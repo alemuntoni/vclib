@@ -36,6 +36,12 @@ option(VCLIB_TESTS_AND_EXAMPLES_HEADER_ONLY
     "If true, the examples and tests of VCLib will be built just setting the
     INCLUDE_PATH of the library (no cmake targets)." OFF)
 
+option(VCLIB_BUILD_CXX20_MODULES "Use VCLib with C++20 Modules" OFF)
+
+if (VCLIB_BUILD_CXX20_MODULES)
+    cmake_minimum_required(VERSION 3.28)
+endif()
+
 # external libraries
 message(STATUS "VCLib: external libraries")
 add_subdirectory(external)
@@ -353,8 +359,24 @@ if (TARGET vclib-external-vcg)
         include/vclib/ext/vcg/type_mapping.h)
 endif()
 
-add_library(vclib INTERFACE ${HEADERS})
-target_include_directories(vclib INTERFACE ${VCLIB_INCLUDE_DIR})
+set(MODULES
+    src/vclib/types.ixx
+    src/vclib.ixx)
+
+if (VCLIB_BUILD_CXX20_MODULES)
+    add_library(vclib)
+
+    target_sources(vclib
+      PUBLIC
+        FILE_SET CXX_MODULES FILES ${MODULES}
+    )
+
+    target_include_directories(vclib PUBLIC ${VCLIB_INCLUDE_DIR})
+    target_compile_definitions(vclib PUBLIC VCLIB_WITH_MODULES)
+else()
+    add_library(vclib INTERFACE ${HEADERS})
+    target_include_directories(vclib INTERFACE ${VCLIB_INCLUDE_DIR})
+endif()
 
 set_target_properties(vclib PROPERTIES
     VCLIB_INCLUDE_DIR ${VCLIB_INCLUDE_DIR})
