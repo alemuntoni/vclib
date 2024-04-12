@@ -23,8 +23,10 @@
 #ifndef VCL_CONCEPTS_ITERATORS_H
 #define VCL_CONCEPTS_ITERATORS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <iterator>
 #include <type_traits>
+#endif
 
 namespace vcl {
 

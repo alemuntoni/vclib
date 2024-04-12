@@ -360,6 +360,8 @@ if (TARGET vclib-external-vcg)
 endif()
 
 set(MODULES
+    src/vclib/concepts.ixx
+    src/vclib/concepts/iterators.ixx
     src/vclib/types.ixx
     src/vclib.ixx)
 

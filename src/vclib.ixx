@@ -25,3 +25,4 @@ module; //Begin global module fragment.
 export module vclib; //Begin the actual module purview
 
 export import vclib.types;
+export import vclib.concepts;
