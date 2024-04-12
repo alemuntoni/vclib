@@ -23,10 +23,10 @@
 #ifndef VCL_TYPES_POINTERS_H
 #define VCL_TYPES_POINTERS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <type_traits>
 #include <utility>
-
-#include <vclib/concepts/pointers.h>
+#endif
 
 namespace vcl {
 
@@ -60,7 +60,7 @@ using RemoveConstFromPointer = std::conditional_t<
 template<typename T>
 auto dereferencePtr(T&& obj)
 {
-    if constexpr (IsPointer<T>) {
+    if constexpr (std::is_pointer_v<std::remove_reference_t<T>>) {
         return *obj;
     }
     else {
@@ -79,7 +79,7 @@ auto dereferencePtr(T&& obj)
 template<typename T>
 auto addressOfObj(T& obj)
 {
-    if constexpr (IsPointer<T>) {
+    if constexpr (std::is_pointer_v<std::remove_reference_t<T>>) {
         return obj;
     }
     else {

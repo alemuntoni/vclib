@@ -23,7 +23,9 @@
 #ifndef VCL_TYPES_CONST_CORRECTNESS_H
 #define VCL_TYPES_CONST_CORRECTNESS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <type_traits>
+#endif
 
 namespace vcl {
 

@@ -23,7 +23,9 @@
 #ifndef VCL_TYPES_MESH_COMPONENTS_H
 #define VCL_TYPES_MESH_COMPONENTS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "base.h"
+#endif
 
 namespace vcl {
 
@@ -55,9 +57,9 @@ struct CompId
     };
 };
 
-inline static constexpr uint COMPONENTS_NUMBER = 19;
+constexpr uint COMPONENTS_NUMBER = 19;
 
-inline static constexpr const char*
+constexpr const char*
     COMPONENT_ENUM_STRINGS[CompId::COMPONENTS_NUMBER] = {
         "BitFlags",
         "Coordinate",

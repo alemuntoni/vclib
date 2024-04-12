@@ -24,12 +24,22 @@ module; //Begin global module fragment.
 
 #include <cassert>
 #include <concepts>
+#include <limits>
 #include <numeric>
+#include <string>
+#include <tuple>
+#include <typeindex>
 #include <type_traits>
+#include <utility>
 
 export module vclib.types; //Begin the actual module purview
 
 export {
 #include <vclib/types/base.h>
 #include <vclib/types/const_correctness.h>
+#include <vclib/types/inheritance.h>
+#include <vclib/types/mesh_components.h>
+#include <vclib/types/mesh_elements.h>
+#include <vclib/types/pointers.h>
+#include <vclib/types/variadic_templates.h>
 }

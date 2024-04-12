@@ -23,10 +23,12 @@
 #ifndef VCL_TYPES_VARIADIC_TEMPLATES_H
 #define VCL_TYPES_VARIADIC_TEMPLATES_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "base.h"
 
 #include <tuple>
 #include <typeindex>
+#endif
 
 namespace vcl {
 

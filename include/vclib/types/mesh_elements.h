@@ -23,9 +23,11 @@
 #ifndef VCL_TYPES_MESH_ELEMENTS_H
 #define VCL_TYPES_MESH_ELEMENTS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <string>
 
 #include "base.h"
+#endif
 
 namespace vcl {
 
@@ -41,7 +43,7 @@ struct ElemId
     };
 };
 
-inline static constexpr const char*
+constexpr const char*
     ELEMENT_ENUM_STRINGS[ElemId::ELEMENTS_NUMBER] = {
         "Vertex",
         "Face",
