@@ -23,7 +23,9 @@
 #ifndef VCL_CONCEPTS_MESH_COMPONENTS_TEX_COORD_H
 #define VCL_CONCEPTS_MESH_COMPONENTS_TEX_COORD_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "component.h"
+#endif
 
 namespace vcl::comp {
 

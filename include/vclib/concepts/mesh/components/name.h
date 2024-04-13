@@ -23,9 +23,11 @@
 #ifndef VCL_CONCEPTS_MESH_COMPONENTS_NAME_H
 #define VCL_CONCEPTS_MESH_COMPONENTS_NAME_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "component.h"
 
 #include <string>
+#endif
 
 namespace vcl::comp {
 

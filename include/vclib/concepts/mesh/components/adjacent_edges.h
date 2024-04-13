@@ -23,9 +23,11 @@
 #ifndef VCL_CONCEPTS_MESH_COMPONENTS_ADJACENT_EDGES_H
 #define VCL_CONCEPTS_MESH_COMPONENTS_ADJACENT_EDGES_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vector>
 
 #include "component.h"
+#endif
 
 namespace vcl::comp {
 

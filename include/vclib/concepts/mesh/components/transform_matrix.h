@@ -23,7 +23,9 @@
 #ifndef VCL_CONCEPTS_MESH_COMPONENTS_TRANSFORM_MATRIX_H
 #define VCL_CONCEPTS_MESH_COMPONENTS_TRANSFORM_MATRIX_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "component.h"
+#endif
 
 namespace vcl::comp {
 

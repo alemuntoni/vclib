@@ -23,9 +23,11 @@
 #ifndef VCL_CONCEPTS_MESH_COMPONENTS_VERTEX_POINTERS_H
 #define VCL_CONCEPTS_MESH_COMPONENTS_VERTEX_POINTERS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "component.h"
 
 #include <vector>
+#endif
 
 namespace vcl::comp {
 

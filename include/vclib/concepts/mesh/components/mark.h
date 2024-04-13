@@ -23,7 +23,9 @@
 #ifndef VCL_CONCEPTS_MESH_COMPONENTS_MARK_H
 #define VCL_CONCEPTS_MESH_COMPONENTS_MARK_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "component.h"
+#endif
 
 namespace vcl::comp {
 

@@ -20,51 +20,36 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_CONCEPTS_MESH_COMPONENTS_TEXTURE_PATHS_H
-#define VCL_CONCEPTS_MESH_COMPONENTS_TEXTURE_PATHS_H
-
-#ifndef VCLIB_WITH_MODULES
-#include "component.h"
+module; //Begin global module fragment.
 
 #include <string>
-#endif
+#include <vector>
 
-namespace vcl::comp {
+export module vclib.concepts.mesh.components; //Begin the actual module purview
 
-/**
- * @brief HasTexturePaths concept is satisfied only if a Element or Mesh class
- * provides the member functions specified in this concept. These member
- * functions allows to access to a TexturePaths component of a given
- * element/mesh.
- *
- * @ingroup components_concepts
- */
-template<typename T>
-concept HasTexturePaths = requires (T o, const T& co, std::string s) {
-    // clang-format off
-    typename T::TexFileNamesIterator;
-    typename T::ConstTexFileNamesIterator;
+import vclib.types;
+import vclib.concepts.mesh.components.component;
 
-    { co.textureNumber() } -> std::same_as<uint>;
-    { co.texturePath(uint()) } -> std::same_as<const std::string&>;
-    { o.texturePath(uint()) } -> std::same_as<std::string&>;
-    { co.meshBasePath() } -> std::same_as<const std::string&>;
-    { o.meshBasePath() } -> std::same_as<std::string&>;
+// todo: add color and wedge_colors
 
-    { o.clearTexturePaths() } -> std::same_as<void>;
-    { o.pushTexturePath(s) } -> std::same_as<void>;
-
-    { o.texturePathBegin() } -> std::same_as<typename T::TexFileNamesIterator>;
-    { o.texturePathEnd() } -> std::same_as<typename T::TexFileNamesIterator>;
-    { co.texturePathBegin() } ->
-        std::same_as<typename T::ConstTexFileNamesIterator>;
-    { co.texturePathEnd() } ->
-        std::same_as<typename T::ConstTexFileNamesIterator>;
-    o.texturePaths();
-    co.texturePaths();
-    // clang-format on
-};
-
-} // namespace vcl::comp
-
-#endif // VCL_CONCEPTS_MESH_COMPONENTS_TEXTURE_PATHS_H
+export {
+#include <vclib/concepts/mesh/components/adjacent_edges.h>
+#include <vclib/concepts/mesh/components/adjacent_faces.h>
+#include <vclib/concepts/mesh/components/adjacent_vertices.h>
+#include <vclib/concepts/mesh/components/bit_flags.h>
+#include <vclib/concepts/mesh/components/bounding_box.h>
+// color
+#include <vclib/concepts/mesh/components/coordinate.h>
+#include <vclib/concepts/mesh/components/custom_components.h>
+#include <vclib/concepts/mesh/components/mark.h>
+#include <vclib/concepts/mesh/components/name.h>
+#include <vclib/concepts/mesh/components/normal.h>
+#include <vclib/concepts/mesh/components/principal_curvature.h>
+#include <vclib/concepts/mesh/components/quality.h>
+#include <vclib/concepts/mesh/components/tex_coord.h>
+#include <vclib/concepts/mesh/components/texture_paths.h>
+#include <vclib/concepts/mesh/components/transform_matrix.h>
+#include <vclib/concepts/mesh/components/vertex_pointers.h>
+// wedge colors
+#include <vclib/concepts/mesh/components/wedge_tex_coords.h>
+}

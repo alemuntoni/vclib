@@ -23,7 +23,9 @@
 #ifndef VCL_CONCEPTS_MESH_COMPONENTS_COMPONENT_H
 #define VCL_CONCEPTS_MESH_COMPONENTS_COMPONENT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/types.h>
+#endif
 
 namespace vcl::comp {
 

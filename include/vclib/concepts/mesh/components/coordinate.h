@@ -23,9 +23,9 @@
 #ifndef VCL_CONCEPTS_MESH_COMPONENTS_COORDINATE_H
 #define VCL_CONCEPTS_MESH_COMPONENTS_COORDINATE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "component.h"
-
-#include <vclib/space/point.h>
+#endif
 
 namespace vcl::comp {
 
