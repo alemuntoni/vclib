@@ -360,7 +360,12 @@ if (TARGET vclib-external-vcg)
 endif()
 
 set(MODULES
+    src/vclib.ixx
     src/vclib/concepts.ixx
+    src/vclib/math.ixx
+    src/vclib/misc.ixx
+    src/vclib/space.ixx
+    src/vclib/types.ixx
     src/vclib/concepts/const_correctness.ixx
     src/vclib/concepts/iterators.ixx
     src/vclib/concepts/mesh.ixx
@@ -368,41 +373,43 @@ set(MODULES
     src/vclib/concepts/ranges.ixx
     src/vclib/concepts/space.ixx
     src/vclib/concepts/mesh/components.ixx
-    src/vclib/concepts/mesh/components/component.ixx
     src/vclib/concepts/mesh/elements.ixx
+    src/vclib/concepts/mesh/components/component.ixx
     src/vclib/concepts/mesh/elements/element.ixx
     src/vclib/concepts/ranges/mesh.ixx
     src/vclib/concepts/ranges/range.ixx
-    src/vclib/math.ixx
     src/vclib/math/base.ixx
-    src/vclib/misc.ixx
     src/vclib/misc/hash.ixx
     src/vclib/misc/logger.ixx
     src/vclib/misc/parallel.ixx
     src/vclib/misc/timer.ixx
     src/vclib/misc/logger/logger.ixx
-    src/vclib/types.ixx
-    src/vclib.ixx)
+    src/vclib/space/point.ixx
+    )
+
+set(VCLIB_TARGET_LINK_TYPE INTERFACE) # header only library
 
 if (VCLIB_BUILD_CXX20_MODULES)
     add_library(vclib)
+
+    set(VCLIB_TARGET_LINK_TYPE PUBLIC)
 
     target_sources(vclib
       PUBLIC
         FILE_SET CXX_MODULES FILES ${MODULES}
     )
 
-    target_include_directories(vclib PUBLIC ${VCLIB_INCLUDE_DIR})
     target_compile_definitions(vclib PUBLIC VCLIB_WITH_MODULES)
 else()
     add_library(vclib INTERFACE ${HEADERS})
-    target_include_directories(vclib INTERFACE ${VCLIB_INCLUDE_DIR})
 endif()
+
+target_include_directories(vclib ${VCLIB_TARGET_LINK_TYPE} ${VCLIB_INCLUDE_DIR})
 
 set_target_properties(vclib PROPERTIES
     VCLIB_INCLUDE_DIR ${VCLIB_INCLUDE_DIR})
 
-target_link_libraries(vclib INTERFACE ${VCLIB_EXTERNAL_LIBRARIES})
+target_link_libraries(vclib ${VCLIB_TARGET_LINK_TYPE} ${VCLIB_EXTERNAL_LIBRARIES})
 
 target_sources(vclib PRIVATE ${HEADERS})
 

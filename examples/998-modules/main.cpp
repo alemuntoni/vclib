@@ -66,12 +66,12 @@ int main()
 {
     std::cerr << "Is NAN degenerate: " << vcl::isDegenerate(std::numeric_limits<double>::quiet_NaN()) << std::endl;
 
-    std::vector<int> v(1000000000);
+    std::vector<vcl::Point3d> v(1000000000);
 
     vcl::Timer t("parallel");
 
-    vcl::parallelFor(v, [](int& el) {
-        el = 1;
+    vcl::parallelFor(v, [](auto& p) {
+        p = vcl::Point3d(1, 1, 1);;
     });
 
     t.stopAndPrint();
@@ -80,8 +80,8 @@ int main()
 
     t.start();
 
-    for (int i = 0; i < v.size(); i++) {
-        v[i] = 2;
+    for (auto& p : v) {
+        p = vcl::Point3d(0, 0, 1);
     }
 
     t.stopAndPrint();

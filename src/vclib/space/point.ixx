@@ -22,10 +22,18 @@
 
 module; //Begin global module fragment.
 
-export module vclib; //Begin the actual module purview
+#include <compare>
 
-export import vclib.types;
-export import vclib.concepts;
-export import vclib.math;
-export import vclib.misc;
-export import vclib.space;
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+export module vclib.space.point; //Begin the actual module purview
+
+import vclib.concepts.space;
+import vclib.math.base;
+import vclib.misc.hash;
+import vclib.types;
+
+export {
+#include <vclib/space/point.h>
+}

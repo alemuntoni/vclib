@@ -23,6 +23,7 @@
 #ifndef VCL_SPACE_POINT_H
 #define VCL_SPACE_POINT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <compare>
 
 #include <Eigen/Core>
@@ -31,6 +32,7 @@
 #include <vclib/concepts/space/point.h>
 #include <vclib/math/base.h>
 #include <vclib/misc/hash.h>
+#endif
 
 namespace vcl {
 
