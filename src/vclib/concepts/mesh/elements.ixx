@@ -31,6 +31,7 @@ import vclib.concepts.mesh.elements.element;
 import vclib.types;
 
 export {
-// todo: add color and wedge_colors
-//#include <vclib/concepts/mesh/elements/edge.h>
+#include <vclib/concepts/mesh/elements/edge.h>
+#include <vclib/concepts/mesh/elements/face.h>
+#include <vclib/concepts/mesh/elements/vertex.h>
 }
