@@ -20,51 +20,35 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_MISC_LOGGER_CONSOLE_LOGGER_H
-#define VCL_MISC_LOGGER_CONSOLE_LOGGER_H
+module; //Begin global module fragment.
 
-#ifndef VCLIB_WITH_MODULES
-#include "logger.h"
+#include <algorithm>
+#include <cassert>
+#include <cctype>
+#include <cstddef>
+#include <initializer_list>
+#include <list>
+#include <sstream>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
-#include <vclib/concepts/logger.h>
-#endif
+export module vclib.misc; //Begin the actual module purview
 
-namespace vcl {
+export import vclib.misc.hash;
+export import vclib.misc.logger;
+export import vclib.misc.parallel;
+export import vclib.misc.timer;
 
-class ConsoleLogger : public Logger<std::ostream>
-{
-    std::ostream& mErrStream   = std::cerr;
-    std::ostream& mWarnStream  = std::cout;
-    std::ostream& mProgStream  = std::cout;
-    std::ostream& mDebugStream = std::cerr;
+import vclib.types;
 
-public:
-    ConsoleLogger() = default;
-
-    ConsoleLogger(
-        std::ostream& errStream,
-        std::ostream& warnStream,
-        std::ostream& progStream,
-        std::ostream& debugStream) :
-            mErrStream(errStream),
-            mWarnStream(warnStream), mProgStream(progStream),
-            mDebugStream(debugStream)
-    {
-    }
-
-protected:
-    std::ostream* levelStream(LogLevel lvl)
-    {
-        switch (lvl) {
-        case ERROR: return &mErrStream;
-        case WARNING: return &mWarnStream;
-        case PROGRESS: return &mProgStream;
-        case DEBUG: return &mDebugStream;
-        }
-        return nullptr;
-    }
-};
-
-} // namespace vcl
-
-#endif // VCL_MISC_LOGGER_CONSOLE_LOGGER_H
+export {
+#include <vclib/misc/compactness.h>
+#include <vclib/misc/comparators.h>
+#include <vclib/misc/nested_initializer_lists.h>
+#include <vclib/misc/pair.h>
+#include <vclib/misc/string.h>
+#include <vclib/misc/tokenizer.h>
+#include <vclib/misc/tuple.h>
+}

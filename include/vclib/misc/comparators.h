@@ -23,8 +23,10 @@
 #ifndef VCL_MISC_COMPARATORS_H
 #define VCL_MISC_COMPARATORS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <algorithm>
 #include <utility>
+#endif
 
 namespace vcl {
 

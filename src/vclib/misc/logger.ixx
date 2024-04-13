@@ -20,51 +20,17 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_MISC_LOGGER_CONSOLE_LOGGER_H
-#define VCL_MISC_LOGGER_CONSOLE_LOGGER_H
+module; //Begin global module fragment.
 
-#ifndef VCLIB_WITH_MODULES
-#include "logger.h"
+#include <iostream>
+#include <string>
 
-#include <vclib/concepts/logger.h>
-#endif
+export module vclib.misc.logger; //Begin the actual module purview
 
-namespace vcl {
+import vclib.concepts;
+import vclib.misc.logger.logger;
 
-class ConsoleLogger : public Logger<std::ostream>
-{
-    std::ostream& mErrStream   = std::cerr;
-    std::ostream& mWarnStream  = std::cout;
-    std::ostream& mProgStream  = std::cout;
-    std::ostream& mDebugStream = std::cerr;
-
-public:
-    ConsoleLogger() = default;
-
-    ConsoleLogger(
-        std::ostream& errStream,
-        std::ostream& warnStream,
-        std::ostream& progStream,
-        std::ostream& debugStream) :
-            mErrStream(errStream),
-            mWarnStream(warnStream), mProgStream(progStream),
-            mDebugStream(debugStream)
-    {
-    }
-
-protected:
-    std::ostream* levelStream(LogLevel lvl)
-    {
-        switch (lvl) {
-        case ERROR: return &mErrStream;
-        case WARNING: return &mWarnStream;
-        case PROGRESS: return &mProgStream;
-        case DEBUG: return &mDebugStream;
-        }
-        return nullptr;
-    }
-};
-
-} // namespace vcl
-
-#endif // VCL_MISC_LOGGER_CONSOLE_LOGGER_H
+export {
+#include <vclib/misc/logger/console_logger.h>
+#include <vclib/misc/logger/null_logger.h>
+}

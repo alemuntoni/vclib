@@ -23,10 +23,12 @@
 #ifndef VCL_MISC_STRING_H
 #define VCL_MISC_STRING_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <algorithm>
 #include <cctype>
 #include <sstream>
 #include <string>
+#endif
 
 namespace vcl {
 

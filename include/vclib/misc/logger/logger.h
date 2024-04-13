@@ -23,15 +23,16 @@
 #ifndef VCL_MISC_LOGGER_LOGGER_H
 #define VCL_MISC_LOGGER_LOGGER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <cassert>
 #include <cmath>
 #include <iomanip>
-#include <iostream>
 #include <mutex>
 #include <stack>
 
 #include <vclib/misc/timer.h>
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 

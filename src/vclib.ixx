@@ -26,3 +26,4 @@ export module vclib; //Begin the actual module purview
 
 export import vclib.types;
 export import vclib.concepts;
+export import vclib.misc;

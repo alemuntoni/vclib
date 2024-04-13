@@ -23,7 +23,9 @@
 #ifndef VCL_MISC_PAIR_H
 #define VCL_MISC_PAIR_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 

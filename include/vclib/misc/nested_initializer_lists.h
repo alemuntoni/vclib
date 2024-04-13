@@ -25,11 +25,13 @@
 
 /* @link https://zcrou.com/blog/dev/nested-initializers */
 
+#ifndef VCLIB_WITH_MODULES
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <initializer_list>
 #include <list>
+#endif
 
 namespace vcl {
 

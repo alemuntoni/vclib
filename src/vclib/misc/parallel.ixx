@@ -20,51 +20,25 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_MISC_LOGGER_CONSOLE_LOGGER_H
-#define VCL_MISC_LOGGER_CONSOLE_LOGGER_H
+module; //Begin global module fragment.
 
-#ifndef VCLIB_WITH_MODULES
-#include "logger.h"
+#include <algorithm>
 
-#include <vclib/concepts/logger.h>
+// Apple clang does not support c++17 parallel algorithms.
+// To compensate this lack, waiting for Apple to support them, we use pstld
+// (https://github.com/mikekazakov/pstld) that implements them in the stl
+// namespace
+#if defined(__clang__) && defined(__APPLE__)
+#include <pstld/pstld.h>
+#else
+#include <execution>
 #endif
 
-namespace vcl {
+export module vclib.misc.parallel; //Begin the actual module purview
 
-class ConsoleLogger : public Logger<std::ostream>
-{
-    std::ostream& mErrStream   = std::cerr;
-    std::ostream& mWarnStream  = std::cout;
-    std::ostream& mProgStream  = std::cout;
-    std::ostream& mDebugStream = std::cerr;
+import vclib.concepts.ranges;
+import vclib.types;
 
-public:
-    ConsoleLogger() = default;
-
-    ConsoleLogger(
-        std::ostream& errStream,
-        std::ostream& warnStream,
-        std::ostream& progStream,
-        std::ostream& debugStream) :
-            mErrStream(errStream),
-            mWarnStream(warnStream), mProgStream(progStream),
-            mDebugStream(debugStream)
-    {
-    }
-
-protected:
-    std::ostream* levelStream(LogLevel lvl)
-    {
-        switch (lvl) {
-        case ERROR: return &mErrStream;
-        case WARNING: return &mWarnStream;
-        case PROGRESS: return &mProgStream;
-        case DEBUG: return &mDebugStream;
-        }
-        return nullptr;
-    }
-};
-
-} // namespace vcl
-
-#endif // VCL_MISC_LOGGER_CONSOLE_LOGGER_H
+export {
+#include <vclib/misc/parallel.h>
+}

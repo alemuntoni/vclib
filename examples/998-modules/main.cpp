@@ -64,9 +64,25 @@ static_assert(
 
 int main()
 {
-    auto k = vcl::FLOAT;
+    std::vector<int> v(1000000000);
 
-    std::cerr << vcl::asConst(k) << "\n";
+    vcl::Timer t("parallel");
+
+    vcl::parallelFor(v, [](int& el) {
+        el = 1;
+    });
+
+    t.stopAndPrint();
+
+    t.setCaption("sequential");
+
+    t.start();
+
+    for (int i = 0; i < v.size(); i++) {
+        v[i] = 2;
+    }
+
+    t.stopAndPrint();
 
     return 0;
 }

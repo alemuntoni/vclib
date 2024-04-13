@@ -23,7 +23,9 @@
 #ifndef VCL_MISC_HASH_H
 #define VCL_MISC_HASH_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <functional>
+#endif
 
 namespace vcl {
 
