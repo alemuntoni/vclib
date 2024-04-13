@@ -369,6 +369,8 @@ set(MODULES
     src/vclib/concepts/space.ixx
     src/vclib/concepts/mesh/components.ixx
     src/vclib/concepts/mesh/components/component.ixx
+    src/vclib/concepts/mesh/elements.ixx
+    src/vclib/concepts/mesh/elements/element.ixx
     src/vclib/concepts/ranges/mesh.ixx
     src/vclib/concepts/ranges/range.ixx
     src/vclib/types.ixx

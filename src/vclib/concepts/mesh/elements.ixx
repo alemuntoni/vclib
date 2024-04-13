@@ -22,7 +22,16 @@
 
 module; //Begin global module fragment.
 
-export module vclib.concepts.mesh; //Begin the actual module purview
+#include <type_traits>
 
-export import vclib.concepts.mesh.components;
-export import vclib.concepts.mesh.elements;
+export module vclib.concepts.mesh.elements; //Begin the actual module purview
+
+import vclib.types;
+import vclib.concepts.mesh.components;
+import vclib.concepts.mesh.elements.element;
+
+
+export {
+// todo: add color and wedge_colors
+//#include <vclib/concepts/mesh/elements/edge.h>
+}
