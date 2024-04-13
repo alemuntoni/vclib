@@ -22,6 +22,19 @@
 
 module; //Begin global module fragment.
 
+#include <concepts>
+#include <string>
+#include <type_traits>
+
 export module vclib.concepts; //Begin the actual module purview
 
+import vclib.types;
+
 export import vclib.concepts.iterators;
+
+export {
+#include <vclib/concepts/const_correctness.h>
+#include <vclib/concepts/logger.h>
+#include <vclib/concepts/pointers.h>
+#include <vclib/concepts/types.h>
+}

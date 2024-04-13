@@ -30,6 +30,21 @@ static_assert(
     vcl::IteratorConcept<std::vector<int>::iterator>,
     "std::vector<int>::iterator is not an iterator");
 
+static_assert(
+    vcl::IsPointer<int*>, "int* is not a pointer");
+
+static_assert(
+    !vcl::LoggerConcept<int>, "int is a Logger");
+
+static_assert(
+    vcl::IntegralOrEnum<vcl::PrimitiveType>, "PrimitiveType is not an integral or enum");
+
+static_assert(
+    !vcl::NonBoolIntegralOrEnum<bool>, "bool is a NonBoolIntegralOrEnum");
+
+static_assert(
+    vcl::NonBoolIntegralOrEnum<int>, "int is not a NonBoolIntegralOrEnum");
+
 int main()
 {
     auto k = vcl::FLOAT;

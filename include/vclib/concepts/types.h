@@ -23,7 +23,9 @@
 #ifndef VCL_CONCEPTS_TYPES_H
 #define VCL_CONCEPTS_TYPES_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <concepts>
+#endif
 
 namespace vcl {
 

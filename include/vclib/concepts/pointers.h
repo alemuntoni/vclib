@@ -23,7 +23,9 @@
 #ifndef VCL_CONCEPTS_POINTERS_H
 #define VCL_CONCEPTS_POINTERS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "const_correctness.h"
+#endif
 
 namespace vcl {
 

@@ -23,9 +23,11 @@
 #ifndef VCL_CONCEPTS_LOGGER_H
 #define VCL_CONCEPTS_LOGGER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <string>
 
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 
