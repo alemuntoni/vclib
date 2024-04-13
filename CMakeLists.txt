@@ -374,7 +374,11 @@ set(MODULES
     src/vclib/concepts/space.ixx
     src/vclib/concepts/mesh/components.ixx
     src/vclib/concepts/mesh/containers.ixx
+    src/vclib/concepts/mesh/element_mesh_concept.ixx
     src/vclib/concepts/mesh/elements.ixx
+    src/vclib/concepts/mesh/mesh_concept.ixx
+    src/vclib/concepts/mesh/per_element.ixx
+    src/vclib/concepts/mesh/per_mesh.ixx
     src/vclib/concepts/mesh/components/component.ixx
     src/vclib/concepts/mesh/containers/element_container.ixx
     src/vclib/concepts/mesh/elements/element.ixx

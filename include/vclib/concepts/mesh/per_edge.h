@@ -23,8 +23,10 @@
 #ifndef VCL_CONCEPTS_MESH_PER_EDGE_H
 #define VCL_CONCEPTS_MESH_PER_EDGE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "containers/edge_container.h"
 #include "elements/edge.h"
+#endif
 
 /**
  * @defgroup edge_mesh_concepts EdgeMesh Concepts

@@ -23,8 +23,10 @@
 #ifndef VCL_CONCEPTS_MESH_EDGE_MESH_CONCEPT_H
 #define VCL_CONCEPTS_MESH_EDGE_MESH_CONCEPT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "mesh_concept.h"
 #include "per_edge.h"
+#endif
 
 namespace vcl {
 

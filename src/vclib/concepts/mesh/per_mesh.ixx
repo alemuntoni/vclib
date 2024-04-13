@@ -22,12 +22,12 @@
 
 module; //Begin global module fragment.
 
-export module vclib.concepts.mesh; //Begin the actual module purview
+export module vclib.concepts.mesh.per_mesh; //Begin the actual module purview
 
-export import vclib.concepts.mesh.components;
-export import vclib.concepts.mesh.element_mesh_concept;
-export import vclib.concepts.mesh.elements;
-export import vclib.concepts.mesh.containers;
-export import vclib.concepts.mesh.mesh_concept;
-export import vclib.concepts.mesh.per_element;
-export import vclib.concepts.mesh.per_mesh;
+import vclib.concepts.mesh.components;
+import vclib.concepts.mesh.mesh_concept;
+import vclib.types;
+
+export {
+#include <vclib/concepts/mesh/per_mesh.h>
+}

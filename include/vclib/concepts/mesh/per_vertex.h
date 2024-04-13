@@ -23,8 +23,10 @@
 #ifndef VCL_CONCEPTS_MESH_PER_VERTEX_H
 #define VCL_CONCEPTS_MESH_PER_VERTEX_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "containers/vertex_container.h"
 #include "elements/vertex.h"
+#endif
 
 /**
  * @defgroup vertex_mesh_concepts VertexMesh Concepts

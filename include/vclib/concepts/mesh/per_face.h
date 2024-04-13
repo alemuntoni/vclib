@@ -23,8 +23,10 @@
 #ifndef VCL_CONCEPTS_MESH_PER_FACE_H
 #define VCL_CONCEPTS_MESH_PER_FACE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "containers/face_container.h"
 #include "elements/face.h"
+#endif
 
 /**
  * @defgroup face_mesh_concepts FaceMesh Concepts

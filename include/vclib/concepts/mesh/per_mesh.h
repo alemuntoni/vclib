@@ -23,8 +23,10 @@
 #ifndef VCL_CONCEPTS_MESH_PER_MESH_H
 #define VCL_CONCEPTS_MESH_PER_MESH_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "components.h"
 #include "mesh_concept.h"
+#endif
 
 namespace vcl {
 
