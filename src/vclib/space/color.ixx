@@ -22,7 +22,14 @@
 
 module; //Begin global module fragment.
 
-export module vclib.space; //Begin the actual module purview
+#include <vector>
 
-export import vclib.space.color;
-export import vclib.space.point;
+#include <Eigen/Core>
+
+export module vclib.space.color; //Begin the actual module purview
+
+import vclib.space.point;
+
+export {
+#include <vclib/space/color.h>
+}

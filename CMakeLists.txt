@@ -384,6 +384,7 @@ set(MODULES
     src/vclib/misc/parallel.ixx
     src/vclib/misc/timer.ixx
     src/vclib/misc/logger/logger.ixx
+    src/vclib/space/color.ixx
     src/vclib/space/point.ixx
     )
 

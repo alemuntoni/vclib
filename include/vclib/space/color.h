@@ -23,9 +23,11 @@
 #ifndef VCL_SPACE_COLOR_H
 #define VCL_SPACE_COLOR_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vector>
 
 #include "point.h"
+#endif
 
 namespace vcl {
 
