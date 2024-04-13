@@ -362,6 +362,7 @@ endif()
 set(MODULES
     src/vclib/concepts.ixx
     src/vclib/concepts/iterators.ixx
+    src/vclib/concepts/space.ixx
     src/vclib/types.ixx
     src/vclib.ixx)
 

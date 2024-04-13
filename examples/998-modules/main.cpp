@@ -24,6 +24,8 @@
 
 #include <vector>
 
+#include <Eigen/Core>
+
 import vclib;
 
 static_assert(
@@ -44,6 +46,18 @@ static_assert(
 
 static_assert(
     vcl::NonBoolIntegralOrEnum<int>, "int is not a NonBoolIntegralOrEnum");
+
+static_assert(
+    !vcl::ArrayConcept<std::vector<int>>, "std::vector<int> is an array");
+
+static_assert(
+    vcl::EigenMatrixConcept<Eigen::Matrix4f>, "Eigen::Matrix4f is not an Eigen matrix");
+
+static_assert(
+    !vcl::PointConcept<Eigen::Vector3d>, "Eigen::Vector3d is a point");
+
+static_assert(
+    !vcl::SphereConcept<Eigen::Vector3d>, "Eigen::Vector3d is a sphere");
 
 int main()
 {

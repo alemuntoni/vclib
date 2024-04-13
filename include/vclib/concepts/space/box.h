@@ -23,7 +23,9 @@
 #ifndef VCL_CONCEPTS_SPACE_BOX_H
 #define VCL_CONCEPTS_SPACE_BOX_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 

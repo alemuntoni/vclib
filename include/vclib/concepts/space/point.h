@@ -23,8 +23,10 @@
 #ifndef VCL_CONCEPTS_SPACE_POINT_H
 #define VCL_CONCEPTS_SPACE_POINT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/iterators.h>
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 

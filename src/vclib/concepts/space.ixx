@@ -20,45 +20,24 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_CONCEPTS_SPACE_SAMPLER_H
-#define VCL_CONCEPTS_SPACE_SAMPLER_H
+module; //Begin global module fragment.
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/types/base.h>
-#endif
+#include <vector>
 
-namespace vcl {
+export module vclib.concepts.space; //Begin the actual module purview
 
-/**
- * @brief A concept for a container that stores Point samples.
- *
- * A type satisfies this concept if it provides the following interface:
- * - `o.samples()`: returns a container of samples in the sampler.
- * - `o.clear()`: clears all previously contained samples.
- * - `o.reserve(uint())`: reserves memory for the given number of samples.
- * - `o.resize(uint())`: resizes the sampler to the given number of samples.
- *
- * @tparam T: The type to be tested for conformity to the SamplerConcept.
- */
-template<typename T>
-concept SamplerConcept = requires (T o, const T& co) {
-    // clang-format off
-    typename T::PointType;
+import vclib.types;
+import vclib.concepts.iterators;
 
-    o.samples();
-
-    { co.size() } -> std::same_as<std::size_t>;
-    co.sample(uint());
-
-    o.clear();
-    o.reserve(uint());
-    o.resize(uint());
-    
-    co.begin();
-    co.end();
-    // clang-format on
-};
-
-} // namespace vcl
-
-#endif // VCL_CONCEPTS_SPACE_SAMPLER_H
+export {
+#include <vclib/concepts/space/array.h>
+#include <vclib/concepts/space/box.h>
+#include <vclib/concepts/space/matrix.h>
+#include <vclib/concepts/space/plane.h>
+#include <vclib/concepts/space/point.h>
+#include <vclib/concepts/space/polygon.h>
+#include <vclib/concepts/space/sampler.h>
+#include <vclib/concepts/space/segment.h>
+#include <vclib/concepts/space/sphere.h>
+#include <vclib/concepts/space/triangle.h>
+}

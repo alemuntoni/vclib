@@ -31,6 +31,7 @@ export module vclib.concepts; //Begin the actual module purview
 import vclib.types;
 
 export import vclib.concepts.iterators;
+export import vclib.concepts.space;
 
 export {
 #include <vclib/concepts/const_correctness.h>

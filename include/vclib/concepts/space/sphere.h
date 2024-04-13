@@ -23,7 +23,9 @@
 #ifndef VCL_CONCEPTS_SPACE_SPHERE_H
 #define VCL_CONCEPTS_SPACE_SPHERE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "point.h"
+#endif
 
 namespace vcl {
 

@@ -23,9 +23,11 @@
 #ifndef VCL_CONCEPTS_SPACE_ARRAY_H
 #define VCL_CONCEPTS_SPACE_ARRAY_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vector>
 
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 
