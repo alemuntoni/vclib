@@ -26,8 +26,8 @@ module; //Begin global module fragment.
 
 export module vclib.concepts.space; //Begin the actual module purview
 
-import vclib.types;
 import vclib.concepts.iterators;
+import vclib.types;
 
 export {
 #include <vclib/concepts/space/array.h>

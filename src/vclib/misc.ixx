@@ -36,12 +36,12 @@ module; //Begin global module fragment.
 
 export module vclib.misc; //Begin the actual module purview
 
+import vclib.types;
+
 export import vclib.misc.hash;
 export import vclib.misc.logger;
 export import vclib.misc.parallel;
 export import vclib.misc.timer;
-
-import vclib.types;
 
 export {
 #include <vclib/misc/compactness.h>

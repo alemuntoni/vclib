@@ -27,8 +27,9 @@ module; //Begin global module fragment.
 
 export module vclib.concepts.mesh.components; //Begin the actual module purview
 
-import vclib.types;
 import vclib.concepts.mesh.components.component;
+import vclib.space.color;
+import vclib.types;
 
 // todo: add color and wedge_colors
 
@@ -38,7 +39,7 @@ export {
 #include <vclib/concepts/mesh/components/adjacent_vertices.h>
 #include <vclib/concepts/mesh/components/bit_flags.h>
 #include <vclib/concepts/mesh/components/bounding_box.h>
-// color
+#include <vclib/concepts/mesh/components/color.h>
 #include <vclib/concepts/mesh/components/coordinate.h>
 #include <vclib/concepts/mesh/components/custom_components.h>
 #include <vclib/concepts/mesh/components/mark.h>
@@ -50,6 +51,6 @@ export {
 #include <vclib/concepts/mesh/components/texture_paths.h>
 #include <vclib/concepts/mesh/components/transform_matrix.h>
 #include <vclib/concepts/mesh/components/vertex_pointers.h>
-// wedge colors
+#include <vclib/concepts/mesh/components/wedge_colors.h>
 #include <vclib/concepts/mesh/components/wedge_tex_coords.h>
 }

@@ -24,8 +24,8 @@ module; //Begin global module fragment.
 
 export module vclib; //Begin the actual module purview
 
-export import vclib.types;
 export import vclib.concepts;
 export import vclib.math;
 export import vclib.misc;
 export import vclib.space;
+export import vclib.types;

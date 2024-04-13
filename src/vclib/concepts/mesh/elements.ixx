@@ -26,10 +26,9 @@ module; //Begin global module fragment.
 
 export module vclib.concepts.mesh.elements; //Begin the actual module purview
 
-import vclib.types;
 import vclib.concepts.mesh.components;
 import vclib.concepts.mesh.elements.element;
-
+import vclib.types;
 
 export {
 // todo: add color and wedge_colors

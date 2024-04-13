@@ -23,9 +23,11 @@
 #ifndef VCL_CONCEPTS_MESH_COMPONENTS_COLOR_H
 #define VCL_CONCEPTS_MESH_COMPONENTS_COLOR_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/space/color.h>
 
 #include "component.h"
+#endif
 
 namespace vcl::comp {
 

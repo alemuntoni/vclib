@@ -30,13 +30,13 @@ module; //Begin global module fragment.
 
 export module vclib.math; //Begin the actual module purview
 
+import vclib.types;
+
 export import vclib.math.base;
 // todo: fibonacci
 // todo: min_max
 // todo: random
 // todo: transform
-
-import vclib.types;
 
 export {
 #include <vclib/math/distribution.h>
