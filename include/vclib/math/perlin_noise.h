@@ -23,7 +23,9 @@
 #ifndef VCL_MATH_PERLIN_NOISE_H
 #define VCL_MATH_PERLIN_NOISE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <cmath>
+#endif
 
 namespace vcl {
 

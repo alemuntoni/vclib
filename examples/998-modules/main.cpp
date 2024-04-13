@@ -64,6 +64,8 @@ static_assert(
 
 int main()
 {
+    std::cerr << "Is NAN degenerate: " << vcl::isDegenerate(std::numeric_limits<double>::quiet_NaN()) << std::endl;
+
     std::vector<int> v(1000000000);
 
     vcl::Timer t("parallel");

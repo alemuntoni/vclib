@@ -22,9 +22,24 @@
 
 module; //Begin global module fragment.
 
-export module vclib; //Begin the actual module purview
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <set>
+#include <vector>
 
-export import vclib.types;
-export import vclib.concepts;
-export import vclib.math;
-export import vclib.misc;
+export module vclib.math; //Begin the actual module purview
+
+export import vclib.math.base;
+// todo: fibonacci
+// todo: min_max
+// todo: random
+// todo: transform
+
+import vclib.types;
+
+export {
+#include <vclib/math/distribution.h>
+#include <vclib/math/histogram.h>
+#include <vclib/math/perlin_noise.h>
+}

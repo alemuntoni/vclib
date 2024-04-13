@@ -23,11 +23,13 @@
 #ifndef VCL_MATH_HISTOGRAM_H
 #define VCL_MATH_HISTOGRAM_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <algorithm>
 #include <cmath>
 #include <vector>
 
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 

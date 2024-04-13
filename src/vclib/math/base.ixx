@@ -22,9 +22,14 @@
 
 module; //Begin global module fragment.
 
-export module vclib; //Begin the actual module purview
+#include <cassert>
+#include <cmath>
+#include <limits>
 
-export import vclib.types;
-export import vclib.concepts;
-export import vclib.math;
-export import vclib.misc;
+export module vclib.math.base; //Begin the actual module purview
+
+import vclib.types;
+
+export {
+#include <vclib/math/base.h>
+}

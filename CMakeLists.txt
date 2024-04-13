@@ -373,6 +373,8 @@ set(MODULES
     src/vclib/concepts/mesh/elements/element.ixx
     src/vclib/concepts/ranges/mesh.ixx
     src/vclib/concepts/ranges/range.ixx
+    src/vclib/math.ixx
+    src/vclib/math/base.ixx
     src/vclib/misc.ixx
     src/vclib/misc/hash.ixx
     src/vclib/misc/logger.ixx
