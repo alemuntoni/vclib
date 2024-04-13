@@ -361,8 +361,13 @@ endif()
 
 set(MODULES
     src/vclib/concepts.ixx
+    src/vclib/concepts/const_correctness.ixx
     src/vclib/concepts/iterators.ixx
+    src/vclib/concepts/pointers.ixx
+    src/vclib/concepts/ranges.ixx
     src/vclib/concepts/space.ixx
+    src/vclib/concepts/ranges/mesh.ixx
+    src/vclib/concepts/ranges/range.ixx
     src/vclib/types.ixx
     src/vclib.ixx)
 

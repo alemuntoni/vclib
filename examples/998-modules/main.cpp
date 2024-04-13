@@ -59,6 +59,9 @@ static_assert(
 static_assert(
     !vcl::SphereConcept<Eigen::Vector3d>, "Eigen::Vector3d is a sphere");
 
+static_assert(
+    vcl::Range<std::vector<int>>, "std::vector<int> is not a Range");
+
 int main()
 {
     auto k = vcl::FLOAT;

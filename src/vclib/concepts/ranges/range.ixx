@@ -20,45 +20,14 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCLIB_CONCEPTS_RANGES_RANGE_H
-#define VCLIB_CONCEPTS_RANGES_RANGE_H
+module; //Begin global module fragment.
 
-#ifndef VCLIB_WITH_MODULES
 #include <ranges>
-#endif
 
-namespace vcl {
+export module vclib.concepts.ranges.range; //Begin the actual module purview
 
-/**
- * @brief Utility concept that is evaluated true if T is a range, e.g. if has a
- * begin and an end.
- *
- * It is equivalent to std::ranges::range.
- *
- * @ingroup uconcepts
- */
-template<typename T>
-concept Range = std::ranges::range<T>;
+export {
+#include <vclib/concepts/ranges/range.h>
+}
 
-/**
- * @brief Utility concept that is evaluated true the Range R has a value_type
- * that is T.
- *
- * @ingroup uconcepts
- */
-template<typename R, typename T>
-concept RangeOf = Range<R> && std::is_same_v<std::ranges::range_value_t<R>, T>;
-
-/**
- * @brief Utility concept that is evaluated true the Range R has a value_type
- * that is convertible to T.
- *
- * @ingroup uconcepts
- */
-template<typename R, typename T>
-concept RangeOfConvertibleTo =
-    Range<R> && std::convertible_to<std::ranges::range_value_t<R>, T>;
-
-} // namespace vcl
-
-#endif // VCLIB_CONCEPTS_RANGES_RANGE_H
+// todo
