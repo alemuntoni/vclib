@@ -22,8 +22,16 @@
 
 module; //Begin global module fragment.
 
-export module vclib.concepts.mesh; //Begin the actual module purview
+#include <ranges>
+#include <vector>
 
-export import vclib.concepts.mesh.components;
-export import vclib.concepts.mesh.elements;
-export import vclib.concepts.mesh.containers;
+export module vclib.concepts.mesh.containers; //Begin the actual module purview
+
+import vclib.concepts.mesh.containers.element_container;
+import vclib.types;
+
+export {
+#include <vclib/concepts/mesh/containers/edge_container.h>
+#include <vclib/concepts/mesh/containers/face_container.h>
+#include <vclib/concepts/mesh/containers/vertex_container.h>
+}

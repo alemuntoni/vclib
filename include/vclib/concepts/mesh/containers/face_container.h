@@ -23,10 +23,12 @@
 #ifndef VCL_CONCEPTS_MESH_CONTAINERS_FACE_CONTAINER_H
 #define VCL_CONCEPTS_MESH_CONTAINERS_FACE_CONTAINER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <ranges>
 #include <vector>
 
 #include "element_container.h"
+#endif
 
 namespace vcl {
 namespace mesh {

@@ -373,8 +373,10 @@ set(MODULES
     src/vclib/concepts/ranges.ixx
     src/vclib/concepts/space.ixx
     src/vclib/concepts/mesh/components.ixx
+    src/vclib/concepts/mesh/containers.ixx
     src/vclib/concepts/mesh/elements.ixx
     src/vclib/concepts/mesh/components/component.ixx
+    src/vclib/concepts/mesh/containers/element_container.ixx
     src/vclib/concepts/mesh/elements/element.ixx
     src/vclib/concepts/ranges/mesh.ixx
     src/vclib/concepts/ranges/range.ixx
