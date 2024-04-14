@@ -23,7 +23,9 @@
 #ifndef VCL_SPACE_TRIANGLE_WRAPPER_H
 #define VCL_SPACE_TRIANGLE_WRAPPER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "triangle.h"
+#endif
 
 namespace vcl {
 

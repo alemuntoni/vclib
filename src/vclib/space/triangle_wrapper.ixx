@@ -22,17 +22,14 @@
 
 module;
 
-export module vclib.space;
+#include <stdexcept>
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.box;
-export import vclib.space.color;
-export import vclib.space.graph;
-export import vclib.space.image;
-export import vclib.space.kd_tree;
-export import vclib.space.matrix;
-export import vclib.space.plane;
-export import vclib.space.point;
-export import vclib.space.triangle;
-export import vclib.space.triangle_wrapper;
+export module vclib.space.triangle_wrapper;
+
+import vclib.concepts.space;
+import vclib.space.point;
+import vclib.space.triangle;
+
+export {
+#include <vclib/space/triangle_wrapper.h>
+}
