@@ -23,9 +23,11 @@
 #ifndef VCL_MESH_ELEMENTS_EDGE_H
 #define VCL_MESH_ELEMENTS_EDGE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/elements/edge.h>
 
 #include "element.h"
+#endif
 
 namespace vcl {
 

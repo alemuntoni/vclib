@@ -23,6 +23,7 @@
 #ifndef VCL_MESH_ELEMENTS_VERTEX_COMPONENTS_H
 #define VCL_MESH_ELEMENTS_VERTEX_COMPONENTS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "../components/adjacent_edges.h"
 #include "../components/adjacent_faces.h"
 #include "../components/adjacent_vertices.h"
@@ -36,6 +37,7 @@
 #include "../components/principal_curvature.h"
 #include "../components/quality.h"
 #include "../components/tex_coord.h"
+#endif
 
 /**
  * @defgroup vert_components Vertex Components

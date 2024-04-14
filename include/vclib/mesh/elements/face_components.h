@@ -23,6 +23,7 @@
 #ifndef VCL_MESH_ELEMENTS_FACE_COMPONENTS_H
 #define VCL_MESH_ELEMENTS_FACE_COMPONENTS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "../components/adjacent_edges.h"
 #include "../components/adjacent_faces.h"
 #include "../components/bit_flags.h"
@@ -38,6 +39,7 @@
 #include "../components/vertex_pointers.h"
 #include "../components/wedge_colors.h"
 #include "../components/wedge_tex_coords.h"
+#endif
 
 /**
  * @defgroup face_components Face Components

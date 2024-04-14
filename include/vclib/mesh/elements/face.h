@@ -23,11 +23,13 @@
 #ifndef VCL_MESH_ELEMENTS_FACE_H
 #define VCL_MESH_ELEMENTS_FACE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/elements/face.h>
 #include <vclib/concepts/ranges/range.h>
 #include <vclib/views/view.h>
 
 #include "element.h"
+#endif
 
 namespace vcl {
 

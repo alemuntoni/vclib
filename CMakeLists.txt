@@ -395,9 +395,14 @@ set(MODULES
     src/vclib/iterators/space.ixx
     src/vclib/math/base.ixx
     src/vclib/mesh/components.ixx
+    src/vclib/mesh/elements.ixx
     src/vclib/mesh/components/bases.ixx
     src/vclib/mesh/components/detail.ixx
     src/vclib/mesh/components/parent_mesh_pointer.ixx
+    src/vclib/mesh/elements/edge.ixx
+    src/vclib/mesh/elements/face.ixx
+    src/vclib/mesh/elements/element.ixx
+    src/vclib/mesh/elements/vertex.ixx
     src/vclib/misc/hash.ixx
     src/vclib/misc/logger.ixx
     src/vclib/misc/parallel.ixx

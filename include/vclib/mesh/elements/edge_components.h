@@ -23,6 +23,7 @@
 #ifndef VCL_MESH_ELEMENTS_EDGE_COMPONENTS_H
 #define VCL_MESH_ELEMENTS_EDGE_COMPONENTS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "../components/adjacent_edges.h"
 #include "../components/adjacent_faces.h"
 #include "../components/bit_flags.h"
@@ -32,6 +33,7 @@
 #include "../components/parent_mesh_pointer.h"
 #include "../components/quality.h"
 #include "../components/vertex_pointers.h"
+#endif
 
 /**
  * @defgroup edge_components Edge Components
