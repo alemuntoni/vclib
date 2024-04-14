@@ -410,6 +410,7 @@ set(MODULES
     src/vclib/space/plane.ixx
     src/vclib/space/point.ixx
     src/vclib/space/principal_curvature.ixx
+    src/vclib/space/quaternion.ixx
     src/vclib/space/triangle.ixx
     src/vclib/space/triangle_wrapper.ixx
     src/vclib/space/vector.ixx

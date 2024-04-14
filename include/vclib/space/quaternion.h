@@ -23,8 +23,10 @@
 #ifndef VCL_SPACE_QUATERNION_H
 #define VCL_SPACE_QUATERNION_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "matrix.h"
 #include "point.h"
+#endif
 
 namespace vcl {
 
