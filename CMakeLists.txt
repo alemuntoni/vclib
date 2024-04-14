@@ -363,6 +363,7 @@ endif()
 set(MODULES
     src/vclib.ixx
     src/vclib/concepts.ixx
+    src/vclib/exceptions.ixx
     src/vclib/math.ixx
     src/vclib/misc.ixx
     src/vclib/space.ixx

@@ -20,58 +20,15 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_IO_EXCEPTIONS_H
-#define VCL_IO_EXCEPTIONS_H
+module; //Begin global module fragment.
 
-#ifndef VCLIB_WITH_MODULES
 #include <stdexcept>
 #include <string>
-#endif
 
-namespace vcl {
+export module vclib.exceptions; //Begin the actual module purview
 
-class UnknownFileFormatException : public std::runtime_error
-{
-public:
-    UnknownFileFormatException(const std::string& err) : std::runtime_error(err)
-    {
-    }
-
-    virtual const char* what() const throw()
-    {
-        static std::string error;
-        error =
-            std::string("Unknown File Format - ") + std::runtime_error::what();
-        return error.c_str();
-    }
-};
-
-class CannotOpenFileException : public std::runtime_error
-{
-public:
-    CannotOpenFileException(const std::string& err) : std::runtime_error(err) {}
-
-    virtual const char* what() const throw()
-    {
-        static std::string error;
-        error = std::string("Cannot Open File - ") + std::runtime_error::what();
-        return error.c_str();
-    }
-};
-
-class MalformedFileException : public std::runtime_error
-{
-public:
-    MalformedFileException(const std::string& err) : std::runtime_error(err) {}
-
-    virtual const char* what() const throw()
-    {
-        static std::string error;
-        error = std::string("Malformed File - ") + std::runtime_error::what();
-        return error.c_str();
-    }
-};
-
-} // namespace vcl
-
-#endif // VCL_IO_EXCEPTIONS_H
+export {
+#include <vclib/exceptions/io_exceptions.h>
+#include <vclib/exceptions/mesh_exceptions.h>
+#include <vclib/exceptions/misc_exceptions.h>
+}

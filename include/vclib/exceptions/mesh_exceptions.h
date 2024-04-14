@@ -23,8 +23,10 @@
 #ifndef VCL_MESH_EXCEPTIONS_H
 #define VCL_MESH_EXCEPTIONS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <stdexcept>
 #include <string>
+#endif
 
 namespace vcl {
 
