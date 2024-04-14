@@ -23,9 +23,11 @@
 #ifndef VCL_SPACE_SEGMENT_H
 #define VCL_SPACE_SEGMENT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/space/segment.h>
 
 #include "point.h"
+#endif
 
 namespace vcl {
 

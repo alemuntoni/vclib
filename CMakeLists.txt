@@ -411,6 +411,7 @@ set(MODULES
     src/vclib/space/point.ixx
     src/vclib/space/principal_curvature.ixx
     src/vclib/space/quaternion.ixx
+    src/vclib/space/segment.ixx
     src/vclib/space/sphere.ixx
     src/vclib/space/triangle.ixx
     src/vclib/space/triangle_wrapper.ixx
