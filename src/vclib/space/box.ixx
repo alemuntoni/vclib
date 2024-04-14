@@ -22,10 +22,14 @@
 
 module;
 
-export module vclib.space;
+#include <algorithm>
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.box;
-export import vclib.space.color;
-export import vclib.space.point;
+export module vclib.space.box;
+
+import vclib.concepts;
+import vclib.math;
+import vclib.space.point;
+
+export {
+#include <vclib/space/box.h>
+}

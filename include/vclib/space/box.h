@@ -23,12 +23,14 @@
 #ifndef VCL_SPACE_BOX_H
 #define VCL_SPACE_BOX_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <algorithm>
 
 #include <vclib/concepts/space/box.h>
 #include <vclib/math/min_max.h>
 
 #include "point.h"
+#endif
 
 namespace vcl {
 
