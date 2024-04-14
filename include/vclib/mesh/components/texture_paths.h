@@ -23,6 +23,7 @@
 #ifndef VCL_MESH_COMPONENTS_TEXTURE_PATHS_H
 #define VCL_MESH_COMPONENTS_TEXTURE_PATHS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <string>
 #include <vector>
 
@@ -30,6 +31,7 @@
 #include <vclib/views/view.h>
 
 #include "bases/component.h"
+#endif
 
 namespace vcl::comp {
 

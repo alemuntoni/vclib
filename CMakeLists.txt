@@ -394,6 +394,7 @@ set(MODULES
     src/vclib/iterators/mesh.ixx
     src/vclib/iterators/space.ixx
     src/vclib/math/base.ixx
+    src/vclib/mesh/components.ixx
     src/vclib/mesh/components/bases.ixx
     src/vclib/mesh/components/detail.ixx
     src/vclib/misc/hash.ixx

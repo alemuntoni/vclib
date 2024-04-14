@@ -23,10 +23,12 @@
 #ifndef VCL_MESH_COMPONENTS_TRANSFORM_MATRIX_H
 #define VCL_MESH_COMPONENTS_TRANSFORM_MATRIX_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/transform_matrix.h>
 #include <vclib/space/matrix.h>
 
 #include "bases/component.h"
+#endif
 
 namespace vcl::comp {
 

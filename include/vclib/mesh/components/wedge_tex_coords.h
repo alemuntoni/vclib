@@ -23,6 +23,7 @@
 #ifndef VCL_MESH_COMPONENTS_WEDGE_TEX_COORDS_H
 #define VCL_MESH_COMPONENTS_WEDGE_TEX_COORDS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/tex_coord.h>
 #include <vclib/concepts/mesh/components/wedge_tex_coords.h>
 #include <vclib/space/tex_coord.h>
@@ -30,6 +31,7 @@
 #include <vclib/views/view.h>
 
 #include "bases/container_component.h"
+#endif
 
 namespace vcl::comp {
 

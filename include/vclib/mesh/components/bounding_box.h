@@ -23,10 +23,12 @@
 #ifndef VCL_MESH_COMPONENTS_BOUNDING_BOX_H
 #define VCL_MESH_COMPONENTS_BOUNDING_BOX_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/bounding_box.h>
 #include <vclib/space/box.h>
 
 #include "bases/component.h"
+#endif
 
 namespace vcl::comp {
 

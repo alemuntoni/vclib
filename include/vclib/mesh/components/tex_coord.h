@@ -23,10 +23,12 @@
 #ifndef VCL_MESH_COMPONENTS_TEX_COORD_H
 #define VCL_MESH_COMPONENTS_TEX_COORD_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/tex_coord.h>
 #include <vclib/space/tex_coord.h>
 
 #include "bases/component.h"
+#endif
 
 namespace vcl::comp {
 

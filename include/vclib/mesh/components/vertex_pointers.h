@@ -23,10 +23,12 @@
 #ifndef VCL_MESH_COMPONENTS_VERTEX_POINTERS_H
 #define VCL_MESH_COMPONENTS_VERTEX_POINTERS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/vertex_pointers.h>
 #include <vclib/views/view.h>
 
 #include "bases/pointers_container_component.h"
+#endif
 
 namespace vcl::comp {
 

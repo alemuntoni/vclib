@@ -23,10 +23,12 @@
 #ifndef VCL_MESH_COMPONENTS_ADJACENT_EDGES_H
 #define VCL_MESH_COMPONENTS_ADJACENT_EDGES_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/adjacent_edges.h>
 #include <vclib/views/view.h>
 
 #include "bases/pointers_container_component.h"
+#endif
 
 namespace vcl::comp {
 
