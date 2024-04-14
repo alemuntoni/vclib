@@ -23,6 +23,7 @@
 #ifndef VCL_MESH_CONTAINER_ELEMENT_CONTAINER_H
 #define VCL_MESH_CONTAINER_ELEMENT_CONTAINER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vector>
 
 #include <vclib/concepts/mesh/components.h>
@@ -34,6 +35,7 @@
 #include "custom_components_vector_map.h"
 #include "custom_component_vector_handle.h"
 #include "vertical_components_vector_tuple.h"
+#endif
 
 namespace vcl::mesh {
 

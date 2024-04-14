@@ -22,18 +22,24 @@
 
 module;
 
-export module vclib.mesh.containers;
+#include <any>
+#include <typeindex>
+#include <vector>
 
-import vclib.concepts.mesh.elements;
-import vclib.mesh.containers.element_container;
-import vclib.mesh.elements;
+export module vclib.mesh.containers.element_container;
 
-export import vclib.mesh.containers.custom_component_vector_handle;
+import vclib.concepts.mesh.components;
+import vclib.concepts.mesh.components.component;
+import vclib.concepts.mesh.containers.element_container;
+import vclib.concepts.mesh.elements.element;
+import vclib.mesh.containers.custom_component_vector_handle;
+import vclib.mesh.containers.custom_components_vector_map;
+import vclib.mesh.containers.vertical_components_vector_tuple;
+import vclib.iterators.mesh;
+import vclib.views;
 
 export {
-#include <vclib/mesh/containers/edge_container.h>
-// todo face_container.h
-#include <vclib/mesh/containers/vertex_container.h>
+#include <vclib/mesh/containers/element_container.h>
 }
 
 

@@ -23,11 +23,13 @@
 #ifndef VCL_MESH_CONTAINER_EDGE_CONTAINER_H
 #define VCL_MESH_CONTAINER_EDGE_CONTAINER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/containers/custom_component_vector_handle.h>
 #include <vclib/mesh/elements/edge.h>
 #include <vclib/mesh/elements/edge_components.h>
 
 #include "element_container.h"
+#endif
 
 namespace vcl::mesh {
 

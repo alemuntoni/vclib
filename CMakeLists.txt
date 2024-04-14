@@ -402,6 +402,7 @@ set(MODULES
     src/vclib/mesh/components/parent_mesh_pointer.ixx
     src/vclib/mesh/containers/custom_component_vector_handle.ixx
     src/vclib/mesh/containers/custom_components_vector_map.ixx
+    src/vclib/mesh/containers/element_container.ixx
     src/vclib/mesh/containers/vertical_components_vector_tuple.ixx
     src/vclib/mesh/elements/edge.ixx
     src/vclib/mesh/elements/face.ixx
