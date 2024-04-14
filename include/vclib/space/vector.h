@@ -23,6 +23,7 @@
 #ifndef VCL_SPACE_VECTOR_H
 #define VCL_SPACE_VECTOR_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -34,6 +35,7 @@
 #include <vclib/exceptions.h>
 #include <vclib/types.h>
 #include <vclib/views/view.h>
+#endif
 
 namespace vcl {
 

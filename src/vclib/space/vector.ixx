@@ -22,18 +22,20 @@
 
 module;
 
-export module vclib.space;
+#include <algorithm>
+#include <array>
+#include <cassert>
+#include <string>
+#include <utility>
+#include <vector>
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.box;
-export import vclib.space.color;
-export import vclib.space.graph;
-export import vclib.space.image;
-export import vclib.space.kd_tree;
-export import vclib.space.matrix;
-export import vclib.space.plane;
-export import vclib.space.point;
-export import vclib.space.triangle;
-export import vclib.space.triangle_wrapper;
-export import vclib.space.vector;
+export module vclib.space.vector;
+
+import vclib.concepts.ranges;
+import vclib.exceptions;
+import vclib.types;
+import vclib.views;
+
+export {
+#include <vclib/space/vector.h>
+}
