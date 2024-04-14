@@ -20,7 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <algorithm>
 #include <cmath>
@@ -29,7 +29,7 @@ module; //Begin global module fragment.
 #include <set>
 #include <vector>
 
-export module vclib.math; //Begin the actual module purview
+export module vclib.math;
 
 import vclib.concepts.space;
 import vclib.space.point;

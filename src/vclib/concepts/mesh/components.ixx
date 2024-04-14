@@ -20,18 +20,16 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <string>
 #include <vector>
 
-export module vclib.concepts.mesh.components; //Begin the actual module purview
+export module vclib.concepts.mesh.components;
 
 import vclib.concepts.mesh.components.component;
 import vclib.space.color;
 import vclib.types;
-
-// todo: add color and wedge_colors
 
 export {
 #include <vclib/concepts/mesh/components/adjacent_edges.h>

@@ -20,7 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <cassert>
 #include <concepts>
@@ -32,7 +32,7 @@ module; //Begin global module fragment.
 #include <type_traits>
 #include <utility>
 
-export module vclib.types; //Begin the actual module purview
+export module vclib.types;
 
 export {
 #include <vclib/types/base.h>

@@ -20,13 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <chrono>
 #include <iostream>
 #include <string>
 
-export module vclib.misc.timer; //Begin the actual module purview
+export module vclib.misc.timer;
 
 export {
 #include <vclib/misc/timer.h>

@@ -20,7 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <cassert>
 #include <cmath>
@@ -28,7 +28,7 @@ module; //Begin global module fragment.
 #include <mutex>
 #include <stack>
 
-export module vclib.misc.logger.logger; //Begin the actual module purview
+export module vclib.misc.logger.logger;
 
 import vclib.misc.timer;
 import vclib.types;

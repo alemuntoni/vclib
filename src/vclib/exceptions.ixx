@@ -20,12 +20,12 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <stdexcept>
 #include <string>
 
-export module vclib.exceptions; //Begin the actual module purview
+export module vclib.exceptions;
 
 export {
 #include <vclib/exceptions/io_exceptions.h>

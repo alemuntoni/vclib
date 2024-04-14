@@ -20,9 +20,9 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
-export module vclib.iterators; //Begin the actual module purview
+export module vclib.iterators;
 
 export import vclib.iterators.mesh;
 export import vclib.iterators.space;

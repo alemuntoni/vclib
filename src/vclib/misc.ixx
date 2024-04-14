@@ -20,7 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <algorithm>
 #include <cassert>
@@ -34,7 +34,7 @@ module; //Begin global module fragment.
 #include <utility>
 #include <vector>
 
-export module vclib.misc; //Begin the actual module purview
+export module vclib.misc;
 
 import vclib.types;
 

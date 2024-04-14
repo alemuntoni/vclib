@@ -20,11 +20,11 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <type_traits>
 
-export module vclib.concepts.mesh.mesh_concept; //Begin the actual module purview
+export module vclib.concepts.mesh.mesh_concept;
 
 import vclib.concepts.mesh.containers;
 import vclib.concepts.mesh.elements.element;

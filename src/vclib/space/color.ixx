@@ -20,13 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <vector>
 
 #include <Eigen/Core>
 
-export module vclib.space.color; //Begin the actual module purview
+export module vclib.space.color;
 
 import vclib.space.point;
 

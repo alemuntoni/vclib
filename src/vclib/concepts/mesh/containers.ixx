@@ -20,12 +20,12 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <ranges>
 #include <vector>
 
-export module vclib.concepts.mesh.containers; //Begin the actual module purview
+export module vclib.concepts.mesh.containers;
 
 import vclib.concepts.mesh.containers.element_container;
 import vclib.types;

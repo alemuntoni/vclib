@@ -20,14 +20,14 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <compare>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-export module vclib.space.point; //Begin the actual module purview
+export module vclib.space.point;
 
 import vclib.concepts.space;
 import vclib.math.base;

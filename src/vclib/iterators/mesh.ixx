@@ -20,12 +20,12 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <iterator>
 #include <type_traits>
 
-export module vclib.iterators.mesh; //Begin the actual module purview
+export module vclib.iterators.mesh;
 
 import vclib.types;
 

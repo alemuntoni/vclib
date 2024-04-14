@@ -20,11 +20,11 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module; //Begin global module fragment.
+module;
 
 #include <functional>
 
-export module vclib.misc.hash; //Begin the actual module purview
+export module vclib.misc.hash;
 
 export {
 #include <vclib/misc/hash.h>
