@@ -397,6 +397,7 @@ set(MODULES
     src/vclib/mesh/components.ixx
     src/vclib/mesh/containers.ixx
     src/vclib/mesh/elements.ixx
+    src/vclib/mesh/mesh_components.ixx
     src/vclib/mesh/components/bases.ixx
     src/vclib/mesh/components/detail.ixx
     src/vclib/mesh/components/parent_mesh_pointer.ixx

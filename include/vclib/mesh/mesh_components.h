@@ -23,6 +23,7 @@
 #ifndef VCL_MESH_MESH_COMPONENTS_H
 #define VCL_MESH_MESH_COMPONENTS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "components/bounding_box.h"
 #include "components/color.h"
 #include "components/custom_components.h"
@@ -30,6 +31,7 @@
 #include "components/name.h"
 #include "components/texture_paths.h"
 #include "components/transform_matrix.h"
+#endif
 
 /**
  * @defgroup mesh_components Mesh Components
