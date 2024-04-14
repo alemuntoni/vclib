@@ -407,6 +407,7 @@ set(MODULES
     src/vclib/space/image.ixx
     src/vclib/space/kd_tree.ixx
     src/vclib/space/matrix.ixx
+    src/vclib/space/plane.ixx
     src/vclib/space/point.ixx
     src/vclib/space/graph/bipartite.ixx
     src/vclib/space/graph/undirected_node.ixx
