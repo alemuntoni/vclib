@@ -22,8 +22,19 @@
 
 module; //Begin global module fragment.
 
-export module vclib.space; //Begin the actual module purview
+#include <array>
+#include <cassert>
+#include <iomanip>
+#include <list>
+#include <utility>
+#include <vector>
 
-export import vclib.space.array;
-export import vclib.space.color;
-export import vclib.space.point;
+export module vclib.space.array; //Begin the actual module purview
+
+import vclib.concepts;
+import vclib.misc;
+import vclib.types;
+
+export {
+#include <vclib/space/array.h>
+}

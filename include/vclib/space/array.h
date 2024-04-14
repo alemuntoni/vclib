@@ -23,6 +23,7 @@
 #ifndef VCL_SPACE_ARRAY_H
 #define VCL_SPACE_ARRAY_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <array>
 #include <cassert>
 #include <iomanip>
@@ -33,6 +34,7 @@
 #include <vclib/concepts/space/array.h>
 #include <vclib/misc/nested_initializer_lists.h>
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 
