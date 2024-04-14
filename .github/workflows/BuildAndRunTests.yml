@@ -11,12 +11,12 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest', 'macos-13', 'windows-latest']
-        with-modules: [true, false]
+        build-with: ['headers', 'modules']
         exclude:
           - os: macos-13
-            with-modules: true
+            build-with: modules
           - os: ubuntu-latest
-            with-modules: true
+            build-with: modules
     steps:
     - uses: actions/checkout@v4
       with:
@@ -44,17 +44,17 @@ jobs:
     - name: Ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
-        key: ${{ runner.os }}-${{ matrix.with-modules }}-${{ github.ref }}
-    - name: Build
-      if: matrix.with-modules == false
+        key: ${{ runner.os }}-${{ matrix.build-with }}-${{ github.ref }}
+    - name: Build (headers)
+      if: matrix.build-with == 'headers'
       shell: bash
       run: |
         mkdir build
         cd build
         cmake -GNinja -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_BUILD_TYPE=Release ..
         ninja
-    - name: Build
-      if: matrix.with-modules == true
+    - name: Build (modules)
+      if: matrix.build-with == 'modules'
       shell: bash
       run: |
         mkdir build
