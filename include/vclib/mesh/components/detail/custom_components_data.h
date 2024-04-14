@@ -23,6 +23,7 @@
 #ifndef VCL_MESH_COMPONENTS_INTERNAL_CUSTOM_COMPONENTS_DATA_H
 #define VCL_MESH_COMPONENTS_INTERNAL_CUSTOM_COMPONENTS_DATA_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <any>
 #include <string>
 #include <typeindex>
@@ -30,6 +31,7 @@
 #include <vector>
 
 #include <vclib/types.h>
+#endif
 
 namespace vcl::comp::detail {
 

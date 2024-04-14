@@ -23,7 +23,9 @@
 #ifndef VCL_MESH_COMPONENTS_INTERNAL_COMPONENT_DATA_H
 #define VCL_MESH_COMPONENTS_INTERNAL_COMPONENT_DATA_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/component.h>
+#endif
 
 namespace vcl::comp::detail {
 

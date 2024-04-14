@@ -23,11 +23,13 @@
 #ifndef VCL_MESH_COMPONENTS_BASES_COMPONENT_H
 #define VCL_MESH_COMPONENTS_BASES_COMPONENT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/component.h>
 #include <vclib/concepts/mesh/elements/element.h>
 #include <vclib/concepts/mesh/mesh_concept.h>
 
 #include "../detail/component_data.h"
+#endif
 
 namespace vcl::comp {
 
