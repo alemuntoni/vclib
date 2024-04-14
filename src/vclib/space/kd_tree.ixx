@@ -22,13 +22,17 @@
 
 module;
 
-export module vclib.space;
+#include <cmath>
+#include <numeric>
+#include <queue>
+#include <vector>
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.box;
-export import vclib.space.color;
-export import vclib.space.graph;
-export import vclib.space.image;
-export import vclib.space.kd_tree;
-export import vclib.space.point;
+export module vclib.space.kd_tree;
+
+import vclib.concepts.mesh;
+import vclib.concepts.space;
+import vclib.space.box;
+
+export {
+#include <vclib/space/kd_tree.h>
+}

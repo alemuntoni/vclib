@@ -23,12 +23,14 @@
 #ifndef VCL_SPACE_KD_TREE_H
 #define VCL_SPACE_KD_TREE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <numeric>
 #include <queue>
 #include <vector>
 
 #include <vclib/concepts/mesh.h>
 #include <vclib/space/box.h>
+#endif
 
 namespace vcl {
 
