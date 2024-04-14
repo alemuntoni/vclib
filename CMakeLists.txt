@@ -40,6 +40,7 @@ option(VCLIB_BUILD_CXX20_MODULES "Use VCLib with C++20 Modules" OFF)
 
 if (VCLIB_BUILD_CXX20_MODULES)
     cmake_minimum_required(VERSION 3.28)
+    message(STATUS "VCLib: using C++20 Modules")
 endif()
 
 # external libraries
