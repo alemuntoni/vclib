@@ -413,6 +413,7 @@ set(MODULES
     src/vclib/space/quaternion.ixx
     src/vclib/space/segment.ixx
     src/vclib/space/sphere.ixx
+    src/vclib/space/tex_coord.ixx
     src/vclib/space/triangle.ixx
     src/vclib/space/triangle_wrapper.ixx
     src/vclib/space/vector.ixx
