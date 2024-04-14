@@ -22,9 +22,18 @@
 
 module;
 
-export module vclib.space;
+#include <concepts>
+#include <functional>
+#include <ostream>
+#include <stdexcept>
+#include <string>
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.color;
-export import vclib.space.point;
+export module vclib.space.bit_set;
+
+import vclib.concepts;
+import vclib.types;
+
+export {
+#include <vclib/space/bit_set/bit_proxy.h>
+#include <vclib/space/bit_set.h>
+}

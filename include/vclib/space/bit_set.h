@@ -23,6 +23,7 @@
 #ifndef VCL_SPACE_BIT_SET_H
 #define VCL_SPACE_BIT_SET_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <ostream>
 #include <stdexcept>
 #include <string>
@@ -30,6 +31,7 @@
 #include <vclib/concepts/types.h>
 
 #include "bit_set/bit_proxy.h"
+#endif
 
 namespace vcl {
 

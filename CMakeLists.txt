@@ -397,6 +397,7 @@ set(MODULES
     src/vclib/misc/timer.ixx
     src/vclib/misc/logger/logger.ixx
     src/vclib/space/array.ixx
+    src/vclib/space/bit_set.ixx
     src/vclib/space/color.ixx
     src/vclib/space/point.ixx
     src/vclib/views/mesh.ixx
