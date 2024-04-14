@@ -23,7 +23,9 @@
 #ifndef VCL_VIEWS_VIEWS_H
 #define VCL_VIEWS_VIEWS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <ranges>
+#endif
 
 namespace vcl::views {
 

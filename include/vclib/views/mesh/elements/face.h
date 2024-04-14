@@ -23,7 +23,9 @@
 #ifndef VCL_VIEWS_MESH_ELEMENTS_FACE_H
 #define VCL_VIEWS_MESH_ELEMENTS_FACE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh.h>
+#endif
 
 namespace vcl::views {
 namespace detail {

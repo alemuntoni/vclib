@@ -23,10 +23,12 @@
 #ifndef VCL_VIEWS_MESH_COMPONENTS_PRINCIPAL_CURVATURES_H
 #define VCL_VIEWS_MESH_COMPONENTS_PRINCIPAL_CURVATURES_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/pointers.h>
 #include <vclib/types.h>
 
 #include <ranges>
+#endif
 
 namespace vcl::views {
 

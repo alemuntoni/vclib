@@ -20,67 +20,31 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_VIEWS_MESH_COMPONENTS_COLORS_H
-#define VCL_VIEWS_MESH_COMPONENTS_COLORS_H
-
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/mesh.h>
-#include <vclib/concepts/pointers.h>
-#include <vclib/types.h>
+module; //Begin global module fragment.
 
 #include <ranges>
-#endif
+#include <type_traits>
 
-namespace vcl::views {
+export module vclib.views.mesh; //Begin the actual module purview
 
-namespace detail {
+import vclib.concepts;
+import vclib.types;
 
-template<typename T>
-concept CleanWedgeColorsConcept = comp::HasWedgeColors<std::remove_cvref_t<T>>;
+export {
+// components
+#include <vclib/views/mesh/components/adj_edges.h>
+#include <vclib/views/mesh/components/adj_faces.h>
+#include <vclib/views/mesh/components/adj_vertices.h>
+#include <vclib/views/mesh/components/colors.h>
+#include <vclib/views/mesh/components/coords.h>
+#include <vclib/views/mesh/components/normals.h>
+#include <vclib/views/mesh/components/principal_curvatures.h>
+#include <vclib/views/mesh/components/quality.h>
+#include <vclib/views/mesh/components/selection.h>
+#include <vclib/views/mesh/components/tex_coords.h>
 
-struct ColorsView
-{
-    constexpr ColorsView() = default;
-
-    inline static constexpr auto constColor =
-        [](const auto& p) -> decltype(auto) {
-        if constexpr (IsPointer<decltype(p)>)
-            return p->color();
-        else
-            return p.color();
-    };
-
-    inline static constexpr auto color = [](auto& p) -> decltype(auto) {
-        if constexpr (IsPointer<decltype(p)>)
-            return p->color();
-        else
-            return p.color();
-    };
-
-    template<std::ranges::range R>
-    friend constexpr auto operator|(R&& r, ColorsView)
-    {
-        using ElemType = std::ranges::range_value_t<R>;
-        if constexpr (IsConst<ElemType>)
-            return std::forward<R>(r) | std::views::transform(constColor);
-        else
-            return std::forward<R>(r) | std::views::transform(color);
-    }
-
-    template<CleanWedgeColorsConcept R>
-    friend constexpr auto operator|(R&& r, ColorsView)
-    {
-        if constexpr (IsPointer<R>)
-            return r->wedgeColors();
-        else
-            return r.wedgeColors();
-    }
-};
-
-} // namespace detail
-
-inline constexpr detail::ColorsView colors;
-
-} // namespace vcl::views
-
-#endif // VCL_VIEWS_MESH_COMPONENTS_COLORS_H
+// elements
+#include <vclib/views/mesh/elements/edge.h>
+#include <vclib/views/mesh/elements/face.h>
+#include <vclib/views/mesh/elements/vertex.h>
+}

@@ -369,6 +369,7 @@ set(MODULES
     src/vclib/misc.ixx
     src/vclib/space.ixx
     src/vclib/types.ixx
+    src/vclib/views.ixx
     src/vclib/concepts/const_correctness.ixx
     src/vclib/concepts/iterators.ixx
     src/vclib/concepts/mesh.ixx
@@ -397,6 +398,7 @@ set(MODULES
     src/vclib/misc/logger/logger.ixx
     src/vclib/space/color.ixx
     src/vclib/space/point.ixx
+    src/vclib/views/mesh.ixx
     )
 
 set(VCLIB_TARGET_LINK_TYPE INTERFACE) # header only library
