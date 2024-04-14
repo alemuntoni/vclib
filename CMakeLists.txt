@@ -397,6 +397,7 @@ set(MODULES
     src/vclib/mesh/components.ixx
     src/vclib/mesh/components/bases.ixx
     src/vclib/mesh/components/detail.ixx
+    src/vclib/mesh/components/parent_mesh_pointer.ixx
     src/vclib/misc/hash.ixx
     src/vclib/misc/logger.ixx
     src/vclib/misc/parallel.ixx

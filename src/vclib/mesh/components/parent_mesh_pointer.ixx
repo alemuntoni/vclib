@@ -22,50 +22,8 @@
 
 module;
 
-#include <any>
-#include <algorithm>
-#include <cassert>
-#include <compare>
-#include <string>
-#include <vector>
-
-export module vclib.mesh.components;
-
-import vclib.concepts.mesh.components;
-import vclib.concepts.mesh.elements.element;
-import vclib.mesh.components.bases;
-import vclib.mesh.components.detail;
-import vclib.mesh.components.parent_mesh_pointer;
-import vclib.space.bit_set;
-import vclib.space.box;
-import vclib.space.color;
-import vclib.space.matrix;
-import vclib.space.point;
-import vclib.space.principal_curvature;
-import vclib.space.tex_coord;
-import vclib.types;
-import vclib.views;
+export module vclib.mesh.components.parent_mesh_pointer;
 
 export {
-#include <vclib/mesh/components/adjacent_edges.h>
-#include <vclib/mesh/components/adjacent_faces.h>
-#include <vclib/mesh/components/adjacent_vertices.h>
-#include <vclib/mesh/components/bit_flags.h>
-#include <vclib/mesh/components/bounding_box.h>
-#include <vclib/mesh/components/color.h>
-#include <vclib/mesh/components/coordinate.h>
-#include <vclib/mesh/components/custom_components.h>
-#include <vclib/mesh/components/mark.h>
-#include <vclib/mesh/components/name.h>
-#include <vclib/mesh/components/normal.h>
-#include <vclib/mesh/components/polygon_bit_flags.h>
-#include <vclib/mesh/components/principal_curvature.h>
-#include <vclib/mesh/components/quality.h>
-#include <vclib/mesh/components/tex_coord.h>
-#include <vclib/mesh/components/texture_paths.h>
-#include <vclib/mesh/components/transform_matrix.h>
-#include <vclib/mesh/components/triangle_bit_flags.h>
-#include <vclib/mesh/components/vertex_pointers.h>
-#include <vclib/mesh/components/wedge_colors.h>
-#include <vclib/mesh/components/wedge_tex_coords.h>
+#include <vclib/mesh/components/parent_mesh_pointer.h>
 }
