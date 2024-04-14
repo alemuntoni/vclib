@@ -16,10 +16,12 @@
   - [ ] MissingTriangularRequirementException and the other ones should be grouped in a single FaceSizeException class
 - Iterators:
   - [ ] make just one StaticGridIterator class that can be both const and non-const (avoid code duplication)
+  - [ ] move bipartite graph iterators from space to iterators (see space todo list)
 - IO:
   - [ ] Manage read and write colors from integral to non integral types
 - Algorithms:
   - [ ] take views arguments instead of vectors (e.g. for selection) - allows to be more general on algorithms
+  - [ ] Implement convex hull algorithm that uses bipartite graph
   - [ ] Implement exporter to VCG
   - [ ] Implement importer/exporter from buffer
   - [ ] Shuffle algorithms should be all made using views
@@ -29,6 +31,7 @@
     - [ ] weights input argument of all the function should be a range
 - Space:
   - [ ] improve documentation for Grid data structures
+  - [ ] move bipartite graph iterators from space to iterators (see iterators todo list)
 - Misc:
   - [ ] implement non-static member functions for FileInfo class
 - External:

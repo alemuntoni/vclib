@@ -400,7 +400,10 @@ set(MODULES
     src/vclib/space/bit_set.ixx
     src/vclib/space/box.ixx
     src/vclib/space/color.ixx
+    src/vclib/space/graph.ixx
     src/vclib/space/point.ixx
+    src/vclib/space/graph/bipartite.ixx
+    src/vclib/space/graph/undirected_node.ixx
     src/vclib/views/mesh.ixx
     )
 

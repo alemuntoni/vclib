@@ -22,11 +22,10 @@
 
 module;
 
-export module vclib.space;
+#include <unordered_set>
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.box;
-export import vclib.space.color;
-export import vclib.space.graph;
-export import vclib.space.point;
+export module vclib.space.graph.undirected_node;
+
+export {
+#include <vclib/space/graph/undirected_node.h>
+}

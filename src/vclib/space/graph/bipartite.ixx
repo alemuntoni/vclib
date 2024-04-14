@@ -22,11 +22,24 @@
 
 module;
 
-export module vclib.space;
+#include <cassert>
+#include <map>
+#include <set>
+#include <unordered_set>
+#include <vector>
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.box;
-export import vclib.space.color;
-export import vclib.space.graph;
-export import vclib.space.point;
+export module vclib.space.graph.bipartite;
+
+import vclib.space.graph.undirected_node;
+import vclib.views;
+import vclib.types;
+
+export {
+#include <vclib/space/graph/bipartite/iterator/adjacent_node_iterator.h>
+
+#include <vclib/space/graph/bipartite/iterator/adjacent_left_node_iterator.h>
+#include <vclib/space/graph/bipartite/iterator/adjacent_right_node_iterator.h>
+#include <vclib/space/graph/bipartite/iterator/node_iterator.h>
+
+#include <vclib/space/graph/bipartite/bipartite_graph.h>
+}

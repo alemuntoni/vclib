@@ -23,6 +23,7 @@
 #ifndef VCL_SPACE_GRAPH_BIPARTITE_BIPARTITE_GRAPH_H
 #define VCL_SPACE_GRAPH_BIPARTITE_BIPARTITE_GRAPH_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <cassert>
 #include <map>
 #include <set>
@@ -35,6 +36,7 @@
 #include "iterator/adjacent_left_node_iterator.h"
 #include "iterator/adjacent_right_node_iterator.h"
 #include "iterator/node_iterator.h"
+#endif
 
 namespace vcl {
 

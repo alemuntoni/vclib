@@ -23,7 +23,9 @@
 #ifndef VCL_SPACE_GRAPH_BIPARTITE_ITERATOR_ADJACENT_LEFT_NODE_ITERATOR_H
 #define VCL_SPACE_GRAPH_BIPARTITE_ITERATOR_ADJACENT_LEFT_NODE_ITERATOR_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "adjacent_node_iterator.h"
+#endif
 
 namespace vcl::detail {
 

@@ -23,7 +23,9 @@
 #ifndef VCL_SPACE_GRAPH_UNDIRECTED_NODE_H
 #define VCL_SPACE_GRAPH_UNDIRECTED_NODE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <unordered_set>
+#endif
 
 namespace vcl {
 

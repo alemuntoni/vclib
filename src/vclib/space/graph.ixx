@@ -22,11 +22,7 @@
 
 module;
 
-export module vclib.space;
+export module vclib.space.graph;
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.box;
-export import vclib.space.color;
-export import vclib.space.graph;
-export import vclib.space.point;
+export import vclib.space.graph.bipartite;
+export import vclib.space.graph.undirected_node;
