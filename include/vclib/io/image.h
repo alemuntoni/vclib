@@ -23,6 +23,7 @@
 #ifndef VCL_IO_IMAGE_H
 #define VCL_IO_IMAGE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/io/file_info.h>
 #include <vclib/misc/string.h>
 
@@ -42,6 +43,7 @@
 
 #include <memory>
 #include <string>
+#endif
 
 namespace vcl {
 

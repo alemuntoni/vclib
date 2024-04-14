@@ -23,6 +23,7 @@
 #ifndef VCL_IO_FILE_INFO_H
 #define VCL_IO_FILE_INFO_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -30,6 +31,7 @@
 
 #include <vclib/exceptions/io_exceptions.h>
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 

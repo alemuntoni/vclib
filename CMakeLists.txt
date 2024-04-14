@@ -364,6 +364,7 @@ set(MODULES
     src/vclib.ixx
     src/vclib/concepts.ixx
     src/vclib/exceptions.ixx
+    src/vclib/io.ixx
     src/vclib/iterators.ixx
     src/vclib/math.ixx
     src/vclib/misc.ixx
@@ -388,6 +389,8 @@ set(MODULES
     src/vclib/concepts/mesh/elements/element.ixx
     src/vclib/concepts/ranges/mesh.ixx
     src/vclib/concepts/ranges/range.ixx
+    src/vclib/io/file_info.ixx
+    src/vclib/io/image.ixx
     src/vclib/iterators/mesh.ixx
     src/vclib/iterators/space.ixx
     src/vclib/math/base.ixx
@@ -401,6 +404,7 @@ set(MODULES
     src/vclib/space/box.ixx
     src/vclib/space/color.ixx
     src/vclib/space/graph.ixx
+    src/vclib/space/image.ixx
     src/vclib/space/point.ixx
     src/vclib/space/graph/bipartite.ixx
     src/vclib/space/graph/undirected_node.ixx

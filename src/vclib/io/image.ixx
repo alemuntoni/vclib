@@ -22,12 +22,19 @@
 
 module;
 
-export module vclib.space;
+#include <memory>
+#include <string>
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.box;
-export import vclib.space.color;
-export import vclib.space.graph;
-export import vclib.space.image;
-export import vclib.space.point;
+#include <stb/stb_image.h>
+#include <stb/stb_image_write.h>
+
+export module vclib.io.image;
+
+import vclib.exceptions;
+import vclib.io.file_info;
+import vclib.misc;
+import vclib.types;
+
+export {
+#include <vclib/io/image.h>
+}

@@ -23,11 +23,13 @@
 #ifndef VCL_SPACE_IMAGE_H
 #define VCL_SPACE_IMAGE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <string>
 
 #include <vclib/io/image.h>
 #include <vclib/space/array.h>
 #include <vclib/space/color.h>
+#endif
 
 namespace vcl {
 
