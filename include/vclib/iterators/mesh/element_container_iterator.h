@@ -23,8 +23,10 @@
 #ifndef VCL_ITERATORS_MESH_ELEMENT_CONTAINER_ITERATOR_H
 #define VCL_ITERATORS_MESH_ELEMENT_CONTAINER_ITERATOR_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <iterator>
 #include <type_traits>
+#endif
 
 namespace vcl {
 

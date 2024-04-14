@@ -23,9 +23,11 @@
 #ifndef VCL_ITERATORS_MESH_EDGE_ADJ_FACE_ITERATOR_H
 #define VCL_ITERATORS_MESH_EDGE_ADJ_FACE_ITERATOR_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <iterator>
 
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 

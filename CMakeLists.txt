@@ -364,6 +364,7 @@ set(MODULES
     src/vclib.ixx
     src/vclib/concepts.ixx
     src/vclib/exceptions.ixx
+    src/vclib/iterators.ixx
     src/vclib/math.ixx
     src/vclib/misc.ixx
     src/vclib/space.ixx
@@ -386,6 +387,8 @@ set(MODULES
     src/vclib/concepts/mesh/elements/element.ixx
     src/vclib/concepts/ranges/mesh.ixx
     src/vclib/concepts/ranges/range.ixx
+    src/vclib/iterators/mesh.ixx
+    src/vclib/iterators/space.ixx
     src/vclib/math/base.ixx
     src/vclib/misc/hash.ixx
     src/vclib/misc/logger.ixx

@@ -23,8 +23,10 @@
 #ifndef VCL_ITERATORS_SPACE_GRID_STATIC_GRID_ITERATOR_H
 #define VCL_ITERATORS_SPACE_GRID_STATIC_GRID_ITERATOR_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/misc/pair.h>
 #include <vclib/space/point.h>
+#endif
 
 namespace vcl {
 
