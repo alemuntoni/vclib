@@ -34,3 +34,4 @@ export import vclib.space.kd_tree;
 export import vclib.space.matrix;
 export import vclib.space.plane;
 export import vclib.space.point;
+export import vclib.space.triangle;

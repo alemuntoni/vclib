@@ -409,6 +409,7 @@ set(MODULES
     src/vclib/space/matrix.ixx
     src/vclib/space/plane.ixx
     src/vclib/space/point.ixx
+    src/vclib/space/triangle.ixx
     src/vclib/space/graph/bipartite.ixx
     src/vclib/space/graph/undirected_node.ixx
     src/vclib/views/mesh.ixx

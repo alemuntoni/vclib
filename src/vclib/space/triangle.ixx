@@ -22,12 +22,15 @@
 
 module;
 
-#include <Eigen/Core>
+#include <array>
+#include <cmath>
+#include <stdexcept>
 
-export module vclib.space.plane;
+export module vclib.space.triangle;
 
+import vclib.concepts.space;
 import vclib.space.point;
 
 export {
-#include <vclib/space/plane.h>
+#include <vclib/space/triangle.h>
 }

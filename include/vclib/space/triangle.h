@@ -23,8 +23,10 @@
 #ifndef VCL_SPACE_TRIANGLE_H
 #define VCL_SPACE_TRIANGLE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/space/triangle.h>
 #include <vclib/space/point.h>
+#endif
 
 namespace vcl {
 
