@@ -23,9 +23,11 @@
 #ifndef VCL_MESH_COMPONENTS_BASES_POINTERS_CONTAINER_COMPONENT_H
 #define VCL_MESH_COMPONENTS_BASES_POINTERS_CONTAINER_COMPONENT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/space/vector.h>
 
 #include "container_component.h"
+#endif
 
 namespace vcl::comp {
 
