@@ -22,14 +22,12 @@
 
 module;
 
-export module vclib.space;
+#include <Eigen/Core>
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.box;
-export import vclib.space.color;
-export import vclib.space.graph;
-export import vclib.space.image;
-export import vclib.space.kd_tree;
-export import vclib.space.matrix;
-export import vclib.space.point;
+export module vclib.space.matrix;
+
+import vclib.concepts.space;
+
+export {
+#include <vclib/space/matrix.h>
+}
