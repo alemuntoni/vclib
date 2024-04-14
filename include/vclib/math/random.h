@@ -23,11 +23,13 @@
 #ifndef VCL_MATH_RANDOM_H
 #define VCL_MATH_RANDOM_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <random>
 
 #include <vclib/space/point.h>
 
 #include "base.h"
+#endif
 
 namespace vcl {
 

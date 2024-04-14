@@ -23,7 +23,9 @@
 #ifndef VCL_MATH_FIBONACCI_H
 #define VCL_MATH_FIBONACCI_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/space/point.h>
+#endif
 
 namespace vcl {
 
