@@ -23,10 +23,12 @@
 #ifndef VCL_MESH_CONTAINERS_CUSTOM_COMPONENT_VECTOR_HANDLE_H
 #define VCL_MESH_CONTAINERS_CUSTOM_COMPONENT_VECTOR_HANDLE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <any>
 #include <vector>
 
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 
