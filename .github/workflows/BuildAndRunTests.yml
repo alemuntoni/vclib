@@ -35,6 +35,8 @@ jobs:
       shell: bash
       run: |
         brew install cmake ninja
+    - uses: seanmiddleditch/gha-setup-ninja@master
+      if: runner.os == 'Linux' && matrix.build-with == 'modules'
     - name: Install newer Clang
       if: runner.os == 'Linux' && matrix.build-with == 'modules'
       run: |
