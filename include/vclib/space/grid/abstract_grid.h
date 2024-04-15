@@ -25,8 +25,8 @@
 
 #include <set>
 
-#include <vclib/algorithms/bounding_box.h>
-#include <vclib/algorithms/distance/functions.h>
+#include <vclib/algorithms/core/bounding_box.h>
+#include <vclib/algorithms/core/distance/functions.h>
 #include <vclib/concepts/range.h>
 #include <vclib/misc/comparators.h>
 #include <vclib/space/sphere.h>
