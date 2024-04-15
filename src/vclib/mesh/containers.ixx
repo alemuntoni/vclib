@@ -22,11 +22,16 @@
 
 module;
 
+#include <string>
+#include <typeindex>
+#include <vector>
+
 export module vclib.mesh.containers;
 
 import vclib.concepts.mesh.elements;
 import vclib.mesh.containers.element_container;
 import vclib.mesh.elements;
+import vclib.types;
 
 export import vclib.mesh.containers.custom_component_vector_handle;
 
