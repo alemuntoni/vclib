@@ -40,6 +40,7 @@ class Sphere
 public:
     using ScalarType = Scalar;
     using PointType  = vcl::Point3<Scalar>;
+    using BoxType    = vcl::Box3<Scalar>;
 
     Sphere() {}
 
