@@ -22,6 +22,7 @@
 
 module;
 
+#include <algorithm>
 #include <cmath>
 #include <numeric>
 #include <queue>

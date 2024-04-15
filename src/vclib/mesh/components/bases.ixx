@@ -24,6 +24,7 @@ module;
 
 #include <tuple>
 #include <type_traits>
+#include <vector>
 
 export module vclib.mesh.components.bases;
 

@@ -27,12 +27,16 @@ module;
 #include <cassert>
 #include <compare>
 #include <string>
+#include <typeindex>
 #include <vector>
 
 export module vclib.mesh.components;
 
 import vclib.concepts.mesh.components;
 import vclib.concepts.mesh.elements.element;
+import vclib.concepts.mesh.mesh_concept;
+import vclib.concepts.ranges;
+import vclib.concepts.space;
 import vclib.mesh.components.bases;
 import vclib.mesh.components.detail;
 import vclib.mesh.components.parent_mesh_pointer;
@@ -43,6 +47,7 @@ import vclib.space.matrix;
 import vclib.space.point;
 import vclib.space.principal_curvature;
 import vclib.space.tex_coord;
+import vclib.space.vector;
 import vclib.types;
 import vclib.views;
 

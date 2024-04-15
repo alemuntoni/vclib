@@ -22,6 +22,7 @@
 
 module;
 
+#include <cassert>
 #include <iterator>
 #include <type_traits>
 

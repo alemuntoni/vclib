@@ -31,6 +31,7 @@ module;
 
 export module vclib.mesh.containers.custom_components_vector_map;
 
+import vclib.exceptions;
 import vclib.misc;
 import vclib.types;
 

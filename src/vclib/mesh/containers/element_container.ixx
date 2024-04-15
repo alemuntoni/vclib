@@ -23,6 +23,7 @@
 module;
 
 #include <any>
+#include <string>
 #include <typeindex>
 #include <vector>
 
@@ -36,6 +37,7 @@ import vclib.mesh.containers.custom_component_vector_handle;
 import vclib.mesh.containers.custom_components_vector_map;
 import vclib.mesh.containers.vertical_components_vector_tuple;
 import vclib.iterators.mesh;
+import vclib.types;
 import vclib.views;
 
 export {

@@ -27,6 +27,7 @@ module;
 export module vclib.space.tex_coord;
 
 import vclib.space.point;
+import vclib.types;
 
 export {
 #include <vclib/space/tex_coord.h>

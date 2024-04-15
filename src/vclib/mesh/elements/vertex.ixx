@@ -27,6 +27,7 @@ export module vclib.mesh.elements.vertex;
 import vclib.concepts.mesh.elements;
 import vclib.mesh.components;
 import vclib.mesh.elements.element;
+import vclib.space.point;
 import vclib.types;
 
 export {

@@ -22,6 +22,7 @@
 
 module;
 
+#include <concepts>
 #include <type_traits>
 
 export module vclib.concepts.mesh.mesh_concept;

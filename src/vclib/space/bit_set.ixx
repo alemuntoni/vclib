@@ -22,6 +22,7 @@
 
 module;
 
+#include <cassert>
 #include <concepts>
 #include <functional>
 #include <ostream>
