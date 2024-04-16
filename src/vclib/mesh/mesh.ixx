@@ -35,6 +35,7 @@ import vclib.concepts.mesh.components.component;
 import vclib.concepts.mesh.containers.element_container;
 import vclib.concepts.mesh.elements.element;
 import vclib.mesh.components.detail;
+import vclib.mesh.elements.element;
 import vclib.mesh.containers.element_container;
 import vclib.types;
 

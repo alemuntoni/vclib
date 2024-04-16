@@ -376,6 +376,7 @@ set(MODULES
     src/vclib/iterators.ixx
     src/vclib/math.ixx
     src/vclib/mesh.ixx
+    src/vclib/meshes.ixx
     src/vclib/misc.ixx
     src/vclib/space.ixx
     src/vclib/types.ixx
@@ -447,6 +448,8 @@ set(MODULES
     src/vclib/mesh/utils/mesh_check.ixx
     src/vclib/mesh/utils/mesh_info.ixx
     src/vclib/mesh/utils/mesh_pos.ixx
+    src/vclib/meshes/poly_mesh.ixx
+    src/vclib/meshes/tri_mesh.ixx
     src/vclib/misc/hash.ixx
     src/vclib/misc/logger.ixx
     src/vclib/misc/parallel.ixx

@@ -21,8 +21,13 @@
  ****************************************************************************/
 
 #include <catch2/catch_test_macros.hpp>
+
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
+#else
+import vclib;
+#endif
 
 std::istringstream objPolyCube()
 {

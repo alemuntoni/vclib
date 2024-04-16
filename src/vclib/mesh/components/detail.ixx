@@ -23,6 +23,7 @@
 module;
 
 #include <any>
+#include <cassert>
 #include <string>
 #include <typeindex>
 #include <unordered_map>

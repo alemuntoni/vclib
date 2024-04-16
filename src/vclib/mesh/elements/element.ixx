@@ -22,6 +22,8 @@
 
 module;
 
+#include <cassert>
+
 export module vclib.mesh.elements.element;
 
 import vclib.concepts.mesh.components.component;

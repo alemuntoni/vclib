@@ -22,27 +22,11 @@
 
 module;
 
-#include <any>
-#include <cassert>
-#include <string>
-#include <typeindex>
-#include <vector>
+export module vclib.meshes.poly_mesh;
 
-export module vclib.mesh.containers.element_container;
-
-import vclib.concepts.mesh.components;
-import vclib.concepts.mesh.components.component;
-import vclib.concepts.mesh.containers.element_container;
-import vclib.concepts.mesh.elements.element;
-import vclib.mesh.containers.custom_component_vector_handle;
-import vclib.mesh.containers.custom_components_vector_map;
-import vclib.mesh.containers.vertical_components_vector_tuple;
-import vclib.iterators.mesh;
-import vclib.types;
-import vclib.views;
+import vclib.mesh;
 
 export {
-#include <vclib/mesh/containers/element_container.h>
+#include <vclib/meshes/poly_mesh.h>
 }
-
 
