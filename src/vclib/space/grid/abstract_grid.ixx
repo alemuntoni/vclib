@@ -23,15 +23,21 @@
 module;
 
 #include <set>
+#include <functional>
 
 export module vclib.space.grid.abstract_grid;
 
+import vclib.algorithms.core.bounding_box;
+import vclib.algorithms.core.distance;
+import vclib.concepts.mesh.elements;
 import vclib.concepts.ranges;
+import vclib.concepts.space;
 import vclib.misc;
+import vclib.space.box;
+import vclib.space.point;
 import vclib.space.sphere;
 import vclib.types;
 
 export {
-
-//todo: #include <vclib/space/grid/abstract_grid.h>
+#include <vclib/space/grid/abstract_grid.h>
 }
