@@ -461,6 +461,7 @@ set(MODULES
     src/vclib/space/grid/regular_grid.ixx
     src/vclib/space/grid/static_grid.ixx
     src/vclib/space/sampler/point_sampler.ixx
+    src/vclib/space/sampler/vertex_sampler.ixx
     src/vclib/views/mesh.ixx
     )
 

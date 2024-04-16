@@ -22,8 +22,14 @@
 
 module;
 
-export module vclib.space.sampler;
+#include <vector>
 
-export import vclib.space.sampler.point_sampler;
-export import vclib.space.sampler.vertex_sampler;
-// todo mesh_sampler
+export module vclib.space.sampler.vertex_sampler;
+
+import vclib.concepts.mesh.elements;
+import vclib.types;
+import vclib.views.mesh;
+
+export {
+#include <vclib/space/sampler/vertex_sampler.h>
+}
