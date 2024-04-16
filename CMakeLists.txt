@@ -432,6 +432,7 @@ set(MODULES
     src/vclib/space/matrix.ixx
     src/vclib/space/plane.ixx
     src/vclib/space/point.ixx
+    src/vclib/space/polygon.ixx
     src/vclib/space/principal_curvature.ixx
     src/vclib/space/quaternion.ixx
     src/vclib/space/segment.ixx

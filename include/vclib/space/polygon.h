@@ -23,6 +23,7 @@
 #ifndef VCL_SPACE_POLYGON_H
 #define VCL_SPACE_POLYGON_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <ranges>
 #include <vector>
 
@@ -39,6 +40,7 @@
 #include <vclib/space/point.h>
 
 #include "triangle.h"
+#endif
 
 namespace vcl {
 

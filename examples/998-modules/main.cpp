@@ -68,6 +68,14 @@ int main()
 
     std::cerr << "Red: " << vcl::Color(vcl::Color::Red) << "\n";
 
+    vcl::Polygon<vcl::Point3d> pol;
+
+    pol.pushBack(vcl::Point3d(0, 0, 0));
+    pol.pushBack(vcl::Point3d(1, 0, 0));
+    pol.pushBack(vcl::Point3d(1, 1, 0));
+
+    std::cerr << "Polygon area: " << pol.area() << "\n";
+
     std::vector<vcl::Point3d> v(1000000000);
 
     vcl::Timer t("parallel");

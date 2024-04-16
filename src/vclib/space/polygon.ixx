@@ -22,26 +22,19 @@
 
 module;
 
-export module vclib.space;
+#include <ranges>
+#include <vector>
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.box;
-export import vclib.space.color;
-export import vclib.space.graph;
-// todo: grid
-export import vclib.space.image;
-export import vclib.space.kd_tree;
-export import vclib.space.matrix;
-export import vclib.space.plane;
-export import vclib.space.point;
-export import vclib.space.polygon;
-export import vclib.space.principal_curvature;
-export import vclib.space.quaternion;
-// todo: sampler
-export import vclib.space.segment;
-export import vclib.space.sphere;
-export import vclib.space.tex_coord;
-export import vclib.space.triangle;
-export import vclib.space.triangle_wrapper;
-export import vclib.space.vector;
+#include <mapbox/earcut.hpp>
+
+export module vclib.space.polygon;
+
+import vclib.concepts.ranges;
+import vclib.concepts.space;
+import vclib.space.point;
+import vclib.space.triangle;
+import vclib.types;
+
+export {
+#include <vclib/space/polygon.h>
+}
