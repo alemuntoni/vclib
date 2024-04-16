@@ -23,6 +23,7 @@
 #ifndef VCL_MESH_UTILS_MESH_INFO_H
 #define VCL_MESH_UTILS_MESH_INFO_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <array>
 #include <bitset>
 #include <list>
@@ -32,6 +33,7 @@
 
 #include <vclib/mesh/requirements.h>
 #include <vclib/types.h>
+#endif
 
 namespace vcl {
 

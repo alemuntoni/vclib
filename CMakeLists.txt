@@ -410,8 +410,11 @@ set(MODULES
     src/vclib/io/file_info.ixx
     src/vclib/io/file_settings.ixx
     src/vclib/io/image.ixx
+    src/vclib/io/mesh.ixx
     src/vclib/io/read.ixx
     src/vclib/io/write.ixx
+    src/vclib/io/mesh/save.ixx
+    src/vclib/io/mesh/off/save.ixx
     src/vclib/iterators/mesh.ixx
     src/vclib/iterators/space.ixx
     src/vclib/math/base.ixx
@@ -435,6 +438,7 @@ set(MODULES
     src/vclib/mesh/elements/element.ixx
     src/vclib/mesh/elements/vertex.ixx
     src/vclib/mesh/utils/mesh_check.ixx
+    src/vclib/mesh/utils/mesh_info.ixx
     src/vclib/mesh/utils/mesh_pos.ixx
     src/vclib/misc/hash.ixx
     src/vclib/misc/logger.ixx
