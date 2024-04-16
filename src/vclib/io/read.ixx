@@ -23,6 +23,7 @@
 module;
 
 #include <cassert>
+#include <fstream>
 #include <string>
 #include <typeindex>
 
