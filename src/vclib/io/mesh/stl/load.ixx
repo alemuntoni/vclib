@@ -22,12 +22,20 @@
 
 module;
 
-
+#include <fstream>
 
 export module vclib.io.mesh.stl.load;
 
-
+import vclib.concepts;
+import vclib.exceptions;
+import vclib.io.file_info;
+import vclib.io.read;
+import vclib.mesh.utils.mesh_info;
+import vclib.misc;
+import vclib.space.color;
+import vclib.space.point;
+import vclib.types;
 
 export {
-//#include <vclib/io/mesh/stl/load.h>
+#include <vclib/io/mesh/stl/load.h>
 }

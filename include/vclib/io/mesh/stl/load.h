@@ -23,9 +23,11 @@
 #ifndef VCL_IO_STL_LOAD_H
 #define VCL_IO_STL_LOAD_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/io/read.h>
 #include <vclib/mesh/utils/mesh_info.h>
 #include <vclib/misc/logger.h>
+#endif
 
 namespace vcl {
 
