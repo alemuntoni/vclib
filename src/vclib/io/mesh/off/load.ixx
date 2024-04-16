@@ -23,6 +23,7 @@
 module;
 
 #include <fstream>
+#include <string>
 #include <vector>
 
 export module vclib.io.mesh.off.load;
@@ -35,6 +36,7 @@ import vclib.mesh.requirements;
 import vclib.mesh.utils.mesh_info;
 import vclib.misc;
 import vclib.space.color;
+import vclib.types;
 
 export {
 #include <vclib/io/mesh/off/load.h>

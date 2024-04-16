@@ -32,6 +32,7 @@ import vclib.concepts;
 import vclib.io.write;
 import vclib.mesh.utils.mesh_info;
 import vclib.misc;
+import vclib.types;
 
 export {
 #include <vclib/io/mesh/stl/save.h>
