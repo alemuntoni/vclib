@@ -369,6 +369,7 @@ endif()
 
 set(MODULES
     src/vclib.ixx
+    src/vclib/algorithms.ixx
     src/vclib/concepts.ixx
     src/vclib/exceptions.ixx
     src/vclib/io.ixx
@@ -378,6 +379,8 @@ set(MODULES
     src/vclib/space.ixx
     src/vclib/types.ixx
     src/vclib/views.ixx
+    src/vclib/algorithms/core.ixx
+    src/vclib/algorithms/core/bounding_box.ixx
     src/vclib/concepts/const_correctness.ixx
     src/vclib/concepts/iterators.ixx
     src/vclib/concepts/mesh.ixx
@@ -444,6 +447,7 @@ set(MODULES
     src/vclib/space/vector.ixx
     src/vclib/space/graph/bipartite.ixx
     src/vclib/space/graph/undirected_node.ixx
+    src/vclib/space/grid/abstract_grid.ixx
     src/vclib/space/grid/regular_grid.ixx
     src/vclib/views/mesh.ixx
     )

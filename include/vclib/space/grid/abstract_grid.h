@@ -23,6 +23,7 @@
 #ifndef VCL_SPACE_GRID_ABSTRACT_GRID_H
 #define VCL_SPACE_GRID_ABSTRACT_GRID_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <set>
 
 #include <vclib/algorithms/core/bounding_box.h>
@@ -30,6 +31,7 @@
 #include <vclib/concepts/range.h>
 #include <vclib/misc/comparators.h>
 #include <vclib/space/sphere.h>
+#endif
 
 namespace vcl {
 

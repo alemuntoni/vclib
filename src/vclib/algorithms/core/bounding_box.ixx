@@ -22,13 +22,20 @@
 
 module;
 
-export module vclib;
+#include <ranges>
 
-export import vclib.algorithms;
-export import vclib.concepts;
-export import vclib.exceptions;
-export import vclib.math;
-export import vclib.misc;
-export import vclib.space;
-export import vclib.types;
-export import vclib.views;
+export module vclib.algorithms.core.bounding_box;
+
+import vclib.concepts.iterators;
+import vclib.concepts.mesh.elements;
+import vclib.concepts.ranges;
+import vclib.concepts.space;
+import vclib.space.box;
+import vclib.space.point;
+import vclib.space.segment;
+import vclib.space.sphere;
+
+export {
+#include <vclib/algorithms/core/bounding_box.h>
+}
+

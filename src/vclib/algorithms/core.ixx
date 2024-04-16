@@ -22,13 +22,7 @@
 
 module;
 
-export module vclib;
+export module vclib.algorithms.core;
 
-export import vclib.algorithms;
-export import vclib.concepts;
-export import vclib.exceptions;
-export import vclib.math;
-export import vclib.misc;
-export import vclib.space;
-export import vclib.types;
-export import vclib.views;
+export import vclib.algorithms.core.bounding_box;
+

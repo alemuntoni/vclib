@@ -23,12 +23,14 @@
 #ifndef VCL_ALGORITHMS_CORE_BOUNDING_BOX_H
 #define VCL_ALGORITHMS_CORE_BOUNDING_BOX_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/iterators.h>
 #include <vclib/concepts/mesh/elements/edge.h>
 #include <vclib/concepts/range.h>
 #include <vclib/space/box.h>
 #include <vclib/space/segment.h>
 #include <vclib/space/sphere.h>
+#endif
 
 /**
  * @defgroup core_bounding_box Core Bounding Box Algorithms

@@ -22,13 +22,16 @@
 
 module;
 
-export module vclib;
+#include <set>
 
-export import vclib.algorithms;
-export import vclib.concepts;
-export import vclib.exceptions;
-export import vclib.math;
-export import vclib.misc;
-export import vclib.space;
-export import vclib.types;
-export import vclib.views;
+export module vclib.space.grid.abstract_grid;
+
+import vclib.concepts.ranges;
+import vclib.misc;
+import vclib.space.sphere;
+import vclib.types;
+
+export {
+
+//todo: #include <vclib/space/grid/abstract_grid.h>
+}
