@@ -22,9 +22,29 @@
 
 module;
 
-export module vclib.algorithms.core;
+#include <cassert>
+#include <cmath>
+#include <set>
+#include <vector>
 
-export import vclib.algorithms.core.bounding_box;
-// export import vclib.algorithms.core.distance;
-export import vclib.algorithms.core.polygon;
+export module vclib.algorithms.core.polygon;
+
+import vclib.concepts.mesh.components;
+import vclib.concepts.mesh.elements;
+import vclib.concepts.space;
+import vclib.exceptions;
+import vclib.iterators.mesh;
+import vclib.mesh.components;
+import vclib.mesh.utils.mesh_pos;
+import vclib.misc;
+import vclib.space.polygon;
+import vclib.space.triangle;
+import vclib.types;
+import vclib.views.mesh;
+
+export {
+#include <vclib/algorithms/core/polygon/create.h>
+#include <vclib/algorithms/core/polygon/geometry.h>
+#include <vclib/algorithms/core/polygon/topology.h>
+}
 

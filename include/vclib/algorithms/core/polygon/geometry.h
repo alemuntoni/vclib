@@ -23,10 +23,12 @@
 #ifndef VCL_ALGORITHMS_CORE_POLYGON_GEOMETRY_H
 #define VCL_ALGORITHMS_CORE_POLYGON_GEOMETRY_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/elements/face.h>
 #include <vclib/mesh/components.h>
 #include <vclib/space/polygon.h>
 #include <vclib/views/mesh.h>
+#endif
 
 namespace vcl {
 

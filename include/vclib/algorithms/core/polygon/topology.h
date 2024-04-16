@@ -23,6 +23,7 @@
 #ifndef VCL_ALGORITHMS_CORE_POLYGON_TOPOLOGY_H
 #define VCL_ALGORITHMS_CORE_POLYGON_TOPOLOGY_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <set>
 
 #include <vclib/concepts/mesh.h>
@@ -32,6 +33,7 @@
 #include <vclib/misc/comparators.h>
 #include <vclib/space/polygon.h>
 #include <vclib/views/mesh.h>
+#endif
 
 namespace vcl {
 
