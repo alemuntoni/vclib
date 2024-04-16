@@ -23,6 +23,7 @@
 #ifndef VCL_SPACE_GRID_STATIC_GRID_H
 #define VCL_SPACE_GRID_STATIC_GRID_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <set>
 #include <vector>
 
@@ -31,6 +32,7 @@
 
 #include "abstract_grid.h"
 #include "regular_grid.h"
+#endif
 
 namespace vcl {
 

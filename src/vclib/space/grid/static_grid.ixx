@@ -20,47 +20,25 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCLIB_CONCEPTS_RANGES_MESH_VERTEX_RANGE_H
-#define VCLIB_CONCEPTS_RANGES_MESH_VERTEX_RANGE_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/mesh/elements/vertex.h>
-#include <vclib/concepts/pointers.h>
-#include <vclib/concepts/ranges/range.h>
-#endif
+#include <algorithm>
+#include <set>
+#include <vector>
 
-namespace vcl {
+export module vclib.space.grid.static_grid;
 
-/**
- * @brief The VertexRangeConcept evaluates to true if Rng is a valid Range on
- * Vertices.
- *
- * This means that Rng must be a Range of VertexConcept: the iterated type must
- * satisfy the VertexConcept.
- *
- * @ingroup vertex_concepts
- */
-template<typename Rng>
-concept VertexRangeConcept =
-    Range<Rng> &&
-    VertexConcept<typename std::ranges::iterator_t<Rng>::value_type>;
+import vclib.concepts.const_correctness;
+import vclib.concepts.mesh.components;
+import vclib.concepts.mesh.elements;
+import vclib.concepts.ranges;
+import vclib.concepts.space;
+import vclib.iterators.space;
+import vclib.misc;
+import vclib.space.grid.abstract_grid;
+import vclib.space.grid.regular_grid;
+import vclib.types;
 
-/**
- * @brief The VertexPointerRangeConcept evaluates to true if Rng is a valid
- * Range on Vertex Pointers.
- *
- * This means that Rng must be a Range of pointers to a type that satisfy the
- * VertexConcept.
- *
- * @ingroup vertex_concepts
- */
-template<typename Rng>
-concept VertexPointerRangeConcept =
-    Range<Rng> &&
-    IsPointer<typename std::ranges::iterator_t<Rng>::value_type> &&
-    VertexConcept<typename std::decay_t<std::remove_pointer_t<
-        typename std::ranges::iterator_t<Rng>::value_type>>>;
-
-} // namespace vcl
-
-#endif // VCLIB_CONCEPTS_RANGES_MESH_VERTEX_RANGE_H
+export {
+#include <vclib/space/grid/static_grid.h>
+}

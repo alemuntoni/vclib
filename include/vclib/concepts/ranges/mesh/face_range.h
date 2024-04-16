@@ -23,9 +23,11 @@
 #ifndef VCLIB_CONCEPTS_RANGES_MESH_FACE_RANGE_H
 #define VCLIB_CONCEPTS_RANGES_MESH_FACE_RANGE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/elements/face.h>
 #include <vclib/concepts/pointers.h>
 #include <vclib/concepts/ranges/range.h>
+#endif
 
 namespace vcl {
 

@@ -22,9 +22,16 @@
 
 module;
 
+#include <ranges>
+
 export module vclib.concepts.ranges.mesh;
 
+import vclib.concepts.mesh.elements;
 import vclib.concepts.pointers;
 import vclib.concepts.ranges.range;
 
-// todo
+export {
+#include <vclib/concepts/ranges/mesh/edge_range.h>
+#include <vclib/concepts/ranges/mesh/face_range.h>
+#include <vclib/concepts/ranges/mesh/vertex_range.h>
+}

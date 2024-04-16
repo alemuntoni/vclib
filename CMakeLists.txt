@@ -458,6 +458,7 @@ set(MODULES
     src/vclib/space/graph/undirected_node.ixx
     src/vclib/space/grid/abstract_grid.ixx
     src/vclib/space/grid/regular_grid.ixx
+    src/vclib/space/grid/static_grid.ixx
     src/vclib/views/mesh.ixx
     )
 

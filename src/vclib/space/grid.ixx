@@ -25,3 +25,4 @@ module;
 export module vclib.space.grid;
 
 export import vclib.space.grid.regular_grid;
+export import vclib.space.grid.static_grid;
