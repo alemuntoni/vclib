@@ -22,8 +22,22 @@
 
 module;
 
-export module vclib.algorithms;
+#include <set>
+#include <string>
+#include <vector>
 
-export import vclib.algorithms.core;
-export import vclib.algorithms.mesh;
+export module vclib.algorithms.mesh.polygon;
+
+import vclib.algorithms.core.polygon;
+import vclib.concepts.mesh.elements;
+import vclib.concepts.mesh.element_mesh_concept;
+import vclib.exceptions;
+import vclib.misc;
+import vclib.space.polygon;
+import vclib.types;
+
+
+export {
+#include <vclib/algorithms/mesh/polygon.h>
+}
 

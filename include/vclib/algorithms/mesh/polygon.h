@@ -23,7 +23,9 @@
 #ifndef VCL_ALGORITHMS_MESH_POLYGON_H
 #define VCL_ALGORITHMS_MESH_POLYGON_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/core/polygon/topology.h>
+#endif
 
 namespace vcl {
 

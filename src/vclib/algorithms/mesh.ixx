@@ -22,8 +22,7 @@
 
 module;
 
-export module vclib.algorithms;
+export module vclib.algorithms.mesh;
 
-export import vclib.algorithms.core;
-export import vclib.algorithms.mesh;
+export import vclib.algorithms.mesh.polygon;
 
