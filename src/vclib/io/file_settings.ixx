@@ -22,13 +22,15 @@
 
 module;
 
-export module vclib.mesh;
+#include <nlohmann/json.hpp>
 
-export import vclib.mesh.components;
-export import vclib.mesh.containers;
-export import vclib.mesh.elements;
-export import vclib.mesh.mesh_components;
-export import vclib.mesh.mesh;
-export import vclib.mesh.requirements;
-export import vclib.mesh.utils;
+#include <fstream>
 
+export module vclib.io.file_settings;
+
+import vclib.exceptions;
+import vclib.types;
+
+export {
+#include <vclib/io/file_settings.h>
+}

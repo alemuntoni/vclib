@@ -23,6 +23,7 @@
 #ifndef VCL_IO_FILE_SETTINGS_H
 #define VCL_IO_FILE_SETTINGS_H
 
+#ifndef VCLIB_WITH_MODULES
 #if __has_include(<nlohmann/json.hpp>)
 #include <nlohmann/json.hpp>
 #else
@@ -34,6 +35,7 @@
 #include <fstream>
 
 #include <vclib/exceptions/io_exceptions.h>
+#endif
 
 namespace vcl {
 

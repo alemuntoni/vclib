@@ -25,4 +25,5 @@ module;
 export module vclib.io;
 
 export import vclib.io.file_info;
+export import vclib.io.file_settings;
 export import vclib.io.image;

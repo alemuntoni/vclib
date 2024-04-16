@@ -22,13 +22,18 @@
 
 module;
 
-export module vclib.mesh;
+#include <cassert>
+#include <string>
+#include <typeindex>
 
-export import vclib.mesh.components;
-export import vclib.mesh.containers;
-export import vclib.mesh.elements;
-export import vclib.mesh.mesh_components;
-export import vclib.mesh.mesh;
-export import vclib.mesh.requirements;
-export import vclib.mesh.utils;
+export module vclib.io.read;
 
+import vclib.concepts.mesh.elements.element;
+import vclib.exceptions;
+import vclib.io.file_info;
+import vclib.misc;
+import vclib.types;
+
+export {
+#include <vclib/io/read.h>
+}

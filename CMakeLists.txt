@@ -406,7 +406,9 @@ set(MODULES
     src/vclib/concepts/ranges/mesh.ixx
     src/vclib/concepts/ranges/range.ixx
     src/vclib/io/file_info.ixx
+    src/vclib/io/file_settings.ixx
     src/vclib/io/image.ixx
+    src/vclib/io/read.ixx
     src/vclib/iterators/mesh.ixx
     src/vclib/iterators/space.ixx
     src/vclib/math/base.ixx
