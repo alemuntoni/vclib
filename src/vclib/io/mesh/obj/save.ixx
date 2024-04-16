@@ -24,6 +24,7 @@ module;
 
 #include <fstream>
 #include <map>
+#include <string>
 #include <vector>
 
 export module vclib.io.mesh.obj.save;
