@@ -25,6 +25,7 @@ module;
 #include <ranges>
 #include <vector>
 
+#include <Eigen/Core>
 #include <mapbox/earcut.hpp>
 
 export module vclib.space.polygon;
