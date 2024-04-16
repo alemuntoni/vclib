@@ -22,8 +22,22 @@
 
 module;
 
-export module vclib.space.sampler;
+#include <ranges>
+#include <vector>
 
-export import vclib.space.sampler.mesh_sampler;
-export import vclib.space.sampler.point_sampler;
-export import vclib.space.sampler.vertex_sampler;
+export module vclib.space.sampler.mesh_sampler;
+
+import vclib.algorithms.core.polygon;
+import vclib.concepts.mesh.elements;
+import vclib.concepts.mesh.mesh_concept;
+import vclib.concepts.mesh.per_element;
+import vclib.concepts.mesh.per_mesh;
+import vclib.concepts.space;
+import vclib.mesh.components;
+import vclib.mesh.requirements;
+import vclib.types;
+import vclib.views;
+
+export {
+#include <vclib/space/sampler/mesh_sampler.h>
+}

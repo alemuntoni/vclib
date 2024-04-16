@@ -23,12 +23,14 @@
 #ifndef VCL_SPACE_SAMPLER_MESH_SAMPLER_H
 #define VCL_SPACE_SAMPLER_MESH_SAMPLER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/core/polygon.h>
 #include <vclib/concepts/mesh/elements/edge.h>
 #include <vclib/concepts/mesh/mesh_concept.h>
 #include <vclib/concepts/space/sampler.h>
 #include <vclib/mesh/requirements/vertex_requirements.h>
 #include <vclib/views/mesh.h>
+#endif
 
 namespace vcl {
 
