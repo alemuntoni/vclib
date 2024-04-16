@@ -23,9 +23,11 @@
 #ifndef VCL_SPACE_GRID_REGULAR_GRID_H
 #define VCL_SPACE_GRID_REGULAR_GRID_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/iterators/space/grid/cell_iterator.h>
 #include <vclib/space/box.h>
 #include <vclib/views/view.h>
+#endif
 
 namespace vcl {
 

@@ -427,6 +427,7 @@ set(MODULES
     src/vclib/space/box.ixx
     src/vclib/space/color.ixx
     src/vclib/space/graph.ixx
+    src/vclib/space/grid.ixx
     src/vclib/space/image.ixx
     src/vclib/space/kd_tree.ixx
     src/vclib/space/matrix.ixx
@@ -443,6 +444,7 @@ set(MODULES
     src/vclib/space/vector.ixx
     src/vclib/space/graph/bipartite.ixx
     src/vclib/space/graph/undirected_node.ixx
+    src/vclib/space/grid/regular_grid.ixx
     src/vclib/views/mesh.ixx
     )
 

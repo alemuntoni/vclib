@@ -22,21 +22,18 @@
 
 module;
 
-#include <ranges>
-#include <vector>
+#include <array>
+#include <cmath>
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <mapbox/earcut.hpp>
+export module vclib.space.grid.regular_grid;
 
-export module vclib.space.polygon;
-
-import vclib.concepts.ranges;
 import vclib.concepts.space;
+import vclib.iterators.space;
+import vclib.space.box;
 import vclib.space.point;
-import vclib.space.triangle;
+import vclib.views;
 import vclib.types;
 
 export {
-#include <vclib/space/polygon.h>
+#include <vclib/space/grid/regular_grid.h>
 }
