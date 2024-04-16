@@ -23,6 +23,7 @@
 #ifndef VCL_IO_OBJ_SAVE_H
 #define VCL_IO_OBJ_SAVE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <map>
 
 #include <vclib/exceptions/io_exceptions.h>
@@ -32,6 +33,7 @@
 #include <vclib/misc/logger.h>
 
 #include "material.h"
+#endif
 
 namespace vcl {
 

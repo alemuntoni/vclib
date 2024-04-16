@@ -22,8 +22,21 @@
 
 module;
 
-export module vclib.io.mesh.load;
+#include <fstream>
+#include <map>
+#include <vector>
 
-export import vclib.io.mesh.obj.load;
-export import vclib.io.mesh.off.load;
-export import vclib.io.mesh.stl.load;
+export module vclib.io.mesh.obj.save;
+
+import vclib.concepts;
+import vclib.concepts.mesh.elements.element;
+import vclib.io.file_info;
+import vclib.io.mesh.obj.material;
+import vclib.io.write;
+import vclib.mesh.utils.mesh_info;
+import vclib.misc;
+import vclib.types;
+
+export {
+#include <vclib/io/mesh/obj/save.h>
+}

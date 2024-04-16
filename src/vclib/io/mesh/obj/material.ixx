@@ -22,8 +22,14 @@
 
 module;
 
-export module vclib.io.mesh.load;
+#include <fstream>
+#include <string>
 
-export import vclib.io.mesh.obj.load;
-export import vclib.io.mesh.off.load;
-export import vclib.io.mesh.stl.load;
+export module vclib.io.mesh.obj.material;
+
+import vclib.space.color;
+import vclib.space.point;
+
+export {
+#include <vclib/io/mesh/obj/material.h>
+}

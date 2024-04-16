@@ -23,8 +23,10 @@
 #ifndef VCL_IO_OBJ_MATERIAL_H
 #define VCL_IO_OBJ_MATERIAL_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/space/color.h>
 #include <vclib/space/point.h>
+#endif
 
 namespace vcl::detail {
 
