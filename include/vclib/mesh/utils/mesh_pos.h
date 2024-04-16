@@ -23,8 +23,10 @@
 #ifndef VCL_MESH_UTILS_MESH_POS_H
 #define VCL_MESH_UTILS_MESH_POS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/components/adjacent_faces.h>
 #include <vclib/mesh/elements/face.h>
+#endif
 
 namespace vcl {
 

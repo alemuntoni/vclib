@@ -22,8 +22,15 @@
 
 module;
 
-export module vclib.algorithms.core;
 
-export import vclib.algorithms.core.bounding_box;
-// export import vclib.algorithms.core.distance;
+
+export module vclib.algorithms.core.distance;
+
+
+
+export {
+//todo: #include <vclib/algorithms/core/distance/misc.h>
+
+
+}
 

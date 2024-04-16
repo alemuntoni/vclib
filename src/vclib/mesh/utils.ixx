@@ -22,8 +22,6 @@
 
 module;
 
-export module vclib.algorithms.core;
+export module vclib.mesh.utils;
 
-export import vclib.algorithms.core.bounding_box;
-// export import vclib.algorithms.core.distance;
-
+export import vclib.mesh.utils.mesh_pos;

@@ -22,8 +22,13 @@
 
 module;
 
-export module vclib.algorithms.core;
+export module vclib.mesh.utils.mesh_pos;
 
-export import vclib.algorithms.core.bounding_box;
-// export import vclib.algorithms.core.distance;
+import vclib.concepts.mesh.elements;
+import vclib.mesh.components;
+import vclib.mesh.elements.face;
+import vclib.types;
 
+export {
+#include <vclib/mesh/utils/mesh_pos.h>
+}

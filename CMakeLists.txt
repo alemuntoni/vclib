@@ -375,12 +375,14 @@ set(MODULES
     src/vclib/io.ixx
     src/vclib/iterators.ixx
     src/vclib/math.ixx
+    src/vclib/mesh.ixx
     src/vclib/misc.ixx
     src/vclib/space.ixx
     src/vclib/types.ixx
     src/vclib/views.ixx
     src/vclib/algorithms/core.ixx
     src/vclib/algorithms/core/bounding_box.ixx
+    src/vclib/algorithms/core/distance.ixx
     src/vclib/concepts/const_correctness.ixx
     src/vclib/concepts/iterators.ixx
     src/vclib/concepts/mesh.ixx
@@ -409,6 +411,7 @@ set(MODULES
     src/vclib/mesh/elements.ixx
     src/vclib/mesh/mesh.ixx
     src/vclib/mesh/mesh_components.ixx
+    src/vclib/mesh/utils.ixx
     src/vclib/mesh/components/bases.ixx
     src/vclib/mesh/components/detail.ixx
     src/vclib/mesh/components/parent_mesh_pointer.ixx
@@ -420,6 +423,7 @@ set(MODULES
     src/vclib/mesh/elements/face.ixx
     src/vclib/mesh/elements/element.ixx
     src/vclib/mesh/elements/vertex.ixx
+    src/vclib/mesh/utils/mesh_pos.ixx
     src/vclib/misc/hash.ixx
     src/vclib/misc/logger.ixx
     src/vclib/misc/parallel.ixx
