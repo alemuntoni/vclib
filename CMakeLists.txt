@@ -448,6 +448,7 @@ set(MODULES
     src/vclib/space/polygon.ixx
     src/vclib/space/principal_curvature.ixx
     src/vclib/space/quaternion.ixx
+    src/vclib/space/sampler.ixx
     src/vclib/space/segment.ixx
     src/vclib/space/sphere.ixx
     src/vclib/space/tex_coord.ixx
@@ -459,6 +460,7 @@ set(MODULES
     src/vclib/space/grid/abstract_grid.ixx
     src/vclib/space/grid/regular_grid.ixx
     src/vclib/space/grid/static_grid.ixx
+    src/vclib/space/sampler/point_sampler.ixx
     src/vclib/views/mesh.ixx
     )
 
