@@ -23,11 +23,13 @@
 #ifndef VCL_ALGORITHMS_CORE_INTERSECTION_MISC_H
 #define VCL_ALGORITHMS_CORE_INTERSECTION_MISC_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/space/box.h>
 #include <vclib/space/plane.h>
 #include <vclib/space/segment.h>
 #include <vclib/space/sphere.h>
 #include <vclib/space/triangle.h>
+#endif
 
 namespace vcl {
 

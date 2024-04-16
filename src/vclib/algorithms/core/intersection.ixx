@@ -22,12 +22,24 @@
 
 module;
 
-export module vclib.algorithms.core;
+#include <cmath>
+#include <vector>
 
-export import vclib.algorithms.core.bounding_box;
-export import vclib.algorithms.core.distance;
-export import vclib.algorithms.core.fitting;
-export import vclib.algorithms.core.intersection;
-export import vclib.algorithms.core.polygon;
-export import vclib.algorithms.core.stat;
+export module vclib.algorithms.core.intersection;
+
+import vclib.algorithms.core.polygon;
+import vclib.concepts.mesh.elements;
+import vclib.concepts.space;
+import vclib.space.box;
+import vclib.space.plane;
+import vclib.space.point;
+import vclib.space.sphere;
+
+export {
+#include <vclib/algorithms/core/intersection/misc.h>
+
+#include <vclib/algorithms/core/intersection/element.h>
+#include <vclib/algorithms/core/intersection/functions.h>
+
+}
 

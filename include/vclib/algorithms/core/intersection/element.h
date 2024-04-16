@@ -23,6 +23,7 @@
 #ifndef VCL_ALGORITHMS_CORE_INTERSECTION_ELEMENT_H
 #define VCL_ALGORITHMS_CORE_INTERSECTION_ELEMENT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/core/polygon.h>
 #include <vclib/concepts/mesh/elements/face.h>
 #include <vclib/space/box.h>
@@ -30,6 +31,7 @@
 #include <vclib/space/triangle_wrapper.h>
 
 #include "misc.h"
+#endif
 
 namespace vcl {
 

@@ -23,10 +23,12 @@
 #ifndef VCL_ALGORITHMS_CORE_INTERSECTION_FUNCTIONS_H
 #define VCL_ALGORITHMS_CORE_INTERSECTION_FUNCTIONS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "element.h"
 #include "misc.h"
 
 #include <vclib/concepts/mesh.h>
+#endif
 
 namespace vcl {
 
