@@ -383,6 +383,7 @@ set(MODULES
     src/vclib/algorithms/core.ixx
     src/vclib/algorithms/core/bounding_box.ixx
     src/vclib/algorithms/core/distance.ixx
+    src/vclib/algorithms/core/fitting.ixx
     src/vclib/algorithms/core/polygon.ixx
     src/vclib/algorithms/core/stat.ixx
     src/vclib/concepts/const_correctness.ixx

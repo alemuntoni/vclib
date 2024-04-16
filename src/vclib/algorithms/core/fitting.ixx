@@ -22,11 +22,18 @@
 
 module;
 
-export module vclib.algorithms.core;
+#include <Eigen/Eigenvalues>
 
-export import vclib.algorithms.core.bounding_box;
-export import vclib.algorithms.core.distance;
-export import vclib.algorithms.core.fitting;
-export import vclib.algorithms.core.polygon;
-export import vclib.algorithms.core.stat;
+export module vclib.algorithms.core.fitting;
+
+import vclib.algorithms.core.stat;
+import vclib.concepts.space;
+import vclib.space.matrix;
+import vclib.space.plane;
+import vclib.space.point;
+import vclib.space.polygon;
+
+export {
+#include <vclib/algorithms/core/fitting.h>
+}
 
