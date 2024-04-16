@@ -29,5 +29,3 @@ export module vclib.concepts.ranges.range;
 export {
 #include <vclib/concepts/ranges/range.h>
 }
-
-// todo

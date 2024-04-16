@@ -22,22 +22,28 @@
 
 module;
 
+#include <cassert>
 #include <string>
 #include <typeindex>
 #include <vector>
 
 export module vclib.mesh.containers;
 
+import vclib.concepts.mesh.containers;
 import vclib.concepts.mesh.elements;
+import vclib.concepts.ranges.range;
+import vclib.mesh.components;
 import vclib.mesh.containers.element_container;
 import vclib.mesh.elements;
+import vclib.space.polygon;
 import vclib.types;
+import vclib.views.mesh;
 
 export import vclib.mesh.containers.custom_component_vector_handle;
 
 export {
 #include <vclib/mesh/containers/edge_container.h>
-// todo face_container.h
+#include <vclib/mesh/containers/face_container.h>
 #include <vclib/mesh/containers/vertex_container.h>
 }
 
