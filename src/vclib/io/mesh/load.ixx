@@ -22,11 +22,6 @@
 
 module;
 
-export module vclib.io;
+export module vclib.io.mesh.load;
 
-export import vclib.io.file_info;
-export import vclib.io.file_settings;
-export import vclib.io.image;
-export import vclib.io.mesh;
-export import vclib.io.read;
-export import vclib.io.write;
+export import vclib.io.mesh.off.load;

@@ -413,7 +413,9 @@ set(MODULES
     src/vclib/io/mesh.ixx
     src/vclib/io/read.ixx
     src/vclib/io/write.ixx
+    src/vclib/io/mesh/load.ixx
     src/vclib/io/mesh/save.ixx
+    src/vclib/io/mesh/off/load.ixx
     src/vclib/io/mesh/off/save.ixx
     src/vclib/iterators/mesh.ixx
     src/vclib/iterators/space.ixx

@@ -22,11 +22,20 @@
 
 module;
 
-export module vclib.io;
+#include <fstream>
+#include <vector>
 
-export import vclib.io.file_info;
-export import vclib.io.file_settings;
-export import vclib.io.image;
-export import vclib.io.mesh;
-export import vclib.io.read;
-export import vclib.io.write;
+export module vclib.io.mesh.off.load;
+
+import vclib.concepts;
+import vclib.exceptions;
+import vclib.io.file_info;
+import vclib.io.read;
+import vclib.mesh.requirements;
+import vclib.mesh.utils.mesh_info;
+import vclib.misc;
+import vclib.space.color;
+
+export {
+#include <vclib/io/mesh/off/load.h>
+}

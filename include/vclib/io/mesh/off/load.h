@@ -23,6 +23,7 @@
 #ifndef VCL_IO_OFF_LOAD_H
 #define VCL_IO_OFF_LOAD_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/polygon.h>
 #include <vclib/exceptions/io_exceptions.h>
 #include <vclib/io/file_info.h>
@@ -30,6 +31,7 @@
 #include <vclib/mesh/utils/mesh_info.h>
 #include <vclib/misc/logger.h>
 #include <vclib/misc/tokenizer.h>
+#endif
 
 namespace vcl {
 
