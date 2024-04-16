@@ -22,15 +22,26 @@
 
 module;
 
-
+#include <cmath>
+#include <functional>
 
 export module vclib.algorithms.core.distance;
 
-
+import vclib.algorithms.core.bounding_box;
+import vclib.algorithms.core.polygon;
+import vclib.concepts.mesh.elements;
+import vclib.concepts.space;
+import vclib.math;
+import vclib.space.box;
+import vclib.space.plane;
+import vclib.space.point;
+import vclib.space.segment;
 
 export {
-//todo: #include <vclib/algorithms/core/distance/misc.h>
+#include <vclib/algorithms/core/distance/misc.h>
 
+#include <vclib/algorithms/core/distance/element.h>
+#include <vclib/algorithms/core/distance/functions.h>
 
 }
 
