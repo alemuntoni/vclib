@@ -423,6 +423,7 @@ set(MODULES
     src/vclib/mesh/elements/face.ixx
     src/vclib/mesh/elements/element.ixx
     src/vclib/mesh/elements/vertex.ixx
+    src/vclib/mesh/utils/mesh_check.ixx
     src/vclib/mesh/utils/mesh_pos.ixx
     src/vclib/misc/hash.ixx
     src/vclib/misc/logger.ixx

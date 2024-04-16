@@ -23,9 +23,11 @@
 #ifndef VCL_MESH_UTILS_MESH_CHECK_H
 #define VCL_MESH_UTILS_MESH_CHECK_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh.h>
 #include <vclib/exceptions/mesh_exceptions.h>
 #include <vclib/misc/string.h>
+#endif
 
 namespace vcl {
 

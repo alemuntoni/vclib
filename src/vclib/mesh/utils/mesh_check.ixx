@@ -22,7 +22,14 @@
 
 module;
 
-export module vclib.mesh.utils;
+export module vclib.mesh.utils.mesh_check;
 
-export import vclib.mesh.utils.mesh_check;
-export import vclib.mesh.utils.mesh_pos;
+import vclib.concepts.mesh.components.component;
+import vclib.concepts.mesh.mesh_concept;
+import vclib.exceptions;
+import vclib.misc;
+import vclib.types;
+
+export {
+#include <vclib/mesh/utils/mesh_check.h>
+}
