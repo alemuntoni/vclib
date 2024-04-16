@@ -23,11 +23,13 @@
 #ifndef VCL_MESH_REQUIREMENTS_EDGE_REQUIREMENTS_H
 #define VCL_MESH_REQUIREMENTS_EDGE_REQUIREMENTS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh.h>
 #include <vclib/exceptions/mesh_exceptions.h>
 
 #include "../containers/edge_container.h"
 #include "element_requirements.h"
+#endif
 
 /**
  * @defgroup edge_requirements Edge Requirements

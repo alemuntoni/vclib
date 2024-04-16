@@ -23,11 +23,13 @@
 #ifndef VCL_MESH_REQUIREMENTS_VERTEX_REQUIREMENTS_H
 #define VCL_MESH_REQUIREMENTS_VERTEX_REQUIREMENTS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh.h>
 #include <vclib/exceptions/mesh_exceptions.h>
 
 #include "../containers/vertex_container.h"
 #include "element_requirements.h"
+#endif
 
 /**
  * @defgroup vertex_requirements Vertex Requirements

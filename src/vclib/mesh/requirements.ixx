@@ -22,13 +22,26 @@
 
 module;
 
-export module vclib.mesh;
+#include <string>
 
-export import vclib.mesh.components;
-export import vclib.mesh.containers;
-export import vclib.mesh.elements;
-export import vclib.mesh.components;
-export import vclib.mesh.mesh;
-export import vclib.mesh.requirements;
-export import vclib.mesh.utils;
+export module vclib.mesh.requirements;
+
+import vclib.concepts.mesh.components.component;
+import vclib.concepts.mesh.containers;
+import vclib.concepts.mesh.containers.element_container;
+import vclib.concepts.mesh.element_mesh_concept;
+import vclib.concepts.mesh.mesh_concept;
+import vclib.concepts.mesh.per_element;
+import vclib.exceptions;
+import vclib.types;
+
+export {
+#include <vclib/mesh/requirements/element_requirements.h>
+
+#include <vclib/mesh/requirements/edge_requirements.h>
+#include <vclib/mesh/requirements/face_requirements.h>
+#include <vclib/mesh/requirements/mesh_requirements.h>
+#include <vclib/mesh/requirements/vertex_requirements.h>
+}
+
 

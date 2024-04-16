@@ -415,6 +415,7 @@ set(MODULES
     src/vclib/mesh/elements.ixx
     src/vclib/mesh/mesh.ixx
     src/vclib/mesh/mesh_components.ixx
+    src/vclib/mesh/requirements.ixx
     src/vclib/mesh/utils.ixx
     src/vclib/mesh/components/bases.ixx
     src/vclib/mesh/components/detail.ixx
