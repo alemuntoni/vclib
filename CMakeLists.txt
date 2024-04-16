@@ -448,7 +448,11 @@ set(MODULES
     src/vclib/mesh/utils/mesh_check.ixx
     src/vclib/mesh/utils/mesh_info.ixx
     src/vclib/mesh/utils/mesh_pos.ixx
+    src/vclib/meshes/detail.ixx
+    src/vclib/meshes/edge_mesh.ixx
+    src/vclib/meshes/point_cloud.ixx
     src/vclib/meshes/poly_mesh.ixx
+    src/vclib/meshes/tri_edge_mesh.ixx
     src/vclib/meshes/tri_mesh.ixx
     src/vclib/misc/hash.ixx
     src/vclib/misc/logger.ixx

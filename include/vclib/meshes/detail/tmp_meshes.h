@@ -23,7 +23,9 @@
 #ifndef VCL_MESHES_TMP_MESHES_H
 #define VCL_MESHES_TMP_MESHES_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/mesh.h>
+#endif
 
 namespace vcl::detail {
 

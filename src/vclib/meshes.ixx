@@ -24,6 +24,9 @@ module;
 
 export module vclib.meshes;
 
+export import vclib.meshes.edge_mesh;
+export import vclib.meshes.point_cloud;
 export import vclib.meshes.poly_mesh;
+export import vclib.meshes.tri_edge_mesh;
 export import vclib.meshes.tri_mesh;
 

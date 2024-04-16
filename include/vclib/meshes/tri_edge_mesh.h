@@ -23,8 +23,10 @@
 #ifndef VCL_MESHES_TRI_EDGE_MESH_H
 #define VCL_MESHES_TRI_EDGE_MESH_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/mesh.h>
 #include <vclib/mesh/requirements.h>
+#endif
 
 namespace vcl {
 

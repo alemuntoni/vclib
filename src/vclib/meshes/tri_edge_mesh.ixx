@@ -20,63 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_MESHES_POINT_CLOUD_H
-#define VCL_MESHES_POINT_CLOUD_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/mesh/mesh.h>
-#include <vclib/mesh/requirements.h>
-#endif
+export module vclib.meshes.tri_edge_mesh;
 
-namespace vcl {
+import vclib.mesh;
 
-template<typename ScalarType>
-class PointCloudT;
+export {
+#include <vclib/meshes/tri_edge_mesh.h>
+}
 
-} // namespace vcl
-
-namespace vcl::pointcloud {
-
-template<typename Scalar>
-class Vertex;
-
-template<typename Scalar>
-class Vertex :
-        public vcl::Vertex<
-            PointCloudT<Scalar>,
-            vcl::vert::BitFlags,
-            vcl::vert::Coordinate3<Scalar>,
-            vcl::vert::Normal3<Scalar>,
-            vcl::vert::OptionalColor<Vertex<Scalar>>,
-            vcl::vert::OptionalQuality<Scalar, Vertex<Scalar>>,
-            vcl::vert::OptionalTexCoord<Scalar, Vertex<Scalar>>,
-            vcl::vert::OptionalMark<Vertex<Scalar>>,
-            vcl::vert::CustomComponents<Vertex<Scalar>>>
-{
-};
-
-} // namespace vcl::pointcloud
-
-namespace vcl {
-
-template<typename Scalar = double>
-class PointCloudT :
-        public vcl::Mesh<
-            mesh::VertexContainer<pointcloud::Vertex<Scalar>>,
-            mesh::BoundingBox3<Scalar>,
-            mesh::Mark,
-            mesh::Name,
-            mesh::TexturePaths,
-            mesh::TransformMatrix<Scalar>,
-            mesh::CustomComponents>
-{
-public:
-    using ScalarType = Scalar;
-};
-
-using PointCloudf = PointCloudT<float>;
-using PointCloud  = PointCloudT<double>;
-
-} // namespace vcl
-
-#endif // VCL_MESHES_POINT_CLOUD_H
