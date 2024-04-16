@@ -22,13 +22,17 @@
 
 module;
 
+#include <fstream>
+#include <vector>
+
 export module vclib.io.mesh.off.save;
 
+import vclib.concepts;
 import vclib.exceptions;
 import vclib.io.write;
-//todo: import vclib.mesh.utils.mesh_info;
+import vclib.mesh.utils.mesh_info;
 import vclib.misc;
 
 export {
-//#include <vclib/io/mesh/off/save.h>
+#include <vclib/io/mesh/off/save.h>
 }
