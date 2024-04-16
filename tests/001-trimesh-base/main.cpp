@@ -21,7 +21,12 @@
  ****************************************************************************/
 
 #include <catch2/catch_test_macros.hpp>
+
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes.h>
+#else
+import vclib;
+#endif
 
 SCENARIO("TriMesh usage")
 {

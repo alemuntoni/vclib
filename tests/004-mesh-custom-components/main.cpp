@@ -20,12 +20,13 @@
  * for more details.                                                         *
  ****************************************************************************/
 
-#include <iostream>
-
 #include <catch2/catch_test_macros.hpp>
-#include <vclib/algorithms.h>
-#include <vclib/load_save.h>
+
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes.h>
+#else
+import vclib;
+#endif
 
 TEST_CASE("Test Custom Components and Handles")
 {
