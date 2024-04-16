@@ -29,7 +29,7 @@ export import vclib.space.bit_set;
 export import vclib.space.box;
 export import vclib.space.color;
 export import vclib.space.graph;
-// todo: grid
+export import vclib.space.grid;
 export import vclib.space.image;
 export import vclib.space.kd_tree;
 export import vclib.space.matrix;
@@ -38,7 +38,7 @@ export import vclib.space.point;
 export import vclib.space.polygon;
 export import vclib.space.principal_curvature;
 export import vclib.space.quaternion;
-// todo: sampler
+export import vclib.space.sampler;
 export import vclib.space.segment;
 export import vclib.space.sphere;
 export import vclib.space.tex_coord;

@@ -22,8 +22,17 @@
 
 module;
 
-export module vclib.space.grid;
+#include <set>
+#include <unordered_map>
+#include <vector>
 
-export import vclib.space.grid.hash_table_grid;
-export import vclib.space.grid.regular_grid;
-export import vclib.space.grid.static_grid;
+export module vclib.space.grid.hash_table_grid;
+
+import vclib.concepts.ranges;
+import vclib.space.grid.abstract_grid;
+import vclib.space.grid.regular_grid;
+import vclib.space.sphere;
+
+export {
+#include <vclib/space/grid/hash_table_grid.h>
+}
