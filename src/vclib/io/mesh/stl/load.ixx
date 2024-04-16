@@ -22,7 +22,12 @@
 
 module;
 
-export module vclib.io.mesh.load;
 
-export import vclib.io.mesh.off.load;
-export import vclib.io.mesh.stl.load;
+
+export module vclib.io.mesh.stl.load;
+
+
+
+export {
+//#include <vclib/io/mesh/stl/load.h>
+}

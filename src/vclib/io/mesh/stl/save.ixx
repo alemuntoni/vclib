@@ -22,7 +22,17 @@
 
 module;
 
-export module vclib.io.mesh.load;
+#include <fstream>
+#include <vector>
 
-export import vclib.io.mesh.off.load;
-export import vclib.io.mesh.stl.load;
+export module vclib.io.mesh.stl.save;
+
+import vclib.algorithms.core.polygon;
+import vclib.concepts;
+import vclib.io.write;
+import vclib.mesh.utils.mesh_info;
+import vclib.misc;
+
+export {
+#include <vclib/io/mesh/stl/save.h>
+}

@@ -25,3 +25,4 @@ module;
 export module vclib.io.mesh.save;
 
 export import vclib.io.mesh.off.save;
+export import vclib.io.mesh.stl.save;
