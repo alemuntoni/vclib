@@ -23,10 +23,12 @@
 #ifndef VCL_MATH_TRANSFORM_H
 #define VCL_MATH_TRANSFORM_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/space/matrix.h>
 #include <vclib/space/point.h>
 
 #include "base.h"
+#endif
 
 namespace vcl {
 

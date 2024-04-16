@@ -410,6 +410,7 @@ set(MODULES
     src/vclib/iterators/mesh.ixx
     src/vclib/iterators/space.ixx
     src/vclib/math/base.ixx
+    src/vclib/math/transform.ixx
     src/vclib/mesh/components.ixx
     src/vclib/mesh/containers.ixx
     src/vclib/mesh/elements.ixx
