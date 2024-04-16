@@ -22,10 +22,17 @@
 
 module;
 
-export module vclib.io;
+#include <cassert>
+#include <fstream>
+#include <typeindex>
 
-export import vclib.io.file_info;
-export import vclib.io.file_settings;
-export import vclib.io.image;
-export import vclib.io.read;
-export import vclib.io.write;
+export module vclib.io.write;
+
+import vclib.concepts.mesh.elements.element;
+import vclib.exceptions;
+import vclib.io.file_info;
+import vclib.types;
+
+export {
+#include <vclib/io/write.h>
+}

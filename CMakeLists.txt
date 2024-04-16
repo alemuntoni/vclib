@@ -409,6 +409,7 @@ set(MODULES
     src/vclib/io/file_settings.ixx
     src/vclib/io/image.ixx
     src/vclib/io/read.ixx
+    src/vclib/io/write.ixx
     src/vclib/iterators/mesh.ixx
     src/vclib/iterators/space.ixx
     src/vclib/math/base.ixx

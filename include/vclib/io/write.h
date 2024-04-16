@@ -23,6 +23,7 @@
 #ifndef VCL_IO_WRITE_H
 #define VCL_IO_WRITE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <fstream>
 #include <typeindex>
 
@@ -30,6 +31,7 @@
 #include <vclib/types.h>
 
 #include "file_info.h"
+#endif
 
 namespace vcl {
 
