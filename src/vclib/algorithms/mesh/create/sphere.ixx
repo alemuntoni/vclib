@@ -22,17 +22,21 @@
 
 module;
 
-//#include <cmath>
+#include <cmath>
+#include <cstdint>
 
 export module vclib.algorithms.mesh.create.sphere;
 
+import vclib.algorithms.mesh.clean;
 import vclib.algorithms.mesh.create.icosahedron;
+import vclib.algorithms.mesh.update.transform;
 import vclib.concepts;
 import vclib.mesh.requirements;
+import vclib.space.point;
 import vclib.space.sphere;
 import vclib.types;
 
 export {
-//todo: #include <vclib/algorithms/mesh/create/sphere.h>
+#include <vclib/algorithms/mesh/create/sphere.h>
 }
 
