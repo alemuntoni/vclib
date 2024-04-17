@@ -23,10 +23,12 @@
 #ifndef VCL_ALGORITHMS_MESH_SORT_H
 #define VCL_ALGORITHMS_MESH_SORT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <algorithm>
 
 #include <vclib/mesh/utils/mesh_edge_util.h>
 #include <vclib/misc/parallel.h>
+#endif
 
 namespace vcl {
 
