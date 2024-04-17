@@ -22,9 +22,20 @@
 
 module;
 
-export module vclib.algorithms.mesh.update;
+#include <cmath>
+#include <exception>
+#include <string>
 
-export import vclib.algorithms.mesh.update.bounding_box;
-export import vclib.algorithms.mesh.update.color;
-export import vclib.algorithms.mesh.update.normal;
+export module vclib.algorithms.mesh.update.normal;
+
+import vclib.concepts;
+import vclib.concepts.mesh.containers.element_container;
+import vclib.mesh.requirements;
+import vclib.misc;
+import vclib.space.matrix;
+import vclib.types;
+
+export {
+#include <vclib/algorithms/mesh/update/normal.h>
+}
 
