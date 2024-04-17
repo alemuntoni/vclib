@@ -24,5 +24,7 @@ module;
 
 export module vclib.algorithms.mesh;
 
+export import vclib.algorithms.mesh.bounding_box;
 export import vclib.algorithms.mesh.polygon;
+export import vclib.algorithms.mesh.update;
 

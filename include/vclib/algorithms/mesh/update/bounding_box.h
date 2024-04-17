@@ -23,7 +23,9 @@
 #ifndef VCL_ALGORITHMS_MESH_UPDATE_BOUNDING_BOX_H
 #define VCL_ALGORITHMS_MESH_UPDATE_BOUNDING_BOX_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/bounding_box.h>
+#endif
 
 namespace vcl {
 

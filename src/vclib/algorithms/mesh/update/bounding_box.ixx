@@ -20,53 +20,14 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_ALGORITHMS_MESH_BOUNDING_BOX_H
-#define VCL_ALGORITHMS_MESH_BOUNDING_BOX_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/mesh/requirements.h>
-#include <vclib/space/box.h>
-#endif
+export module vclib.algorithms.mesh.update.bounding_box;
 
-/**
- * @defgroup mesh_bounding_box Mesh Bounding Box Algorithm
- *
- * @ingroup algorithms_mesh
- *
- * @brief Function that take in input a mesh and return its bounding box.
- *
- * You can access these algorithms by including
- * `#include <vclib/algorithms/mesh/bounding_box.h>`
- */
+import vclib.algorithms.mesh.bounding_box;
+import vclib.concepts.mesh;
 
-namespace vcl {
-
-/**
- * @brief Compute the bounding box of a mesh
- *
- * Given a mesh `m`, this function computes and returns the bounding
- * box of the mesh. The bounding box is represented by a `vcl::Box` object.
- *
- * @tparam MeshType: The type of the mesh. It must satisfy the MeshConcept.
- *
- * @param[in] m: The input mesh to compute the bounding box of
- * @return The bounding box of the input mesh
- *
- * @ingroup mesh_bounding_box
- */
-template<MeshConcept MeshType>
-auto boundingBox(const MeshType& m)
-{
-    using VertexType = MeshType::VertexType;
-    vcl::Box<typename VertexType::CoordType> b;
-
-    for (const VertexType& v : m.vertices()) {
-        b.add(v.coord());
-    }
-
-    return b;
+export {
+#include <vclib/algorithms/mesh/update/bounding_box.h>
 }
 
-} // namespace vcl
-
-#endif // VCL_ALGORITHMS_BOUNDING_BOX_H

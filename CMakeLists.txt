@@ -389,7 +389,10 @@ set(MODULES
     src/vclib/algorithms/core/intersection.ixx
     src/vclib/algorithms/core/polygon.ixx
     src/vclib/algorithms/core/stat.ixx
+    src/vclib/algorithms/mesh/bounding_box.ixx
     src/vclib/algorithms/mesh/polygon.ixx
+    src/vclib/algorithms/mesh/update.ixx
+    src/vclib/algorithms/mesh/update/bounding_box.ixx
     src/vclib/concepts/const_correctness.ixx
     src/vclib/concepts/iterators.ixx
     src/vclib/concepts/mesh.ixx
