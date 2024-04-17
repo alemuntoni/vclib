@@ -22,8 +22,19 @@
 
 module;
 
-export module vclib.algorithms.mesh.create;
+#include <cmath>
+#include <vector>
 
-export import vclib.algorithms.mesh.create.cone;
-export import vclib.algorithms.mesh.create.dodecahedron;
+export module vclib.algorithms.mesh.create.dodecahedron;
+
+import vclib.algorithms.core.polygon;
+import vclib.concepts;
+import vclib.mesh.requirements;
+import vclib.meshes.detail;
+import vclib.misc;
+import vclib.types;
+
+export {
+#include <vclib/algorithms/mesh/create/dodecahedron.h>
+}
 

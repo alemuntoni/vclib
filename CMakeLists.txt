@@ -394,6 +394,7 @@ set(MODULES
     src/vclib/algorithms/mesh/polygon.ixx
     src/vclib/algorithms/mesh/stat.ixx
     src/vclib/algorithms/mesh/create/cone.ixx
+    src/vclib/algorithms/mesh/create/dodecahedron.ixx
     src/vclib/algorithms/mesh/stat/quality.ixx
     src/vclib/algorithms/mesh/stat/selection.ixx
     src/vclib/algorithms/mesh/update.ixx
