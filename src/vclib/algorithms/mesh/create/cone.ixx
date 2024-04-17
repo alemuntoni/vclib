@@ -22,11 +22,16 @@
 
 module;
 
-export module vclib.algorithms.mesh;
+#include <cmath>
 
-export import vclib.algorithms.mesh.bounding_box;
-export import vclib.algorithms.mesh.create;
-export import vclib.algorithms.mesh.polygon;
-export import vclib.algorithms.mesh.stat;
-export import vclib.algorithms.mesh.update;
+export module vclib.algorithms.mesh.create.cone;
+
+import vclib.concepts.mesh;
+import vclib.math;
+import vclib.mesh.requirements;
+import vclib.types;
+
+export {
+#include <vclib/algorithms/mesh/create/cone.h>
+}
 

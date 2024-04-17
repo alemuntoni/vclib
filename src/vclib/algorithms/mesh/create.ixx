@@ -22,11 +22,7 @@
 
 module;
 
-export module vclib.algorithms.mesh;
+export module vclib.algorithms.mesh.create;
 
-export import vclib.algorithms.mesh.bounding_box;
-export import vclib.algorithms.mesh.create;
-export import vclib.algorithms.mesh.polygon;
-export import vclib.algorithms.mesh.stat;
-export import vclib.algorithms.mesh.update;
+export import vclib.algorithms.mesh.create.cone;
 
