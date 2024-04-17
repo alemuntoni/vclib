@@ -22,11 +22,15 @@
 
 module;
 
-export module vclib.mesh.utils;
+#include <Eigen/Eigenvalues>
 
-export import vclib.mesh.utils.mesh_check;
-export import vclib.mesh.utils.mesh_edge_util;
-export import vclib.mesh.utils.mesh_inertia;
-export import vclib.mesh.utils.mesh_info;
-export import vclib.mesh.utils.mesh_pos;
-export import vclib.mesh.utils.tri_poly_index_bimap;
+export module vclib.mesh.utils.mesh_inertia;
+
+import vclib.algorithms.core.polygon;
+import vclib.concepts.mesh.element_mesh_concept;
+import vclib.space.point;
+import vclib.types;
+
+export {
+#include <vclib/mesh/utils/mesh_inertia.h>
+}

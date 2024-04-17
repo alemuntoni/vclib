@@ -457,8 +457,11 @@ set(MODULES
     src/vclib/mesh/elements/element.ixx
     src/vclib/mesh/elements/vertex.ixx
     src/vclib/mesh/utils/mesh_check.ixx
+    src/vclib/mesh/utils/mesh_edge_util.ixx
+    src/vclib/mesh/utils/mesh_inertia.ixx
     src/vclib/mesh/utils/mesh_info.ixx
     src/vclib/mesh/utils/mesh_pos.ixx
+    src/vclib/mesh/utils/tri_poly_index_bimap.ixx
     src/vclib/meshes/detail.ixx
     src/vclib/meshes/edge_mesh.ixx
     src/vclib/meshes/point_cloud.ixx
