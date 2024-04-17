@@ -20,28 +20,17 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_ALGORITHMS_MESH_STAT_SELECTION_H
-#define VCL_ALGORITHMS_MESH_STAT_SELECTION_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/mesh/requirements.h>
-#include <vclib/views/mesh.h>
-#endif
+#include <ranges>
 
-namespace vcl {
+export module vclib.algorithms.mesh.stat.selection;
 
-template<MeshConcept MeshType>
-uint vertexSelectionNumber(const MeshType& m)
-{
-    return std::ranges::distance(m.vertices() | views::selected);
+import vclib.concepts.mesh;
+import vclib.views.mesh;
+import vclib.types;
+
+export {
+#include <vclib/algorithms/mesh/stat/selection.h>
 }
 
-template<FaceMeshConcept MeshType>
-uint faceSelectionNumber(const MeshType& m)
-{
-    return std::ranges::distance(m.faces() | views::selected);
-}
-
-} // namespace vcl
-
-#endif // VCL_ALGORITHMS_MESH_STAT_SELECTION_H

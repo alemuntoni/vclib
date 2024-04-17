@@ -23,10 +23,12 @@
 #ifndef VCL_ALGORITHMS_MESH_STAT_QUALITY_H
 #define VCL_ALGORITHMS_MESH_STAT_QUALITY_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/math/base.h>
 #include <vclib/math/histogram.h>
 #include <vclib/mesh/requirements.h>
 #include <vclib/views/mesh.h>
+#endif
 
 namespace vcl {
 
