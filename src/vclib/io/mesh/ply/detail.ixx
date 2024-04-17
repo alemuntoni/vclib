@@ -20,66 +20,35 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_IO_PLY_EXTRA_H
-#define VCL_IO_PLY_EXTRA_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include <fstream>
+#include <algorithm>
+#include <cassert>
+#include <list>
+#include <ostream>
+#include <string>
+#include <vector>
 
-#include <vclib/io/read.h>
-#include <vclib/mesh/requirements.h>
+export module vclib.io.mesh.ply.detail;
 
-#include "header.h"
-#endif
+export import vclib.concepts.mesh;
+export import vclib.exceptions;
+export import vclib.io.file_info;
+import vclib.io.read;
+import vclib.io.write;
+import vclib.mesh.requirements;
+export import vclib.mesh.utils.mesh_info;
+export import vclib.misc;
+export import vclib.types;
 
-namespace vcl::detail {
+export {
+#include <vclib/io/mesh/ply/detail/ply.h>
 
-template<MeshConcept MeshType>
-void readPlyTextures(const PlyHeader& header, MeshType& mesh)
-{
-    if constexpr (vcl::HasTexturePaths<MeshType>) {
-        for (const std::string& str : header.textureFileNames()) {
-            mesh.pushTexturePath(str);
-        }
-    }
+#include <vclib/io/mesh/ply/detail/header.h>
+
+#include <vclib/io/mesh/ply/detail/edge.h>
+#include <vclib/io/mesh/ply/detail/extra.h>
+#include <vclib/io/mesh/ply/detail/face.h>
+#include <vclib/io/mesh/ply/detail/tristrip.h>
+#include <vclib/io/mesh/ply/detail/vertex.h>
 }
-
-template<MeshConcept MeshType>
-void writePlyTextures(PlyHeader& header, const MeshType& mesh)
-{
-    if constexpr (vcl::HasTexturePaths<MeshType>) {
-        for (const std::string& str : mesh.texturePaths()) {
-            header.pushTextureFileName(str);
-        }
-    }
-}
-
-inline void readPlyUnknownElement(
-    std::istream&    file,
-    const PlyHeader& header,
-    PlyElement       el)
-{
-    if (header.format() == ply::ASCII) {
-        for (uint i = 0; i < el.numberElements; ++i) {
-            readAndTokenizeNextNonEmptyLine(file);
-        }
-    }
-    else {
-        for (uint i = 0; i < el.numberElements; ++i) {
-            for (const PlyProperty& p : el.properties) {
-                if (p.list) {
-                    uint s = io::readPrimitiveType<int>(file, p.listSizeType);
-                    for (uint i = 0; i < s; ++i)
-                        io::readPrimitiveType<int>(file, p.type);
-                }
-                else {
-                    io::readPrimitiveType<int>(file, p.type);
-                }
-            }
-        }
-    }
-}
-
-} // namespace vcl::detail
-
-#endif // VCL_IO_PLY_EXTRA_H

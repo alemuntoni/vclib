@@ -23,6 +23,7 @@
 #ifndef VCL_IO_PLY_SAVE_H
 #define VCL_IO_PLY_SAVE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/exceptions/io_exceptions.h>
 #include <vclib/misc/logger.h>
 
@@ -30,6 +31,7 @@
 #include "detail/extra.h"
 #include "detail/face.h"
 #include "detail/vertex.h"
+#endif
 
 namespace vcl {
 

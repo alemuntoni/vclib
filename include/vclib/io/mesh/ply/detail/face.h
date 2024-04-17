@@ -23,6 +23,7 @@
 #ifndef VCL_IO_PLY_FACE_H
 #define VCL_IO_PLY_FACE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/polygon.h>
 #include <vclib/exceptions/io_exceptions.h>
 #include <vclib/io/read.h>
@@ -31,6 +32,7 @@
 #include <vclib/misc/tokenizer.h>
 
 #include "header.h"
+#endif
 
 namespace vcl::detail {
 

@@ -23,12 +23,14 @@
 #ifndef VCL_IO_PLY_TRISTRIP_H
 #define VCL_IO_PLY_TRISTRIP_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <fstream>
 
 #include <vclib/io/read.h>
 #include <vclib/misc/tokenizer.h>
 
 #include "header.h"
+#endif
 
 namespace vcl::detail {
 

@@ -23,10 +23,12 @@
 #ifndef VCL_IO_SAVE_H
 #define VCL_IO_SAVE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "obj/save.h"
 #include "off/save.h"
 #include "ply/save.h"
 #include "stl/save.h"
+#endif
 
 namespace vcl {
 

@@ -22,8 +22,21 @@
 
 module;
 
+#include <string>
+
 export module vclib.io.mesh.load;
+
+import vclib.concepts;
+import vclib.exceptions;
+import vclib.io.file_info;
+import vclib.mesh.utils.mesh_info;
+import vclib.misc;
 
 export import vclib.io.mesh.obj.load;
 export import vclib.io.mesh.off.load;
+export import vclib.io.mesh.ply.load;
 export import vclib.io.mesh.stl.load;
+
+export {
+#include <vclib/io/mesh/load.h>
+}

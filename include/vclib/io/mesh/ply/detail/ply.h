@@ -23,9 +23,11 @@
 #ifndef VCL_IO_PLY_H
 #define VCL_IO_PLY_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <list>
 
 #include <vclib/misc/tokenizer.h>
+#endif
 
 namespace vcl::detail {
 

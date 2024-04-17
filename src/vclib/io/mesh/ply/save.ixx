@@ -20,66 +20,16 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_IO_PLY_EXTRA_H
-#define VCL_IO_PLY_EXTRA_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
 #include <fstream>
 
-#include <vclib/io/read.h>
-#include <vclib/mesh/requirements.h>
+export module vclib.io.mesh.ply.save;
 
-#include "header.h"
-#endif
+import vclib.concepts;
+import vclib.io.mesh.ply.detail;
+import vclib.io.write;
 
-namespace vcl::detail {
-
-template<MeshConcept MeshType>
-void readPlyTextures(const PlyHeader& header, MeshType& mesh)
-{
-    if constexpr (vcl::HasTexturePaths<MeshType>) {
-        for (const std::string& str : header.textureFileNames()) {
-            mesh.pushTexturePath(str);
-        }
-    }
+export {
+#include <vclib/io/mesh/ply/save.h>
 }
-
-template<MeshConcept MeshType>
-void writePlyTextures(PlyHeader& header, const MeshType& mesh)
-{
-    if constexpr (vcl::HasTexturePaths<MeshType>) {
-        for (const std::string& str : mesh.texturePaths()) {
-            header.pushTextureFileName(str);
-        }
-    }
-}
-
-inline void readPlyUnknownElement(
-    std::istream&    file,
-    const PlyHeader& header,
-    PlyElement       el)
-{
-    if (header.format() == ply::ASCII) {
-        for (uint i = 0; i < el.numberElements; ++i) {
-            readAndTokenizeNextNonEmptyLine(file);
-        }
-    }
-    else {
-        for (uint i = 0; i < el.numberElements; ++i) {
-            for (const PlyProperty& p : el.properties) {
-                if (p.list) {
-                    uint s = io::readPrimitiveType<int>(file, p.listSizeType);
-                    for (uint i = 0; i < s; ++i)
-                        io::readPrimitiveType<int>(file, p.type);
-                }
-                else {
-                    io::readPrimitiveType<int>(file, p.type);
-                }
-            }
-        }
-    }
-}
-
-} // namespace vcl::detail
-
-#endif // VCL_IO_PLY_EXTRA_H

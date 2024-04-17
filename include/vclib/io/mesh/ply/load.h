@@ -23,6 +23,7 @@
 #ifndef VCL_IO_PLY_LOAD_H
 #define VCL_IO_PLY_LOAD_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/utils/mesh_info.h>
 #include <vclib/misc/logger.h>
 
@@ -30,6 +31,7 @@
 #include "detail/face.h"
 #include "detail/tristrip.h"
 #include "detail/vertex.h"
+#endif
 
 namespace vcl {
 

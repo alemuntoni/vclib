@@ -23,6 +23,7 @@
 #ifndef VCL_PLY_HEADER_H
 #define VCL_PLY_HEADER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <clocale>
 #include <fstream>
 #include <string>
@@ -35,6 +36,7 @@
 #include <vclib/misc/tokenizer.h>
 
 #include "ply.h"
+#endif
 
 namespace vcl::detail {
 

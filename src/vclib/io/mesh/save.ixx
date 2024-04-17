@@ -22,8 +22,21 @@
 
 module;
 
+#include <string>
+
 export module vclib.io.mesh.save;
+
+import vclib.concepts;
+import vclib.exceptions;
+import vclib.io.file_info;
+import vclib.mesh.utils.mesh_info;
+import vclib.misc;
 
 export import vclib.io.mesh.obj.save;
 export import vclib.io.mesh.off.save;
+export import vclib.io.mesh.ply.save;
 export import vclib.io.mesh.stl.save;
+
+export {
+#include <vclib/io/mesh/save.h>
+}
