@@ -34,7 +34,7 @@ namespace vcl::views {
 
 namespace detail {
 
-inline constexpr auto isSelected = [](const auto& e) {
+constexpr auto isSelected = [](const auto& e) {
     if constexpr (vcl::IsPointer<decltype(e)>) {
         return e->selected();
     }
@@ -43,7 +43,7 @@ inline constexpr auto isSelected = [](const auto& e) {
     }
 };
 
-inline constexpr auto isNotSelected = [](const auto& e) {
+constexpr auto isNotSelected = [](const auto& e) {
     if constexpr (vcl::IsPointer<decltype(e)>) {
         return !e->selected();
     }

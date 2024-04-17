@@ -38,24 +38,23 @@ namespace detail {
 template<typename T>
 concept CleanWedgeColorsConcept = comp::HasWedgeColors<std::remove_cvref_t<T>>;
 
+constexpr auto constColor = [](const auto& p) -> decltype(auto) {
+    if constexpr (IsPointer<decltype(p)>)
+        return p->color();
+    else
+        return p.color();
+};
+
+constexpr auto color = [](auto& p) -> decltype(auto) {
+    if constexpr (IsPointer<decltype(p)>)
+        return p->color();
+    else
+        return p.color();
+};
+
 struct ColorsView
 {
     constexpr ColorsView() = default;
-
-    inline static constexpr auto constColor =
-        [](const auto& p) -> decltype(auto) {
-        if constexpr (IsPointer<decltype(p)>)
-            return p->color();
-        else
-            return p.color();
-    };
-
-    inline static constexpr auto color = [](auto& p) -> decltype(auto) {
-        if constexpr (IsPointer<decltype(p)>)
-            return p->color();
-        else
-            return p.color();
-    };
 
     template<std::ranges::range R>
     friend constexpr auto operator|(R&& r, ColorsView)
