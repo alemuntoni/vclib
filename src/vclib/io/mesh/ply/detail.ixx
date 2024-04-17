@@ -29,6 +29,8 @@ module;
 #include <string>
 #include <vector>
 
+#include <Eigen/Core>
+
 export module vclib.io.mesh.ply.detail;
 
 export import vclib.concepts.mesh;
