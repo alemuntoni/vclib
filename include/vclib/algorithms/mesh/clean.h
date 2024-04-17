@@ -23,6 +23,7 @@
 #ifndef VCL_ALGORITHMS_MESH_CLEAN_H
 #define VCL_ALGORITHMS_MESH_CLEAN_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <map>
 #include <set>
 #include <stack>
@@ -32,6 +33,7 @@
 #include <vclib/algorithms/mesh/sort.h>
 #include <vclib/mesh/requirements.h>
 #include <vclib/mesh/utils/mesh_pos.h>
+#endif
 
 /**
  * @defgroup clean Cleaning and Repairing Algorithms

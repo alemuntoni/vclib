@@ -390,6 +390,7 @@ set(MODULES
     src/vclib/algorithms/core/polygon.ixx
     src/vclib/algorithms/core/stat.ixx
     src/vclib/algorithms/mesh/bounding_box.ixx
+    src/vclib/algorithms/mesh/clean.ixx
     src/vclib/algorithms/mesh/create.ixx
     src/vclib/algorithms/mesh/polygon.ixx
     src/vclib/algorithms/mesh/sort.ixx

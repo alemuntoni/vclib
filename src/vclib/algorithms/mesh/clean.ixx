@@ -22,13 +22,33 @@
 
 module;
 
-export module vclib.algorithms.mesh;
+#include <algorithm>
+#include <numeric>
+#include <set>
+#include <stack>
+#include <vector>
 
-export import vclib.algorithms.mesh.bounding_box;
-export import vclib.algorithms.mesh.clean;
-export import vclib.algorithms.mesh.create;
-export import vclib.algorithms.mesh.polygon;
-export import vclib.algorithms.mesh.sort;
-export import vclib.algorithms.mesh.stat;
-export import vclib.algorithms.mesh.update;
+// Apple clang does not support c++17 parallel algorithms.
+// To compensate this lack, waiting for Apple to support them, we use pstld
+// (https://github.com/mikekazakov/pstld) that implements them in the stl
+// namespace
+#if defined(__clang__) && defined(__APPLE__)
+#include <pstld/pstld.h>
+#else
+#include <execution>
+#endif
+
+export module vclib.algorithms.mesh.clean;
+
+import vclib.concepts.mesh;
+import vclib.concepts.ranges;
+import vclib.mesh.requirements;
+import vclib.mesh.utils.mesh_edge_util;
+import vclib.mesh.utils.mesh_pos;
+import vclib.space.vector;
+import vclib.types;
+
+export {
+#include <vclib/algorithms/mesh/clean.h>
+}
 
