@@ -22,11 +22,13 @@
 
 module;
 
-export module vclib.algorithms.mesh.create;
+export module vclib.algorithms.mesh.create.hexahedron;
 
-export import vclib.algorithms.mesh.create.cone;
-export import vclib.algorithms.mesh.create.dodecahedron;
-export import vclib.algorithms.mesh.create.hexahedron;
-export import vclib.algorithms.mesh.create.icosahedron;
-export import vclib.algorithms.mesh.create.sphere;
-export import vclib.algorithms.mesh.create.tetrahedron;
+import vclib.concepts;
+import vclib.mesh.requirements;
+import vclib.types;
+
+export {
+#include <vclib/algorithms/mesh/create/hexahedron.h>
+}
+
