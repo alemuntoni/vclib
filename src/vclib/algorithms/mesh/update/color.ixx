@@ -22,8 +22,22 @@
 
 module;
 
-export module vclib.algorithms.mesh.update;
+#include <algorithm>
+#include <cstdint>
+#include <set>
+#include <vector>
 
-export import vclib.algorithms.mesh.update.bounding_box;
-export import vclib.algorithms.mesh.update.color;
+export module vclib.algorithms.mesh.update.color;
+
+import vclib.concepts.mesh;
+import vclib.concepts.space;
+import vclib.mesh.requirements;
+import vclib.space.color;
+import vclib.space.point;
+import vclib.types;
+import vclib.views.mesh;
+
+export {
+#include <vclib/algorithms/mesh/update/color.h>
+}
 

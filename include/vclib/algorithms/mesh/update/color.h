@@ -23,6 +23,7 @@
 #ifndef VCL_ALGORITHMS_MESH_UPDATE_COLOR_H
 #define VCL_ALGORITHMS_MESH_UPDATE_COLOR_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <set>
 
 #include <vclib/algorithms/mesh/stat.h>
@@ -30,6 +31,7 @@
 #include <vclib/mesh/requirements.h>
 #include <vclib/space/color.h>
 #include <vclib/views/mesh.h>
+#endif
 
 namespace vcl {
 
