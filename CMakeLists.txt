@@ -407,6 +407,7 @@ set(MODULES
     src/vclib/algorithms/mesh/update/bounding_box.ixx
     src/vclib/algorithms/mesh/update/color.ixx
     src/vclib/algorithms/mesh/update/normal.ixx
+    src/vclib/algorithms/mesh/update/transform.ixx
     src/vclib/concepts/const_correctness.ixx
     src/vclib/concepts/iterators.ixx
     src/vclib/concepts/mesh.ixx
