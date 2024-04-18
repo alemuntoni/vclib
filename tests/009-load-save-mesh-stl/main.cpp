@@ -27,6 +27,8 @@
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #else
+#include <Eigen/Geometry>
+#include <ranges>
 import vclib;
 #endif
 
