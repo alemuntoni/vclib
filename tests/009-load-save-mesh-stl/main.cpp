@@ -21,9 +21,14 @@
  ****************************************************************************/
 
 #include <catch2/catch_test_macros.hpp>
+
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/create/hexahedron.h>
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
+#else
+import vclib;
+#endif
 
 std::istringstream stlCube()
 {
@@ -134,6 +139,7 @@ TEST_CASE("Load STL cube from istringstream")
     }
 }
 
+#ifndef VCLIB_WITH_MODULES
 TEST_CASE("Save STL cube in a ostringstream")
 {
     SECTION("TriMesh - Cube")
@@ -156,3 +162,4 @@ TEST_CASE("Save STL cube in a ostringstream")
         REQUIRE(count == expectedStlSize);
     }
 }
+#endif
