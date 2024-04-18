@@ -22,14 +22,16 @@
 
 module;
 
-export module vclib.algorithms.mesh;
+#include <ranges>
+#include <zip_view.hpp>
 
-export import vclib.algorithms.mesh.bounding_box;
-export import vclib.algorithms.mesh.clean;
-export import vclib.algorithms.mesh.create;
-export import vclib.algorithms.mesh.filter;
-export import vclib.algorithms.mesh.polygon;
-export import vclib.algorithms.mesh.sort;
-export import vclib.algorithms.mesh.stat;
-export import vclib.algorithms.mesh.update;
+export module vclib.algorithms.mesh.filter;
+
+import vclib.concepts;
+import vclib.types;
+import vclib.views.mesh;
+
+export {
+#include <vclib/algorithms/mesh/filter.h>
+}
 

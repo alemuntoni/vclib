@@ -23,8 +23,10 @@
 #ifndef VCL_ALGORITHMS_MESH_FILTER_H
 #define VCL_ALGORITHMS_MESH_FILTER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/requirements.h>
 #include <vclib/views.h>
+#endif
 
 namespace vcl {
 
