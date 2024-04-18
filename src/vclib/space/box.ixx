@@ -23,6 +23,7 @@
 module;
 
 #include <algorithm>
+#include <cassert>
 
 export module vclib.space.box;
 

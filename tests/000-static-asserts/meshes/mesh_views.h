@@ -3,7 +3,11 @@
 
 #include <ranges>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/views.h>
+#else
+import vclib;
+#endif
 
 template<typename MeshType>
 void meshViewsStaticAsserts()
@@ -41,6 +45,7 @@ void meshViewsStaticAsserts()
         "VertexPointerRangeConcept.");
 
     // assure that component ranges are ranges
+#ifndef VCLIB_WITH_MODULES
     static_assert(
         std::ranges::range<decltype(m.vertices() | vcl::views::colors)>, "");
     static_assert(
@@ -58,6 +63,7 @@ void meshViewsStaticAsserts()
     static_assert(
         std::ranges::range<decltype(m.vertices() | vcl::views::notSelected)>,
         "");
+#endif
 
     if constexpr (vcl::HasFaces<MeshType>) {
         static_assert(

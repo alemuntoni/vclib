@@ -3,7 +3,11 @@
 
 #include "mesh_views.h"
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes/tri_mesh.h>
+#else
+import vclib;
+#endif
 
 void trimeshStaticAsserts()
 {

@@ -3,7 +3,11 @@
 
 #include "mesh_views.h"
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes/point_cloud.h>
+#else
+import vclib;
+#endif
 
 void pointcloudStaticAsserts()
 {

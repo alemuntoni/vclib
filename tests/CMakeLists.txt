@@ -28,13 +28,14 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 # tests
 if (VCLIB_BUILD_TESTS)
 
+    add_subdirectory(000-static-asserts)
     add_subdirectory(001-trimesh-base)
     add_subdirectory(004-mesh-custom-components)
     add_subdirectory(006-load-save-mesh-obj)
     add_subdirectory(007-load-save-mesh-off)
 
     if (NOT VCLIB_BUILD_CXX20_MODULES)
-        add_subdirectory(000-static-asserts)
+
 
         add_subdirectory(002-mesh-topology)
         add_subdirectory(003-mesh-conversions)
