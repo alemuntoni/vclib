@@ -23,11 +23,13 @@
 #ifndef VCL_ALGORITHMS_MESH_SMOOTH_H
 #define VCL_ALGORITHMS_MESH_SMOOTH_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <cmath>
 #include <vector>
 
 #include <vclib/mesh/requirements.h>
 #include <vclib/space/kd_tree.h>
+#endif
 
 namespace vcl {
 
