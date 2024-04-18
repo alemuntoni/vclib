@@ -23,6 +23,7 @@
 #ifndef VCL_ALGORITHMS_MESH_DISTANCE_H
 #define VCL_ALGORITHMS_MESH_DISTANCE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/point_sampling.h>
 #include <vclib/math/histogram.h>
 #include <vclib/mesh/requirements.h>
@@ -30,6 +31,7 @@
 #include <vclib/misc/parallel.h>
 #include <vclib/space/grid.h>
 #include <vclib/views.h>
+#endif
 
 namespace vcl {
 

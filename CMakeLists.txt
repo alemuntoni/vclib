@@ -390,6 +390,7 @@ set(MODULES
     src/vclib/algorithms/mesh/bounding_box.ixx
     src/vclib/algorithms/mesh/clean.ixx
     src/vclib/algorithms/mesh/create.ixx
+    src/vclib/algorithms/mesh/distance.ixx
     src/vclib/algorithms/mesh/filter.ixx
     src/vclib/algorithms/mesh/import_export.ixx
     src/vclib/algorithms/mesh/intersection.ixx

@@ -22,20 +22,25 @@
 
 module;
 
-export module vclib.algorithms.mesh;
+#include <cassert>
+#include <cmath>
+#include <limits>
+#include <mutex>
+#include <string>
+#include <vector>
 
-export import vclib.algorithms.mesh.bounding_box;
-export import vclib.algorithms.mesh.clean;
-export import vclib.algorithms.mesh.create;
-export import vclib.algorithms.mesh.distance;
-export import vclib.algorithms.mesh.filter;
-export import vclib.algorithms.mesh.import_export;
-export import vclib.algorithms.mesh.intersection;
-export import vclib.algorithms.mesh.point_sampling;
-export import vclib.algorithms.mesh.polygon;
-export import vclib.algorithms.mesh.shuffle;
-export import vclib.algorithms.mesh.smooth;
-export import vclib.algorithms.mesh.sort;
-export import vclib.algorithms.mesh.stat;
-export import vclib.algorithms.mesh.update;
+export module vclib.algorithms.mesh.distance;
+
+import vclib.algorithms.mesh.point_sampling;
+import vclib.concepts;
+import vclib.math;
+import vclib.misc;
+import vclib.space.grid;
+import vclib.space.sampler;
+import vclib.types;
+import vclib.views;
+
+export {
+#include <vclib/algorithms/mesh/distance.h>
+}
 
