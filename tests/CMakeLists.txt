@@ -36,15 +36,13 @@ if (VCLIB_BUILD_TESTS)
     add_subdirectory(005-mesh-new-user-component)
     add_subdirectory(006-load-save-mesh-obj)
     add_subdirectory(007-load-save-mesh-off)
-
+    add_subdirectory(008-load-save-mesh-ply)
     add_subdirectory(009-load-save-mesh-stl)
 
     add_subdirectory(013-mesh-update-normal)
 
     if (NOT VCLIB_BUILD_CXX20_MODULES)
         add_subdirectory(002-mesh-topology)
-
-        add_subdirectory(008-load-save-mesh-ply)
 
         add_subdirectory(010-mesh-clean)
         add_subdirectory(011-mesh-filter)
