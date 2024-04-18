@@ -131,7 +131,6 @@ SCENARIO("Mesh Conversions")
             REQUIRE(pm.faceNumber() == 6);
         }
 
-#ifndef VCLIB_WITH_MODULES
         GIVEN("When importing into TriMesh")
         {
             vcl::TriMesh tm;
@@ -152,6 +151,5 @@ SCENARIO("Mesh Conversions")
                 REQUIRE(tm.faceNumber() == 12);
             }
         }
-#endif
     }
 }

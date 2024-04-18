@@ -180,7 +180,6 @@ TEST_CASE("Save OFF to a ostringstream")
         REQUIRE(line == "3 0 2 1 ");
     }
 
-#ifndef VCLIB_WITH_MODULES
     SECTION("PolyMesh - Cube (Normals and Colors)")
     {
         vcl::PolyMesh pm = vcl::createCube<vcl::PolyMesh>();
@@ -206,5 +205,4 @@ TEST_CASE("Save OFF to a ostringstream")
             std::getline(iss, line); // go to face 0
         REQUIRE(line == "4 2 3 1 0 ");
     }
-#endif
 }

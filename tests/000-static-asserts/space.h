@@ -131,7 +131,6 @@ void spaceStaticAsserts()
     static_assert(
         PointIteratorConcept<std::vector<Point3d>::const_iterator>, "");
 
-#ifndef VCLIB_WITH_MODULES
     // sampler
     static_assert(
         SamplerConcept<MeshSampler<detail::TMPSimplePolyMesh>>,
@@ -153,7 +152,6 @@ void spaceStaticAsserts()
 
     //    VertexSampler<detail::TMPSimplePolyMesh::Vertex> v;
     //    auto it = std::ranges::begin(v);
-#endif
 
     static_assert(
         SphereConcept<Spheref>, "Spheref does not satisfy the SphereConcept");
