@@ -23,12 +23,14 @@
 #ifndef VCL_ALGORITHMS_MESH_POINT_SAMPLING_H
 #define VCL_ALGORITHMS_MESH_POINT_SAMPLING_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/shuffle.h>
 #include <vclib/algorithms/mesh/stat.h>
 #include <vclib/math/random.h>
 #include <vclib/mesh/requirements.h>
 #include <vclib/misc/comparators.h>
 #include <vclib/space/sampler.h>
+#endif
 
 /**
  * @defgroup point_sampling Point Sampling Algorithms
