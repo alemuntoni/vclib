@@ -39,6 +39,8 @@ if (VCLIB_BUILD_TESTS)
 
     add_subdirectory(009-load-save-mesh-stl)
 
+    add_subdirectory(013-mesh-update-normal)
+
     if (NOT VCLIB_BUILD_CXX20_MODULES)
         add_subdirectory(002-mesh-topology)
 
@@ -47,7 +49,7 @@ if (VCLIB_BUILD_TESTS)
         add_subdirectory(010-mesh-clean)
         add_subdirectory(011-mesh-filter)
         add_subdirectory(012-kd-tree)
-        add_subdirectory(013-mesh-update-normal)
+
 
 
         if (TARGET vclib-external-vcg)

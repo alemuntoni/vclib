@@ -21,9 +21,19 @@
  ****************************************************************************/
 
 #include <catch2/catch_test_macros.hpp>
+
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
+#else
+#include <cmath>
+#include <set>
+
+import vclib;
+#endif
+
+
 
 TEST_CASE("TriMesh Update Normal")
 {
