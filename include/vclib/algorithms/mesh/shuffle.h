@@ -23,9 +23,11 @@
 #ifndef VCL_ALGORITHMS_MESH_SHUFFLE_H
 #define VCL_ALGORITHMS_MESH_SHUFFLE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <random>
 
 #include <vclib/mesh/requirements.h>
+#endif
 
 namespace vcl {
 

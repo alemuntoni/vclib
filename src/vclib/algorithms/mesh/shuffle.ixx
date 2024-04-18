@@ -22,15 +22,15 @@
 
 module;
 
-export module vclib.algorithms.mesh;
+#include <algorithm>
+#include <random>
+#include <vector>
 
-export import vclib.algorithms.mesh.bounding_box;
-export import vclib.algorithms.mesh.clean;
-export import vclib.algorithms.mesh.create;
-export import vclib.algorithms.mesh.filter;
-export import vclib.algorithms.mesh.polygon;
-export import vclib.algorithms.mesh.shuffle;
-export import vclib.algorithms.mesh.sort;
-export import vclib.algorithms.mesh.stat;
-export import vclib.algorithms.mesh.update;
+export module vclib.algorithms.mesh.shuffle;
+
+import vclib.concepts.mesh;
+
+export {
+#include <vclib/algorithms/mesh/shuffle.h>
+}
 
