@@ -23,8 +23,10 @@
 #ifndef FOO_MESH_H
 #define FOO_MESH_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/mesh.h>
 #include <vclib/mesh/requirements.h>
+#endif
 
 #include "foo_component.h"
 

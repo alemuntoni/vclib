@@ -24,7 +24,9 @@
 
 #include "foo_mesh.h"
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes/tri_mesh.h>
+#endif
 
 TEST_CASE("Simple User Component")
 {

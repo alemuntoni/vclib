@@ -23,7 +23,11 @@
 #ifndef FOO_COMPONENT_H
 #define FOO_COMPONENT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/types.h>
+#else
+import vclib;
+#endif
 
 /*
  * This is an example of a simple plain component class.
