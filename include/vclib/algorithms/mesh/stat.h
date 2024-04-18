@@ -23,6 +23,7 @@
 #ifndef VCL_ALGORITHMS_MESH_STAT_H
 #define VCL_ALGORITHMS_MESH_STAT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vector>
 
 #include <vclib/mesh/utils/mesh_inertia.h>
@@ -31,6 +32,7 @@
 
 #include "stat/quality.h"
 #include "stat/selection.h"
+#endif
 
 namespace vcl {
 

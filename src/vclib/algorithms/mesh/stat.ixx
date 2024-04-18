@@ -22,8 +22,20 @@
 
 module;
 
+#include <Eigen/Core>
+
 export module vclib.algorithms.mesh.stat;
 
 export import vclib.algorithms.mesh.stat.quality;
 export import vclib.algorithms.mesh.stat.selection;
+
+import vclib.concepts.mesh;
+import vclib.mesh.requirements;
+import vclib.mesh.utils.mesh_inertia;
+import vclib.space.matrix;
+import vclib.types;
+
+export {
+#include <vclib/algorithms/mesh/stat.h>
+}
 
