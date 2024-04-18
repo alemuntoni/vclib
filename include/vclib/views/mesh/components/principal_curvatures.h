@@ -34,7 +34,7 @@ namespace vcl::views {
 
 namespace detail {
 
-constexpr auto principalCurvature = [](auto&& p) -> decltype(auto) {
+inline constexpr auto principalCurvature = [](auto&& p) -> decltype(auto) {
     if constexpr (IsPointer<decltype(p)>)
         return p->principalCurvature();
     else
