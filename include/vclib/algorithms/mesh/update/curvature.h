@@ -23,6 +23,7 @@
 #ifndef VCL_ALGORITHMS_MESH_UPDATE_CURVATURE_H
 #define VCL_ALGORITHMS_MESH_UPDATE_CURVATURE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <mutex>
 
 #include <vclib/algorithms/core/polygon.h>
@@ -38,6 +39,7 @@
 #include <vclib/space/grid.h>
 #include <vclib/space/principal_curvature.h>
 #include <vclib/views.h>
+#endif
 
 namespace vcl {
 

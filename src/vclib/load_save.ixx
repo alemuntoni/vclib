@@ -22,7 +22,7 @@
 
 module;
 
-export module vclib.io;
+export module vclib.load_save;
 
 export import vclib.io.file_info;
 export import vclib.io.image;

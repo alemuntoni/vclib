@@ -370,8 +370,8 @@ set(MODULES
     src/vclib/algorithms.ixx
     src/vclib/concepts.ixx
     src/vclib/exceptions.ixx
-    src/vclib/io.ixx
     src/vclib/iterators.ixx
+    src/vclib/load_save.ixx
     src/vclib/math.ixx
     src/vclib/mesh.ixx
     src/vclib/meshes.ixx
@@ -411,6 +411,7 @@ set(MODULES
     src/vclib/algorithms/mesh/update.ixx
     src/vclib/algorithms/mesh/update/bounding_box.ixx
     src/vclib/algorithms/mesh/update/color.ixx
+    src/vclib/algorithms/mesh/update/curvature.ixx
     src/vclib/algorithms/mesh/update/flag.ixx
     src/vclib/algorithms/mesh/update/normal.ixx
     src/vclib/algorithms/mesh/update/quality.ixx

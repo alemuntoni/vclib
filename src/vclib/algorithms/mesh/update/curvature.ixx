@@ -22,16 +22,28 @@
 
 module;
 
-export module vclib;
+#include <Eigen/Core>
+#include <Eigen/Eigenvalues>
+#include <mutex>
+#include <vector>
 
-export import vclib.algorithms;
-export import vclib.concepts;
-export import vclib.exceptions;
-export import vclib.load_save;
-export import vclib.math;
-export import vclib.mesh;
-export import vclib.meshes;
-export import vclib.misc;
-export import vclib.space;
-export import vclib.types;
-export import vclib.views;
+export module vclib.algorithms.mesh.update.curvature;
+
+import vclib.algorithms.core.bounding_box;
+import vclib.algorithms.core.polygon;
+import vclib.algorithms.mesh.stat;
+import vclib.algorithms.mesh.update.normal;
+import vclib.concepts;
+import vclib.math;
+import vclib.mesh.requirements;
+import vclib.mesh.utils.mesh_pos;
+import vclib.misc;
+import vclib.space.grid;
+import vclib.space.matrix;
+import vclib.space.sphere;
+import vclib.views;
+
+export {
+#include <vclib/algorithms/mesh/update/curvature.h>
+}
+

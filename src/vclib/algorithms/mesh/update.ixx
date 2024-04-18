@@ -26,6 +26,7 @@ export module vclib.algorithms.mesh.update;
 
 export import vclib.algorithms.mesh.update.bounding_box;
 export import vclib.algorithms.mesh.update.color;
+export import vclib.algorithms.mesh.update.curvature;
 export import vclib.algorithms.mesh.update.flag;
 export import vclib.algorithms.mesh.update.normal;
 export import vclib.algorithms.mesh.update.quality;
