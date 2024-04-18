@@ -413,6 +413,7 @@ set(MODULES
     src/vclib/algorithms/mesh/update/color.ixx
     src/vclib/algorithms/mesh/update/flag.ixx
     src/vclib/algorithms/mesh/update/normal.ixx
+    src/vclib/algorithms/mesh/update/quality.ixx
     src/vclib/algorithms/mesh/update/transform.ixx
     src/vclib/concepts/const_correctness.ixx
     src/vclib/concepts/iterators.ixx

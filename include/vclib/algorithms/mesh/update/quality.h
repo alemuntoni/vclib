@@ -23,9 +23,11 @@
 #ifndef VCL_ALGORITHMS_MESH_UPDATE_QUALITY_H
 #define VCL_ALGORITHMS_MESH_UPDATE_QUALITY_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/core/polygon.h>
 #include <vclib/algorithms/mesh/stat.h>
 #include <vclib/mesh/requirements.h>
+#endif
 
 namespace vcl {
 

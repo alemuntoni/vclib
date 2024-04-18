@@ -22,11 +22,15 @@
 
 module;
 
-export module vclib.algorithms.mesh.update;
+#include <algorithm>
+#include <cmath>
 
-export import vclib.algorithms.mesh.update.bounding_box;
-export import vclib.algorithms.mesh.update.color;
-export import vclib.algorithms.mesh.update.flag;
-export import vclib.algorithms.mesh.update.normal;
-export import vclib.algorithms.mesh.update.quality;
+export module vclib.algorithms.mesh.update.quality;
+
+import vclib.concepts.mesh;
+import vclib.mesh.requirements;
+
+export {
+#include <vclib/algorithms/mesh/update/quality.h>
+}
 
