@@ -22,17 +22,20 @@
 
 module;
 
-export module vclib.algorithms.mesh;
+#include <Eigen/Core>
+#include <vector>
 
-export import vclib.algorithms.mesh.bounding_box;
-export import vclib.algorithms.mesh.clean;
-export import vclib.algorithms.mesh.create;
-export import vclib.algorithms.mesh.filter;
-export import vclib.algorithms.mesh.import_export;
-export import vclib.algorithms.mesh.point_sampling;
-export import vclib.algorithms.mesh.polygon;
-export import vclib.algorithms.mesh.shuffle;
-export import vclib.algorithms.mesh.sort;
-export import vclib.algorithms.mesh.stat;
-export import vclib.algorithms.mesh.update;
+export module vclib.algorithms.mesh.import_export;
+
+import vclib.concepts.mesh;
+import vclib.concepts.space;
+import vclib.exceptions;
+import vclib.mesh.requirements;
+import vclib.space.color;
+import vclib.types;
+
+export {
+#include <vclib/algorithms/mesh/import_export/export_matrix.h>
+#include <vclib/algorithms/mesh/import_export/import_matrix.h>
+}
 

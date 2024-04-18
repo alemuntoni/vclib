@@ -23,10 +23,12 @@
 #ifndef VCL_ALGORITHMS_MESH_IMPORT_EXPORT_IMPORT_MATRIX_H
 #define VCL_ALGORITHMS_MESH_IMPORT_EXPORT_IMPORT_MATRIX_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/space/matrix.h>
 #include <vclib/exceptions.h>
 #include <vclib/mesh/requirements.h>
 #include <vclib/space/polygon.h>
+#endif
 
 namespace vcl {
 

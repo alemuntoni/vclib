@@ -23,8 +23,10 @@
 #ifndef VCL_ALGORITHMS_MESH_IMPORT_EXPORT_EXPORT_MATRIX_H
 #define VCL_ALGORITHMS_MESH_IMPORT_EXPORT_EXPORT_MATRIX_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/space/matrix.h>
 #include <vclib/mesh/requirements.h>
+#endif
 
 namespace vcl {
 

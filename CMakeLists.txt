@@ -391,6 +391,7 @@ set(MODULES
     src/vclib/algorithms/mesh/clean.ixx
     src/vclib/algorithms/mesh/create.ixx
     src/vclib/algorithms/mesh/filter.ixx
+    src/vclib/algorithms/mesh/import_export.ixx
     src/vclib/algorithms/mesh/point_sampling.ixx
     src/vclib/algorithms/mesh/polygon.ixx
     src/vclib/algorithms/mesh/shuffle.ixx
