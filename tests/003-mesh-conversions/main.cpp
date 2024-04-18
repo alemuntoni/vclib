@@ -26,6 +26,8 @@
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #else
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <set>
 #include <unordered_map>
 import vclib;
