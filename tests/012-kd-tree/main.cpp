@@ -22,9 +22,14 @@
 
 #include <iostream>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #include <vclib/space/kd_tree.h>
+#else
+#include <set>
+import vclib;
+#endif
 
 #include <catch2/catch_test_macros.hpp>
 
