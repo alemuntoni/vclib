@@ -27,7 +27,6 @@
 #include <vclib/meshes/detail/tmp_meshes.h>
 #include <vclib/space.h>
 #else
-#include <vector>
 import vclib;
 import vclib.meshes.detail;
 #endif

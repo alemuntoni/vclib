@@ -1,8 +1,6 @@
 #ifndef MESH_VIEWS_H
 #define MESH_VIEWS_H
 
-#include <ranges>
-
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/views.h>
 #else

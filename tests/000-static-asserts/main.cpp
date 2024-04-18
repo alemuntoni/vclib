@@ -20,6 +20,11 @@
  * for more details.                                                         *
  ****************************************************************************/
 
+#ifdef VCLIB_WITH_MODULES
+#include <ranges>
+#include <vector>
+#endif
+
 #include "loggers.h"
 #include "meshes.h"
 #include "space.h"
