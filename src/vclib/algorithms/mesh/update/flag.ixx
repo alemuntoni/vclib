@@ -22,10 +22,15 @@
 
 module;
 
-export module vclib.algorithms.mesh.update;
+#include <vector>
 
-export import vclib.algorithms.mesh.update.bounding_box;
-export import vclib.algorithms.mesh.update.color;
-export import vclib.algorithms.mesh.update.flag;
-export import vclib.algorithms.mesh.update.normal;
+export module vclib.algorithms.mesh.update.flag;
+
+import vclib.algorithms.mesh.sort;
+import vclib.concepts.mesh;
+import vclib.mesh.utils.mesh_edge_util;
+
+export {
+#include <vclib/algorithms/mesh/update/flag.h>
+}
 
