@@ -29,6 +29,7 @@
 #else
 #include <cmath>
 #include <set>
+#include <Eigen/Geometry>
 
 import vclib;
 #endif
