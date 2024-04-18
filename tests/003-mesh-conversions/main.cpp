@@ -21,8 +21,15 @@
  ****************************************************************************/
 
 #include <catch2/catch_test_macros.hpp>
+
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
+#else
+#include <set>
+#include <unordered_map>
+import vclib;
+#endif
 
 SCENARIO("Mesh Conversions")
 {
@@ -122,6 +129,7 @@ SCENARIO("Mesh Conversions")
             REQUIRE(pm.faceNumber() == 6);
         }
 
+#ifndef VCLIB_WITH_MODULES
         GIVEN("When importing into TriMesh")
         {
             vcl::TriMesh tm;
@@ -142,5 +150,6 @@ SCENARIO("Mesh Conversions")
                 REQUIRE(tm.faceNumber() == 12);
             }
         }
+#endif
     }
 }
