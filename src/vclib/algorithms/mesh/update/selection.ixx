@@ -20,65 +20,17 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_ALGORITHMS_MESH_UPDATE_SELECTION_H
-#define VCL_ALGORITHMS_MESH_UPDATE_SELECTION_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/algorithms/mesh/clean.h>
-#include <vclib/concepts/range.h>
-#include <vclib/mesh/requirements.h>
-#endif
+#include <vector>
 
-namespace vcl {
+export module vclib.algorithms.mesh.update.selection;
 
-namespace detail {
+import vclib.algorithms.mesh.clean;
+import vclib.concepts.mesh;
+import vclib.concepts.ranges;
 
-template<vcl::Range Rng>
-void clearSelection(Rng&& r)
-{
-    for (auto& e : r) {
-        e.selected() = false;
-    }
+export {
+#include <vclib/algorithms/mesh/update/selection.h>
 }
 
-} // namespace detail
-
-template<MeshConcept MeshType>
-void clearVertexSelection(MeshType& m)
-{
-    detail::clearSelection(m.vertices());
-}
-
-template<FaceMeshConcept MeshType>
-void clearFaceSelection(MeshType& m)
-{
-    detail::clearSelection(m.faces());
-}
-
-template<EdgeMeshConcept MeshType>
-void clearEdgeSelection(MeshType& m)
-{
-    detail::clearSelection(m.edges());
-}
-
-template<FaceMeshConcept MeshType>
-void selectNonManifoldVertices(MeshType& m, bool clearSelectionFirst)
-{
-    std::vector<bool> nonManifoldVertices =
-        detail::nonManifoldVerticesVectorBool(m);
-
-    using VertexType = MeshType::VertexType;
-
-    for (VertexType& v : m.vertices()) {
-        if (nonManifoldVertices[m.index(v)]) {
-            v.selected() = true;
-        }
-        else if (clearSelectionFirst) {
-            v.selected() = false;
-        }
-    }
-}
-
-} // namespace vcl
-
-#endif // VCL_ALGORITHMS_MESH_UPDATE_SELECTION_H

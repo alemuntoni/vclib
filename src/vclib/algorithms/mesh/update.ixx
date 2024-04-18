@@ -29,4 +29,5 @@ export import vclib.algorithms.mesh.update.color;
 export import vclib.algorithms.mesh.update.flag;
 export import vclib.algorithms.mesh.update.normal;
 export import vclib.algorithms.mesh.update.quality;
+export import vclib.algorithms.mesh.update.selection;
 
