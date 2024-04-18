@@ -415,6 +415,7 @@ set(MODULES
     src/vclib/algorithms/mesh/update/normal.ixx
     src/vclib/algorithms/mesh/update/quality.ixx
     src/vclib/algorithms/mesh/update/selection.ixx
+    src/vclib/algorithms/mesh/update/topology.ixx
     src/vclib/algorithms/mesh/update/transform.ixx
     src/vclib/concepts/const_correctness.ixx
     src/vclib/concepts/iterators.ixx

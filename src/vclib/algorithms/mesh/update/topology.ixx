@@ -22,14 +22,16 @@
 
 module;
 
-export module vclib.algorithms.mesh.update;
+#include <vector>
 
-export import vclib.algorithms.mesh.update.bounding_box;
-export import vclib.algorithms.mesh.update.color;
-export import vclib.algorithms.mesh.update.flag;
-export import vclib.algorithms.mesh.update.normal;
-export import vclib.algorithms.mesh.update.quality;
-export import vclib.algorithms.mesh.update.selection;
-export import vclib.algorithms.mesh.update.topology;
-export import vclib.algorithms.mesh.update.transform;
+export module vclib.algorithms.mesh.update.topology;
+
+import vclib.concepts.mesh;
+import vclib.mesh.requirements;
+import vclib.mesh.utils.mesh_edge_util;
+import vclib.types;
+
+export {
+#include <vclib/algorithms/mesh/update/topology.h>
+}
 
