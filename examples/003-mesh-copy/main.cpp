@@ -22,9 +22,14 @@
 
 #include <iostream>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
 #include <vclib/io/mesh.h>
 #include <vclib/meshes.h>
+#else
+#include <ranges>
+import vclib;
+#endif
 
 int main()
 {
