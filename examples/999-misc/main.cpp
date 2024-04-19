@@ -23,7 +23,12 @@
 #include <iostream>
 #include <vector>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/views.h>
+#else
+#include <ranges>
+import vclib;
+#endif
 
 struct Point
 {

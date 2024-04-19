@@ -54,11 +54,9 @@ if (VCLIB_BUILD_EXAMPLES)
     add_subdirectory(024-distance)
     add_subdirectory(025-grid)
 
-    if (NOT VCLIB_BUILD_CXX20_MODULES)
+    add_subdirectory(999-misc)
 
-
-        add_subdirectory(999-misc)
-    else()
+    if (VCLIB_BUILD_CXX20_MODULES)
         add_subdirectory(998-modules)
     endif()
 endif()
