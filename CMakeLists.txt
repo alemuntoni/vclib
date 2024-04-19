@@ -525,6 +525,15 @@ set(MODULES
     src/vclib/views/mesh.ixx
     )
 
+if (TARGET vclib-external-vcg)
+    list(APPEND MODULES
+        src/vclib/ext/vcg.ixx
+        src/vclib/ext/vcg/concepts.ixx
+        src/vclib/ext/vcg/import_export.ixx
+        src/vclib/ext/vcg/type_mapping.ixx
+    )
+endif()
+
 set(VCLIB_TARGET_LINK_TYPE INTERFACE) # header only library
 
 if (VCLIB_BUILD_CXX20_MODULES)

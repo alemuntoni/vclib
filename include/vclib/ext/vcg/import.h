@@ -23,11 +23,13 @@
 #ifndef VCL_EXT_VCG_IMPORT_H
 #define VCL_EXT_VCG_IMPORT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/requirements.h>
 
 #include <vcg/complex/complex.h>
 
 #include "type_mapping.h"
+#endif
 
 namespace vcl::vc {
 

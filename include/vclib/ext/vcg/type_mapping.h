@@ -23,6 +23,7 @@
 #ifndef VCL_EXT_VCG_TYPE_MAPPING_H
 #define VCL_EXT_VCG_TYPE_MAPPING_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "concepts.h"
 
 #include <vclib/space/point.h>
@@ -30,6 +31,7 @@
 #include <vcg/space/point2.h>
 #include <vcg/space/point3.h>
 #include <vcg/space/point4.h>
+#endif
 
 namespace vcl::vc {
 

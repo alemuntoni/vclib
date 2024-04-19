@@ -20,46 +20,10 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_EXT_VCG_CONCEPTS_H
-#define VCL_EXT_VCG_CONCEPTS_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/types.h>
+export module vclib.external.vcg;
 
-#include <vcg/space/point2.h>
-#include <vcg/space/point3.h>
-#include <vcg/space/point4.h>
-#endif
-
-namespace vcl::vc {
-
-template<typename T>
-concept Point2Concept = T::Dimension == 2 && requires (T a) {
-    // clang-format off
-    { a.X() } -> std::convertible_to<float>;
-    { a.Y() } -> std::convertible_to<float>;
-    // clang-format on
-};
-
-template<typename T>
-concept Point3Concept = T::Dimension == 3 && requires (T a) {
-    // clang-format off
-    { a.X() } -> std::convertible_to<float>;
-    { a.Y() } -> std::convertible_to<float>;
-    { a.Z() } -> std::convertible_to<float>;
-    // clang-format on
-};
-
-template<typename T>
-concept Point4Concept = T::Dimension == 4 && requires (T a) {
-    // clang-format off
-    { a.X() } -> std::convertible_to<float>;
-    { a.Y() } -> std::convertible_to<float>;
-    { a.Z() } -> std::convertible_to<float>;
-    { a.W() } -> std::convertible_to<float>;
-    // clang-format on
-};
-
-} // namespace vcl::vc
-
-#endif // VCL_EXT_VCG_CONCEPTS_H
+export import vclib.external.vcg.concepts;
+export import vclib.external.vcg.import_export;
+export import vclib.external.vcg.type_mapping;

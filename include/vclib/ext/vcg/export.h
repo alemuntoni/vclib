@@ -23,9 +23,11 @@
 #ifndef VCL_EXT_VCG_EXPORT_H
 #define VCL_EXT_VCG_EXPORT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/requirements.h>
 
 #include <vcg/complex/complex.h>
+#endif
 
 namespace vcl::vc {
 
