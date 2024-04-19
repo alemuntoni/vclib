@@ -23,9 +23,15 @@
 #ifndef BIMBA_SPHERE_INTERSECTION_H
 #define BIMBA_SPHERE_INTERSECTION_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
+#else
+#include <Eigen/Core> // needed by msvc...
+#include <ranges>     // needed by msvc...
+import vclib;
+#endif
 
 vcl::TriMesh bimbaSphereIntersection(
     vcl::Sphere<vcl::TriMesh::ScalarType> s = {
