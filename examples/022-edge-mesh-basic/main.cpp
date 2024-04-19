@@ -22,7 +22,11 @@
 
 #include <iostream>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes.h>
+#else
+import vclib;
+#endif
 
 int main()
 {

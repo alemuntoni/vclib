@@ -49,6 +49,7 @@ if (VCLIB_BUILD_EXAMPLES)
     add_subdirectory(019-mesh-sampling)
     add_subdirectory(020-mesh-smooth)
     add_subdirectory(021-mesh-sphere-intersection)
+    add_subdirectory(022-edge-mesh-basic)
 
     if (NOT VCLIB_BUILD_CXX20_MODULES)
         add_subdirectory(022-edge-mesh-basic)
