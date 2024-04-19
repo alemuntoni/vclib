@@ -25,7 +25,6 @@
 #include <vector>
 
 #include <Eigen/Core>
-#include <Eigen/Geometry>
 
 import vclib;
 
