@@ -53,6 +53,7 @@ jobs:
       with:
         key: ${{ runner.os }}-${{ matrix.build-with }}-${{ github.ref }}
     - name: Setup cmake arguments
+      shell: bash
       run: |
         # if modules are enabled, we need to set the CMake arguments
         CMAKE_ARGUMENTS=""
@@ -64,8 +65,8 @@ jobs:
           fi
         fi
         echo "Additional cmake arguments: $CMAKE_ARGUMENTS"
-        # export the arguments
-        echo "export CMAKE_ARGUMENTS=\"$CMAKE_ARGUMENTS\"" >> $GITHUB_ENV
+        # make CMAKE_ARGUMENTS available to the next steps
+        echo "CMAKE_ARGUMENTS=$CMAKE_ARGUMENTS" >> $GITHUB_ENV
     - name: Build
       shell: bash
       run: |
