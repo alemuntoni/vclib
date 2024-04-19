@@ -22,6 +22,8 @@
 
 module;
 
+#include <cassert>
+
 export module vclib.mesh.utils.mesh_pos;
 
 import vclib.concepts.mesh.elements;

@@ -31,6 +31,7 @@ export module vclib.algorithms.mesh.update.color;
 
 import vclib.concepts.mesh;
 import vclib.concepts.space;
+import vclib.math;
 import vclib.mesh.requirements;
 import vclib.space.color;
 import vclib.space.point;
