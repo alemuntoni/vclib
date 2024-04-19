@@ -53,4 +53,5 @@ export {
 std::map<vcl::detail::ObjMaterial, std::string>
     dummyMap;
 
+auto dummyIt = dummyMap.begin();
 bool dummyB = dummyMap.find(vcl::detail::ObjMaterial()) == dummyMap.end();
