@@ -20,12 +20,17 @@
  * for more details.                                                         *
  ****************************************************************************/
 
-#include "vclib/algorithms/core/polygon/geometry.h"
-#include "vclib/misc/logger/null_logger.h"
+#include <cassert>
 #include <iostream>
 
-#include <vclib/load_save.h>
+#ifndef VCLIB_WITH_MODULES
+#include <vclib/algorithms/core/polygon/geometry.h>
 #include <vclib/meshes.h>
+#include <vclib/misc/logger/null_logger.h>
+#include <vclib/load_save.h>
+#else
+import vclib;
+#endif
 
 int main()
 {
