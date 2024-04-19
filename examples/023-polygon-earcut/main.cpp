@@ -21,8 +21,13 @@
  ****************************************************************************/
 
 #include <iostream>
+#include <vector>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
+#else
+import vclib;
+#endif
 
 int main()
 {
