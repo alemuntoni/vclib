@@ -34,6 +34,7 @@ import vclib.space.box;
 import vclib.space.plane;
 import vclib.space.point;
 import vclib.space.sphere;
+import vclib.space.triangle_wrapper;
 
 export {
 #include <vclib/algorithms/core/intersection/misc.h>

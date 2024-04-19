@@ -23,6 +23,7 @@
 module;
 
 #include <array>
+#include <cassert>
 #include <cmath>
 
 export module vclib.space.grid.regular_grid;

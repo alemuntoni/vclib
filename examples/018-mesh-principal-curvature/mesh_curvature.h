@@ -25,10 +25,17 @@
 
 #include <iostream>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #include <vclib/misc/timer.h>
+#else
+#include <Eigen/Core>     // needed by msvc...
+#include <Eigen/Geometry> // needed by msvc...
+#include <ranges>         // needed by msvc...
+import vclib;
+#endif
 
 void updateCurvature(vcl::TriMesh& m)
 {

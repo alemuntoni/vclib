@@ -23,6 +23,7 @@
 module;
 
 #include <algorithm>
+#include <cassert>
 #include <ranges>
 #include <utility>
 #include <vector>
