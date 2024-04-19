@@ -27,7 +27,6 @@
 #include <vclib/meshes.h>
 #else
 #include <Eigen/Core>
-#include <Eigen/Geometry>
 #include <ranges>
 #include <set>
 #include <unordered_map>

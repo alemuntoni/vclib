@@ -27,7 +27,6 @@
 #include <vclib/meshes.h>
 #include <vclib/space/kd_tree.h>
 #else
-#include <Eigen/Geometry>
 #include <set>
 import vclib;
 #endif

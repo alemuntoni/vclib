@@ -26,7 +26,6 @@
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #else
-#include <Eigen/Geometry>
 #include <set>
 import vclib;
 #endif

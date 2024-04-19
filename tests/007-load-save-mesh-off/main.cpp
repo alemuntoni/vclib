@@ -29,7 +29,6 @@
 #include <vclib/meshes.h>
 #else
 #include <Eigen/Core>
-#include <Eigen/Geometry>
 #include <ranges>
 #include <set>
 import vclib;
