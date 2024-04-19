@@ -20,12 +20,17 @@
  * for more details.                                                         *
  ****************************************************************************/
 
+#include <cassert>
 #include <iostream>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/smooth.h>
 #include <vclib/algorithms/mesh/update/flag.h>
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
+#else
+import vclib;
+#endif
 
 int main()
 {

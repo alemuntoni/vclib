@@ -28,6 +28,7 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 # examples
 if (VCLIB_BUILD_EXAMPLES)
     add_subdirectory(000-mesh-basic)
+    add_subdirectory(001-polymesh-basic)
 
     if (NOT VCLIB_BUILD_CXX20_MODULES)
         add_subdirectory(001-polymesh-basic)
