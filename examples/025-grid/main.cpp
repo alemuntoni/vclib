@@ -22,12 +22,17 @@
 
 #include <iostream>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/space.h>
 
 #include <vclib/algorithms.h>
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #include <vclib/miscellaneous.h>
+#else
+#include <Eigen/Core>
+import vclib;
+#endif
 
 int main()
 {
