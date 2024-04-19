@@ -22,11 +22,17 @@
 
 #include <iostream>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 
 #include <vclib/algorithms/mesh/update.h>
 #include <vclib/views/mesh.h>
+#else
+#include <Eigen/Core>
+#include <ranges>
+import vclib;
+#endif
 
 int main()
 {
