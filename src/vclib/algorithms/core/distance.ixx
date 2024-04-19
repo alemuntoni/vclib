@@ -22,6 +22,7 @@
 
 module;
 
+#include <cassert>
 #include <cmath>
 #include <functional>
 

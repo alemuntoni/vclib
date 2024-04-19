@@ -22,6 +22,7 @@
 
 module;
 
+#include <cassert>
 #include <vector>
 
 export module vclib.space.sampler.point_sampler;

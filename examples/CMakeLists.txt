@@ -51,9 +51,9 @@ if (VCLIB_BUILD_EXAMPLES)
     add_subdirectory(021-mesh-sphere-intersection)
     add_subdirectory(022-edge-mesh-basic)
     add_subdirectory(023-polygon-earcut)
+    add_subdirectory(024-distance)
 
     if (NOT VCLIB_BUILD_CXX20_MODULES)
-        add_subdirectory(024-distance)
         add_subdirectory(025-grid)
 
         add_subdirectory(999-misc)
