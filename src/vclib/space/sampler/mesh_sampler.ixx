@@ -22,6 +22,7 @@
 
 module;
 
+#include <cassert>
 #include <ranges>
 #include <vector>
 

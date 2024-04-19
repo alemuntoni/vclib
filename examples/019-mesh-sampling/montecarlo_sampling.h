@@ -23,8 +23,13 @@
 #ifndef MONTECARLO_SAMPLING_H
 #define MONTECARLO_SAMPLING_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
 #include <vclib/meshes.h>
+#else
+#include <ranges> // needed by msvc...
+import vclib;
+#endif
 
 void montecarloSampling(const vcl::TriMesh& m, vcl::TriMesh& samples)
 {

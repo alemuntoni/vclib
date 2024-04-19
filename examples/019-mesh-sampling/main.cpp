@@ -22,7 +22,9 @@
 
 #include <iostream>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/load_save.h>
+#endif
 
 #include "montecarlo_sampling.h"
 
