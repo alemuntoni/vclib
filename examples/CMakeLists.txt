@@ -42,10 +42,9 @@ if (VCLIB_BUILD_EXAMPLES)
     add_subdirectory(012-mesh-io-obj)
     add_subdirectory(013-mesh-io-off)
     add_subdirectory(014-mesh-io-ply)
+    add_subdirectory(015-mesh-io-stl)
 
     if (NOT VCLIB_BUILD_CXX20_MODULES)
-
-        add_subdirectory(015-mesh-io-stl)
         add_subdirectory(016-mesh-clean)
         add_subdirectory(017-mesh-create)
         add_subdirectory(018-mesh-principal-curvature)

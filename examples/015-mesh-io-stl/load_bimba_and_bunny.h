@@ -1,9 +1,13 @@
 #ifndef LOAD_BIMBA_AND_BUNNY_H
 #define LOAD_BIMBA_AND_BUNNY_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/update.h>
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
+#else
+import vclib;
+#endif
 
 void loadBimbaAndBunnyMeshes(vcl::TriMesh& m1, vcl::TriMesh& m2)
 {
