@@ -31,9 +31,10 @@ if (VCLIB_BUILD_EXAMPLES)
     add_subdirectory(001-polymesh-basic)
     add_subdirectory(002-mesh-iterators)
     add_subdirectory(003-mesh-copy)
+    add_subdirectory(004-mesh-normal)
 
     if (NOT VCLIB_BUILD_CXX20_MODULES)
-        add_subdirectory(004-mesh-normal)
+
         add_subdirectory(005-mesh-topology)
         add_subdirectory(006-mesh-stat)
         add_subdirectory(007-mesh-conversion)
