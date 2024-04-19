@@ -20,6 +20,12 @@
  * for more details.                                                         *
  ****************************************************************************/
 
+#include <catch2/catch_test_macros.hpp>
+
+#include <wrap/io_trimesh/import_ply.h>
+
+#include "mesh.h"
+
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/core/polygon.h>
 #include <vclib/algorithms/mesh/create.h>
@@ -30,12 +36,6 @@
 import vclib;
 import vclib.external.vcg;
 #endif
-
-#include <catch2/catch_test_macros.hpp>
-
-#include <wrap/io_trimesh/import_ply.h>
-
-#include "mesh.h"
 
 TEST_CASE("Import TriMesh from VCG")
 {
