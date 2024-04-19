@@ -23,6 +23,9 @@
 #ifndef FOO_COMPONENT_H
 #define FOO_COMPONENT_H
 
+#include <concepts>
+#include <string>
+
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/types.h>
 #else

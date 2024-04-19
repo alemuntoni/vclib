@@ -22,7 +22,9 @@
 
 #include "foo_mesh.h"
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes/tri_mesh.h>
+#endif
 
 int main(int argc, char** argv)
 {
