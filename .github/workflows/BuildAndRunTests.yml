@@ -52,29 +52,26 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         key: ${{ runner.os }}-${{ matrix.build-with }}-${{ github.ref }}
-    - name: Build (headers)
-      if: matrix.build-with == 'headers'
+    - name: Setup cmake arguments
+      run: |
+        # if modules are enabled, we need to set the CMake arguments
+        CMAKE_ARGUMENTS=""
+        if [ "${{ matrix.build-with }}" == "modules" ]; then
+          CMAKE_ARGUMENTS="-DVCLIB_BUILD_CXX20_MODULES=ON"
+          # if we are on linux, we need to set the CMake arguments
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            CMAKE_ARGUMENTS="$CMAKE_ARGUMENTS -DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18"
+          fi
+        fi
+        echo "Additional cmake arguments: $CMAKE_ARGUMENTS"
+        # export the arguments
+        echo "export CMAKE_ARGUMENTS=\"$CMAKE_ARGUMENTS\"" >> $GITHUB_ENV
+    - name: Build
       shell: bash
       run: |
         mkdir build
         cd build
-        cmake -GNinja -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_BUILD_TYPE=Release ..
-        ninja
-    - name: Build (modules)
-      if: matrix.build-with == 'modules' && runner.os == 'Windows'
-      shell: bash
-      run: |
-        mkdir build
-        cd build
-        cmake -GNinja -DVCLIB_BUILD_CXX20_MODULES=ON -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_BUILD_TYPE=Release ..
-        ninja
-    - name: Build (modules)
-      if: matrix.build-with == 'modules' && runner.os != 'Windows'
-      shell: bash
-      run: |
-        mkdir build
-        cd build
-        cmake -GNinja -DVCLIB_BUILD_CXX20_MODULES=ON -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_BUILD_TYPE=Release ..
+        cmake -GNinja -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_BUILD_TYPE=Release $CMAKE_ARGUMENTS ..
         ninja
     - name: Run Tests
       shell: bash
