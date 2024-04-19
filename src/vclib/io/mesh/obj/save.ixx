@@ -41,17 +41,3 @@ import vclib.types;
 export {
 #include <vclib/io/mesh/obj/save.h>
 }
-
-// for some reason, clang does not compile the internal calls of the == operator
-// between std::map iterators, and therefore it is not exported.
-// Adding this operation forces the compilation inside this module.
-// Without this, on clang you get an unresolved external symbol error every time
-// you try to use this module, and the solution would be to `#include <map>`
-// along with `import vclib;` in the client code.
-// note: these dummy objects are not exported
-// TODO: test if this is still necessary when clang gets updated.
-std::map<vcl::detail::ObjMaterial, std::string>
-    dummyMap;
-
-auto dummyIt = dummyMap.begin();
-bool dummyB = dummyMap.find(vcl::detail::ObjMaterial()) == dummyMap.end();
