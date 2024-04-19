@@ -30,7 +30,7 @@ if (VCLIB_BUILD_TESTS)
 
     add_subdirectory(000-static-asserts)
     add_subdirectory(001-trimesh-base)
-
+    add_subdirectory(002-mesh-topology)
     add_subdirectory(003-mesh-conversions)
     add_subdirectory(004-mesh-custom-components)
     add_subdirectory(005-mesh-new-user-component)
@@ -44,7 +44,7 @@ if (VCLIB_BUILD_TESTS)
     add_subdirectory(013-mesh-update-normal)
 
     if (NOT VCLIB_BUILD_CXX20_MODULES)
-        add_subdirectory(002-mesh-topology)
+
 
         if (TARGET vclib-external-vcg)
             add_subdirectory(900-mesh-import-vcg)
