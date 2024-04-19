@@ -29,8 +29,8 @@
 #include <vclib/algorithms/mesh/update.h>
 #include <vclib/views/mesh.h>
 #else
-#include <Eigen/Core>
-#include <ranges>
+#include <Eigen/Core> // needed by msvc...
+#include <ranges>     // needed by msvc...
 import vclib;
 #endif
 

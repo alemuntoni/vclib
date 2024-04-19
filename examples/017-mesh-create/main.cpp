@@ -20,11 +20,18 @@
  * for more details.                                                         *
  ****************************************************************************/
 
+#include <cassert>
 #include <iostream>
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
 #include <vclib/io/mesh.h>
 #include <vclib/meshes.h>
+#else
+#include <Eigen/Core> // needed by msvc...
+#include <ranges>     // needed by msvc...
+import vclib;
+#endif
 
 int main()
 {

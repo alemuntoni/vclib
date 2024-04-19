@@ -27,8 +27,8 @@
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #else
-#include <Eigen/Core>
-#include <ranges>
+#include <Eigen/Core> // needed by msvc...
+#include <ranges>     // needed by msvc...
 import vclib;
 #endif
 
