@@ -31,6 +31,7 @@ import vclib.concepts.mesh;
 import vclib.concepts.space;
 import vclib.mesh.requirements;
 import vclib.space.kd_tree;
+import vclib.space.point;
 import vclib.types;
 
 export {
