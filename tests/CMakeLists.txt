@@ -42,13 +42,8 @@ if (VCLIB_BUILD_TESTS)
     add_subdirectory(011-mesh-filter)
     add_subdirectory(012-kd-tree)
     add_subdirectory(013-mesh-update-normal)
-
-    if (NOT VCLIB_BUILD_CXX20_MODULES)
-
-
-        if (TARGET vclib-external-vcg)
-            add_subdirectory(900-mesh-import-vcg)
-        endif()
+    if (TARGET vclib-external-vcg)
+        add_subdirectory(900-mesh-import-vcg)
     endif()
 endif()
 
