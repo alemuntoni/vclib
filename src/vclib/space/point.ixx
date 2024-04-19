@@ -40,10 +40,11 @@ export {
 
 // for some reason, msvc does not compile the internal calls of the cross
 // product, and therefore it is not exported.
-// Adding this operation forces the compilation inside the point module.
+// Adding this operation forces the compilation inside this module.
 // Without this, on msvc you get an unresolved external symbol error every time
-// you try to use the cross product, and the solution would be to include
-// Eigen/Geometry along with 'import vclib;' in the client code.
+// you try to use this module, and the solution would be to `#include
+// <Eigen/Geometry>` along with `import vclib;` in the client code.
+// note: these dummy objects are not exported
 // TODO: test if this is still necessary when msvc gets updated.
 vcl::Point3f dummyf
     = vcl::Point3f(1, 0, 0).cross(vcl::Point3f(0, 1, 0));

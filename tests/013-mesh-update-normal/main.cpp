@@ -28,7 +28,6 @@
 #include <vclib/meshes.h>
 #else
 #include <cmath>
-#include <set>
 #include <Eigen/Core>
 
 import vclib;

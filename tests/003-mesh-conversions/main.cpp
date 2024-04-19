@@ -28,7 +28,6 @@
 #else
 #include <Eigen/Core>
 #include <ranges>
-#include <set>
 #include <unordered_map>
 import vclib;
 #endif

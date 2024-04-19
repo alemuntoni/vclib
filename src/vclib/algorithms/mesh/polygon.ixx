@@ -41,3 +41,15 @@ export {
 #include <vclib/algorithms/mesh/polygon.h>
 }
 
+// for some reason, clang does not compile the internal calls of the == operator
+// between std::set iterators, and therefore it is not exported.
+// Adding this operation forces the compilation inside this module.
+// Without this, on clang you get an unresolved external symbol error every time
+// you try to use this module, and the solution would be to `#include <set>`
+// along with `import vclib;` in the client code.
+// note: these dummy objects are not exported
+// TODO: test if this is still necessary when clang gets updated.
+std::set<std::pair<uint, uint>, vcl::UnorderedPairComparator<uint>>
+    dummySet;
+
+bool dummyB = dummySet.find(std::make_pair(0, 0)) == dummySet.end();
