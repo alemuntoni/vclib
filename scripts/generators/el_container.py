@@ -20,7 +20,8 @@ def get_comp_string(element):
 
 def generate_elem_container(element):
     include_file = "containers/" + element.name + '_container.h'
-    target_file_h = "include/vclib/mesh/" + include_file
+    module_include_file = "vclib/mesh/" + include_file
+    target_file_h = "include/" + module_include_file
     template_file_h = "mesh/containers/element_container.h"
 
     comp_string = get_comp_string(element)
@@ -37,5 +38,7 @@ def generate_elem_container(element):
         file.write(element_container)
 
     common.insert_include_in_file("include/vclib/mesh/mesh_containers.h", include_file)
+
+    common.insert_include_in_file("src/vclib/mesh/containers.ixx", module_include_file, True)
 
     return target_file_h
