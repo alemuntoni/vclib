@@ -475,6 +475,7 @@ set(MODULES
     src/vclib/mesh/elements/face.ixx
     src/vclib/mesh/elements/element.ixx
     src/vclib/mesh/elements/vertex.ixx
+    src/vclib/mesh/requirements/element_requirements.ixx
     src/vclib/mesh/utils/mesh_check.ixx
     src/vclib/mesh/utils/mesh_edge_util.ixx
     src/vclib/mesh/utils/mesh_inertia.ixx
