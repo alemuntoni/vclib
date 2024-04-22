@@ -554,7 +554,9 @@ if (VCLIB_BUILD_CXX20_MODULES)
 
     # avoid warnings when using modules
     # todo: remove this when modules are and header units stable and supported by all compilers
-    if (NOT MSVC)
+    if (MSVC)
+        target_compile_options(vclib PRIVATE "/wd5244;")
+    else()
         target_compile_options(vclib PRIVATE -Wno-include-angled-in-module-purview)
     endif()
 else()
