@@ -551,6 +551,12 @@ if (VCLIB_BUILD_CXX20_MODULES)
     )
 
     target_compile_definitions(vclib PUBLIC VCLIB_WITH_MODULES)
+
+    # avoid warnings when using modules
+    # todo: remove this when modules are and header units stable and supported by all compilers
+    if (NOT MSVC)
+        target_compile_options(vclib PRIVATE -Wno-include-angled-in-module-purview)
+    endif()
 else()
     add_library(vclib INTERFACE ${HEADERS})
 endif()
