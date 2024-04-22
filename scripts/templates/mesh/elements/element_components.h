@@ -21,6 +21,8 @@
 
 namespace vcl::%EL_NS% {
 
+/// TODO: Check this file and update the components according to the element
+
 /**
  * @addtogroup %EL%_components
  * @{
