@@ -16,7 +16,8 @@ def get_comp_string(element, functions):
 
 def generate_elem_requirements(element):
     include_file = 'requirements/' + element.name + '_requirements.h'
-    target_file_h = "include/vclib/mesh/" + include_file
+    module_include_file = "vclib/mesh/" + include_file
+    target_file_h = "include/" + module_include_file
     template_file_h = "mesh/requirements/element_requirements.h"
 
     is_enable_comp_string = get_comp_string(element, "is_enable")
@@ -35,5 +36,7 @@ def generate_elem_requirements(element):
         file.write(element_requirements)
 
     common.insert_include_in_file("include/vclib/mesh/requirements.h", include_file)
+
+    common.insert_include_in_file("src/vclib/mesh/requirements.ixx", module_include_file, True)
 
     return target_file_h
