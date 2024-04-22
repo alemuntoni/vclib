@@ -3,8 +3,10 @@
 #ifndef VCL_CONCEPTS_MESH_%EL_U%_MESH_CONCEPT_H
 #define VCL_CONCEPTS_MESH_%EL_U%_MESH_CONCEPT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "mesh_concept.h"
 #include "per_%EL%.h"
+#endif
 
 namespace vcl {
 

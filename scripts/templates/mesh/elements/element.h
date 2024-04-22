@@ -3,9 +3,11 @@
 #ifndef VCL_MESH_ELEMENTS_%EL_U%_H
 #define VCL_MESH_ELEMENTS_%EL_U%_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/elements/%EL%.h>
 
 #include "element.h"
+#endif
 
 namespace vcl {
 

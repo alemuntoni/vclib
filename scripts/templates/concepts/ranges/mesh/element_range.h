@@ -3,9 +3,11 @@
 #ifndef VCLIB_CONCEPTS_RANGES_MESH_%EL_U%_RANGE_H
 #define VCLIB_CONCEPTS_RANGES_MESH_%EL_U%_RANGE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/pointers.h>
 #include <vclib/concepts/ranges/range.h>
 #include <vclib/concepts/mesh/elements/%EL%.h>
+#endif
 
 namespace vcl {
 

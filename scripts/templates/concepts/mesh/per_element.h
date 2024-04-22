@@ -3,8 +3,10 @@
 #ifndef VCL_CONCEPTS_MESH_PER_%EL_U%_H
 #define VCL_CONCEPTS_MESH_PER_%EL_U%_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "containers/%EL%_container.h"
 #include "elements/%EL%.h"
+#endif
 
 /**
  * @defgroup %EL%_mesh_concepts %EL_UC%Mesh Concepts

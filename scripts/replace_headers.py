@@ -31,7 +31,7 @@ def replace_headers_in_dir(folder_path):
     for file_path in glob.glob(os.path.join(folder_path, '*')):
         if os.path.isdir(file_path):
             replace_headers_in_dir(file_path)
-        elif file_path.endswith(('.h', '.cpp')):
+        elif file_path.endswith(('.h', '.cpp', '.ixx')):
             replace_header(file_path, header_string)
 
 def replace_cmake_headers_in_dir(folder_path, recursive=True):
@@ -66,6 +66,7 @@ def replace_shader_headers_in_dir(folder_path):
 
 if __name__ == "__main__":
     replace_headers_in_dir('../include/vclib/')
+    replace_headers_in_dir('../src/')
     replace_headers_in_dir('../examples/')
     replace_headers_in_dir('../tests/')
     replace_cmake_headers_in_dir('../')
@@ -75,9 +76,6 @@ if __name__ == "__main__":
     replace_cmake_headers_in_dir('../examples/')
     replace_cmake_headers_in_dir('../tests/')
 
-    # for vclib-render module, that has sources and shaders in different folders
-    if os.path.exists('../src/'):
-        replace_headers_in_dir('../src/')
-    
+    # for vclib-render module, that has shaders in different folders
     if os.path.exists('../shaders/'):
         replace_shader_headers_in_dir('../shaders/')

@@ -3,10 +3,12 @@
 #ifndef VCL_CONCEPTS_MESH_CONTAINERS_%EL_U%_CONTAINER_H
 #define VCL_CONCEPTS_MESH_CONTAINERS_%EL_U%_CONTAINER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <ranges>
 #include <vector>
 
 #include "element_container.h"
+#endif
 
 namespace vcl {
 namespace mesh {
