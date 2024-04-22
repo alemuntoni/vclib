@@ -42,7 +42,7 @@ namespace vcl {
 template<%EL_UC%MeshConcept MeshType>
 bool is%EL_UC%ContainerCompact(const MeshType& m)
 {
-    return isElementContainerCompact<%EL_U%>(m);
+    return isElementContainerCompact<ElemId::%EL_U%>(m);
 }
 
 %IS_ENABLE_COMPONENTS%
@@ -73,7 +73,7 @@ bool is%EL_UC%ContainerCompact(const MeshType& m)
 template<%EL_UC%MeshConcept MeshType>
 void require%EL_UC%ContainerCompactness(const MeshType& m)
 {
-    requireElementContainerCompactness<%EL_U%>(m);
+    requireElementContainerCompactness<ElemId::%EL_U%>(m);
 }
 
 %REQUIRE_COMPONENTS%
