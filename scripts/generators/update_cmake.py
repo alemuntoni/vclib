@@ -1,8 +1,7 @@
 from . import common
 import bisect
 
-def replace(cmake_file_string, list):
-    start = 'set(HEADERS\n'
+def replace(cmake_file_string, list, start):
     end = ')'
 
     start_index = cmake_file_string.index(start)
@@ -23,14 +22,31 @@ def replace(cmake_file_string, list):
     
     return cmake_file_string
 
-def update_cmake_file(headers_list = None):
+
+def replace_headers(cmake_file_string, list):
+    start = 'set(HEADERS\n'
+    return replace(cmake_file_string, list, start)
+
+def replace_modules(cmake_file_string, list):
+    start = 'set(MODULES\n'
+    return replace(cmake_file_string, list, start)
+
+
+def update_cmake_file(file_list = None):
     target_file = "../CMakeLists.txt"
+
+    # take from file_list all names that end with '.ixx' and put them in module_list
+    module_list = [file for file in file_list if file.endswith('.ixx')]
+
+    # remove from file_list all the names that end with '.ixx'
+    file_list = [file for file in file_list if not file.endswith('.ixx')]
 
     # Read in the file
     with open(target_file, 'r') as file :
         cmake_file = file.read()
 
-    cmake_file = replace(cmake_file, headers_list)
+    cmake_file = replace_headers(cmake_file, file_list)
+    cmake_file = replace_modules(cmake_file, module_list)
 
     with open(target_file, 'w') as file:
         file.write(cmake_file)

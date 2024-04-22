@@ -5,9 +5,9 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include "../components/parent_mesh_pointer.h"
-#endif
 
 %INCLUDE_COMPONENTS%
+#endif
 
 /**
  * @defgroup %EL%_components %EL_UC% Components

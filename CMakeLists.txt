@@ -527,7 +527,7 @@ set(MODULES
     src/vclib/views/mesh.ixx
     src/vclib/views/mesh/components.ixx
     src/vclib/views/mesh/elements.ixx
-    )
+)
 
 if (TARGET vclib-external-vcg)
     list(APPEND MODULES
