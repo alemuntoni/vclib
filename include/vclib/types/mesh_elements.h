@@ -37,8 +37,6 @@ struct ElemId
         VERTEX = 0,
         FACE,
         EDGE,
-        // Additional elements here
-
         ELEMENTS_NUMBER,
     };
 };
