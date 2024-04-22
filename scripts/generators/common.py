@@ -81,20 +81,30 @@ def simple_string_replacement(target_file_name, template_file_name, element):
     return target_file_name
 
 
-def insert_include_in_file(target_file_name, include_string):
+def insert_include_in_file(target_file_name, include_string, is_module = False):
     # Read in the file
     with open("../" + target_file_name, 'r') as file :
         file_string = file.read()
 
     start = '#include'
 
-    start_index = file_string.index(start)
+    if is_module:
+        # look for the first occurrence of start in file_string after the string
+        # 'export {'
+        start_index = file_string.index('export {')
+        start_index = file_string.index(start, start_index)
+    else:
+        start_index = file_string.index(start)
+
     end_index = file_string.rfind('#include')
     end_index = file_string.index('\n', end_index)
 
     includes = file_string[start_index + len(start):(end_index)].split('\n')
 
-    item = '#include "' + include_string + '"'
+    if is_module:
+        item = '#include <' + include_string + '>'
+    else:
+        item = '#include "' + include_string + '"'
     pos = bisect.bisect_left(includes, item)
     if pos == len(includes) or includes[pos] != item:
         bisect.insort(includes, item)
