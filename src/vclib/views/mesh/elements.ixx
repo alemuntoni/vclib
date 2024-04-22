@@ -22,7 +22,16 @@
 
 module;
 
-export module vclib.views.mesh;
+#include <ranges>
+#include <type_traits>
 
-export import vclib.views.mesh.components;
-export import vclib.views.mesh.elements;
+export module vclib.views.mesh.elements;
+
+import vclib.concepts;
+import vclib.types;
+
+export {
+#include <vclib/views/mesh/elements/edge.h>
+#include <vclib/views/mesh/elements/face.h>
+#include <vclib/views/mesh/elements/vertex.h>
+}
