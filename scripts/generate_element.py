@@ -13,6 +13,7 @@ from generators.el_view import generate_elem_view
 from generators.per_el_concepts import generate_per_elem_concepts
 from generators.update_cmake import update_cmake_file
 from generators.update_element_type_list import update_element_list
+from generators.el_module import generate_elem_module
 
 def main():
     parser = argparse.ArgumentParser(description="Generate a Mesh Element for the VCLib library",
@@ -41,7 +42,8 @@ def main():
         generate_elem_components,
         generate_elem_container,
         generate_elem_requirements,
-        generate_elem_view
+        generate_elem_view,
+        generate_elem_module
     ]
 
     update_function_list = [
