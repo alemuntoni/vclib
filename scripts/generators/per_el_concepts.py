@@ -2,7 +2,8 @@ from . import common
 
 def generate_per_elem_concepts(element):
     include_file = "mesh/per_" + element.name + '.h'
-    target_file = "include/vclib/concepts/" + include_file
+    module_include_file = "vclib/concepts/" + include_file
+    target_file = "include/" + module_include_file
     template_file = "concepts/mesh/per_element.h"
 
     with open('templates/concepts/mesh/per_comp.txt', 'r') as file :
@@ -18,6 +19,8 @@ def generate_per_elem_concepts(element):
     per_element_concepts = per_element_concepts.replace('%PER_ELEM_CONCEPTS%', comp_string)
 
     per_element_concepts = common.replace_header_and_element_strings(per_element_concepts, element)
+
+    common.insert_include_in_file("src/vclib/concepts/mesh/per_element.ixx", module_include_file, True)
 
     with open("../" + target_file, 'w') as file:
         file.write(per_element_concepts)
