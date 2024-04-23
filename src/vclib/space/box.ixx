@@ -30,6 +30,7 @@ export module vclib.space.box;
 import vclib.concepts;
 import vclib.math;
 import vclib.space.point;
+import vclib.types;
 
 export {
 #include <vclib/space/box.h>

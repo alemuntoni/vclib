@@ -30,6 +30,7 @@ export module vclib.space.triangle;
 
 import vclib.concepts.space;
 import vclib.space.point;
+import vclib.types;
 
 export {
 #include <vclib/space/triangle.h>

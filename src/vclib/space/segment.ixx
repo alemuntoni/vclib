@@ -28,6 +28,7 @@ export module vclib.space.segment;
 
 import vclib.concepts.space;
 import vclib.space.point;
+import vclib.types;
 
 export {
 #include <vclib/space/segment.h>

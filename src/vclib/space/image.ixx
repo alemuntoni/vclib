@@ -31,6 +31,7 @@ export module vclib.space.image;
 import vclib.io.image;
 import vclib.space.array;
 import vclib.space.color;
+import vclib.types;
 
 export {
 #include <vclib/space/image.h>

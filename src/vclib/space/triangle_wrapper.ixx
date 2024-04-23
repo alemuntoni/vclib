@@ -29,6 +29,7 @@ export module vclib.space.triangle_wrapper;
 import vclib.concepts.space;
 import vclib.space.point;
 import vclib.space.triangle;
+import vclib.types;
 
 export {
 #include <vclib/space/triangle_wrapper.h>

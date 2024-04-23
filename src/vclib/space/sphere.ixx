@@ -29,6 +29,7 @@ export module vclib.space.sphere;
 import vclib.concepts.space;
 import vclib.space.box;
 import vclib.space.point;
+import vclib.types;
 
 export {
 #include <vclib/space/sphere.h>
