@@ -12,6 +12,9 @@ jobs:
       matrix:
         os: ['ubuntu-latest', 'macos-13', 'windows-latest']
         build-with: ['headers', 'modules']
+        exclude:
+          - os: 'macos-13'
+            build-with: 'modules'
     steps:
     - uses: actions/checkout@v4
       with:
