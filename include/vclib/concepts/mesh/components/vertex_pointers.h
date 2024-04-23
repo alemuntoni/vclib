@@ -52,12 +52,13 @@ concept HasVertexPointers = requires (
     typename T::ConstVertexIterator;
 
     { co.vertexNumber() } -> std::same_as<uint>;
-    { o.vertex(uint()) } -> std::same_as<typename T::VertexType*&>;
+    { o.vertex(uint()) } -> std::same_as<typename T::VertexType*>;
     { co.vertex(uint()) } -> std::same_as<const typename T::VertexType*>;
-    { o.vertexMod(int()) } -> std::same_as<typename T::VertexType*&>;
+    { o.vertexMod(int()) } -> std::same_as<typename T::VertexType*>;
     { co.vertexMod(int()) } -> std::same_as<const typename T::VertexType*>;
 
     { o.setVertex(uint(), &v) } -> std::same_as<void>;
+    { o.setVertexMod(int(), &v) } -> std::same_as<void>;
     { o.setVertices(vec) } -> std::same_as<void>;
 
     { co.containsVertex(&v) } -> std::same_as<bool>;

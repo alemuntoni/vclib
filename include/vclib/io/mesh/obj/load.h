@@ -307,7 +307,7 @@ void readObjFace(
                 throw vcl::MalformedFileException(
                     "Bad vertex index for face " + std::to_string(fid));
             }
-            f.vertex(i) = &m.vertex(vids[i]);
+            f.setVertex(i, &m.vertex(vids[i]));
         }
     }
     else { // split needed
