@@ -450,6 +450,8 @@ void importFacesFromMatrix(
 
             for (uint j = 0; j < vertexNumber; ++j)
                 f.setVertex(j, &mesh.vertex(faces(i, j)));
+
+            ++i;
         }
     }
     else { // the vertex number of mesh faces is fixed
@@ -457,11 +459,11 @@ void importFacesFromMatrix(
 
         constexpr int VN = FaceType::VERTEX_NUMBER;
         if (faces.cols() == VN) { // faces of matrix and mesh have same size
-
             uint i = 0;
             for (auto& f : mesh.faces()) {
                 for (uint j = 0; j < VN; ++j)
                     f.setVertex(j, &mesh.vertex(faces(i, j)));
+                ++i;
             }
         }
         else { // faces of matrix and mesh have different sizes
