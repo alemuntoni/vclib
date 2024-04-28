@@ -155,7 +155,14 @@ public:
      * @param[in] i: the position of the required face in this container.
      * @return The index of the i-th adjacent face of the element.
      */
-    uint adjFaceIndex(uint i) const { return adjFace(i)->index(); }
+    uint adjFaceIndex(uint i) const
+    {
+        auto* f = adjFace(i);
+        if (f) [[likely]]
+            return f->index();
+        else
+            return UINT_NULL;
+    }
 
     /**
      * @brief Returns the pointer to the i-th adjacent face of this element but
@@ -210,7 +217,14 @@ public:
      * adjFacesNumber().
      * @return The index of the required adjacent face of the element.
      */
-    uint adjFaceIndexMod(int i) const { return adjFaceMod(i)->index(); }
+    uint adjFaceIndexMod(int i) const
+    {
+        auto* f = adjFaceMod(i);
+        if (f) [[likely]]
+            return f->index();
+        else
+            return UINT_NULL;
+    }
 
     /**
      * @brief Sets the i-th adjacent face of this element.
@@ -219,6 +233,17 @@ public:
      * @param[in] f: The pointer to the adjacent face to set to this element.
      */
     void setAdjFace(uint i, Face* f) { Base::container().set(i, f); }
+
+    /**
+     * @brief Sets the adjacent face pointed by the iterator.
+     * @param[in] it: the position of the iterator in this container on which
+     * set the adjacent face; the value must be between begin() and end().
+     * @param[in] f: The pointer to the adjacent face to set to the element.
+     */
+    void setAdjFace(ConstAdjacentFaceIterator it, Face* f)
+    {
+        Base::container().set(it, f);
+    }
 
     /**
      * @brief Sets the i-th adjacent face of the element, but using as index the
@@ -276,7 +301,7 @@ public:
      * this component that is equal to the given face. If no such adjacent face
      * is found, past-the-end iterator is returned.
      *
-     * @param[in] e: the pointer to the face to search.
+     * @param[in] f: the pointer to the face to search.
      * @return an iterator pointing to the first adjacent face equal to the
      * given face, or end if no such adjacent face is found.
      */
@@ -290,7 +315,7 @@ public:
      * container of this component that is equal to the given edge. If no such
      * adjacent face is found, past-the-end iterator is returned.
      *
-     * @param[in] e: the pointer to the face to search.
+     * @param[in] f: the pointer to the face to search.
      * @return a const iterator pointing to the first adjacent face equal to the
      * given face, or end if no such adjacent face is found.
      */
@@ -304,7 +329,7 @@ public:
      * this element. If the given adjacent face is not in the container, returns
      * UINT_NULL.
      *
-     * @param[in] e: the pointer to the adjacent face to search.
+     * @param[in] f: the pointer to the adjacent face to search.
      * @return the index of the given adjacent face, or UINT_NULL if it is not
      * found.
      */
@@ -330,7 +355,7 @@ public:
      * @brief Pushes in the back of the container the given adjacent face.
      * @note This function is available only if the container of the Adjacent
      * Faces component has dynamic size.
-     * @param[in] e: The pointer to the adjacent face to push in the back of the
+     * @param[in] f: The pointer to the adjacent face to push in the back of the
      * container.
      */
     void pushAdjFace(Face* f) requires (N < 0 && !TTVN)
@@ -345,7 +370,7 @@ public:
      * Faces component has dynamic size.
      * @param[in] i: The position in this container where to insert the adjacent
      * face.
-     * @param[in] e: The pointer to the adjacent face to insert in the
+     * @param[in] f: The pointer to the adjacent face to insert in the
      * container.
      */
     void insertAdjFace(uint i, Face* f) requires (N < 0 && !TTVN)

@@ -148,7 +148,14 @@ public:
      * @param[in] i: the position of the required vertex in this container.
      * @return The index of the i-th vertex of the element.
      */
-    uint vertexIndex(uint i) const { return vertex(i)->index(); }
+    uint vertexIndex(uint i) const
+    {
+        auto* v = vertex(i);
+        if (v) [[likely]]
+            return v->index();
+        else
+            return UINT_NULL;
+    }
 
     /**
      * @brief Returns a reference of the pointer to the i-th vertex of the
@@ -197,7 +204,14 @@ public:
      * w.r.t. the position 0; value is modularized on vertexNumber().
      * @return The index of the required vertex of the element.
      */
-    uint vertexIndexMod(int i) const { return vertexMod(i)->index(); }
+    uint vertexIndexMod(int i) const
+    {
+        auto* v = vertexMod(i);
+        if (v) [[likely]]
+            return v->index();
+        else
+            return UINT_NULL;
+    }
 
     /**
      * @brief Sets the i-th vertex of the element.
@@ -206,6 +220,17 @@ public:
      * @param[in] v: The pointer to the vertex to set to the element.
      */
     void setVertex(uint i, Vertex* v) { Base::container().set(i, v); }
+
+    /**
+     * @brief Sets the vertex pointed by the iterator.
+     * @param[in] it: the position of the iterator in this container on which
+     * set the vertex; the value must be between begin() and end().
+     * @param[in] v: The pointer to the vertex to set to the element.
+     */
+    void setVertex(ConstVertexIterator it, Vertex* v)
+    {
+        Base::container().set(it, v);
+    }
 
     /**
      * @brief Sets the i-th vertex of the element, but using as index the module
@@ -325,7 +350,7 @@ public:
             return vid;
         }
         else if (vertexMod((int) vid - 1) == v2) {
-            uint n = vertexNumber();
+            int n = vertexNumber(); // n must be int to avoid unwanted casts
             return (((int) vid - 1) % n + n) % n;
         }
         else {

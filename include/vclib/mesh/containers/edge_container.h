@@ -152,8 +152,8 @@ public:
     uint addEdge(uint v0, uint v1)
     {
         uint eid = addEdge();
-        edge(eid).setVertex(0, &Base::mParentMesh->vertex(v0));
-        edge(eid).setVertex(1, &Base::mParentMesh->vertex(v1));
+        edge(eid).setVertex(0U, &Base::mParentMesh->vertex(v0));
+        edge(eid).setVertex(1U, &Base::mParentMesh->vertex(v1));
         return eid;
     }
 
@@ -172,8 +172,8 @@ public:
     uint addEdge(typename T::VertexType* v0, typename T::VertexType* v1)
     {
         uint eid = addEdge();
-        edge(eid).setVertex(0, v0);
-        edge(eid).setVertex(1, v1);
+        edge(eid).setVertex(0U, v0);
+        edge(eid).setVertex(1U, v1);
         return eid;
     }
 

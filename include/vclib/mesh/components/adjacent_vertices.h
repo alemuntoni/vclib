@@ -140,7 +140,14 @@ public:
      * @param[in] i: the position of the required vertex in this container.
      * @return The index of the i-th adjacent vertex of the element.
      */
-    uint adjVertexIndex(uint i) const { return adjVertex(i)->index(); }
+    uint adjVertexIndex(uint i) const
+    {
+        auto* v = adjVertex(i);
+        if (v) [[likely]]
+            return v->index();
+        else
+            return UINT_NULL;
+    }
 
     /**
      * @brief Returns the pointer to the i-th adjacent vertex of the element,
@@ -200,7 +207,14 @@ public:
      * adjVerticesNumber().
      * @return The index of the required adjacent vertex of the element.
      */
-    uint adjVertexIndexMod(int i) const { return adjVertexMod(i)->index(); }
+    uint adjVertexIndexMod(int i) const
+    {
+        auto* v = adjVertexMod(i);
+        if (v) [[likely]]
+            return v->index();
+        else
+            return UINT_NULL;
+    }
 
     /**
      * @brief Sets the i-th adjacent vertex of the element.
@@ -209,6 +223,17 @@ public:
      * @param[in] v: The pointer to the adjacent vertex to set to this element.
      */
     void setAdjVertex(uint i, Vertex* v) { Base::container().set(i, v); }
+
+    /**
+     * @brief Sets the adjacent vertex pointed by the iterator.
+     * @param[in] it: the position of the iterator in this container on which
+     * set the adjacent vertex; the value must be between begin() and end().
+     * @param[in] v: The pointer to the adjacent vertex to set to the element.
+     */
+    void setAdjVertex(ConstAdjacentVertexIterator it, Vertex* v)
+    {
+        Base::container().set(it, v);
+    }
 
     /**
      * @brief Sets the i-th adjacent vertex of the element, but using as index
