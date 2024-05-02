@@ -26,6 +26,7 @@
 #include <vclib/meshes.h>
 #else
 #include <Eigen/Core>
+#include <ranges>
 import vclib;
 #endif
 
