@@ -56,6 +56,7 @@ concept HasAdjacentEdges = requires (
     typename T::AdjacentEdgeType;
     typename T::AdjacentEdgeIterator;
     typename T::ConstAdjacentEdgeIterator;
+    typename T::ConstAdjacentEdgeIndexIterator;
 
     { o.adjEdgesNumber() } -> std::same_as<uint>;
     { o.adjEdge(uint()) } -> std::same_as<typename T::AdjacentEdgeType*>;
@@ -70,6 +71,8 @@ concept HasAdjacentEdges = requires (
     { o.setAdjEdge(typename T::AdjacentEdgeIterator(), &e) } ->
         std::same_as<void>;
     { o.setAdjEdge(typename T::ConstAdjacentEdgeIterator(), &e) } ->
+        std::same_as<void>;
+    { o.setAdjEdge(typename T::ConstAdjacentEdgeIndexIterator(), &e) } ->
         std::same_as<void>;
     { o.setAdjEdgeMod(int(), &e) } -> std::same_as<void>;
     { o.setAdjEdges(v) } -> std::same_as<void>;
@@ -86,8 +89,15 @@ concept HasAdjacentEdges = requires (
     { co.adjEdgeBegin() } ->
         std::same_as<typename T::ConstAdjacentEdgeIterator>;
     { co.adjEdgeEnd() } -> std::same_as<typename T::ConstAdjacentEdgeIterator>;
+
+    { co.adjEdgeIndexBegin() } ->
+        std::same_as<typename T::ConstAdjacentEdgeIndexIterator>;
+    { co.adjEdgeIndexEnd() } ->
+        std::same_as<typename T::ConstAdjacentEdgeIndexIterator>;
+
     o.adjEdges();
     co.adjEdges();
+    co.adjEdgeIndices();
     // clang-format on
 };
 

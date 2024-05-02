@@ -25,6 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/adjacent_vertices.h>
+#include <vclib/iterators/mesh/components/index_from_pointer_iterator.h>
 #include <vclib/views/view.h>
 
 #include "bases/pointers_container_component.h"
@@ -98,6 +99,8 @@ public:
 
     using AdjacentVertexIterator      = Base::Iterator;
     using ConstAdjacentVertexIterator = Base::ConstIterator;
+    using ConstAdjacentVertexIndexIterator =
+        IndexFromPointerIterator<ConstAdjacentVertexIterator>;
 
     /* Constructors */
 
@@ -226,13 +229,24 @@ public:
 
     /**
      * @brief Sets the adjacent vertex pointed by the iterator.
-     * @param[in] it: the position of the iterator in this container on which
-     * set the adjacent vertex; the value must be between begin() and end().
+     * @param[in] it: the iterator in this container on which set the adjacent
+     * vertex; the value must be between begin() and end().
      * @param[in] v: The pointer to the adjacent vertex to set to the element.
      */
     void setAdjVertex(ConstAdjacentVertexIterator it, Vertex* v)
     {
         Base::container().set(it, v);
+    }
+
+    /**
+     * @brief Sets the adjacent vertex pointed by the iterator.
+     * @param[in] it: the iterator in this container on which set the adjacent
+     * vertex; the value must be between begin() and end().
+     * @param[in] v: The pointer to the adjacent vertex to set to the element.
+     */
+    void setAdjVertex(ConstAdjacentVertexIndexIterator it, Vertex* v)
+    {
+        Base::container().set(it - adjVertexIndexBegin(), v);
     }
 
     /**
@@ -417,6 +431,27 @@ public:
     }
 
     /**
+     * @brief Returns an iterator to the first adjacent vertex index in the
+     * container of this component.
+     *
+     * @return an iterator pointing to the begin of the adjacent vertex indices.
+     */
+    ConstAdjacentVertexIndexIterator adjVertexIndexBegin() const
+    {
+        return ConstAdjacentVertexIndexIterator(adjVertexBegin());
+    }
+
+    /**
+     * @brief Returns an iterator to the end of the container of this component.
+     *
+     * @return an iterator pointing to the end of the adjacent vertex indices.
+     */
+    ConstAdjacentVertexIndexIterator adjVertexIndexEnd() const
+    {
+        return ConstAdjacentVertexIndexIterator(adjVertexEnd(), true);
+    }
+
+    /**
      * @brief Returns a lightweight view object that stores the begin and end
      * iterators of the container of adjacent vertices of the element. The view
      * object exposes the iterators trough the `begin()` and `end()` member
@@ -456,6 +491,27 @@ public:
     View<ConstAdjacentVertexIterator> adjVertices() const
     {
         return View(adjVertexBegin(), adjVertexEnd());
+    }
+
+    /**
+     * @brief Returns a lightweight view object that stores the begin and end
+     * iterators of the container of adjacent vertex indices of the element. The
+     * view object exposes the iterators trough the `begin()` and `end()` member
+     * functions, and therefore the returned object can be used in range-based
+     * for loops:
+     *
+     * @code{.cpp}
+     * for (uint eid : el.adjVertexIndices()) {
+     *     // Do something with adj vertex index...
+     * }
+     * @endcode
+     *
+     * @return a lightweight view object that can be used in range-based for
+     * loops to iterate over adjacent vertex indices.
+     */
+    View<ConstAdjacentVertexIndexIterator> adjVertexIndices() const
+    {
+        return View(adjVertexIndexBegin(), adjVertexIndexEnd());
     }
 
     // dummy member to discriminate between AdjacentVertices and

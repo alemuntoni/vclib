@@ -50,6 +50,7 @@ concept HasVertexPointers = requires (
     typename T::VertexType;
     typename T::VertexIterator;
     typename T::ConstVertexIterator;
+    typename T::ConstVertexIndexIterator;
 
     { co.vertexNumber() } -> std::same_as<uint>;
     { o.vertex(uint()) } -> std::same_as<typename T::VertexType*>;
@@ -62,6 +63,8 @@ concept HasVertexPointers = requires (
     { o.setVertex(uint(), &v) } -> std::same_as<void>;
     { o.setVertex(typename T::VertexIterator(), &v) } -> std::same_as<void>;
     { o.setVertex(typename T::ConstVertexIterator(), &v) } ->
+        std::same_as<void>;
+    { o.setVertex(typename T::ConstVertexIndexIterator(), &v) } ->
         std::same_as<void>;
     { o.setVertexMod(int(), &v) } -> std::same_as<void>;
     { o.setVertices(vec) } -> std::same_as<void>;
@@ -77,8 +80,15 @@ concept HasVertexPointers = requires (
     { o.vertexEnd() } -> std::same_as<typename T::VertexIterator>;
     { co.vertexBegin() } -> std::same_as<typename T::ConstVertexIterator>;
     { co.vertexEnd() } -> std::same_as<typename T::ConstVertexIterator>;
+
+    { co.vertexIndexBegin() } ->
+        std::same_as<typename T::ConstVertexIndexIterator>;
+    { co.vertexIndexEnd() } ->
+        std::same_as<typename T::ConstVertexIndexIterator>;
+
     o.vertices();
     co.vertices();
+    co.vertexIndices();
     // clang-format on
 };
 

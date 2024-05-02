@@ -31,6 +31,8 @@ import vclib.concepts;
 import vclib.types;
 
 export {
+#include <vclib/views/mesh/elements/element.h>
+
 #include <vclib/views/mesh/elements/edge.h>
 #include <vclib/views/mesh/elements/face.h>
 #include <vclib/views/mesh/elements/vertex.h>

@@ -31,6 +31,7 @@ export module vclib.iterators.mesh;
 import vclib.types;
 
 export {
+#include <vclib/iterators/mesh/components/index_from_pointer_iterator.h>
 #include <vclib/iterators/mesh/face/edge_adj_face_iterator.h>
 #include <vclib/iterators/mesh/element_container_iterator.h>
 }
