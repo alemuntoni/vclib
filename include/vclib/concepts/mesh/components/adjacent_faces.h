@@ -26,6 +26,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vector>
 
+#include <vclib/views/view.h>
+
 #include "component.h"
 #endif
 
@@ -91,9 +93,12 @@ concept HasAdjacentFaces = requires (
     { co.adjFaceIndexEnd() } ->
         std::same_as<typename T::ConstAdjacentFaceIndexIterator>;
 
-    o.adjFaces();
-    co.adjFaces();
-    co.adjFaceIndices();
+    { o.adjFaces() } ->
+        std::same_as<vcl::View<typename T::AdjacentFaceIterator>>;
+    { co.adjFaces() } ->
+        std::same_as<vcl::View<typename T::ConstAdjacentFaceIterator>>;
+    { co.adjFaceIndices() } ->
+        std::same_as<vcl::View<typename T::ConstAdjacentFaceIndexIterator>>;
     // clang-format on
 };
 

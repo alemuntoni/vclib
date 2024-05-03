@@ -24,9 +24,9 @@
 #define VCL_CONCEPTS_MESH_COMPONENTS_TEXTURE_PATHS_H
 
 #ifndef VCLIB_WITH_MODULES
-#include "component.h"
-
 #include <string>
+
+#include "component.h"
 #endif
 
 namespace vcl::comp {

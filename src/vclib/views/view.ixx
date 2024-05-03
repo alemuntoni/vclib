@@ -22,8 +22,11 @@
 
 module;
 
-export module vclib.iterators;
+#include <ranges>
+#include <zip_view.hpp>
 
-export import vclib.iterators.mesh;
-export import vclib.iterators.space;
-export import vclib.iterators.const_pointer_iterator;
+export module vclib.views.view;
+
+export {
+#include <vclib/views/view.h>
+}

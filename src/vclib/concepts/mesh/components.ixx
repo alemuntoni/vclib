@@ -30,6 +30,7 @@ export module vclib.concepts.mesh.components;
 import vclib.concepts.mesh.components.component;
 import vclib.space.color;
 import vclib.types;
+import vclib.views.view;
 
 export {
 #include <vclib/concepts/mesh/components/adjacent_edges.h>

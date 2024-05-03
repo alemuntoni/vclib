@@ -22,8 +22,13 @@
 
 module;
 
-export module vclib.iterators;
+#include <iterator>
 
-export import vclib.iterators.mesh;
-export import vclib.iterators.space;
-export import vclib.iterators.const_pointer_iterator;
+export module vclib.iterators.const_pointer_iterator;
+
+import vclib.concepts.pointers;
+import vclib.types;
+
+export {
+#include <vclib/iterators/const_pointer_iterator.h>
+}

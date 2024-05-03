@@ -26,6 +26,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vector>
 
+#include <vclib/views/view.h>
+
 #include "component.h"
 #endif
 
@@ -93,9 +95,12 @@ concept HasAdjacentVertices = requires (
     { co.adjVertexIndexEnd() } ->
         std::same_as<typename T::ConstAdjacentVertexIndexIterator>;
 
-    o.adjVertices();
-    co.adjVertices();
-    co.adjVertexIndices();
+    { o.adjVertices() } ->
+        std::same_as<vcl::View<typename T::AdjacentVertexIterator>>;
+    { co.adjVertices() } ->
+        std::same_as<vcl::View<typename T::ConstAdjacentVertexIterator>>;
+    { co.adjVertexIndices() } ->
+        std::same_as<vcl::View<typename T::ConstAdjacentVertexIndexIterator>>;
     // clang-format on
 };
 

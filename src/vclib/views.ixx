@@ -23,13 +23,12 @@
 module;
 
 #include <ranges>
-#include <zip_view.hpp>
 
 export module vclib.views;
 
 export import vclib.views.mesh;
+export import vclib.views.view;
 
 export {
-#include <vclib/views/view.h>
 #include <vclib/views/views.h>
 }

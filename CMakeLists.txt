@@ -203,10 +203,11 @@ set(HEADERS
     include/vclib/io/mesh/ply/detail/vertex.h
     include/vclib/io/mesh/stl/load.h
     include/vclib/io/mesh/stl/save.h
+    include/vclib/iterators/const_pointer_iterator.h
     include/vclib/iterators/mesh.h
-	include/vclib/iterators/mesh/components.h
+    include/vclib/iterators/mesh/components.h
     include/vclib/iterators/mesh/face.h
-	include/vclib/iterators/mesh/components/index_from_pointer_iterator.h
+    include/vclib/iterators/mesh/components/index_from_pointer_iterator.h
     include/vclib/iterators/mesh/element_container_iterator.h
     include/vclib/iterators/mesh/face/edge_adj_face_iterator.h
     include/vclib/iterators/space/grid/cell_iterator.h
@@ -457,6 +458,7 @@ set(MODULES
     src/vclib/io/mesh/ply/save.ixx
     src/vclib/io/mesh/stl/load.ixx
     src/vclib/io/mesh/stl/save.ixx
+    src/vclib/iterators/const_pointer_iterator.ixx
     src/vclib/iterators/mesh.ixx
     src/vclib/iterators/space.ixx
     src/vclib/math/base.ixx
@@ -528,6 +530,7 @@ set(MODULES
     src/vclib/space/sampler/point_sampler.ixx
     src/vclib/space/sampler/vertex_sampler.ixx
     src/vclib/views/mesh.ixx
+    src/vclib/views/view.ixx
     src/vclib/views/mesh/components.ixx
     src/vclib/views/mesh/elements.ixx
 )
