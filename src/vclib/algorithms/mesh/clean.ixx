@@ -23,6 +23,7 @@
 module;
 
 #include <algorithm>
+#include <cassert>
 #include <numeric>
 #include <set>
 #include <stack>

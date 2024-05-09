@@ -20,6 +20,7 @@
  * for more details.                                                         *
  ****************************************************************************/
 
+#include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #ifndef VCLIB_WITH_MODULES
@@ -30,10 +31,17 @@
 import vclib;
 #endif
 
-TEST_CASE("TriMesh Topology")
+TEMPLATE_TEST_CASE(
+    "TriMesh Topology",
+    "",
+    vcl::TriMesh,
+    vcl::TriMeshf,
+    vcl::TriMeshIndexed,
+    vcl::TriMeshIndexedf)
 {
-    vcl::TriMesh tm =
-        vcl::loadPly<vcl::TriMesh>(VCLIB_ASSETS_PATH "/cube_tri.ply");
+    using TriMesh = TestType;
+
+    TriMesh tm = vcl::loadPly<TriMesh>(VCLIB_ASSETS_PATH "/cube_tri.ply");
 
     THEN("The mesh has 8 vertices, 12 triangles")
     {
@@ -287,10 +295,15 @@ TEST_CASE("TriMesh Topology")
     }
 }
 
-TEST_CASE("PolyMesh Triangle Mesh Topology")
+TEMPLATE_TEST_CASE(
+    "PolyMesh Triangle Mesh Topology",
+    "",
+    vcl::PolyMesh,
+    vcl::PolyMeshf)
 {
-    vcl::PolyMesh pm =
-        vcl::loadPly<vcl::PolyMesh>(VCLIB_ASSETS_PATH "/cube_tri.ply");
+    using TriMesh = TestType;
+
+    TriMesh pm = vcl::loadPly<TriMesh>(VCLIB_ASSETS_PATH "/cube_tri.ply");
 
     THEN("The mesh has 8 vertices, 12 triangles")
     {
@@ -544,10 +557,17 @@ TEST_CASE("PolyMesh Triangle Mesh Topology")
     }
 }
 
-TEST_CASE("PolyMesh Polygon Mesh Topology")
+TEMPLATE_TEST_CASE(
+    "PolyMesh Polygon Mesh Topology",
+    "",
+    vcl::PolyMesh,
+    vcl::PolyMeshf,
+    vcl::PolyMeshIndexed,
+    vcl::PolyMeshIndexedf)
 {
-    vcl::PolyMesh pm =
-        vcl::loadPly<vcl::PolyMesh>(VCLIB_ASSETS_PATH "/cube_poly.ply");
+    using PolyMesh = TestType;
+
+    PolyMesh pm = vcl::loadPly<PolyMesh>(VCLIB_ASSETS_PATH "/cube_poly.ply");
 
     THEN("The mesh has 8 vertices, 6 faces")
     {

@@ -76,6 +76,7 @@ class TexturePaths :
             CompId::TEXTURE_PATHS,
             detail::TPData,
             void,
+            false,
             false>
 {
     using Base = Component<
@@ -83,6 +84,7 @@ class TexturePaths :
         CompId::TEXTURE_PATHS,
         detail::TPData,
         void,
+        false,
         false>;
 
 public:

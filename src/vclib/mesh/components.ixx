@@ -71,7 +71,7 @@ export {
 #include <vclib/mesh/components/texture_paths.h>
 #include <vclib/mesh/components/transform_matrix.h>
 #include <vclib/mesh/components/triangle_bit_flags.h>
-#include <vclib/mesh/components/vertex_pointers.h>
+#include <vclib/mesh/components/vertex_references.h>
 #include <vclib/mesh/components/wedge_colors.h>
 #include <vclib/mesh/components/wedge_tex_coords.h>
 }

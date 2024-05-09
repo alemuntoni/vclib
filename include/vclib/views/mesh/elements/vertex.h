@@ -34,8 +34,8 @@ template<typename T>
 concept CleanMeshConcept = MeshConcept<std::remove_cvref_t<T>>;
 
 template<typename T>
-concept CleanVertexPtrsConcept =
-    comp::HasVertexPointers<std::remove_cvref_t<T>>;
+concept CleanVertexRefsConcept =
+    comp::HasVertexReferences<std::remove_cvref_t<T>>;
 
 struct VerticesView
 {
@@ -47,7 +47,7 @@ struct VerticesView
         return r.vertices();
     }
 
-    template<CleanVertexPtrsConcept R>
+    template<CleanVertexRefsConcept R>
     friend constexpr auto operator|(R&& r, VerticesView)
     {
         return r.vertices();
@@ -62,7 +62,7 @@ struct VerticesView
  * This view can be applied to objects having type that satisfies one of the
  * following concepts:
  * - MeshConcept
- * - HasVertexPointers
+ * - HasVertexReferences
  *
  * @ingroup views
  */

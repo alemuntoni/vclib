@@ -20,6 +20,7 @@
  * for more details.                                                         *
  ****************************************************************************/
 
+#include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #ifndef VCLIB_WITH_MODULES
@@ -128,23 +129,39 @@ std::istringstream stlCube()
 }
 
 // Test to load stl from a istringstream
-TEST_CASE("Load STL cube from istringstream")
+TEMPLATE_TEST_CASE(
+    "Load STL cube from istringstream",
+    "",
+    vcl::TriMesh,
+    vcl::TriMeshf,
+    vcl::TriMeshIndexed,
+    vcl::TriMeshIndexedf)
 {
+    using TriMesh = TestType;
+
     SECTION("TriMesh - Cube")
     {
-        vcl::TriMesh tm;
-        auto         ss = stlCube();
+        TriMesh tm;
+        auto    ss = stlCube();
         vcl::loadStl(tm, ss);
         REQUIRE(tm.vertexNumber() == 36);
         REQUIRE(tm.faceNumber() == 12);
     }
 }
 
-TEST_CASE("Save STL cube in a ostringstream")
+TEMPLATE_TEST_CASE(
+    "Save STL cube in a ostringstream",
+    "",
+    vcl::TriMesh,
+    vcl::TriMeshf,
+    vcl::TriMeshIndexed,
+    vcl::TriMeshIndexedf)
 {
+    using TriMesh = TestType;
+
     SECTION("TriMesh - Cube")
     {
-        vcl::TriMesh tm = vcl::createCube<vcl::TriMesh>();
+        TriMesh tm = vcl::createCube<TriMesh>();
 
         std::ostringstream ss;
         vcl::saveStl(tm, ss);

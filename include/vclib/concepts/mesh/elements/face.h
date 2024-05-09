@@ -85,7 +85,7 @@ concept HasOptionalQuality = comp::HasOptionalQuality<T>;
 template<typename T>
 concept HasTriangleBitFlags = comp::HasTriangleBitFlags<T>;
 template<typename T>
-concept HasVertexPointers = comp::HasVertexPointers<T>;
+concept HasVertexReferences = comp::HasVertexReferences<T>;
 template<typename T>
 concept HasWedgeColors = comp::HasWedgeColors<T>;
 template<typename T>
@@ -106,9 +106,9 @@ concept HasOptionalWedgeTexCoords = comp::HasOptionalWedgeTexCoords<T>;
  * The Face concept is satisfied for a class F if ALL the following sentences
  * are true:
  * - The class F has the BitFlags component (or a derivate);
- * - The class F has the VertexPointers component (or a derivate);
- * - The number of vertices of the VertexPointers is -1 (dynamic size) or at
- * least 3 (static size)
+ * - The class F has either VertexPointers or VertexIndices components;
+ * - The number of vertices of the VertexPointers/VertexIndices is -1 (dynamic
+ * size) or at least 3 (static size)
  * - If the class F has the TriangleBitFlags component (or a derivate), the
  * number of vertices must be 3 (static)
  * - If the class F has the AdjacentEdges component (or a derivate), its size
@@ -125,7 +125,7 @@ concept HasOptionalWedgeTexCoords = comp::HasOptionalWedgeTexCoords<T>;
 template<typename T>
 concept FaceConcept =
     ElementConcept<T> && T::ELEMENT_ID == ElemId::FACE &&
-    face::HasBitFlags<T> && face::HasVertexPointers<T> &&
+    face::HasBitFlags<T> && face::HasVertexReferences<T> &&
     (T::VERTEX_NUMBER < 0 || T::VERTEX_NUMBER >= 3) &&
     (!face::HasTriangleBitFlags<T> || T::VERTEX_NUMBER == 3) &&
     comp::SanityCheckAdjacentEdges<T> && comp::SanityCheckAdjacentFaces<T> &&

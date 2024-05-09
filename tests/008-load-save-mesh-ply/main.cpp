@@ -20,6 +20,7 @@
  * for more details.                                                         *
  ****************************************************************************/
 
+#include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #ifndef VCLIB_WITH_MODULES
@@ -103,13 +104,27 @@ std::istringstream plyTriCube()
     return ss;
 }
 
+using Meshes  = std::pair<vcl::TriMesh, vcl::PolyMesh>;
+using Meshesf = std::pair<vcl::TriMeshf, vcl::PolyMeshf>;
+using MeshesIndexed  = std::pair<vcl::TriMeshIndexed, vcl::PolyMeshIndexed>;
+using MeshesIndexedf = std::pair<vcl::TriMeshIndexedf, vcl::PolyMeshIndexedf>;
+
 // Test to load obj from a istringstream
-TEST_CASE("Load PLY cube from istringstream")
+TEMPLATE_TEST_CASE(
+    "Load PLY cube from istringstream",
+    "",
+    Meshes,
+    Meshesf,
+    MeshesIndexed,
+    MeshesIndexedf)
 {
+    using TriMesh  = typename TestType::first_type;
+    using PolyMesh = typename TestType::second_type;
+
     SECTION("TriMesh - PolyCube")
     {
-        vcl::TriMesh tm;
-        auto         ss = plyPolyCube();
+        TriMesh tm;
+        auto    ss = plyPolyCube();
         vcl::loadPly(tm, ss);
         REQUIRE(tm.vertexNumber() == 8);
         REQUIRE(tm.faceNumber() == 12);
@@ -117,8 +132,8 @@ TEST_CASE("Load PLY cube from istringstream")
 
     SECTION("TriMesh - TriCube")
     {
-        vcl::TriMesh tm;
-        auto         ss = plyTriCube();
+        TriMesh tm;
+        auto    ss = plyTriCube();
         vcl::loadPly(tm, ss);
         REQUIRE(tm.vertexNumber() == 8);
         REQUIRE(tm.faceNumber() == 12);
@@ -126,8 +141,8 @@ TEST_CASE("Load PLY cube from istringstream")
 
     SECTION("PolyMesh - PolyCube")
     {
-        vcl::PolyMesh pm;
-        auto          ss = plyPolyCube();
+        PolyMesh pm;
+        auto     ss = plyPolyCube();
         vcl::loadPly(pm, ss);
         REQUIRE(pm.vertexNumber() == 8);
         REQUIRE(pm.faceNumber() == 6);
@@ -135,8 +150,8 @@ TEST_CASE("Load PLY cube from istringstream")
 
     SECTION("PolyMesh - TriCube")
     {
-        vcl::PolyMesh pm;
-        auto          ss = plyTriCube();
+        PolyMesh pm;
+        auto     ss = plyTriCube();
         vcl::loadPly(pm, ss);
         REQUIRE(pm.vertexNumber() == 8);
         REQUIRE(pm.faceNumber() == 12);

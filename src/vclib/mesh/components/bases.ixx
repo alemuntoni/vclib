@@ -22,6 +22,7 @@
 
 module;
 
+#include <ranges>
 #include <tuple>
 #include <type_traits>
 #include <vector>
@@ -30,13 +31,19 @@ export module vclib.mesh.components.bases;
 
 import vclib.concepts.mesh.components.component;
 import vclib.concepts.mesh.mesh_concept;
+import vclib.concepts.ranges.range;
 import vclib.iterators.const_pointer_iterator;
+import vclib.iterators.mesh;
 import vclib.mesh.components.detail;
 import vclib.space.vector;
 import vclib.types;
+import vclib.views.view;
 
 export {
 #include <vclib/mesh/components/bases/component.h>
 #include <vclib/mesh/components/bases/container_component.h>
+#include <vclib/mesh/components/bases/indices_container_component.h>
 #include <vclib/mesh/components/bases/pointers_container_component.h>
+
+#include <vclib/mesh/components/bases/references_container_component.h>
 }

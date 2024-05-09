@@ -20,6 +20,7 @@
  * for more details.                                                         *
  ****************************************************************************/
 
+#include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #ifndef VCLIB_WITH_MODULES
@@ -33,14 +34,16 @@ import vclib;
 template<vcl::FaceMeshConcept MeshType>
 void populateTriMesh(MeshType& tm)
 {
+    using Point = MeshType::VertexType::CoordType;
+
     // note: p3 and p4 have same coords
-    const vcl::Point3d p0(0, 0, 0);
-    const vcl::Point3d p1(1, 0, 0);
-    const vcl::Point3d p2(0, 1, 0);
-    const vcl::Point3d p3(1, 1, 0);
-    const vcl::Point3d p4(1, 1, 0); // dup of p3
-    const vcl::Point3d p5(1, 1, 1);
-    const vcl::Point3d p6(2, 0, 0); // unref
+    const Point p0(0, 0, 0);
+    const Point p1(1, 0, 0);
+    const Point p2(0, 1, 0);
+    const Point p3(1, 1, 0);
+    const Point p4(1, 1, 0); // dup of p3
+    const Point p5(1, 1, 1);
+    const Point p6(2, 0, 0); // unref
 
     tm.addVertices(p0, p1, p2, p3, p4, p5, p6);
 
@@ -58,12 +61,14 @@ void populateTriMesh(MeshType& tm)
 template<vcl::FaceMeshConcept MeshType>
 void populatePolyMesh(MeshType& pm)
 {
+    using Point = MeshType::VertexType::CoordType;
+
     // note: p3 and p4 have same coords
-    const vcl::Point3d p0(0, 0, 0);
-    const vcl::Point3d p1(1, 0, 0);
-    const vcl::Point3d p2(0, 1, 0);
-    const vcl::Point3d p3(1, 1, 0);
-    const vcl::Point3d p4(1, 1, 0);
+    const Point p0(0, 0, 0);
+    const Point p1(1, 0, 0);
+    const Point p2(0, 1, 0);
+    const Point p3(1, 1, 0);
+    const Point p4(1, 1, 0);
 
     pm.addVertices(p0, p1, p2, p3, p4);
 
@@ -78,10 +83,12 @@ void populatePolyMesh(MeshType& pm)
 template<vcl::EdgeMeshConcept MeshType>
 void populateEdgeMesh(MeshType& m)
 {
-    const vcl::Point3d p0(0, 0, 0);
-    const vcl::Point3d p1(1, 0, 0);
-    const vcl::Point3d p2(0, 1, 0); // unref
-    const vcl::Point3d p3(1, 1, 0);
+    using Point = MeshType::VertexType::CoordType;
+
+    const Point p0(0, 0, 0);
+    const Point p1(1, 0, 0);
+    const Point p2(0, 1, 0); // unref
+    const Point p3(1, 1, 0);
 
     m.addVertices(p0, p1, p2, p3);
 
@@ -91,11 +98,21 @@ void populateEdgeMesh(MeshType& m)
     m.addEdge(3, 1);
 }
 
-TEST_CASE("Clean Duplicated Faces")
+using Meshes  = std::tuple<vcl::TriMesh, vcl::PolyMesh, vcl::EdgeMesh>;
+using Meshesf = std::tuple<vcl::TriMeshf, vcl::PolyMeshf, vcl::EdgeMeshf>;
+using MeshesIndexed =
+    std::tuple<vcl::TriMeshIndexed, vcl::PolyMeshIndexed, vcl::EdgeMeshIndexed>;
+using MeshesIndexedf = std::
+    tuple<vcl::TriMeshIndexedf, vcl::PolyMeshIndexedf, vcl::EdgeMeshIndexedf>;
+
+TEMPLATE_TEST_CASE("Clean Duplicated Faces", "", Meshes, Meshesf)
 {
+    using TriMesh  = std::tuple_element_t<0, TestType>;
+    using PolyMesh = std::tuple_element_t<1, TestType>;
+
     SECTION("TriMesh")
     {
-        vcl::TriMesh tm;
+        TriMesh tm;
 
         populateTriMesh(tm);
 
@@ -110,7 +127,7 @@ TEST_CASE("Clean Duplicated Faces")
 
     SECTION("PolyMesh with triangles")
     {
-        vcl::PolyMesh pm;
+        PolyMesh pm;
 
         populateTriMesh(pm);
 
@@ -125,7 +142,7 @@ TEST_CASE("Clean Duplicated Faces")
 
     SECTION("PolyMesh with polygons")
     {
-        vcl::PolyMesh pm;
+        PolyMesh pm;
 
         populatePolyMesh(pm);
 
@@ -140,12 +157,19 @@ TEST_CASE("Clean Duplicated Faces")
     }
 }
 
-TEST_CASE("WaterTightness")
+TEMPLATE_TEST_CASE(
+    "WaterTightness",
+    "",
+    vcl::TriMesh,
+    vcl::TriMeshf,
+    vcl::TriMeshIndexed,
+    vcl::TriMeshIndexedf)
 {
+    using TriMesh = TestType;
+
     SECTION("A TriMesh that is not watertight")
     {
-        vcl::TriMesh t =
-            vcl::load<vcl::TriMesh>(VCLIB_ASSETS_PATH "/brain.ply");
+        TriMesh t = vcl::load<TriMesh>(VCLIB_ASSETS_PATH "/brain.ply");
 
         REQUIRE(t.vertexNumber() == 18844);
         REQUIRE(t.faceNumber() == 36752);
@@ -164,9 +188,17 @@ TEST_CASE("WaterTightness")
     }
 }
 
-TEST_CASE("Duplicated Vertices")
+TEMPLATE_TEST_CASE(
+    "Duplicated Vertices",
+    "",
+    vcl::TriMesh,
+    vcl::TriMeshf,
+    vcl::TriMeshIndexed,
+    vcl::TriMeshIndexedf)
 {
-    vcl::TriMesh tm;
+    using TriMesh = TestType;
+
+    TriMesh tm;
 
     populateTriMesh(tm);
 
@@ -179,11 +211,14 @@ TEST_CASE("Duplicated Vertices")
     REQUIRE(tm.face(5).vertex(1) == &tm.vertex(3));
 }
 
-TEST_CASE("Unreferenced Vertices")
+TEMPLATE_TEST_CASE("Unreferenced Vertices", "", Meshes, Meshesf)
 {
+    using TriMesh  = std::tuple_element_t<0, TestType>;
+    using EdgeMesh = std::tuple_element_t<2, TestType>;
+
     SECTION("TriMesh")
     {
-        vcl::TriMesh tm;
+        TriMesh tm;
 
         populateTriMesh(tm);
 
@@ -194,7 +229,7 @@ TEST_CASE("Unreferenced Vertices")
 
     SECTION("EdgeMesh")
     {
-        vcl::EdgeMesh em;
+        EdgeMesh em;
 
         populateEdgeMesh(em);
 
@@ -204,9 +239,17 @@ TEST_CASE("Unreferenced Vertices")
     }
 }
 
-TEST_CASE("Duplicated Vertices brain.ply")
+TEMPLATE_TEST_CASE(
+    "Duplicated Vertices brain.ply",
+    "",
+    vcl::TriMesh,
+    vcl::TriMeshf,
+    vcl::TriMeshIndexed,
+    vcl::TriMeshIndexedf)
 {
-    vcl::TriMesh t = vcl::load<vcl::TriMesh>(VCLIB_ASSETS_PATH "/brain.ply");
+    using TriMesh = TestType;
+
+    TriMesh t = vcl::load<TriMesh>(VCLIB_ASSETS_PATH "/brain.ply");
 
     uint nv = vcl::removeDuplicatedVertices(t);
 

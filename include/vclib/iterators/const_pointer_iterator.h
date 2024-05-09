@@ -51,8 +51,8 @@ public:
     using difference_type = std::iterator_traits<It>::difference_type;
     using value_type =
         MakeConstPointerT<typename std::iterator_traits<It>::value_type>;
-    using reference = value_type&;
-    using pointer = value_type*;
+    using reference         = value_type&;
+    using pointer           = value_type*;
     using iterator_category = std::iterator_traits<It>::iterator_category;
 
     ConstPointerIterator() = default;
@@ -60,6 +60,7 @@ public:
     ConstPointerIterator(It it) : mIt(it) {}
 
     value_type operator*() const { return *mIt; }
+
     pointer operator->() const { return &(*mIt); }
 
     bool operator==(const ConstPointerIterator& oi) const
@@ -85,7 +86,8 @@ public:
         return tmp;
     }
 
-    ConstPointerIterator& operator--() requires(std::bidirectional_iterator<It>)
+    ConstPointerIterator& operator--()
+        requires (std::bidirectional_iterator<It>)
     {
         --mIt;
         return *this;
@@ -112,7 +114,9 @@ public:
         return ConstPointerIterator(mIt + n);
     }
 
-    friend ConstPointerIterator operator+(difference_type n, const ConstPointerIterator& it)
+    friend ConstPointerIterator operator+(
+        difference_type             n,
+        const ConstPointerIterator& it)
         requires (std::random_access_iterator<It>)
     {
         return ConstPointerIterator(n + it.mIt);
@@ -143,7 +147,6 @@ public:
         return mIt[n];
     }
 };
-
 
 } // namespace vcl
 

@@ -45,7 +45,7 @@ struct MakeConstPointer<T*>
     using type = const T*;
 };
 
-template <typename T>
+template<typename T>
 using MakeConstPointerT = typename MakeConstPointer<T>::type;
 
 /*

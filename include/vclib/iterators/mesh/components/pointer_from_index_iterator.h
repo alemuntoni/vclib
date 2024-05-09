@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_ITERATORS_MESH_COMPONENTS_INDEX_FROM_POINTER_ITERATOR_H
-#define VCL_ITERATORS_MESH_COMPONENTS_INDEX_FROM_POINTER_ITERATOR_H
+#ifndef VCL_ITERATORS_MESH_COMPONENTS_POINTER_FROM_INDEX_ITERATOR_H
+#define VCL_ITERATORS_MESH_COMPONENTS_POINTER_FROM_INDEX_ITERATOR_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <iterator>
@@ -37,123 +37,168 @@ namespace vcl {
  *
  * @tparam Iterator: The iterator type of the container of pointers to elements.
  */
-template<typename Iterator>
-class IndexFromPointerIterator
+template<
+    typename Iterator,
+    typename ElementType,
+    typename ParentElement,
+    bool CNST = false>
+class PointerFromIndexIterator
 {
+    template<typename, typename, typename, bool>
+    friend class PointerFromIndexIterator;
+
+    static constexpr uint ELEM_ID = ElementType::ELEMENT_ID;
+
+    using VT = std::conditional_t<CNST, const ElementType, ElementType>;
+    using PE = std::conditional_t<CNST, const ParentElement*, ParentElement*>;
+
     Iterator mIt;
+    PE parentElement = nullptr;
 
 public:
     using difference_type   = ptrdiff_t;
-    using value_type        = uint;
-    using reference         = const uint&;
-    using pointer           = const uint*;
+    using value_type        = VT*;
+    using reference         = VT*;
+    using pointer           = VT**;
     using iterator_category = std::random_access_iterator_tag;
 
-    IndexFromPointerIterator() = default;
+    PointerFromIndexIterator() = default;
 
-    IndexFromPointerIterator(const Iterator& it) : mIt(it) {}
+    /**
+     * @brief Constructor for the begin iterator - ParentMesh required
+     * @param it
+     * @param mesh
+     */
+    PointerFromIndexIterator(Iterator it, PE pElem) :
+            mIt(it), parentElement(pElem)
+    {
+    }
+
+    /**
+     * @brief Constructor for the end iterator, ParentMesh not required
+     * @param it
+     * @param end
+     */
+    PointerFromIndexIterator(Iterator it) : mIt(it) {}
+
+    PointerFromIndexIterator(const PointerFromIndexIterator&) = default;
+
+    /**
+     * @brief Constructor from a non-const iterator
+     * @param oi
+     */
+    PointerFromIndexIterator(const PointerFromIndexIterator<
+                             Iterator,
+                             ElementType,
+                             ParentElement,
+                             false>& oi) requires (CNST == true)
+            : mIt(oi.mIt), parentElement(oi.parentElement) {};
 
     value_type operator*() const
     {
-        auto e = *mIt;
-        if (e == nullptr) [[unlikely]]
-            return UINT_NULL;
+        uint e = *mIt;
+        if (e == UINT_NULL) [[unlikely]]
+            return nullptr;
         else
-            return e->index();
+            return &(parentElement->parentMesh()->template element<ELEM_ID>(e));
     }
 
     auto operator->() const { return FakePointerWithValue(**this); }
 
-    bool operator==(const IndexFromPointerIterator& oi) const
+    bool operator==(const PointerFromIndexIterator& oi) const
     {
         return mIt == oi.mIt;
     }
 
-    bool operator!=(const IndexFromPointerIterator& oi) const
+    bool operator!=(const PointerFromIndexIterator& oi) const
     {
         return !(*this == oi);
     }
 
-    IndexFromPointerIterator& operator++()
+    PointerFromIndexIterator& operator++()
     {
         ++mIt;
         return *this;
     }
 
-    IndexFromPointerIterator operator++(int)
+    PointerFromIndexIterator operator++(int)
     {
         auto it = *this;
         ++mIt;
         return it;
     }
 
-    IndexFromPointerIterator& operator--()
+    PointerFromIndexIterator& operator--()
     {
         --mIt;
         return *this;
     }
 
-    IndexFromPointerIterator operator--(int)
+    PointerFromIndexIterator operator--(int)
     {
         auto it = *this;
         --mIt;
         return it;
     }
 
-    IndexFromPointerIterator& operator+=(difference_type n)
+    PointerFromIndexIterator& operator+=(difference_type n)
     {
         mIt += n;
         return *this;
     }
 
-    IndexFromPointerIterator& operator-=(difference_type n)
+    PointerFromIndexIterator& operator-=(difference_type n)
     {
         mIt -= n;
         return *this;
     }
 
-    IndexFromPointerIterator operator+(difference_type n) const
+    PointerFromIndexIterator operator+(difference_type n) const
     {
         auto it = *this;
         it += n;
         return it;
     }
 
-    IndexFromPointerIterator operator-(difference_type n) const
+    PointerFromIndexIterator operator-(difference_type n) const
     {
         auto it = *this;
         it -= n;
         return it;
     }
 
-    difference_type operator-(const IndexFromPointerIterator& oi) const
+    difference_type operator-(const PointerFromIndexIterator& oi) const
     {
         return mIt - oi.mIt;
     }
 
     value_type operator[](difference_type i) { return *(*this + i); }
 
-    bool operator<(const IndexFromPointerIterator& oi) const
+    bool operator<(const PointerFromIndexIterator& oi) const
     {
         return mIt < oi.mIt;
     }
 
-    bool operator>(const IndexFromPointerIterator& oi) const
+    bool operator>(const PointerFromIndexIterator& oi) const
     {
         return mIt > oi.mIt;
     }
 
-    bool operator<=(const IndexFromPointerIterator& oi) const
+    bool operator<=(const PointerFromIndexIterator& oi) const
     {
         return mIt <= oi.mIt;
     }
 
-    bool operator>=(const IndexFromPointerIterator& oi) const
+    bool operator>=(const PointerFromIndexIterator& oi) const
     {
         return mIt >= oi.mIt;
     }
 };
 
+template<typename Iterator, typename ElementType, typename ParentElement>
+using ConstPointerFromIndexIterator =
+    PointerFromIndexIterator<Iterator, ElementType, ParentElement, true>;
+
 } // namespace vcl
 
-#endif // VCL_ITERATORS_MESH_COMPONENTS_INDEX_FROM_POINTER_ITERATOR_H
+#endif // VCL_ITERATORS_MESH_COMPONENTS_POINTER_FROM_INDEX_ITERATOR_H
