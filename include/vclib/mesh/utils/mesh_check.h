@@ -230,7 +230,7 @@ bool checkMeshPointers(const MeshType& mesh, TypeWrapper<Containers...>)
 {
     return (
         checkElementPointers<Containers::ElementType::ELEMENT_ID>(
-            mesh, typename MeshType::Containers()) &&
+            mesh, TypeWrapper<Containers...>()) &&
         ...);
 }
 
