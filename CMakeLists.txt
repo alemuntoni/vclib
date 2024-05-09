@@ -561,6 +561,10 @@ if (VCLIB_BUILD_CXX20_MODULES)
 
     target_compile_definitions(vclib PUBLIC VCLIB_WITH_MODULES)
 
+    if (MSVC)
+        target_compile_options(vclib PUBLIC "/bigobj")
+    endif()
+
     # avoid warnings when using modules
     # todo: remove this when modules are and header units stable and supported by all compilers
     if (MSVC)
