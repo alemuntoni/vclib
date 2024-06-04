@@ -23,6 +23,7 @@
 module;
 
 #include <algorithm>
+#include <ranges>
 #include <set>
 #include <vector>
 

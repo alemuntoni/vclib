@@ -22,6 +22,7 @@
 
 module;
 
+#include <ranges>
 #include <set>
 #include <unordered_map>
 #include <vector>
