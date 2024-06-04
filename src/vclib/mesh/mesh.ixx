@@ -22,6 +22,7 @@
 
 module;
 
+#include <array>
 #include <string>
 #include <typeindex>
 #include <vector>
