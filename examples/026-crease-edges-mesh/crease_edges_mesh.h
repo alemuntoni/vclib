@@ -28,7 +28,7 @@
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #else
-#include <algorithm>
+#include <ranges>
 import vclib;
 #endif
 
