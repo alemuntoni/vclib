@@ -24,8 +24,6 @@
 #define VCL_IO_PLY_EDGE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <fstream>
-
 #include <vclib/io/write.h>
 #include <vclib/misc/tokenizer.h>
 

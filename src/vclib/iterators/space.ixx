@@ -22,6 +22,7 @@
 
 module;
 
+#include <cstddef>
 #include <vector>
 
 export module vclib.iterators.space;
