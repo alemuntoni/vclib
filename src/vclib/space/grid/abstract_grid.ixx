@@ -22,8 +22,9 @@
 
 module;
 
-#include <set>
 #include <functional>
+#include <ranges>
+#include <set>
 
 export module vclib.space.grid.abstract_grid;
 
