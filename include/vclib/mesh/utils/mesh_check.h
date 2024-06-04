@@ -74,7 +74,6 @@ bool checkElementPointersInElementContainerOnComponent(
 
     // if Comp has pointers to ElemType
     if constexpr (comp::HasPointersOfType<Comp, ElemType>) {
-
         // we create a lambda to loop over the elements of the mesh
         // to avoid code duplication
 
@@ -85,7 +84,7 @@ bool checkElementPointersInElementContainerOnComponent(
                 // that has pointers to ElemType
                 const Comp& comp = static_cast<const Comp&>(el);
 
-                       // take the pointers in the component and look at them
+                // take the pointers in the component and look at them
                 for (const ElemType* ptr : comp.template pointers<ElemType>()) {
                     if (ptr != nullptr) {
                         if (ptr < first || ptr >= last) {
@@ -123,7 +122,6 @@ bool checkElementPointersInElementContainerOnComponent(
 
     // if Comp has indices to ElemType
     if constexpr (comp::HasIndicesOfType<Comp, ElemType>) {
-
         // we create a lambda to loop over the elements of the mesh
         // to avoid code duplication
 
@@ -134,16 +132,16 @@ bool checkElementPointersInElementContainerOnComponent(
                 // that has indices to ElemType
                 const Comp& comp = static_cast<const Comp&>(el);
 
-                       // take the pointers in the component and look at them
+                // take the pointers in the component and look at them
                 for (uint i : comp.template indices<ElemType>()) {
                     if (i != UINT_NULL) {
                         if (i >= last - first) {
                             throw InconsistentMeshException(
                                 "The " + vcl::elementEnumString<ELEM_ID>() +
                                 " n. " + vcl::toString(el.index()) +
-                                " has a wrong pointer in " +
+                                " has a wrong index in " +
                                 vcl::componentEnumString<Comp::COMPONENT_ID>() +
-                                " component.\n" + "The pointer " +
+                                " component.\n" + "The index " +
                                 vcl::toString(i) + " is out of range [ 0, " +
                                 vcl::toString(last - first) + ")");
                             return false;

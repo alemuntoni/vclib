@@ -25,6 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/clean.h>
+#include <vclib/algorithms/mesh/stat.h>
 #include <vclib/concepts/range.h>
 #include <vclib/mesh/requirements.h>
 #endif
@@ -55,6 +56,16 @@ void clearFaceSelection(MeshType& m)
     detail::clearSelection(m.faces());
 }
 
+template<FaceMeshConcept MeshType>
+void clearFaceEdgesSelection(MeshType& m)
+{
+    for (auto& f : m.faces()) {
+        for (uint i = 0; i < f.vertexNumber(); ++i) {
+            f.edgeSelected(i) = false;
+        }
+    }
+}
+
 template<EdgeMeshConcept MeshType>
 void clearEdgeSelection(MeshType& m)
 {
@@ -76,6 +87,23 @@ void selectNonManifoldVertices(MeshType& m, bool clearSelectionFirst)
         else if (clearSelectionFirst) {
             v.selected() = false;
         }
+    }
+}
+
+template<FaceMeshConcept MeshType>
+void selectCreaseFaceEdges(
+    MeshType& m,
+    double    angleRadNeg,
+    double    angleRadPos,
+    bool      alsoBorderEdges = false)
+{
+    clearFaceEdgesSelection(m);
+
+    std::vector<std::pair<uint, uint>> creaseEdges =
+        creaseFaceEdges(m, angleRadNeg, angleRadPos, alsoBorderEdges);
+
+    for (const auto& [fi, ei] : creaseEdges) {
+        m.face(fi).edgeSelected(ei) = true;
     }
 }
 

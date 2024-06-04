@@ -114,8 +114,7 @@ public:
      */
     template<typename... V>
     void setVertices(V... args) requires (
-        (std::convertible_to<V, VertexType*> ||
-         std::convertible_to<V, uint>) &&
+        (std::convertible_to<V, VertexType*> || std::convertible_to<V, uint>) &&
         ...)
     {
         setVertices(std::list({args...}));
@@ -177,7 +176,7 @@ public:
     }
 
     template<typename ElType>
-    void importFrom(const ElType& v)
+    void importFrom(const ElType& v, bool importRefs = true)
     {
         if constexpr (comp::HasVertexReferences<ElType> && NV < 0) {
             VRefs::resizeVertices(v.vertexNumber());
@@ -185,7 +184,7 @@ public:
             (resizeTTVNComponent<Comps>(v.vertexNumber()), ...);
         }
 
-        Base::importFrom(v);
+        Base::importFrom(v, importRefs);
     }
 
 private:

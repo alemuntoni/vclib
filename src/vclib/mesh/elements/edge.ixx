@@ -28,6 +28,7 @@ import vclib.concepts.mesh.elements;
 import vclib.mesh.components;
 import vclib.mesh.components.parent_mesh_pointer;
 import vclib.mesh.elements.element;
+import vclib.space.point;
 import vclib.types;
 
 export {

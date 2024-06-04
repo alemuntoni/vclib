@@ -21,36 +21,17 @@
 #****************************************************************************/
 
 cmake_minimum_required(VERSION 3.24)
-project(vclib-tests)
 
-if (VCLIB_BUILD_CXX20_MODULES)
-    set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
-endif()
+set(EXAMPLE_NAME 026-crease-edges-mesh)
+project(vclib-example-${EXAMPLE_NAME})
 
-# tests
-if (VCLIB_BUILD_TESTS)
+set(HEADERS
+    crease_edges_mesh.h)
 
-    add_subdirectory(000-static-asserts)
-    add_subdirectory(001-trimesh-base)
-    add_subdirectory(002-mesh-topology)
-    add_subdirectory(003-mesh-conversions)
-    add_subdirectory(004-mesh-custom-components)
-    add_subdirectory(005-mesh-new-user-component)
-    add_subdirectory(006-load-save-mesh-obj)
-    add_subdirectory(007-load-save-mesh-off)
-    add_subdirectory(008-load-save-mesh-ply)
-    add_subdirectory(009-load-save-mesh-stl)
-    add_subdirectory(010-mesh-clean)
-    add_subdirectory(011-mesh-filter)
-    add_subdirectory(012-kd-tree)
-    add_subdirectory(013-mesh-update-normal)
-    add_subdirectory(014-polymesh-base)
-    add_subdirectory(015-mesh-copy-and-append)
-    add_subdirectory(016-mesh-crease-edges)
+set(SOURCES
+    main.cpp)
 
-
-    if (TARGET vclib-external-vcg)
-        add_subdirectory(900-mesh-import-vcg)
-    endif()
-endif()
-
+vclib_add_example(
+    ${EXAMPLE_NAME}
+    ${VCLIB_TESTS_AND_EXAMPLES_HEADER_ONLY}
+    ${HEADERS} ${SOURCES})

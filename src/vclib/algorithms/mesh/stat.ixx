@@ -29,6 +29,7 @@ export module vclib.algorithms.mesh.stat;
 export import vclib.algorithms.mesh.stat.quality;
 export import vclib.algorithms.mesh.stat.selection;
 
+import vclib.algorithms.core.polygon;
 import vclib.concepts.mesh;
 import vclib.mesh.requirements;
 import vclib.mesh.utils.mesh_inertia;

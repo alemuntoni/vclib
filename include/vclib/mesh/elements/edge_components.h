@@ -30,6 +30,7 @@
 #include "../components/color.h"
 #include "../components/custom_components.h"
 #include "../components/mark.h"
+#include "../components/normal.h"
 #include "../components/parent_mesh_pointer.h"
 #include "../components/quality.h"
 #include "../components/vertex_references.h"
@@ -105,8 +106,8 @@ using VerticalAdjacentFaces =
     comp::AdjacentFaces<INDEXED, FaceType, -1, false, ParentEdgeType, true>;
 
 template<bool INDEXED, typename FaceType, typename ParentEdgeType>
-using OptionalAdjacentFaces =
-    comp::AdjacentFaces<INDEXED, FaceType, -1, false, ParentEdgeType, true, true>;
+using OptionalAdjacentFaces = comp::
+    AdjacentFaces<INDEXED, FaceType, -1, false, ParentEdgeType, true, true>;
 
 template<typename FaceType, typename ParentEdgeType>
 using AdjacentFaceIndices =
@@ -156,6 +157,40 @@ using VerticalMark = comp::Mark<ParentEdgeType>;
 
 template<typename ParentEdgeType>
 using OptionalMark = comp::Mark<ParentEdgeType, true>;
+
+/* Port Normal classes into edge namespace */
+template<typename ScalarType, int N>
+using Normal = comp::Normal<Point<ScalarType, N>>;
+
+template<typename ScalarType>
+using Normal3 = comp::Normal3<ScalarType>;
+
+using Normal3f = comp::Normal3f<>;
+using Normal3d = comp::Normal3d<>;
+
+template<typename ScalarType, int N, typename ParentEdgeType>
+using VerticalNormal = comp::Normal<Point<ScalarType, N>, ParentEdgeType>;
+
+template<typename ScalarType, typename ParentEdgeType>
+using VerticalNormal3 = comp::Normal3<ScalarType, ParentEdgeType>;
+
+template<typename ParentEdgeType>
+using VerticalNormal3f = comp::Normal3f<ParentEdgeType>;
+
+template<typename ParentEdgeType>
+using VerticalNormal3d = comp::Normal3d<ParentEdgeType>;
+
+template<typename ScalarType, int N, typename ParentEdgeType>
+using OptionalNormal = comp::Normal<Point<ScalarType, N>, ParentEdgeType, true>;
+
+template<typename ScalarType, typename ParentEdgeType>
+using OptionalNormal3 = comp::Normal3<ScalarType, ParentEdgeType, true>;
+
+template<typename ParentEdgeType>
+using OptionalNormal3f = comp::Normal3f<ParentEdgeType, true>;
+
+template<typename ParentEdgeType>
+using OptionalNormal3d = comp::Normal3d<ParentEdgeType, true>;
 
 /* Port ParentMeshPointer class into vert namespace */
 template<typename MeshType>

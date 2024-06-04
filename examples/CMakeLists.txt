@@ -23,7 +23,9 @@
 cmake_minimum_required(VERSION 3.24)
 project(vclib-examples)
 
-set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
+if (VCLIB_BUILD_CXX20_MODULES)
+    set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
+endif()
 
 # examples
 if (VCLIB_BUILD_EXAMPLES)
@@ -53,6 +55,7 @@ if (VCLIB_BUILD_EXAMPLES)
     add_subdirectory(023-polygon-earcut)
     add_subdirectory(024-distance)
     add_subdirectory(025-grid)
+    add_subdirectory(026-crease-edges-mesh)
 
     add_subdirectory(999-misc)
 
