@@ -129,12 +129,14 @@ void readPlyFaceProperty(
     Stream&     file,
     MeshType&   mesh,
     FaceType&   f,
-    PlyProperty p)
+    PlyProperty p,
+    MeshInfo&   loadedInfo)
 {
     bool              hasBeenRead = false;
     std::vector<uint> vids; // contains the vertex ids of the actual face
     if (p.name == ply::vertex_indices) { // loading vertex indices
         uint fSize = io::readPrimitiveType<uint>(file, p.listSizeType);
+        loadedInfo.updateMeshType(fSize);
         vids.resize(fSize);
         for (uint i = 0; i < fSize; ++i) {
             vids[i] = io::readPrimitiveType<size_t>(file, p.type);
@@ -249,6 +251,7 @@ void readPlyFaceTxt(
     std::istream&                 file,
     FaceType&                     f,
     MeshType&                     mesh,
+    MeshInfo&                     loadedInfo,
     const std::list<PlyProperty>& faceProperties)
 {
     vcl::Tokenizer spaceTokenizer  = readAndTokenizeNextNonEmptyLine(file);
@@ -257,7 +260,7 @@ void readPlyFaceTxt(
         if (token == spaceTokenizer.end()) {
             throw vcl::MalformedFileException("Unexpected end of line.");
         }
-        readPlyFaceProperty(token, mesh, f, p);
+        readPlyFaceProperty(token, mesh, f, p, loadedInfo);
     }
 }
 
@@ -266,10 +269,11 @@ void readPlyFaceBin(
     std::istream&                 file,
     FaceType&                     f,
     MeshType&                     mesh,
+    MeshInfo&                     loadedInfo,
     const std::list<PlyProperty>& faceProperties)
 {
     for (const PlyProperty& p : faceProperties) {
-        readPlyFaceProperty(file, mesh, f, p);
+        readPlyFaceProperty(file, mesh, f, p, loadedInfo);
     }
 }
 
@@ -351,7 +355,11 @@ void writePlyFaces(
 }
 
 template<FaceMeshConcept MeshType>
-void readPlyFaces(std::istream& file, const PlyHeader& header, MeshType& mesh)
+void readPlyFaces(
+    std::istream&    file,
+    const PlyHeader& header,
+    MeshType&        mesh,
+    MeshInfo&        loadedInfo)
 {
     using FaceType = MeshType::FaceType;
     mesh.reserveFaces(header.numberFaces());
@@ -359,10 +367,12 @@ void readPlyFaces(std::istream& file, const PlyHeader& header, MeshType& mesh)
         uint      ffid = mesh.addFace();
         FaceType& f    = mesh.face(ffid);
         if (header.format() == ply::ASCII) {
-            detail::readPlyFaceTxt(file, f, mesh, header.faceProperties());
+            detail::readPlyFaceTxt(
+                file, f, mesh, loadedInfo, header.faceProperties());
         }
         else {
-            detail::readPlyFaceBin(file, f, mesh, header.faceProperties());
+            detail::readPlyFaceBin(
+                file, f, mesh, loadedInfo, header.faceProperties());
         }
     }
 }

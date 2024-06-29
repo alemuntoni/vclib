@@ -119,6 +119,8 @@ void readStlBin(
 
     fp.seekg(80); // size of the header
     uint fnum = io::readUInt<uint>(fp);
+    if (fnum > 0)
+        loadedInfo.setTriangleMesh();
 
     log.startProgress("Loading STL file", fnum);
 
@@ -248,6 +250,9 @@ void readStlAscii(
 
             log.progress(fp.tellg());
         } while (fp);
+
+        if (m.faceNumber() > 0)
+            loadedInfo.setTriangleMesh();
     }
 
     log.endProgress();

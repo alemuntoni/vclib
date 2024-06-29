@@ -276,6 +276,8 @@ void readObjFace(
     std::vector<uint> vids;
     std::vector<uint> wids;
 
+    loadedInfo.updateMeshType(tokens.size() - 1);
+
     // actual read - load vertex indices and texcoords indices, if present
     vcl::Tokenizer::iterator token = tokens.begin();
     ++token;
@@ -608,9 +610,6 @@ void loadObj(
                     log.log(
                         LogType::WARNING,
                         "Cannot load texture " + texture.path());
-                }
-                else {
-                    texture.image().mirror();
                 }
             }
         }
