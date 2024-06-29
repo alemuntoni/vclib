@@ -24,6 +24,7 @@
 #define VCL_TYPES_CONST_CORRECTNESS_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <memory>
 #include <type_traits>
 #endif
 
@@ -43,6 +44,12 @@ template<typename T>
 struct MakeConstPointer<T*>
 {
     using type = const T*;
+};
+
+template<typename T>
+struct MakeConstPointer<std::shared_ptr<T>>
+{
+    using type = std::shared_ptr<const T>;
 };
 
 template<typename T>

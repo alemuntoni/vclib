@@ -27,7 +27,7 @@
 #include <vclib/concepts/mesh/components/adjacent_edges.h>
 #include <vclib/views/view.h>
 
-#include "bases/references_container_component.h"
+#include "bases/reference_container_component.h"
 #endif
 
 namespace vcl::comp {
@@ -87,7 +87,7 @@ template<
     bool VERT               = false,
     bool OPT                = false>
 class AdjacentEdges :
-        public ReferencesContainerComponent<
+        public ReferenceContainerComponent<
             STORE_INDICES,
             AdjacentEdges<
                 STORE_INDICES,
@@ -105,7 +105,7 @@ class AdjacentEdges :
             OPT,
             TTVN>
 {
-    using Base = ReferencesContainerComponent<
+    using Base = ReferenceContainerComponent<
         STORE_INDICES,
         AdjacentEdges<STORE_INDICES, Edge, N, TTVN, ParentElemType, VERT, OPT>,
         CompId::ADJACENT_EDGES,

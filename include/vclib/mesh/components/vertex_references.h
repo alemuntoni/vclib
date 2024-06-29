@@ -27,7 +27,7 @@
 #include <vclib/concepts/mesh/components/vertex_references.h>
 #include <vclib/views/view.h>
 
-#include "bases/references_container_component.h"
+#include "bases/reference_container_component.h"
 #endif
 
 namespace vcl::comp {
@@ -88,7 +88,7 @@ template<
     typename ParentElemType = void,
     bool VERT               = false>
 class VertexReferences :
-        public ReferencesContainerComponent<
+        public ReferenceContainerComponent<
             STORE_INDICES,
             VertexReferences<STORE_INDICES, Vertex, N, ParentElemType, VERT>,
             CompId::VERTEX_REFERENCES,
@@ -99,7 +99,7 @@ class VertexReferences :
             false,
             false>
 {
-    using Base = ReferencesContainerComponent<
+    using Base = ReferenceContainerComponent<
         STORE_INDICES,
         VertexReferences<STORE_INDICES, Vertex, N, ParentElemType, VERT>,
         CompId::VERTEX_REFERENCES,
