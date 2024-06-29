@@ -41,6 +41,7 @@
 #include "space/segment.h"
 #include "space/sphere.h"
 #include "space/tex_coord.h"
+#include "space/texture.h"
 #include "space/triangle_wrapper.h"
 #include "space/vector.h"
 

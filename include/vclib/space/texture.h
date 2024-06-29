@@ -20,30 +20,65 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_SPACE_TEXTURE_H
+#define VCL_SPACE_TEXTURE_H
 
-export module vclib.space;
+#ifndef VCLIB_WITH_MODULES
+#include "image.h"
 
-export import vclib.space.array;
-export import vclib.space.bit_set;
-export import vclib.space.box;
-export import vclib.space.color;
-export import vclib.space.graph;
-export import vclib.space.grid;
-export import vclib.space.image;
-export import vclib.space.kd_tree;
-export import vclib.space.matrix;
-export import vclib.space.plane;
-export import vclib.space.point;
-export import vclib.space.polygon;
-export import vclib.space.polymorphic_object_vector;
-export import vclib.space.principal_curvature;
-export import vclib.space.quaternion;
-export import vclib.space.sampler;
-export import vclib.space.segment;
-export import vclib.space.sphere;
-export import vclib.space.tex_coord;
-export import vclib.space.texture;
-export import vclib.space.triangle;
-export import vclib.space.triangle_wrapper;
-export import vclib.space.vector;
+#include <vclib/io/file_info.h>
+#endif
+
+namespace vcl {
+
+class Texture
+{
+    Image mImg;
+    std::string mName;
+
+public:
+    Texture() {}
+
+    /**
+     * @brief Load a texture from a file.
+     *
+     * @param[in] filename: the name of the file.
+     */
+    Texture(const std::string& filename)
+    {
+        mName = FileInfo::fileNameWithExtension(filename);
+        mImg.load(filename);
+    }
+
+    /**
+     * @brief Get the name of the texture.
+     *
+     * @return the name of the texture.
+     */
+    const std::string& name() const { return mName; }
+
+    /**
+     * @brief Get the name of the texture.
+     *
+     * @return the name of the texture.
+     */
+    std::string& name() { return mName; }
+
+    /**
+     * @brief Get the image of the texture.
+     *
+     * @return the image of the texture.
+     */
+    const Image& image() const { return mImg; }
+
+    /**
+     * @brief Get the image of the texture.
+     *
+     * @return the image of the texture.
+     */
+    Image& image() { return mImg; }
+};
+
+} // namespace vcl
+
+#endif // VCL_SPACE_TEXTURE_H
