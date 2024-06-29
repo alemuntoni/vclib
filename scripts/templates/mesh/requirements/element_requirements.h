@@ -5,7 +5,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh.h>
-#include <vclib/exceptions/mesh_exceptions.h>
+#include <vclib/exceptions/mesh.h>
 
 #include "element_requirements.h"
 #include "../containers/%EL%_container.h"

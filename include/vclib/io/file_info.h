@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 
-#include <vclib/exceptions/io_exceptions.h>
+#include <vclib/exceptions/io.h>
 #include <vclib/types.h>
 #endif
 

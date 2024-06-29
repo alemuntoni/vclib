@@ -28,7 +28,7 @@ module;
 export module vclib.exceptions;
 
 export {
-#include <vclib/exceptions/io_exceptions.h>
-#include <vclib/exceptions/mesh_exceptions.h>
-#include <vclib/exceptions/misc_exceptions.h>
+#include <vclib/exceptions/io.h>
+#include <vclib/exceptions/mesh.h>
+#include <vclib/exceptions/misc.h>
 }

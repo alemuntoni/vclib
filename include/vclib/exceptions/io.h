@@ -20,34 +20,58 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_IO_STL_CAPABILITY_H
-#define VCL_IO_STL_CAPABILITY_H
+#ifndef VCL_EXCEPTIONS_IO_H
+#define VCL_EXCEPTIONS_IO_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/mesh/utils/mesh_info.h>
+#include <stdexcept>
+#include <string>
 #endif
 
 namespace vcl {
 
-inline MeshInfo stlFormatCapability()
+class UnknownFileFormatException : public std::runtime_error
 {
-    MeshInfo info;
+public:
+    UnknownFileFormatException(const std::string& err) : std::runtime_error(err)
+    {
+    }
 
-    info.setTriangleMesh();
+    virtual const char* what() const throw()
+    {
+        static std::string error;
+        error =
+            std::string("Unknown File Format - ") + std::runtime_error::what();
+        return error.c_str();
+    }
+};
 
-    info.setVertices();
+class CannotOpenFileException : public std::runtime_error
+{
+public:
+    CannotOpenFileException(const std::string& err) : std::runtime_error(err) {}
 
-    info.setVertexCoords();
+    virtual const char* what() const throw()
+    {
+        static std::string error;
+        error = std::string("Cannot Open File - ") + std::runtime_error::what();
+        return error.c_str();
+    }
+};
 
-    info.setFaces();
+class MalformedFileException : public std::runtime_error
+{
+public:
+    MalformedFileException(const std::string& err) : std::runtime_error(err) {}
 
-    info.setFaceVRefs();
-    info.setFaceColors();
-    info.setFaceNormals();
-
-    return info;
-}
+    virtual const char* what() const throw()
+    {
+        static std::string error;
+        error = std::string("Malformed File - ") + std::runtime_error::what();
+        return error.c_str();
+    }
+};
 
 } // namespace vcl
 
-#endif // VCL_IO_STL_CAPABILITY_H
+#endif // VCL_EXCEPTIONS_IO_H

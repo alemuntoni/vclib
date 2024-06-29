@@ -36,6 +36,7 @@ export import vclib.space.matrix;
 export import vclib.space.plane;
 export import vclib.space.point;
 export import vclib.space.polygon;
+export import vclib.space.polymorphic_object_vector;
 export import vclib.space.principal_curvature;
 export import vclib.space.quaternion;
 export import vclib.space.sampler;

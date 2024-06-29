@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/polygon.h>
-#include <vclib/exceptions/io_exceptions.h>
+#include <vclib/exceptions/io.h>
 #include <vclib/io/file_info.h>
 #include <vclib/io/read.h>
 #include <vclib/mesh/utils/mesh_info.h>

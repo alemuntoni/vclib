@@ -31,7 +31,7 @@
 namespace vcl {
 
 template<typename T>
-concept Clonable = requires (T o) {
+concept Cloneable = requires (const T& o) {
     // clang-format off
     { o.clone() } -> std::same_as<std::shared_ptr<T>>;
     // clang-format on
