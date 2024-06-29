@@ -48,6 +48,7 @@ import vclib.space.matrix;
 import vclib.space.point;
 import vclib.space.principal_curvature;
 import vclib.space.tex_coord;
+import vclib.space.texture;
 import vclib.space.vector;
 import vclib.types;
 import vclib.views;
@@ -68,6 +69,7 @@ export {
 #include <vclib/mesh/components/principal_curvature.h>
 #include <vclib/mesh/components/quality.h>
 #include <vclib/mesh/components/tex_coord.h>
+#include <vclib/mesh/components/texture_images.h>
 #include <vclib/mesh/components/texture_paths.h>
 #include <vclib/mesh/components/transform_matrix.h>
 #include <vclib/mesh/components/triangle_bit_flags.h>

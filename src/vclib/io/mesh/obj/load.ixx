@@ -35,11 +35,13 @@ import vclib.concepts;
 import vclib.exceptions;
 import vclib.io.file_info;
 import vclib.io.mesh.obj.material;
+import vclib.io.mesh.settings;
 import vclib.io.read;
 import vclib.mesh.utils.mesh_info;
 import vclib.misc;
 import vclib.space.point;
 import vclib.space.tex_coord;
+import vclib.space.texture;
 import vclib.types;
 
 export {

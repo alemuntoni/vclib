@@ -20,30 +20,15 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_MESH_COMPONENTS_H
-#define VCL_MESH_COMPONENTS_H
+module;
 
-#include "components/adjacent_edges.h"
-#include "components/adjacent_faces.h"
-#include "components/adjacent_vertices.h"
-#include "components/bit_flags.h"
-#include "components/bounding_box.h"
-#include "components/color.h"
-#include "components/coordinate.h"
-#include "components/custom_components.h"
-#include "components/mark.h"
-#include "components/name.h"
-#include "components/normal.h"
-#include "components/polygon_bit_flags.h"
-#include "components/principal_curvature.h"
-#include "components/quality.h"
-#include "components/tex_coord.h"
-#include "components/texture_images.h"
-#include "components/texture_paths.h"
-#include "components/transform_matrix.h"
-#include "components/triangle_bit_flags.h"
-#include "components/vertex_references.h"
-#include "components/wedge_colors.h"
-#include "components/wedge_tex_coords.h"
+#include <string>
 
-#endif // VCL_MESH_COMPONENTS_H
+export module vclib.concepts.mesh.components.texture_images;
+
+import vclib.concepts.mesh.components.component;
+import vclib.space.texture;
+
+export {
+#include <vclib/concepts/mesh/components/texture_images.h>
+}

@@ -24,6 +24,7 @@
 #define VCL_IO_STL_LOAD_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/io/mesh/settings.h>
 #include <vclib/io/read.h>
 #include <vclib/mesh/utils/mesh_info.h>
 #include <vclib/misc/logger.h>
@@ -95,16 +96,16 @@ inline bool isStlColored(std::istream& fp, bool& magicsMode)
 
 template<MeshConcept MeshType, LoggerConcept LogType>
 void readStlBin(
-    MeshType&     m,
-    std::istream& fp,
-    MeshInfo&     loadedInfo,
-    LogType&      log,
-    bool          enableOptionalComponents)
+    MeshType&           m,
+    std::istream&       fp,
+    MeshInfo&           loadedInfo,
+    LogType&            log,
+    const LoadSettings& settings)
 {
     bool magicsMode, colored;
     colored = isStlColored(fp, magicsMode);
 
-    if (enableOptionalComponents) {
+    if (settings.enableOptionalComponents) {
         if (colored)
             loadedInfo.setFaceColors();
         enableOptionalComponentsFromInfo(loadedInfo, m);
@@ -175,13 +176,13 @@ void readStlBin(
 
 template<MeshConcept MeshType, LoggerConcept LogType>
 void readStlAscii(
-    MeshType&     m,
-    std::istream& fp,
-    MeshInfo&     loadedInfo,
-    LogType&      log,
-    bool          enableOptionalComponents)
+    MeshType&           m,
+    std::istream&       fp,
+    MeshInfo&           loadedInfo,
+    LogType&            log,
+    const LoadSettings& settings)
 {
-    if (enableOptionalComponents) {
+    if (settings.enableOptionalComponents) {
         enableOptionalComponentsFromInfo(loadedInfo, m);
     }
 
@@ -280,20 +281,18 @@ void readStlAscii(
  * @param[in] isBinary: if true, the stream is considered binary, otherwise it
  * is considered ascii
  * @param[in] log: the logger to use
- * @param[in] enableOptionalComponents: if true, some eventual optional
- * components of the mesh that were not enabled and that can be loaded from the
- * stream, will be enabled before loading the stream.
+ * @param[in] settings: settings for loading the file/stream.
  *
  * @ingroup load
  */
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void loadStl(
-    MeshType&     m,
-    std::istream& inputStlStream,
-    MeshInfo&     loadedInfo,
-    bool          isBinary                 = false,
-    LogType&      log                      = nullLogger,
-    bool          enableOptionalComponents = true)
+    MeshType&           m,
+    std::istream&       inputStlStream,
+    MeshInfo&           loadedInfo,
+    bool                isBinary = false,
+    LogType&            log      = nullLogger,
+    const LoadSettings& settings = LoadSettings())
 {
     loadedInfo = MeshInfo();
     loadedInfo.setVertices();
@@ -309,10 +308,10 @@ void loadStl(
 
     if (isBinary)
         detail::readStlBin(
-            m, inputStlStream, loadedInfo, log, enableOptionalComponents);
+            m, inputStlStream, loadedInfo, log, settings);
     else
         detail::readStlAscii(
-            m, inputStlStream, loadedInfo, log, enableOptionalComponents);
+            m, inputStlStream, loadedInfo, log, settings);
 
     log.log(100, "STL file loaded");
 }
@@ -338,23 +337,21 @@ void loadStl(
  * @param[in] isBinary: if true, the stream is considered binary, otherwise it
  * is considered ascii
  * @param[in] log: the logger to use
- * @param[in] enableOptionalComponents: if true, some eventual optional
- * components of the mesh that were not enabled and that can be loaded from the
- * stream, will be enabled before loading the stream.
+ * @param[in] settings: settings for loading the file/stream.
  *
  * @ingroup load
  */
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void loadStl(
-    MeshType&     m,
-    std::istream& inputStlStream,
-    bool          isBinary                 = false,
-    LogType&      log                      = nullLogger,
-    bool          enableOptionalComponents = true)
+    MeshType&           m,
+    std::istream&       inputStlStream,
+    bool                isBinary = false,
+    LogType&            log      = nullLogger,
+    const LoadSettings& settings = LoadSettings())
 {
     MeshInfo loadedInfo;
     loadStl(
-        m, inputStlStream, loadedInfo, isBinary, log, enableOptionalComponents);
+        m, inputStlStream, loadedInfo, isBinary, log, settings);
 }
 
 /**
@@ -382,24 +379,22 @@ void loadStl(
  * @param[in] isBinary: if true, the stream is considered binary, otherwise it
  * is considered ascii
  * @param[in] log: the logger to use
- * @param[in] enableOptionalComponents: if true, some eventual optional
- * components of the mesh that were not enabled and that can be loaded from the
- * stream, will be enabled before loading the stream.
+ * @param[in] settings: settings for loading the file/stream.
  * @returns the mesh loaded from the stream.
  *
  * @ingroup load
  */
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 MeshType loadStl(
-    std::istream& inputStlStream,
-    MeshInfo&     loadedInfo,
-    bool          isBinary                 = false,
-    LogType&      log                      = nullLogger,
-    bool          enableOptionalComponents = true)
+    std::istream&       inputStlStream,
+    MeshInfo&           loadedInfo,
+    bool                isBinary = false,
+    LogType&            log      = nullLogger,
+    const LoadSettings& settings = LoadSettings())
 {
     MeshType m;
     loadStl(
-        m, inputStlStream, loadedInfo, isBinary, log, enableOptionalComponents);
+        m, inputStlStream, loadedInfo, isBinary, log, settings);
     return m;
 }
 
@@ -423,23 +418,21 @@ MeshType loadStl(
  * @param[in] isBinary: if true, the stream is considered binary, otherwise it
  * is considered ascii
  * @param[in] log: the logger to use
- * @param[in] enableOptionalComponents: if true, some eventual optional
- * components of the mesh that were not enabled and that can be loaded from the
- * stream, will be enabled before loading the stream.
+ * @param[in] settings: settings for loading the file/stream.
  * @returns the mesh loaded from the stream.
  *
  * @ingroup load
  */
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 MeshType loadStl(
-    std::istream& inputStlStream,
-    bool          isBinary                 = false,
-    LogType&      log                      = nullLogger,
-    bool          enableOptionalComponents = true)
+    std::istream&       inputStlStream,
+    bool                isBinary = false,
+    LogType&            log      = nullLogger,
+    const LoadSettings& settings = LoadSettings())
 {
     MeshInfo loadedInfo;
     return loadStl<MeshType>(
-        inputStlStream, loadedInfo, isBinary, log, enableOptionalComponents);
+        inputStlStream, loadedInfo, isBinary, log, settings);
 }
 
 /**
@@ -462,19 +455,17 @@ MeshType loadStl(
  * @param[out] loadedInfo: the info about what elements and components have been
  * loaded from the stream
  * @param[in] log: the logger to use
- * @param[in] enableOptionalComponents: if true, some eventual optional
- * components of the mesh that were not enabled and that can be loaded from the
- * stream, will be enabled before loading the stream.
+ * @param[in] settings: settings for loading the file/stream.
  *
  * @ingroup load
  */
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void loadStl(
-    MeshType&          m,
-    const std::string& filename,
-    MeshInfo&          loadedInfo,
-    LogType&           log                      = nullLogger,
-    bool               enableOptionalComponents = true)
+    MeshType&           m,
+    const std::string&  filename,
+    MeshInfo&           loadedInfo,
+    LogType&            log      = nullLogger,
+    const LoadSettings& settings = LoadSettings())
 {
     log.log(0, "Checking STL file");
 
@@ -491,7 +482,7 @@ void loadStl(
         m.name() = FileInfo::fileNameWithoutExtension(filename);
     }
 
-    loadStl(m, fp, loadedInfo, isBinary, log, enableOptionalComponents);
+    loadStl(m, fp, loadedInfo, isBinary, log, settings);
 }
 
 /**
@@ -509,21 +500,19 @@ void loadStl(
  * @param[in] m: the mesh to fill
  * @param[in] filename: the name of the file to read from
  * @param[in] log: the logger to use
- * @param[in] enableOptionalComponents: if true, some eventual optional
- * components of the mesh that were not enabled and that can be loaded from the
- * stream, will be enabled before loading the stream.
+ * @param[in] settings: settings for loading the file/stream.
  *
  * @ingroup load
  */
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void loadStl(
-    MeshType&          m,
-    const std::string& filename,
-    LogType&           log                      = nullLogger,
-    bool               enableOptionalComponents = true)
+    MeshType&           m,
+    const std::string&  filename,
+    LogType&            log      = nullLogger,
+    const LoadSettings& settings = LoadSettings())
 {
     MeshInfo loadedInfo;
-    loadStl(m, filename, loadedInfo, log, enableOptionalComponents);
+    loadStl(m, filename, loadedInfo, log, settings);
 }
 
 /**
@@ -545,22 +534,20 @@ void loadStl(
  * @param[out] loadedInfo: the info about what elements and components have been
  * loaded from the stream
  * @param[in] log: the logger to use
- * @param[in] enableOptionalComponents: if true, some eventual optional
- * components of the mesh that were not enabled and that can be loaded from the
- * stream, will be enabled before loading the stream.
+ * @param[in] settings: settings for loading the file/stream.
  * @returns the mesh loaded from the file.
  *
  * @ingroup load
  */
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 MeshType loadStl(
-    const std::string& filename,
-    MeshInfo&          loadedInfo,
-    LogType&           log                      = nullLogger,
-    bool               enableOptionalComponents = true)
+    const std::string&  filename,
+    MeshInfo&           loadedInfo,
+    LogType&            log      = nullLogger,
+    const LoadSettings& settings = LoadSettings())
 {
     MeshType m;
-    loadStl(m, filename, loadedInfo, log, enableOptionalComponents);
+    loadStl(m, filename, loadedInfo, log, settings);
     return m;
 }
 
@@ -578,22 +565,20 @@ MeshType loadStl(
  *
  * @param[in] filename: the name of the file to read from
  * @param[in] log: the logger to use
- * @param[in] enableOptionalComponents: if true, some eventual optional
- * components of the mesh that were not enabled and that can be loaded from the
- * stream, will be enabled before loading the stream.
+ * @param[in] settings: settings for loading the file/stream.
  * @returns the mesh loaded from the file.
  *
  * @ingroup load
  */
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 MeshType loadStl(
-    const std::string& filename,
-    LogType&           log                      = nullLogger,
-    bool               enableOptionalComponents = true)
+    const std::string&  filename,
+    LogType&            log      = nullLogger,
+    const LoadSettings& settings = LoadSettings())
 {
     MeshInfo loadedInfo;
     return loadStl<MeshType>(
-        filename, loadedInfo, log, enableOptionalComponents);
+        filename, loadedInfo, log, settings);
 }
 
 } // namespace vcl

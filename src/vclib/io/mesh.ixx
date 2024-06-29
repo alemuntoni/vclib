@@ -27,4 +27,5 @@ export module vclib.io.mesh;
 export import vclib.io.mesh.capability;
 export import vclib.io.mesh.load;
 export import vclib.io.mesh.save;
+export import vclib.io.mesh.settings;
 

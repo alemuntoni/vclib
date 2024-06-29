@@ -26,9 +26,6 @@ module;
 #include <cassert>
 #include <cctype>
 #include <cstddef>
-#include <initializer_list>
-#include <list>
-#include <sstream>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -40,15 +37,15 @@ import vclib.types;
 
 export import vclib.misc.hash;
 export import vclib.misc.logger;
+export import vclib.misc.nested_initializer_lists;
 export import vclib.misc.parallel;
+export import vclib.misc.string;
 export import vclib.misc.timer;
 
 export {
 #include <vclib/misc/compactness.h>
 #include <vclib/misc/comparators.h>
-#include <vclib/misc/nested_initializer_lists.h>
 #include <vclib/misc/pair.h>
-#include <vclib/misc/string.h>
 #include <vclib/misc/tokenizer.h>
 #include <vclib/misc/tuple.h>
 }

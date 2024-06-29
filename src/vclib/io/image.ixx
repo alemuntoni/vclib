@@ -32,7 +32,7 @@ export module vclib.io.image;
 
 import vclib.exceptions;
 import vclib.io.file_info;
-import vclib.misc;
+import vclib.misc.string;
 import vclib.types;
 
 export {

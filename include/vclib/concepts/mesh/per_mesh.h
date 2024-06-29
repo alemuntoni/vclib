@@ -44,6 +44,8 @@ concept HasMark = comp::HasMark<T>;
 template<typename T>
 concept HasName = comp::HasName<T>;
 template<typename T>
+concept HasTextureImages = comp::HasTextureImages<T>;
+template<typename T>
 concept HasTexturePaths = comp::HasTexturePaths<T>;
 template<typename T>
 concept HasTransformMatrix = comp::HasTransformMatrix<T>;
@@ -93,6 +95,15 @@ concept HasMark = MeshConcept<MeshType> && mesh::HasMark<MeshType>;
  */
 template<typename MeshType>
 concept HasName = MeshConcept<MeshType> && mesh::HasName<MeshType>;
+
+/**
+ * @brief Concept that checks if a Mesh has the TextureImages component.
+ *
+ * @ingroup mesh_concepts
+ */
+template<typename MeshType>
+concept HasTextureImages =
+    MeshConcept<MeshType> && mesh::HasTextureImages<MeshType>;
 
 /**
  * @brief Concept that checks if a Mesh has the TexturePaths component.

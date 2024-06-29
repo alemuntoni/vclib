@@ -27,6 +27,8 @@ module;
 
 export module vclib.concepts.mesh.components;
 
+export import vclib.concepts.mesh.components.texture_images;
+
 import vclib.concepts.mesh.components.component;
 import vclib.space.color;
 import vclib.types;

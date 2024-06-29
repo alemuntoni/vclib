@@ -29,6 +29,7 @@ export module vclib.io.mesh.load;
 import vclib.concepts;
 import vclib.exceptions;
 import vclib.io.file_info;
+import vclib.io.mesh.settings;
 import vclib.mesh.utils.mesh_info;
 import vclib.misc;
 

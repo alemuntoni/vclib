@@ -33,12 +33,15 @@ module;
 
 export module vclib.io.mesh.ply.detail;
 
-export import vclib.concepts.mesh;
-export import vclib.exceptions;
-export import vclib.io.file_info;
+import vclib.concepts;
 import vclib.io.read;
 import vclib.io.write;
 import vclib.mesh.requirements;
+import vclib.space.texture;
+
+export import vclib.concepts.mesh;
+export import vclib.exceptions;
+export import vclib.io.file_info;
 export import vclib.mesh.utils.mesh_info;
 export import vclib.misc;
 export import vclib.types;
