@@ -530,7 +530,6 @@ void loadOff(
         m, inputOffStream, fileInfo, nFaces, enableOptionalComponents);
     if (enableOptionalComponents)
         loadedInfo = fileInfo;
-    // detail::loadOffEdges(m, inputOffStream, loadedInfo, nEdges);
 }
 
 /**

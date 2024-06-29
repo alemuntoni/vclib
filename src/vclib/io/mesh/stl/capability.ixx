@@ -22,9 +22,10 @@
 
 module;
 
-export module vclib.io.mesh;
+export module vclib.io.mesh.stl.capability;
 
-export import vclib.io.mesh.capability;
-export import vclib.io.mesh.load;
-export import vclib.io.mesh.save;
+import vclib.mesh.utils.mesh_info;
 
+export {
+#include <vclib/io/mesh/stl/capability.h>
+}

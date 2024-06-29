@@ -20,11 +20,41 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_IO_CAPABILITY_H
+#define VCL_IO_CAPABILITY_H
 
-export module vclib.io.mesh;
+#ifndef VCLIB_WITH_MODULES
+#include <vclib/exceptions/io_exceptions.h>
+#include <vclib/misc/string.h>
 
-export import vclib.io.mesh.capability;
-export import vclib.io.mesh.load;
-export import vclib.io.mesh.save;
+#include "obj/capability.h"
+#include "off/capability.h"
+#include "ply/capability.h"
+#include "stl/capability.h"
+#endif
 
+namespace vcl {
+
+inline MeshInfo formatCapability(const std::string& format)
+{
+    std::string ext = vcl::toLower(format);
+    if (ext == "obj") {
+        return objFormatCapability();
+    }
+    else if (ext == "off") {
+        return offFormatCapability();
+    }
+    else if (ext == "ply") {
+        return plyFormatCapability();
+    }
+    else if (ext == "stl") {
+        return stlFormatCapability();
+    }
+    else {
+        throw vcl::UnknownFileFormatException(ext);
+    }
+}
+
+} // namespace vcl
+
+#endif // VCL_IO_CAPABILITY_H

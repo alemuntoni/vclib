@@ -20,11 +20,35 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_IO_OFF_CAPABILITY_H
+#define VCL_IO_OFF_CAPABILITY_H
 
-export module vclib.io.mesh;
+#ifndef VCLIB_WITH_MODULES
+#include <vclib/mesh/utils/mesh_info.h>
+#endif
 
-export import vclib.io.mesh.capability;
-export import vclib.io.mesh.load;
-export import vclib.io.mesh.save;
+namespace vcl {
 
+inline MeshInfo offFormatCapability()
+{
+    MeshInfo info;
+
+    info.setPolygonMesh();
+
+    info.setVertices();
+    info.setFaces();
+
+    info.setVertexCoords();
+    info.setVertexNormals();
+    info.setVertexColors();
+    info.setVertexTexCoords();
+
+    info.setFaceVRefs();
+    info.setFaceColors();
+
+    return info;
+}
+
+} // namespace vcl
+
+#endif // VCL_IO_OFF_CAPABILITY_H

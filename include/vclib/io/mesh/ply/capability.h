@@ -20,11 +20,47 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_IO_PLY_CAPABILITY_H
+#define VCL_IO_PLY_CAPABILITY_H
 
-export module vclib.io.mesh;
+#ifndef VCLIB_WITH_MODULES
+#include <vclib/mesh/utils/mesh_info.h>
+#endif
 
-export import vclib.io.mesh.capability;
-export import vclib.io.mesh.load;
-export import vclib.io.mesh.save;
+namespace vcl {
 
+inline MeshInfo plyFormatCapability()
+{
+    MeshInfo info;
+
+    info.setPolygonMesh();
+
+    info.setVertices();
+    info.setFaces();
+    info.setEdges();
+
+    info.setTextures();
+
+    info.setVertexCoords();
+    info.setVertexNormals();
+    info.setVertexColors();
+    info.setVertexQuality();
+    info.setVertexTexCoords();
+    info.setVertexCustomComponents();
+
+    info.setFaceVRefs();
+    info.setFaceColors();
+    info.setFaceNormals();
+    info.setFaceQuality();
+    info.setFaceWedgeTexCoords();
+    info.setFaceCustomComponents();
+
+    info.setEdgeVRefs();
+    info.setEdgeColors();
+
+    return info;
+}
+
+} // namespace vcl
+
+#endif // VCL_IO_PLY_CAPABILITY_H
