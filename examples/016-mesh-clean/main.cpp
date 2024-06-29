@@ -31,6 +31,7 @@
 #include <vclib/meshes.h>
 #include <vclib/misc/timer.h>
 #else
+#include <fstream>
 #include <ranges> // needed by msvc...
 import vclib;
 #endif

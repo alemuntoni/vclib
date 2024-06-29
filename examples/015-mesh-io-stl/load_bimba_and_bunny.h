@@ -6,6 +6,7 @@
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #else
+#include <fstream>
 import vclib;
 #endif
 

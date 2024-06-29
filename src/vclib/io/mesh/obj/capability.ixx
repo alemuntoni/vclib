@@ -22,6 +22,8 @@
 
 module;
 
+#include <Eigen/Core>
+
 export module vclib.io.mesh.obj.capability;
 
 import vclib.mesh.utils.mesh_info;

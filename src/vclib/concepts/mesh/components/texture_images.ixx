@@ -28,6 +28,7 @@ export module vclib.concepts.mesh.components.texture_images;
 
 import vclib.concepts.mesh.components.component;
 import vclib.space.texture;
+import vclib.types;
 
 export {
 #include <vclib/concepts/mesh/components/texture_images.h>

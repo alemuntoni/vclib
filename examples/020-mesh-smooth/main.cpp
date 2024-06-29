@@ -29,6 +29,7 @@
 #include <vclib/misc/timer.h>
 #else
 #include <Eigen/Core>
+#include <fstream>
 import vclib;
 #endif
 

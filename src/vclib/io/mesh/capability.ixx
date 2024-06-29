@@ -22,6 +22,7 @@
 
 module;
 
+#include <Eigen/Core>
 #include <string>
 
 export module vclib.io.mesh.capability;

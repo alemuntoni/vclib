@@ -30,6 +30,7 @@
 #include <vclib/views/mesh.h>
 #else
 #include <Eigen/Core> // needed by msvc...
+#include <fstream>
 #include <ranges>     // needed by msvc...
 import vclib;
 #endif

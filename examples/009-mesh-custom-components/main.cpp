@@ -29,6 +29,7 @@
 #include <vclib/meshes.h>
 #else
 #include <Eigen/Core> // needed by msvc...
+#include <fstream>
 import vclib;
 #endif
 

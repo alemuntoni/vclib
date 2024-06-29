@@ -29,6 +29,7 @@
 #include <vclib/misc/logger/null_logger.h>
 #include <vclib/load_save.h>
 #else
+#include <fstream>
 import vclib;
 #endif
 

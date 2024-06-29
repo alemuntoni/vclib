@@ -28,6 +28,7 @@
 #include <vclib/meshes.h>
 #include <vclib/misc/timer.h>
 #else
+#include <fstream>
 #include <map>    // needed by clang...
 #include <ranges> // needed by msvc...
 import vclib;

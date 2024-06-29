@@ -27,6 +27,7 @@
 #include <vclib/io/mesh.h>
 #include <vclib/meshes.h>
 #else
+#include <fstream>
 #include <ranges> // needed by msvc...
 import vclib;
 #endif
