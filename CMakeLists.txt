@@ -184,6 +184,7 @@ set(MODULES
     src/vclib/meshes/detail.ixx
     src/vclib/meshes/edge_mesh.ixx
     src/vclib/meshes/point_cloud.ixx
+    src/vclib/meshes/poly_edge_mesh.ixx
     src/vclib/meshes/poly_mesh.ixx
     src/vclib/meshes/tri_edge_mesh.ixx
     src/vclib/meshes/tri_mesh.ixx

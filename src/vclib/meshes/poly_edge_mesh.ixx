@@ -20,62 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_MISC_LOGGER_CONSOLE_LOGGER_H
-#define VCL_MISC_LOGGER_CONSOLE_LOGGER_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include "logger.h"
+export module vclib.meshes.poly_edge_mesh;
 
-#include <vclib/concepts/logger.h>
-#endif
+import vclib.mesh;
 
-namespace vcl {
+export {
+#include <vclib/meshes/poly_edge_mesh.h>
+}
 
-class ConsoleLogger : public Logger<std::ostream>
-{
-    std::ostream& mErrStream   = std::cerr;
-    std::ostream& mWarnStream  = std::cout;
-    std::ostream& mMsgStream   = std::cout;
-    std::ostream& mProgStream  = std::cout;
-    std::ostream& mDebugStream = std::cerr;
-
-public:
-    ConsoleLogger() = default;
-
-    ConsoleLogger(
-        std::ostream& errStream,
-        std::ostream& warnStream,
-        std::ostream& msgStream,
-        std::ostream& progStream,
-        std::ostream& debugStream) :
-            mErrStream(errStream),
-            mWarnStream(warnStream), mMsgStream(msgStream),
-            mProgStream(progStream), mDebugStream(debugStream)
-    {
-    }
-
-protected:
-    std::ostream* levelStream(LogLevel lvl) override
-    {
-        switch (lvl) {
-        case ERROR: return &mErrStream;
-        case WARNING: return &mWarnStream;
-        case MESSAGE: return &mMsgStream;
-        case PROGRESS: return &mProgStream;
-        case DEBUG: return &mDebugStream;
-        }
-        return nullptr;
-    }
-
-    void alignLeft(std::ostream& o) override { o << std::left; }
-
-    void alignRight(std::ostream& o) override { o << std::right; }
-
-    void setWidth(std::ostream& o, uint w) override { o << std::setw(w); }
-
-    void flush(std::ostream& o) override { o.flush(); }
-};
-
-} // namespace vcl
-
-#endif // VCL_MISC_LOGGER_CONSOLE_LOGGER_H

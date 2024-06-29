@@ -43,7 +43,7 @@ namespace vcl {
 class NullLogger
 {
 public:
-    enum LogLevel { ERROR = 0, WARNING, PROGRESS, DEBUG };
+    enum LogLevel { ERROR = 0, WARNING, MESSAGE, PROGRESS, DEBUG };
 
     NullLogger() = default;
 
@@ -51,13 +51,27 @@ public:
 
     void disableIndentation() {}
 
+    void enablePrintPercentage() {}
+
+    void disablePrintPercentage() {}
+
+    void enablePrintMessageDuringProgress() {}
+
+    void disablePrintMessageDuringProgress() {}
+
+    void enablePrintTimer() {}
+
+    void disablePrintTimer() {}
+
     void reset() {}
 
     void setMaxLineWidth(uint) {}
 
-    void setPrintTimer(bool) {}
-
     void startTimer() {}
+
+    void stopTimer() {}
+
+    double getTime() { return 0; }
 
     void startNewTask(double, double, std::string) {}
 

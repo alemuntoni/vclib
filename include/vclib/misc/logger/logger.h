@@ -40,7 +40,7 @@ template<typename Stream>
 class Logger
 {
 public:
-    enum LogLevel { ERROR = 0, WARNING, PROGRESS, DEBUG };
+    enum LogLevel { ERROR = 0, WARNING, MESSAGE, PROGRESS, DEBUG };
 
 private:
     enum InternalLogLevel { START = DEBUG + 1, END };
@@ -58,19 +58,24 @@ private:
 
     double mStep = 1; // the value that corresponds to 1% on the current task
 
-    bool mIndent    = true;
     uint mLineWidth = 80;
 
     vcl::Timer mTimer;
-    bool       mPrintTimer = false;
 
     // progress status members
-    bool        mIsProgressActive = false;
     std::string mProgressMessage;
     uint        mProgressStep;
     uint        mProgressPerc;
     uint        mProgressPercStep;
+    uint        mProgressSize;
     uint        mLastProgress;
+    bool        mIsProgressActive = false;
+
+    // settings
+    bool mPrintPerc              = true;
+    bool mPrintMsgDuringProgress = true;
+    bool mIndent                 = true;
+    bool mPrintTimer             = false;
 
     std::mutex mMutex;
 
@@ -85,6 +90,21 @@ public:
 
     void disableIndentation() { mIndent = false; }
 
+    void enablePrintPercentage() { mPrintPerc = true; }
+
+    void disablePrintPercentage() { mPrintPerc = false; }
+
+    void enablePrintMessageDuringProgress() { mPrintMsgDuringProgress = true; }
+
+    void disablePrintMessageDuringProgress()
+    {
+        mPrintMsgDuringProgress = false;
+    }
+
+    void enablePrintTimer() { mPrintTimer = true; }
+
+    void disablePrintTimer() { mPrintTimer = false; }
+
     void reset()
     {
         while (!mIntervals.empty())
@@ -95,9 +115,18 @@ public:
 
     void setMaxLineWidth(uint w) { mLineWidth = w; }
 
-    void setPrintTimer(bool b) { mPrintTimer = b; }
-
     void startTimer() { mTimer.start(); }
+
+    void stopTimer() { mTimer.stop(); }
+
+    /**
+     * @brief Returns the time passed since the last call to `startTimer` member
+     * function, or the time passed between the call to `startTimer` and the
+     * call to `stopTimer` member functions. The time is expressed in seconds.
+     *
+     * @return The time passed, expressed in seconds.
+     */
+    double getTime() { return mTimer.delay(); }
 
     void startNewTask(double fromPerc, double toPerc, const std::string& action)
     {
@@ -198,10 +227,11 @@ public:
         assert((endPerc - startPerc) > 0);
         mIsProgressActive = true;
         mProgressMessage  = msg;
+        mProgressSize     = progressSize;
         mProgressPerc     = startPerc;
         mProgressPercStep = percPrintProgress;
         mProgressStep =
-            progressSize / ((endPerc - startPerc) / percPrintProgress - 1);
+            (progressSize + 1) / ((endPerc - startPerc) / percPrintProgress);
         if (mProgressStep == 0)
             mProgressStep = progressSize;
         mLastProgress = 0;
@@ -230,7 +260,11 @@ public:
      *
      * @endcode
      */
-    void endProgress() { mIsProgressActive = false; }
+    void endProgress()
+    {
+        progress(mProgressSize);
+        mIsProgressActive = false;
+    }
 
     /**
      * @brief Allows to easily manage progresses with the logger, along with the
@@ -268,7 +302,10 @@ public:
         uint progress = n / mProgressStep;
         if (mLastProgress < progress) {
             mProgressPerc = progress * mProgressPercStep;
-            log(mProgressPerc, mProgressMessage);
+            if (mPrintMsgDuringProgress)
+                log(mProgressPerc, PROGRESS, mProgressMessage);
+            else
+                setPercentage(mProgressPerc);
             mLastProgress = progress;
         }
         mMutex.unlock();
@@ -285,6 +322,14 @@ protected:
      */
     virtual Stream* levelStream(LogLevel lvl) = 0;
 
+    virtual void alignLeft(Stream& o) {}
+
+    virtual void alignRight(Stream& o) {}
+
+    virtual void setWidth(Stream& o, uint w) {}
+
+    virtual void flush(Stream& o) {}
+
 private:
     void updateStep()
     {
@@ -293,6 +338,9 @@ private:
 
     void printLine(const std::string& msg, uint lvl)
     {
+        if (!mPrintPerc && msg.empty())
+            return;
+
         LogLevel l = PROGRESS;
         if (lvl < DEBUG) {
             l = (LogLevel) lvl;
@@ -301,26 +349,32 @@ private:
 
         if (stream) {
             uint s = 0;
-            s      = printPercentage(*stream);
+
+            if (mPrintPerc) {
+                s = printPercentage(*stream);
+            }
             s += printIndentation(*stream);
             printMessage(*stream, msg, lvl, s);
             printElapsedTime(*stream);
-            *stream << std::endl;
+            *stream << "\n";
         }
+        flush(*stream);
     }
 
-    uint printPercentage(Stream& o) const
+    uint printPercentage(Stream& o)
     {
         uint size = 3;
         if (mPercPrecision > 0)
             size += 1 + mPercPrecision;
 
         o << "[";
-        o << std::right << std::setw(size) << percentage() << "%]";
+        alignRight(o);
+        setWidth(o, size);
+        o << percentage() << "%]";
         return size + 3;
     }
 
-    uint printIndentation(Stream& o) const
+    uint printIndentation(Stream& o)
     {
         uint s = 0;
         if (mIndent) {
@@ -364,14 +418,18 @@ private:
             o << " End ";
             break;
         }
-        o << std::setw(maxMsgSize) << std::left << msg;
+        setWidth(o, maxMsgSize);
+        alignLeft(o);
+        o << msg.c_str();
     }
 
-    void printElapsedTime(Stream& o) const
+    void printElapsedTime(Stream& o)
     {
         if (mPrintTimer) {
-            o << "[" << std::setw(TIMER_MAX_CHAR_NUMBER - 3) << std::right
-              << mTimer.delay() << "s]";
+            o << "[";
+            setWidth(o, TIMER_MAX_CHAR_NUMBER - 3);
+            alignRight(o);
+            o << mTimer.delay() << "s]";
         }
     }
 };
