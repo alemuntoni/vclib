@@ -28,6 +28,7 @@
 
 #include <vclib/exceptions/io.h>
 #include <vclib/io/file_info.h>
+#include <vclib/io/mesh/settings.h>
 #include <vclib/io/write.h>
 #include <vclib/mesh/utils/mesh_info.h>
 #include <vclib/misc/logger.h>
@@ -83,7 +84,10 @@ ObjMaterial objMaterialFromFace(
     return mat;
 }
 
-template<ElementConcept ElementType, MeshConcept MeshType>
+template<
+    ElementConcept ElementType,
+    MeshConcept    MeshType,
+    LoggerConcept  LogType = NullLogger>
 void writeElementObjMaterial(
     const ElementType&                  e,
     const MeshType&                     m,
@@ -91,19 +95,20 @@ void writeElementObjMaterial(
     ObjMaterial&                        lastMaterial,
     std::map<ObjMaterial, std::string>& materialMap,
     std::ostream&                       fp,
-    std::ostream&                       mtlfp)
+    std::ostream&                       mtlfp,
+    const SaveSettings&                 settings,
+    LogType&                            log = nullLogger)
 {
-    ObjMaterial mat;
-    if constexpr (std::is_same<ElementType, typename MeshType::VertexType>::
-                      value)
-    {
+    ObjMaterial    mat;
+    constexpr bool EL_IS_VERTEX = ElementType::ELEMENT_ID == ElemId::VERTEX;
+    constexpr bool EL_IS_FACE   = ElementType::ELEMENT_ID == ElemId::FACE;
+
+    if constexpr (EL_IS_VERTEX) {
         mat = objMaterialFromVertex<typename MeshType::VertexType, MeshType>(
             e, fi);
     }
-    if constexpr (HasFaces<MeshType>) {
-        if constexpr (std::is_same<ElementType, typename MeshType::FaceType>::
-                          value)
-            mat = objMaterialFromFace(e, m, fi);
+    if constexpr (EL_IS_FACE) {
+        mat = objMaterialFromFace(e, m, fi);
     }
     if (!mat.isEmpty()) {
         static const std::string MATERIAL_PREFIX = "MATERIAL_";
@@ -116,6 +121,24 @@ void writeElementObjMaterial(
             // save the material in the mtl file
             mtlfp << "newmtl " << mname << std::endl;
             mtlfp << mat << std::endl;
+            if constexpr (HasTextureImages<MeshType>) {
+                if (settings.saveTextureImages && mat.hasTexture) {
+                    // we need to save the texture image
+                    // first, get the index of the texture: 0 if vertex,
+                    // textureIndex if face
+                    uint textureIndex = 0;
+                    if constexpr (EL_IS_FACE) {
+                        textureIndex = e.textureIndex();
+                    }
+                    const Texture& t = m.texture(textureIndex);
+                    try {
+                        t.image().save(m.meshBasePath() + mat.map_Kd);
+                    }
+                    catch (const std::runtime_error& e) {
+                        log.log(LogType::WARNING, e.what());
+                    }
+                }
+            }
         }
         else { // get the name of the material
             mname = it->second;
@@ -131,13 +154,13 @@ void writeElementObjMaterial(
 
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void saveObj(
-    const MeshType&    m,
-    const std::string& filename,
-    std::ostream&      fp,
-    std::ostream*      mtlfp,
-    bool               saveMtlFile,
-    const MeshInfo&    info,
-    LogType&           log = nullLogger)
+    const MeshType&     m,
+    const std::string&  filename,
+    std::ostream&       fp,
+    std::ostream*       mtlfp,
+    bool                saveMtlFile,
+    LogType&            log      = nullLogger,
+    const SaveSettings& settings = SaveSettings())
 {
     MeshInfo meshInfo(m);
 
@@ -145,7 +168,8 @@ void saveObj(
     // available in the mesh. meshInfo will contain the intersection between the
     // components that the user wants to save and the components that are
     // available in the mesh.
-    meshInfo = info.intersect(meshInfo);
+    if (!settings.info.isEmpty())
+        meshInfo = settings.info.intersect(meshInfo);
 
     // if the mesh has both vertex and wedge texcords, will be saved just wedges
     // because obj does not allow to save them both. In any case, also vertex
@@ -184,7 +208,15 @@ void saveObj(
     for (const VertexType& v : m.vertices()) {
         if (useMtl) { // mtl management
             detail::writeElementObjMaterial<VertexType, MeshType>(
-                v, m, meshInfo, lastMaterial, materialMap, fp, *mtlfp);
+                v,
+                m,
+                meshInfo,
+                lastMaterial,
+                materialMap,
+                fp,
+                *mtlfp,
+                settings,
+                log);
         }
         fp << "v ";
         io::writeDouble(fp, v.coord().x(), false);
@@ -223,7 +255,15 @@ void saveObj(
         for (const FaceType& f : m.faces()) {
             if (useMtl) { // mtl management
                 detail::writeElementObjMaterial(
-                    f, m, meshInfo, lastMaterial, materialMap, fp, *mtlfp);
+                    f,
+                    m,
+                    meshInfo,
+                    lastMaterial,
+                    materialMap,
+                    fp,
+                    *mtlfp,
+                    settings,
+                    log);
             }
             if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
                 if (meshInfo.hasFaceWedgeTexCoords()) {
@@ -266,63 +306,35 @@ void saveObj(
 
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void saveObj(
-    const MeshType& m,
-    std::ostream&   fp,
-    std::ostream&   mtlfp,
-    const MeshInfo& info,
-    LogType&        log = nullLogger)
+    const MeshType&     m,
+    std::ostream&       fp,
+    std::ostream&       mtlfp,
+    LogType&            log      = nullLogger,
+    const SaveSettings& settings = SaveSettings())
 {
-    detail::saveObj(m, "materials", fp, &mtlfp, false, info, log);
+    detail::saveObj(m, "materials", fp, &mtlfp, false, log, settings);
 }
 
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void saveObj(
-    const MeshType& m,
-    std::ostream&   fp,
-    const MeshInfo& info,
-    LogType&        log = nullLogger)
+    const MeshType&     m,
+    std::ostream&       fp,
+    LogType&            log      = nullLogger,
+    const SaveSettings& settings = SaveSettings())
 {
-    detail::saveObj(m, "", fp, nullptr, false, info, log);
+    detail::saveObj(m, "", fp, nullptr, false, log, settings);
 }
 
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void saveObj(
-    const MeshType& m,
-    std::ostream&   fp,
-    std::ostream&   mtlfp,
-    LogType&        log = nullLogger)
-{
-    MeshInfo info(m);
-    saveObj(m, fp, mtlfp, info, log);
-}
-
-template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
-void saveObj(const MeshType& m, std::ostream& fp, LogType& log = nullLogger)
-{
-    MeshInfo info(m);
-    saveObj(m, fp, info, log);
-}
-
-template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
-void saveObj(
-    const MeshType&    m,
-    const std::string& filename,
-    const MeshInfo&    info,
-    LogType&           log = nullLogger)
+    const MeshType&     m,
+    const std::string&  filename,
+    LogType&            log      = nullLogger,
+    const SaveSettings& settings = SaveSettings())
 {
     std::ofstream fp = openOutputFileStream(filename, "obj");
 
-    detail::saveObj(m, filename, fp, nullptr, true, info, log);
-}
-
-template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
-void saveObj(
-    const MeshType&    m,
-    const std::string& filename,
-    LogType&           log = nullLogger)
-{
-    MeshInfo info(m);
-    saveObj(m, filename, info, log);
+    detail::saveObj(m, filename, fp, nullptr, true, log, settings);
 }
 
 } // namespace vcl

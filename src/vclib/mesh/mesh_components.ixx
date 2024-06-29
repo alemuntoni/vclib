@@ -22,6 +22,8 @@
 
 module;
 
+#include <type_traits>
+
 export module vclib.mesh.mesh_components;
 
 import vclib.mesh.components;

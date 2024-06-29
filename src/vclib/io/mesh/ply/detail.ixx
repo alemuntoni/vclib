@@ -35,6 +35,7 @@ export module vclib.io.mesh.ply.detail;
 
 import vclib.concepts;
 import vclib.io.read;
+import vclib.io.mesh.settings;
 import vclib.io.write;
 import vclib.mesh.requirements;
 import vclib.space.texture;

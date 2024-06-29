@@ -29,6 +29,7 @@ export module vclib.io.mesh.off.save;
 
 import vclib.concepts;
 import vclib.exceptions;
+import vclib.io.mesh.settings;
 import vclib.io.write;
 import vclib.mesh.utils.mesh_info;
 import vclib.misc;

@@ -50,7 +50,9 @@ template<MeshConcept MeshType>
 void loadObjMaterials(
     std::map<std::string, ObjMaterial>& materialMap,
     MeshType&                           mesh,
-    std::istream&                       stream)
+    std::istream&                       stream,
+    MeshInfo&                           loadedInfo,
+    const LoadSettings&                 settings)
 {
     std::string matName;
     ObjMaterial mat;
@@ -140,10 +142,12 @@ void loadObjMaterials(
                 mat.map_Kd     = *token;
                 mat.hasTexture = true;
                 if constexpr (HasTexturePaths<MeshType>) {
+                    loadedInfo.setTextures();
                     mat.mapId = mesh.textureNumber();
                     mesh.pushTexturePath(mat.map_Kd);
                 }
                 else if constexpr (HasTextureImages<MeshType>) {
+                    loadedInfo.setTextures();
                     mat.mapId = mesh.textureNumber();
                     mesh.pushTexture(mat.map_Kd);
                 }
@@ -161,10 +165,12 @@ template<MeshConcept MeshType>
 void loadObjMaterials(
     std::map<std::string, ObjMaterial>& materialMap,
     MeshType&                           mesh,
-    const std::string&                  mtllib)
+    const std::string&                  mtllib,
+    MeshInfo&                           loadedInfo,
+    const LoadSettings&                 settings)
 {
     std::ifstream file = openInputFileStream(mtllib);
-    loadObjMaterials(materialMap, mesh, file);
+    loadObjMaterials(materialMap, mesh, file, loadedInfo, settings);
 }
 
 template<MeshConcept MeshType>
@@ -449,6 +455,8 @@ void loadObj(
     LogType&                          log          = nullLogger,
     const LoadSettings&               settings     = LoadSettings())
 {
+    loadedInfo.clear();
+
     // save normals if they can't be stored directly into vertices
     detail::ObjNormalsMap<MeshType> mapNormalsCache;
     uint                            vn = 0; // number of vertex normals read
@@ -461,7 +469,7 @@ void loadObj(
 
     // load materials from the material files, if any
     for (auto* stream : inputMtlStreams) {
-        detail::loadObjMaterials(materialMap, m, *stream);
+        detail::loadObjMaterials(materialMap, m, *stream, loadedInfo, settings);
     }
 
     // the current material, set by 'usemtl'
@@ -487,7 +495,8 @@ void loadObj(
                 std::string mtlfile =
                     FileInfo::pathWithoutFileName(filename) + *token;
                 try {
-                    detail::loadObjMaterials(materialMap, m, mtlfile);
+                    detail::loadObjMaterials(
+                        materialMap, m, mtlfile, loadedInfo, settings);
                 }
                 catch (vcl::CannotOpenFileException) {
                     log.log(
@@ -512,23 +521,13 @@ void loadObj(
             // color)
             if (header == "v") {
                 detail::readObjVertex(
-                    m,
-                    token,
-                    loadedInfo,
-                    tokens,
-                    currentMaterial,
-                    settings);
+                    m, token, loadedInfo, tokens, currentMaterial, settings);
             }
             // read vertex normal (and save in vn how many normals we read)
             if constexpr (HasPerVertexNormal<MeshType>) {
                 if (header == "vn") {
                     detail::readObjVertexNormal(
-                        m,
-                        mapNormalsCache,
-                        vn,
-                        token,
-                        loadedInfo,
-                        settings);
+                        m, mapNormalsCache, vn, token, loadedInfo, settings);
                     vn++;
                 }
             }
@@ -601,13 +600,18 @@ void loadObj(
     }
 
     if constexpr (HasTextureImages<MeshType>) {
-        // try to load the textures
-        for (vcl::Texture& texture : m.textures()) {
-            bool b = texture.image().load(m.meshBasePath() + texture.path());
-            if (!b) {
-                log.log(
-                    LogType::WARNING,
-                    "Cannot load texture " + texture.path());
+        if (settings.loadTextureImages) {
+            for (vcl::Texture& texture : m.textures()) {
+                bool b =
+                    texture.image().load(m.meshBasePath() + texture.path());
+                if (!b) {
+                    log.log(
+                        LogType::WARNING,
+                        "Cannot load texture " + texture.path());
+                }
+                else {
+                    texture.image().mirror();
+                }
             }
         }
     }
@@ -740,13 +744,7 @@ MeshType loadObj(
     const LoadSettings&               settings = LoadSettings())
 {
     MeshType m;
-    loadObj(
-        m,
-        inputObjStream,
-        inputMtlStreams,
-        loadedInfo,
-        log,
-        settings);
+    loadObj(m, inputObjStream, inputMtlStreams, loadedInfo, log, settings);
     return m;
 }
 
@@ -841,14 +839,7 @@ void loadObj(
     }
 
     detail::loadObj(
-        m,
-        file,
-        mtlStreams,
-        loadedInfo,
-        filename,
-        false,
-        log,
-        settings);
+        m, file, mtlStreams, loadedInfo, filename, false, log, settings);
 }
 
 /**
@@ -952,8 +943,7 @@ MeshType loadObj(
     const LoadSettings& settings = LoadSettings())
 {
     MeshInfo loadedInfo;
-    return loadObj<MeshType>(
-        filename, loadedInfo, log, settings);
+    return loadObj<MeshType>(filename, loadedInfo, log, settings);
 }
 
 } // namespace vcl

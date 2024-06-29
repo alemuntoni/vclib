@@ -151,10 +151,7 @@ public:
      * @brief Adds a texture to the vector of textures.
      * @param[in] texture: The texture to add.
      */
-    void pushTexture(const vcl::Texture& texture)
-    {
-        texs().push_back(texture);
-    }
+    void pushTexture(const vcl::Texture& texture) { texs().push_back(texture); }
 
     /**
      * @brief Returns an iterator to the beginning of the vector of textures.
@@ -173,57 +170,50 @@ public:
      * textures.
      * @return a const iterator to the beginning of the vector of textures.
      */
-    ConstTextureIterator textureBegin() const
-    {
-        return texs().begin();
-    }
+    ConstTextureIterator textureBegin() const { return texs().begin(); }
 
     /**
      * @brief Returns a const iterator to the end of the vector of textures.
      * @return a const iterator to the end of the vector of textures.
      */
-    ConstTextureIterator textureEnd() const
-    {
-        return texs().end();
-    }
+    ConstTextureIterator textureEnd() const { return texs().end(); }
 
     /**
      * @brief Returns a lightweigth view object that stores the begin and end
-     * iterators of the vector of texture paths. The view
-     * object exposes the iterators trough the `begin()` and `end()` member
-     * functions, and therefore the returned object can be used in range-based
-     * for loops:
+     * iterators of the vector of textures. The view object exposes the
+     * iterators trough the `begin()` and `end()` member functions, and
+     * therefore the returned object can be used in range-based for loops:
      *
      * @code{.cpp}
-     * for (auto& tpath : m.texturePaths()) {
-     *     // Do something with tpath
+     * for (auto& texture : m.texturess()) {
+     *     // Do something with texture
      * }
      * @endcode
      *
      * @return a lightweight view object that can be used in range-based for
-     * loops to iterate over the vector of texture paths.
+     * loops to iterate over the vector of textures.
      */
-    View<TextureIterator> texturePaths()
+    View<TextureIterator> textures()
     {
         return View(textureBegin(), textureEnd());
     }
 
     /**
      * @brief Returns a lightweigth const view object that stores the begin and
-     * end iterators of the vector of texture paths. The view object exposes the
+     * end iterators of the vector of textures. The view object exposes the
      * iterators trough the `begin()` and `end()` member functions, and
      * therefore the returned object can be used in range-based for loops:
      *
      * @code{.cpp}
-     * for (const auto& tpath : m.texturePaths()) {
-     *     // Do something with tpath
+     * for (const auto& texture : m.textures()) {
+     *     // Do something with texture
      * }
      * @endcode
      *
      * @return a lightweight view object that can be used in range-based for
-     * loops to iterate over the vector of texture paths.
+     * loops to iterate over the vector of textures.
      */
-    View<ConstTextureIterator> texturePaths() const
+    View<ConstTextureIterator> textures() const
     {
         return View(textureBegin(), textureEnd());
     }

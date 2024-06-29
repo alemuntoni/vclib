@@ -29,6 +29,7 @@ export module vclib.io.mesh.stl.save;
 
 import vclib.algorithms.core.polygon;
 import vclib.concepts;
+import vclib.io.mesh.settings;
 import vclib.io.write;
 import vclib.mesh.utils.mesh_info;
 import vclib.misc;

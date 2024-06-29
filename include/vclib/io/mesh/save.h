@@ -34,25 +34,24 @@ namespace vcl {
 
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void save(
-    const MeshType&    m,
-    const std::string& filename,
-    const MeshInfo&    info,
-    LogType&           log    = nullLogger,
-    bool               binary = true)
+    const MeshType&     m,
+    const std::string&  filename,
+    LogType&            log      = nullLogger,
+    const SaveSettings& settings = SaveSettings())
 {
     std::string ext = FileInfo::extension(filename);
     ext             = vcl::toLower(ext);
     if (ext == ".obj") {
-        saveObj(m, filename, info, log);
+        saveObj(m, filename, log, settings);
     }
     else if (ext == ".off") {
-        saveOff(m, filename, info, log);
+        saveOff(m, filename, log, settings);
     }
     else if (ext == ".ply") {
-        savePly(m, filename, info, log, binary);
+        savePly(m, filename, log, settings);
     }
     else if (ext == ".stl") {
-        saveStl(m, filename, info, log, binary);
+        saveStl(m, filename, log, settings);
     }
     else {
         throw vcl::UnknownFileFormatException(ext);
@@ -61,35 +60,12 @@ void save(
 
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void save(
-    const MeshType&    m,
-    const std::string& filename,
-    const MeshInfo&    info,
-    bool               binary,
-    LogType&           log = nullLogger)
+    const MeshType&     m,
+    const std::string&  filename,
+    const SaveSettings& settings,
+    LogType&            log = nullLogger)
 {
-    save(m, filename, info, log, binary);
-}
-
-template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
-void save(
-    const MeshType&    m,
-    const std::string& filename,
-    bool               binary,
-    LogType&           log = nullLogger)
-{
-    MeshInfo info(m);
-    save(m, filename, info, log, binary);
-}
-
-template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
-void save(
-    const MeshType&    m,
-    const std::string& filename,
-    LogType&           log    = nullLogger,
-    bool               binary = true)
-{
-    MeshInfo info(m);
-    save(m, filename, info, log, binary);
+    save(m, filename, log, settings);
 }
 
 } // namespace vcl

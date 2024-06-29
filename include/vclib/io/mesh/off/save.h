@@ -25,6 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/exceptions/io.h>
+#include <vclib/io/mesh/settings.h>
 #include <vclib/io/write.h>
 #include <vclib/mesh/utils/mesh_info.h>
 #include <vclib/misc/logger.h>
@@ -34,10 +35,10 @@ namespace vcl {
 
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void saveOff(
-    const MeshType& m,
-    std::ostream&   fp,
-    const MeshInfo& info,
-    LogType&        log = nullLogger)
+    const MeshType&     m,
+    std::ostream&       fp,
+    LogType&            log      = nullLogger,
+    const SaveSettings& settings = SaveSettings())
 {
     MeshInfo meshInfo(m);
 
@@ -45,7 +46,8 @@ void saveOff(
     // available in the mesh. meshInfo will contain the intersection between the
     // components that the user wants to save and the components that are
     // available in the mesh.
-    meshInfo = info.intersect(meshInfo);
+    if (!settings.info.isEmpty())
+        meshInfo = settings.info.intersect(meshInfo);
 
     if (meshInfo.hasVertexNormals())
         fp << "N";
@@ -132,32 +134,35 @@ void saveOff(
 }
 
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
-void saveOff(const MeshType& m, std::ostream& fp, LogType& log = nullLogger)
+void saveOff(
+    const MeshType&     m,
+    std::ostream&       fp,
+    const SaveSettings& settings,
+    LogType&            log = nullLogger)
 {
-    MeshInfo info(m);
-    saveOff(m, fp, info, log);
+    saveOff(m, fp, log, settings);
 }
 
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void saveOff(
-    const MeshType&    m,
-    const std::string& filename,
-    const MeshInfo&    info,
-    LogType&           log = nullLogger)
+    const MeshType&     m,
+    const std::string&  filename,
+    LogType&            log      = nullLogger,
+    const SaveSettings& settings = SaveSettings())
 {
     std::ofstream fp = openOutputFileStream(filename, "off");
-    saveOff(m, fp, info, log);
+    saveOff(m, fp, log, settings);
     fp.close();
 }
 
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void saveOff(
-    const MeshType&    m,
-    const std::string& filename,
-    LogType&           log = nullLogger)
+    const MeshType&     m,
+    const std::string&  filename,
+    const SaveSettings& settings,
+    LogType&            log = nullLogger)
 {
-    MeshInfo info(m);
-    saveOff(m, filename, info, log);
+    saveOff(m, filename, log, settings);
 }
 
 } // namespace vcl

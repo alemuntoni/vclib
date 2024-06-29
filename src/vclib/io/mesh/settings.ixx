@@ -24,6 +24,8 @@ module;
 
 export module vclib.io.mesh.settings;
 
+import vclib.mesh.utils.mesh_info;
+
 export {
 #include <vclib/io/mesh/settings.h>
 }

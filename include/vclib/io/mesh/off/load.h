@@ -622,8 +622,7 @@ MeshType loadOff(
     const LoadSettings& settings = LoadSettings())
 {
     MeshInfo loadedInfo;
-    return loadOff<MeshType>(
-        inputOffStream, loadedInfo, log, settings);
+    return loadOff<MeshType>(inputOffStream, loadedInfo, log, settings);
 }
 
 /**
@@ -759,8 +758,7 @@ MeshType loadOff(
     const LoadSettings& settings = LoadSettings())
 {
     MeshInfo loadedInfo;
-    return loadOff<MeshType>(
-        filename, loadedInfo, log, settings);
+    return loadOff<MeshType>(filename, loadedInfo, log, settings);
 }
 
 } // namespace vcl

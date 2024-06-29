@@ -33,9 +33,11 @@ import vclib.concepts;
 import vclib.concepts.mesh.elements.element;
 import vclib.io.file_info;
 import vclib.io.mesh.obj.material;
+import vclib.io.mesh.settings;
 import vclib.io.write;
 import vclib.mesh.utils.mesh_info;
 import vclib.misc;
+import vclib.space.texture;
 import vclib.types;
 
 export {

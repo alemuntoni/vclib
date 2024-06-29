@@ -28,6 +28,7 @@ export module vclib.io.mesh.ply.save;
 
 import vclib.concepts;
 import vclib.io.mesh.ply.detail;
+import vclib.io.mesh.settings;
 import vclib.io.write;
 
 export {

@@ -61,7 +61,7 @@ void loadPly(
     if constexpr (HasName<MeshType>) {
         m.name() = FileInfo::fileNameWithoutExtension(filename);
     }
-    if constexpr (HasTexturePaths<MeshType>) {
+    if constexpr (HasTexturePaths<MeshType> || HasTextureImages<MeshType>) {
         m.meshBasePath() = FileInfo::pathWithoutFileName(filename);
     }
     try {
@@ -73,7 +73,7 @@ void loadPly(
             default: readPlyUnknownElement(file, header, el); break;
             }
         }
-        readPlyTextures(header, m, log);
+        readPlyTextures(header, m, log, settings);
     }
     catch (const std::runtime_error& err) {
         m.clear();
@@ -210,8 +210,7 @@ MeshType loadPly(
     const LoadSettings& settings = LoadSettings())
 {
     MeshInfo loadedInfo;
-    return loadPly<MeshType>(
-        inputPlyStream, loadedInfo, log, settings);
+    return loadPly<MeshType>(inputPlyStream, loadedInfo, log, settings);
 }
 
 /**
@@ -247,8 +246,7 @@ void loadPly(
 {
     std::ifstream file = openInputFileStream(filename);
 
-    detail::loadPly(
-        m, file, filename, loadedInfo, log, settings);
+    detail::loadPly(m, file, filename, loadedInfo, log, settings);
 }
 
 /**
@@ -342,8 +340,7 @@ MeshType loadPly(
     const LoadSettings& settings = LoadSettings())
 {
     MeshInfo loadedInfo;
-    return loadPly<MeshType>(
-        filename, loadedInfo, log, settings);
+    return loadPly<MeshType>(filename, loadedInfo, log, settings);
 }
 
 } // namespace vcl
