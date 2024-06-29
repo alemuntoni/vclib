@@ -20,23 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_CONCEPTS_POLYMORPHISM_H
-#define VCL_CONCEPTS_POLYMORPHISM_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
 #include <concepts>
 #include <memory>
-#endif
 
-namespace vcl {
+export module vclib.concepts.polymorphism;
 
-template<typename T>
-concept Clonable = requires (T o) {
-    // clang-format off
-    { o.clone() } -> std::same_as<std::shared_ptr<T>>;
-    // clang-format on
-};
-
-} // namespace vcl
-
-#endif // VCL_CONCEPTS_POLYMORPHISM_H
+export {
+#include <vclib/concepts/polymorphism.h>
+}

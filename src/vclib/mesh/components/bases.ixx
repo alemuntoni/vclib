@@ -42,8 +42,8 @@ import vclib.views.view;
 export {
 #include <vclib/mesh/components/bases/component.h>
 #include <vclib/mesh/components/bases/container_component.h>
-#include <vclib/mesh/components/bases/indices_container_component.h>
-#include <vclib/mesh/components/bases/pointers_container_component.h>
+#include <vclib/mesh/components/bases/index_container_component.h>
+#include <vclib/mesh/components/bases/pointer_container_component.h>
 
-#include <vclib/mesh/components/bases/references_container_component.h>
+#include <vclib/mesh/components/bases/reference_container_component.h>
 }

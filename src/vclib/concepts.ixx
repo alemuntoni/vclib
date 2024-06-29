@@ -34,6 +34,7 @@ export import vclib.concepts.const_correctness;
 export import vclib.concepts.iterators;
 export import vclib.concepts.mesh;
 export import vclib.concepts.pointers;
+export import vclib.concepts.polymorphism;
 export import vclib.concepts.ranges;
 export import vclib.concepts.space;
 

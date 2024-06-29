@@ -25,6 +25,7 @@ module;
 #include <cassert>
 #include <concepts>
 #include <limits>
+#include <memory>
 #include <numeric>
 #include <string>
 #include <tuple>

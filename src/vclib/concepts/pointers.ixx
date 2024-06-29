@@ -23,6 +23,7 @@
 module;
 
 #include <iterator>
+#include <memory>
 #include <type_traits>
 
 export module vclib.concepts.pointers;
