@@ -23,7 +23,9 @@
 #ifndef VCL_PROCESSING_SETTINGS_H
 #define VCL_PROCESSING_SETTINGS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/types.h>
+#endif
 
 #ifndef VCLIB_PROCESSING_SCALAR_TYPE
 #define VCLIB_PROCESSING_SCALAR_TYPE double

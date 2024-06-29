@@ -22,17 +22,10 @@
 
 module;
 
-export module vclib;
+export module vclib.processing.settings;
 
-export import vclib.algorithms;
-export import vclib.concepts;
-export import vclib.exceptions;
-export import vclib.load_save;
-export import vclib.math;
-export import vclib.mesh;
-export import vclib.meshes;
-export import vclib.misc;
-export import vclib.processing;
-export import vclib.space;
-export import vclib.types;
-export import vclib.views;
+import vclib.types;
+
+export {
+#include <vclib/processing/settings.h>
+}
