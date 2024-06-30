@@ -26,8 +26,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include <map>
 
-#include <vclib/processing/actions/interfaces/action.h>
 #include <vclib/processing/actions/common/file_format.h>
+#include <vclib/processing/actions/interfaces/action.h>
 #include <vclib/space/polymorphic_object_vector.h>
 #endif
 
@@ -62,6 +62,15 @@ public:
     {
         checkFormatExists(format);
         return mFormatMap[format];
+    }
+
+    std::vector<FileFormat> formats() const
+    {
+        std::vector<FileFormat> formats;
+        for (const auto& [format, _] : mFormatMap) {
+            formats.push_back(format);
+        }
+        return formats;
     }
 
 private:

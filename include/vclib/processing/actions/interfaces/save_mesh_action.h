@@ -35,7 +35,8 @@
 
 namespace vcl::proc {
 
-class SaveMeshAction : public MeshAction {
+class SaveMeshAction : public MeshAction
+{
 public:
     uint type() const final { return ActionType::SAVE_MESH_ACTION; }
 
@@ -73,16 +74,16 @@ public:
     }
 
     void save(
-        const std::string&  filename,
-        const MeshI& mesh,
-        const MeshInfo&     info) const
+        const std::string& filename,
+        const MeshI&       mesh,
+        const MeshInfo&    info) const
     {
         save(filename, mesh, info, parameters());
     }
 
     void save(
         const std::string&     filename,
-        const MeshI&    mesh,
+        const MeshI&           mesh,
         const ParameterVector& parameters) const
     {
         save(filename, mesh, formatCapability(), parameters);
@@ -95,7 +96,7 @@ protected:
         auto&&... args) const
     {
         auto supportedMeshTypes = supportedInputMeshType();
-        if (! supportedMeshTypes[mesh.type()]) {
+        if (!supportedMeshTypes[mesh.type()]) {
             throw std::runtime_error(
                 "The action " + name() + " does not support the " +
                 mesh.typeName() + " type.");

@@ -42,10 +42,7 @@ public:
     {
     }
 
-    ParameterType::Enum type() const override
-    {
-        return ParameterType::SCALAR;
-    }
+    ParameterType::Enum type() const override { return ParameterType::SCALAR; }
 
     std::shared_ptr<Parameter> clone() const override
     {

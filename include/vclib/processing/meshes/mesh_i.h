@@ -33,8 +33,7 @@ namespace vcl::proc {
 
 struct MeshIType
 {
-    enum Enum
-    {
+    enum Enum {
         TRI_MESH,
         POLY_MESH,
 
@@ -45,7 +44,7 @@ struct MeshIType
 class MeshI
 {
 public:
-    MeshI() = default;
+    MeshI()          = default;
     virtual ~MeshI() = default;
 
     virtual std::shared_ptr<MeshI> clone() const = 0;

@@ -42,10 +42,7 @@ public:
     {
     }
 
-    ParameterType::Enum type() const override
-    {
-        return ParameterType::BOOL;
-    }
+    ParameterType::Enum type() const override { return ParameterType::BOOL; }
 
     std::shared_ptr<Parameter> clone() const override
     {
