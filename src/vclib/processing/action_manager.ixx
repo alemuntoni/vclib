@@ -25,3 +25,4 @@ module;
 export module vclib.processing.action_manager;
 
 export import vclib.processing.action_manager.identifier_action_manager;
+export import vclib.processing.action_manager.io_action_manager;

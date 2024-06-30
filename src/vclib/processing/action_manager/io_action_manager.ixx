@@ -20,66 +20,20 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTION_MANAGER_IO_ACTION_MANAGER_H
-#define VCL_PROCESSING_ACTION_MANAGER_IO_ACTION_MANAGER_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
 #include <map>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
-#include <vclib/processing/actions/interfaces/action.h>
-#include <vclib/processing/actions/common/file_format.h>
-#include <vclib/space/polymorphic_object_vector.h>
-#endif
+export module vclib.processing.action_manager.io_action_manager;
 
-namespace vcl::proc {
+import vclib.processing.actions.interfaces.action;
+import vclib.processing.actions.common.file_format;
+import vclib.space.polymorphic_object_vector;
 
-template<typename IOAction>
-class IOActionManager
-{
-    vcl::PolymorphicObjectVector<Action> mActions;
-
-    std::map<FileFormat, std::shared_ptr<IOAction>> mFormatMap;
-
-public:
-    IOActionManager() = default;
-
-    void add(std::shared_ptr<IOAction> action)
-    {
-        if (!action) {
-            throw std::runtime_error("Action is nullptr.");
-        }
-        std::vector<FileFormat> formats = action->formats();
-
-        for (const auto& format : formats) {
-            checkFormatDoesNotExist(format);
-            mActions.pushBack(action);
-            mFormatMap[format] =
-                std::dynamic_pointer_cast<IOAction>(mActions.back());
-        }
-    }
-
-    std::shared_ptr<IOAction> get(const FileFormat& format)
-    {
-        checkFormatExists(format);
-        return mFormatMap[format];
-    }
-
-private:
-    void checkFormatDoesNotExist(const FileFormat& format)
-    {
-        if (mFormatMap.find(format) != mFormatMap.end()) {
-            throw std::runtime_error("Format already registered.");
-        }
-    }
-
-    void checkFormatExists(const FileFormat& format)
-    {
-        if (mFormatMap.find(format) == mFormatMap.end()) {
-            throw std::runtime_error("Format not registered.");
-        }
-    }
-};
-
-} // namespace vcl::proc
-
-#endif // VCL_PROCESSING_ACTION_MANAGER_SAVE_IMAGE_ACTION_MANAGER_H
+export {
+#include <vclib/processing/action_manager/io_action_manager.h>
+}

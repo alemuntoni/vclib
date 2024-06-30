@@ -24,6 +24,7 @@ module;
 
 #include <map>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 export module vclib.processing.action_manager.identifier_action_manager;
