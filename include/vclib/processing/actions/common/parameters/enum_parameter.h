@@ -23,9 +23,11 @@
 #ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_ENUM_PARAMETER_H
 #define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_ENUM_PARAMETER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "parameter.h"
 
 #include <vclib/concepts/ranges/range.h>
+#endif
 
 namespace vcl::proc {
 

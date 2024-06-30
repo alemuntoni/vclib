@@ -20,39 +20,18 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_INT_PARAMETER_H
-#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_INT_PARAMETER_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include "parameter.h"
-#endif
+#include <any>
+#include <memory>
+#include <string>
 
-namespace vcl::proc {
+export module vclib.processing.actions.common.parameters.parameter;
 
-class IntParameter : public Parameter
-{
-public:
-    IntParameter(
-        const std::string& name,
-        int                value,
-        const std::string& description = "",
-        const std::string& tooltip     = "",
-        const std::string& category    = "") :
-            Parameter(name, value, description, tooltip, category)
-    {
-    }
+import vclib.processing.settings;
+import vclib.space.color;
+import vclib.space.point;
 
-    ParameterType::Enum type() const override
-    {
-        return ParameterType::INT;
-    }
-
-    std::shared_ptr<Parameter> clone() const override
-    {
-        return std::make_shared<IntParameter>(*this);
-    }
-};
-
-} // namespace vcl::proc
-
-#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_INT_PARAMETER_H
+export {
+#include <vclib/processing/actions/common/parameters/parameter.h>
+}

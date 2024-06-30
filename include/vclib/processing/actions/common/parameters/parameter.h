@@ -23,6 +23,7 @@
 #ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_PARAMETER_H
 #define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_PARAMETER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <any>
 #include <memory>
 #include <string>
@@ -30,6 +31,7 @@
 #include <vclib/processing/settings.h>
 #include <vclib/space/color.h>
 #include <vclib/space/point.h>
+#endif
 
 namespace vcl::proc {
 
