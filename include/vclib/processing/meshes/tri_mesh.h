@@ -23,10 +23,12 @@
 #ifndef VCL_PROCESSING_MESHES_TRI_MESH_H
 #define VCL_PROCESSING_MESHES_TRI_MESH_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "mesh_i.h"
 
 #include <vclib/meshes/tri_mesh.h>
 #include <vclib/processing/settings.h>
+#endif
 
 namespace vcl::proc {
 

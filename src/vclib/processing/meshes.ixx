@@ -23,3 +23,6 @@
 module;
 
 export module vclib.processing.meshes;
+
+export import vclib.processing.meshes.poly_mesh;
+export import vclib.processing.meshes.tri_mesh;

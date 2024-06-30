@@ -20,41 +20,17 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_MESHES_POLY_MESH_H
-#define VCL_PROCESSING_MESHES_POLY_MESH_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include "mesh_i.h"
+#include <memory>
+#include <string>
 
-#include <vclib/meshes/poly_mesh.h>
-#include <vclib/processing/settings.h>
-#endif
+export module vclib.processing.meshes.poly_mesh;
 
-namespace vcl::proc {
+import vclib.meshes.poly_mesh;
+import vclib.processing.meshes.mesh_i;
+import vclib.processing.settings;
 
-class PolyMesh final:
-        public MeshI,
-        public PolyMeshT<ProcScalarType, INDEXED_MESHES>
-{
-public:
-    PolyMesh() = default;
-
-    std::shared_ptr<MeshI> clone() const override
-    {
-        return std::make_shared<PolyMesh>(*this);
-    }
-
-    MeshIType::Enum type() const override
-    {
-        return MeshIType::POLY_MESH;
-    }
-
-    std::string typeName() const override
-    {
-        return "PolyMesh";
-    }
-};
-
-} // namespace vcl::proc
-
-#endif // VCL_PROCESSING_MESHES_POLY_MESH_H
+export {
+#include <vclib/processing/meshes/poly_mesh.h>
+}
