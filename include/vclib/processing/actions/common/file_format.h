@@ -23,12 +23,14 @@
 #ifndef VCL_PROCESSING_ACTIONS_COMMON_FILE_FORMAT_H
 #define VCL_PROCESSING_ACTIONS_COMMON_FILE_FORMAT_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <algorithm>
 #include <string>
 #include <vector>
 
 #include <vclib/concepts/ranges/range.h>
 #include <vclib/misc/string.h>
+#endif
 
 namespace vcl::proc {
 

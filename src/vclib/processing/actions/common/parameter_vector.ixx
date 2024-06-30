@@ -20,45 +20,15 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETER_VECTOR_H
-#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETER_VECTOR_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/space/polymorphic_object_vector.h>
+#include <memory>
 
-#include "parameters/parameter.h"
-#endif
+export module vclib.processing.actions.common.parameter_vector;
 
-namespace vcl::proc {
+import vclib.processing.actions.common.parameters.parameter;
+import vclib.space.polymorphic_object_vector;
 
-class ParameterVector : public PolymorphicObjectVector<Parameter>
-{
-public:
-    std::shared_ptr<const Parameter> get(const std::string& name) const
-    {
-        for (const auto& parameter : *this) {
-            if (parameter->name() == name) {
-                return parameter;
-            }
-        }
-
-        return nullptr;
-    }
-
-    std::shared_ptr<Parameter> get(const std::string& name)
-    {
-        for (auto& parameter : *this) {
-            if (parameter->name() == name) {
-                return parameter;
-            }
-        }
-
-        return nullptr;
-    }
-};
-
-using OutputValues = ParameterVector;
-
-} // namespace vcl::proc
-
-#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETER_VECTOR_H
+export {
+#include <vclib/processing/actions/common/parameter_vector.h>
+}
