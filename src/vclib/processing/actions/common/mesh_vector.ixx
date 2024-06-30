@@ -25,7 +25,7 @@ module;
 export module vclib.processing.actions.common.mesh_vector;
 
 import vclib.processing.meshes.mesh_i;
-import vclib.space.polymorphic_object_vector;
+import vclib.space.vector.polymorphic_object_vector;
 
 export {
 #include <vclib/processing/actions/common/mesh_vector.h>

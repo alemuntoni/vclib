@@ -22,14 +22,15 @@
 
 module;
 
-#include <memory>
-#include <string>
 
-export module vclib.processing.actions.common.parameter_vector;
 
-import vclib.processing.actions.common.parameters.parameter;
-import vclib.space.vector.polymorphic_object_vector;
+export module vclib.space.vector.pointer_vector;
+
+import vclib.concepts.pointers;
+import vclib.iterators.const_pointer_iterator;
+import vclib.space.vector.vector;
+import vclib.types;
 
 export {
-#include <vclib/processing/actions/common/parameter_vector.h>
+#include <vclib/space/vector/pointer_vector.h>
 }

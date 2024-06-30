@@ -22,20 +22,8 @@
 
 module;
 
-#include <algorithm>
-#include <array>
-#include <cassert>
-#include <string>
-#include <utility>
-#include <vector>
-
 export module vclib.space.vector;
 
-import vclib.concepts.ranges;
-import vclib.exceptions;
-import vclib.types;
-import vclib.views;
-
-export {
-#include <vclib/space/vector.h>
-}
+export import vclib.space.vector.pointer_vector;
+export import vclib.space.vector.polymorphic_object_vector;
+export import vclib.space.vector.vector;

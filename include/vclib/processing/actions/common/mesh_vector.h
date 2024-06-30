@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/processing/meshes/mesh_i.h>
-#include <vclib/space/polymorphic_object_vector.h>
+#include <vclib/space/vector/polymorphic_object_vector.h>
 #endif
 
 namespace vcl::proc {

@@ -25,19 +25,17 @@ module;
 #include <algorithm>
 #include <array>
 #include <cassert>
-#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
-export module vclib.space.polymorphic_object_vector;
+export module vclib.space.vector.vector;
 
-import vclib.concepts.polymorphism;
 import vclib.concepts.ranges;
 import vclib.exceptions;
-import vclib.iterators.const_pointer_iterator;
 import vclib.types;
 import vclib.views;
 
 export {
-#include <vclib/space/polymorphic_object_vector.h>
+#include <vclib/space/vector/vector.h>
 }

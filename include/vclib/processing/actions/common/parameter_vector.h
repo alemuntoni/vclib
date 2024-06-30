@@ -24,7 +24,7 @@
 #define VCL_PROCESSING_ACTIONS_COMMON_PARAMETER_VECTOR_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/space/polymorphic_object_vector.h>
+#include <vclib/space/vector/polymorphic_object_vector.h>
 
 #include "parameters/parameter.h"
 #endif

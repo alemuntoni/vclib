@@ -30,7 +30,7 @@ module;
 export module vclib.processing.action_manager.identifier_action_manager;
 
 import vclib.processing.actions.interfaces.action;
-import vclib.space.polymorphic_object_vector;
+import vclib.space.vector.polymorphic_object_vector;
 
 export {
 #include <vclib/processing/action_manager/identifier_action_manager.h>
