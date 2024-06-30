@@ -32,17 +32,10 @@
 
 namespace vcl::proc {
 
-class TriMesh final :
-        public MeshI,
-        public TriMeshT<ProcScalarType, INDEXED_MESHES>
+class TriMesh : public MeshI, public TriMeshT<ProcScalarType, INDEXED_MESHES>
 {
 public:
     TriMesh() = default;
-
-    std::shared_ptr<MeshI> clone() const override
-    {
-        return std::make_shared<TriMesh>(*this);
-    }
 
     MeshIType::Enum type() const override { return MeshIType::TRI_MESH; }
 

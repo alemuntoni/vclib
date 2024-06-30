@@ -22,16 +22,10 @@
 
 module;
 
-#include <iomanip>
-#include <iostream>
-#include <string>
-
 export module vclib.misc.logger;
 
-import vclib.concepts;
-import vclib.misc.logger.logger;
+export import vclib.misc.logger.abstract_logger;
+export import vclib.misc.logger.logger;
+export import vclib.misc.logger.console_logger;
 
-export {
-#include <vclib/misc/logger/console_logger.h>
-#include <vclib/misc/logger/null_logger.h>
-}
+export import vclib.misc.logger.null_logger;

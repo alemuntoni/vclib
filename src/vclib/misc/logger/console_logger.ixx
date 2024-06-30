@@ -20,20 +20,15 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_MESH_VECTOR_H
-#define VCL_PROCESSING_ACTIONS_COMMON_MESH_VECTOR_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/processing/meshes/mesh_i.h>
-#include <vclib/space/vector/pointer_vector.h>
-#endif
+#include <iomanip>
+#include <iostream>
 
-namespace vcl::proc {
+export module vclib.misc.logger.console_logger;
 
-class MeshVector : public PointerVector<std::shared_ptr<MeshI>>
-{
-};
+import vclib.misc.logger.logger;
 
-} // namespace vcl::proc
-
-#endif // VCL_PROCESSING_ACTIONS_COMMON_MESH_VECTOR_H
+export {
+#include <vclib/misc/logger/console_logger.h>
+}

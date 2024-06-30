@@ -48,14 +48,19 @@ public:
         ParameterVector params;
 
         params.pushBack(EnumParameter(
-            "mesh_type", 0, {"Best Fit", "TriMesh", "PolyMesh"}, "", ""));
+            "mesh_type",
+            0,
+            {"Best Fit", "TriMesh", "PolyMesh"},
+            "Mesh Type",
+            "Type of the Mesh on which to load the file; Best Fit will try to "
+            "load the file in the most suitable mesh type."));
 
         return params;
     }
 
     std::vector<FileFormat> formats() const override
     {
-        return {FileFormat("obj", "")};
+        return {FileFormat("obj", "OBJ Wavefront .obj")};
     }
 
     std::shared_ptr<MeshI> load(
@@ -67,8 +72,8 @@ public:
 
         switch (parameters.get("mesh_type")->intValue()) {
         case 0: mesh = loadBestFit(filename, loadedInfo); break;
-        case 1: mesh = loadObj<TriMesh>(filename, loadedInfo).clone(); break;
-        case 2: mesh = loadObj<PolyMesh>(filename, loadedInfo).clone(); break;
+        case 1: mesh = loadObj<TriMesh>(filename, loadedInfo); break;
+        case 2: mesh = loadObj<PolyMesh>(filename, loadedInfo); break;
         default: throw std::runtime_error("Invalid mesh type");
         }
 
@@ -113,11 +118,13 @@ private:
     }
 
     template<MeshConcept MeshType>
-    MeshType loadObj(const std::string& filename, MeshInfo& loadedInfo) const
+    std::shared_ptr<MeshI> loadObj(
+        const std::string& filename,
+        MeshInfo&          loadedInfo) const
     {
         MeshType mesh = vcl::loadObj<MeshType>(filename, loadedInfo);
         postProcess(mesh, filename, loadedInfo);
-        return mesh;
+        return std::make_shared<MeshType>(mesh);
     }
 };
 

@@ -49,14 +49,21 @@ public:
         ParameterVector params;
 
         params.pushBack(BoolParameter(
-            "unify_duplicate_vertices", true, "Unify Duplicate Vertices", ""));
+            "unify_duplicate_vertices",
+            true,
+            "Unify Duplicate Vertices",
+            "STL files may contain duplicated vertices. "
+            "If this option is enabled, the loader will remove them. "
+            "This may lead to a reduction in the number of vertices. "
+            "The original number of vertices and the number of removed "
+            "vertices will be logged."));
 
         return params;
     }
 
     std::vector<FileFormat> formats() const override
     {
-        return {FileFormat("stl", "")};
+        return {FileFormat("stl", "STL STereo Lithography interface format")};
     }
 
     std::shared_ptr<MeshI> load(
@@ -72,7 +79,7 @@ public:
         }
 
         postLoad(tm, loadedInfo);
-        return tm.clone();
+        return std::make_shared<TriMesh>(tm);
     }
 };
 

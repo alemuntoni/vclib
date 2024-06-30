@@ -32,17 +32,10 @@
 
 namespace vcl::proc {
 
-class PolyMesh final :
-        public MeshI,
-        public PolyMeshT<ProcScalarType, INDEXED_MESHES>
+class PolyMesh : public MeshI, public PolyMeshT<ProcScalarType, INDEXED_MESHES>
 {
 public:
     PolyMesh() = default;
-
-    std::shared_ptr<MeshI> clone() const override
-    {
-        return std::make_shared<PolyMesh>(*this);
-    }
 
     MeshIType::Enum type() const override { return MeshIType::POLY_MESH; }
 

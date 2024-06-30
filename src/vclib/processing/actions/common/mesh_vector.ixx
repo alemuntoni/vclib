@@ -22,10 +22,12 @@
 
 module;
 
+#include <memory>
+
 export module vclib.processing.actions.common.mesh_vector;
 
 import vclib.processing.meshes.mesh_i;
-import vclib.space.vector.polymorphic_object_vector;
+import vclib.space.vector.pointer_vector;
 
 export {
 #include <vclib/processing/actions/common/mesh_vector.h>

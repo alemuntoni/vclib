@@ -30,6 +30,7 @@ module;
 
 export module vclib.misc.logger.logger;
 
+import vclib.misc.logger.abstract_logger;
 import vclib.misc.timer;
 import vclib.types;
 

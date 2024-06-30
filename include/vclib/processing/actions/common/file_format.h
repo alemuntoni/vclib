@@ -88,7 +88,7 @@ public:
      * @param other
      * @return a std::strong_ordering value indicating the comparison result
      */
-    std::strong_ordering operator<=>(const FileFormat& other) const
+    auto operator<=>(const FileFormat& other) const
     {
         for (const auto& ext : mExtensions) {
             if (other.matchExtension(ext)) {
@@ -97,6 +97,11 @@ public:
         }
 
         return mExtensions[0] <=> other.mExtensions[0];
+    }
+
+    bool operator==(const FileFormat& other) const
+    {
+        return *this <=> other == std::strong_ordering::equal;
     }
 
 private:
