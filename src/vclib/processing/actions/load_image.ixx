@@ -22,8 +22,8 @@
 
 module;
 
-#include <functional>
 #include <memory>
+#include <string>
 #include <vector>
 
 export module vclib.processing.actions.load_image;

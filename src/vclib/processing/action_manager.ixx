@@ -22,15 +22,6 @@
 
 module;
 
-#include <memory>
-#include <string>
-#include <vector>
+export module vclib.processing.action_manager;
 
-export module vclib.processing.actions.save_image;
-
-import vclib.processing.actions.interfaces.action;
-import vclib.processing.actions.save_image.base_save_image_action;
-
-export {
-#include <vclib/processing/actions/save_image.h>
-}
+export import vclib.processing.action_manager.identifier_action_manager;
