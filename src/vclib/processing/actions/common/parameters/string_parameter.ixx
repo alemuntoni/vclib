@@ -20,39 +20,15 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_SCALAR_PARAMETER_H
-#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_SCALAR_PARAMETER_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include "parameter.h"
-#endif
+#include <memory>
+#include <string>
 
-namespace vcl::proc {
+export module vclib.processing.actions.common.parameters.string_parameter;
 
-class ScalarParameter : public Parameter
-{
-public:
-    ScalarParameter(
-        const std::string& name,
-        Scalar             value,
-        const std::string& description = "",
-        const std::string& tooltip     = "",
-        const std::string& category    = "") :
-            Parameter(name, value, description, tooltip, category)
-    {
-    }
+import vclib.processing.actions.common.parameters.parameter;
 
-    ParameterType::Enum type() const override
-    {
-        return ParameterType::SCALAR;
-    }
-
-    std::shared_ptr<Parameter> clone() const override
-    {
-        return std::make_shared<ScalarParameter>(*this);
-    }
-};
-
-} // namespace vcl::proc
-
-#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_SCALAR_PARAMETER_H
+export {
+#include <vclib/processing/actions/common/parameters/string_parameter.h>
+}
