@@ -315,17 +315,19 @@ inline vcl::Color readOffColor(
     return vcl::Color(red, green, blue, alpha);
 }
 
-template<MeshConcept MeshType>
+template<MeshConcept MeshType, LoggerConcept LogType>
 void readOffVertices(
     MeshType&       mesh,
     std::istream&   file,
     const MeshInfo& fileInfo,
-    uint            nv)
+    uint            nv,
+    LogType&        log)
 {
     using VertexType = MeshType::VertexType;
 
     const uint nTexCoords = fileInfo.hasVertexTexCoords() ? 2 : 0;
 
+    log.startProgress("Reading vertices", nv);
     mesh.addVertices(nv);
     for (uint i = 0; i < nv; i++) {
         VertexType& v = mesh.vertex(i);
@@ -396,21 +398,27 @@ void readOffVertices(
                 io::readDouble<double>(token);
             }
         }
+
+        log.progress(i);
     }
+    log.endProgress();
 }
 
-template<FaceMeshConcept MeshType>
+template<FaceMeshConcept MeshType, LoggerConcept LogType>
 void readOffFaces(
     MeshType&           mesh,
     std::istream&       file,
     MeshInfo&           loadedInfo,
     uint                nf,
-    const LoadSettings& settings)
+    const LoadSettings& settings,
+    LogType&            log)
 {
     if constexpr (HasFaces<MeshType>) {
         using FaceType = MeshType::FaceType;
 
         mesh.reserveFaces(nf);
+        log.startProgress("Reading faces", nf);
+
         for (uint fid = 0; fid < nf; ++fid) {
             vcl::Tokenizer tokens = readAndTokenizeNextNonEmptyLine(file);
             vcl::Tokenizer::iterator token = tokens.begin();
@@ -474,7 +482,9 @@ void readOffFaces(
                     }
                 }
             }
+            log.progress(fid);
         }
+        log.endProgress();
     }
     else { // mesh does not have face, read nf lines and throw them away
         for (uint i = 0; i < nf; ++i)
@@ -525,8 +535,15 @@ void loadOff(
     if (settings.enableOptionalComponents)
         enableOptionalComponentsFromInfo(loadedInfo, m);
 
-    detail::readOffVertices(m, inputOffStream, fileInfo, nVertices);
-    detail::readOffFaces(m, inputOffStream, fileInfo, nFaces, settings);
+    int percVertices = nVertices / (nVertices + nFaces) * 100;
+    int percFaces = 100 - percVertices;
+
+    log.startNewTask(0, percVertices, "Reading vertices");
+    detail::readOffVertices(m, inputOffStream, fileInfo, nVertices, log);
+    log.endTask("Reading vertices");
+    log.startNewTask(percVertices, 100, "Reading faces");
+    detail::readOffFaces(m, inputOffStream, fileInfo, nFaces, settings, log);
+    log.endTask("Reading faces");
     if (settings.enableOptionalComponents)
         loadedInfo = fileInfo;
 }

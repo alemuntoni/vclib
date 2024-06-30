@@ -28,6 +28,7 @@ module;
 
 export module vclib.processing.actions.interfaces.action;
 
+import vclib.misc.logger;
 import vclib.misc.string;
 import vclib.processing.meshes.mesh_i;
 import vclib.types;

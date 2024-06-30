@@ -48,7 +48,10 @@ public:
         ParameterVector params;
 
         params.pushBack(EnumParameter(
-            "mesh_type", 0, {"Best Fit", "TriMesh", "PolyMesh"}, "Mesh Type",
+            "mesh_type",
+            0,
+            {"Best Fit", "TriMesh", "PolyMesh"},
+            "Mesh Type",
             "Type of the Mesh on which to load the file; Best Fit will try to "
             "load the file in the most suitable mesh type."));
 
@@ -63,7 +66,8 @@ public:
     std::shared_ptr<MeshI> load(
         const std::string&     filename,
         const ParameterVector& parameters,
-        MeshInfo&              loadedInfo) const override
+        MeshInfo&              loadedInfo,
+        AbstractLogger&        log = logger()) const override
     {
         std::shared_ptr<MeshI> mesh;
 

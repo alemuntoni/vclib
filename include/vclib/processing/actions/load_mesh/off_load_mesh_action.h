@@ -49,7 +49,10 @@ public:
         ParameterVector params;
 
         params.pushBack(EnumParameter(
-            "mesh_type", 0, {"Best Fit", "TriMesh", "PolyMesh"}, "Mesh Type",
+            "mesh_type",
+            0,
+            {"Best Fit", "TriMesh", "PolyMesh"},
+            "Mesh Type",
             "Type of the Mesh on which to load the file; Best Fit will try to "
             "load the file in the most suitable mesh type."));
 
@@ -64,14 +67,15 @@ public:
     std::shared_ptr<MeshI> load(
         const std::string&     filename,
         const ParameterVector& parameters,
-        MeshInfo&              loadedInfo) const override
+        MeshInfo&              loadedInfo,
+        AbstractLogger&        log = logger()) const override
     {
         std::shared_ptr<MeshI> mesh;
 
         switch (parameters.get("mesh_type")->intValue()) {
-        case 0: mesh = loadBestFit(filename, loadedInfo); break;
-        case 1: mesh = loadOff<TriMesh>(filename, loadedInfo); break;
-        case 2: mesh = loadOff<PolyMesh>(filename, loadedInfo); break;
+        case 0: mesh = loadBestFit(filename, loadedInfo, log); break;
+        case 1: mesh = loadOff<TriMesh>(filename, loadedInfo, log); break;
+        case 2: mesh = loadOff<PolyMesh>(filename, loadedInfo, log); break;
         default: throw std::runtime_error("Invalid mesh type");
         }
 
@@ -92,13 +96,14 @@ private:
 
     std::shared_ptr<MeshI> loadBestFit(
         const std::string& filename,
-        MeshInfo&          loadedInfo) const
+        MeshInfo&          loadedInfo,
+        AbstractLogger&    log) const
     {
         std::shared_ptr<MeshI> mesh;
 
         // first I load in a PolyMesh, which I know it can store all the info
         // contained in a off
-        PolyMesh pm = vcl::loadOff<PolyMesh>(filename, loadedInfo);
+        PolyMesh pm = vcl::loadOff<PolyMesh>(filename, loadedInfo, log);
 
         // if the file contains triangle meshes, I convert it to a TriMesh
         if (loadedInfo.isTriangleMesh()) {
@@ -118,9 +123,10 @@ private:
     template<MeshConcept MeshType>
     std::shared_ptr<MeshI> loadOff(
         const std::string& filename,
-        MeshInfo&          loadedInfo) const
+        MeshInfo&          loadedInfo,
+        AbstractLogger&    log) const
     {
-        MeshType mesh = vcl::loadOff<MeshType>(filename, loadedInfo);
+        MeshType mesh = vcl::loadOff<MeshType>(filename, loadedInfo, log);
         postProcess(mesh, filename, loadedInfo);
         return std::make_shared<MeshType>(mesh);
     }

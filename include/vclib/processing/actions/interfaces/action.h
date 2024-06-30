@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <memory>
 
+#include <vclib/misc/logger.h>
 #include <vclib/misc/string.h>
 #include <vclib/processing/meshes/mesh_i.h>
 #include <vclib/types.h>
@@ -58,6 +59,8 @@ class Action
      */
     ActionManager* mManage = nullptr;
 
+    static inline ConsoleLogger log;
+
 public:
     Action()          = default;
     virtual ~Action() = default;
@@ -84,6 +87,8 @@ protected:
     void setManager(ActionManager* manager) { mManage = manager; }
 
     ActionManager* manager() const { return mManage; }
+
+    static ConsoleLogger& logger() { return log; }
 };
 
 } // namespace vcl::proc

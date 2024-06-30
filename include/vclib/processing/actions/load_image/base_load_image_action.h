@@ -55,7 +55,8 @@ public:
         return formats;
     }
 
-    Image load(const std::string& filename) const override
+    Image load(const std::string& filename, AbstractLogger& log = logger())
+        const override
     {
         return Image(filename);
     }
