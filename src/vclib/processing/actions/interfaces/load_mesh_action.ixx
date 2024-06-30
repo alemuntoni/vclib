@@ -23,6 +23,7 @@
 module;
 
 #include <memory>
+#include <string>
 #include <vector>
 
 export module vclib.processing.actions.interfaces.load_mesh_action;

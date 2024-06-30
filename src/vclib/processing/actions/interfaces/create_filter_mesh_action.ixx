@@ -22,6 +22,8 @@
 
 module;
 
+#include <compare>
+
 export module vclib.processing.actions.interfaces.create_filter_mesh_action;
 
 import vclib.processing.actions.interfaces.filter_mesh_action;

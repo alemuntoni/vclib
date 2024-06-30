@@ -24,6 +24,7 @@ module;
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 export module vclib.processing.actions.interfaces.action;
 

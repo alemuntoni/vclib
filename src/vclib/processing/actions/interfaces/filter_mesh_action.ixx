@@ -23,6 +23,7 @@
 module;
 
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 export module vclib.processing.actions.interfaces.filter_mesh_action;

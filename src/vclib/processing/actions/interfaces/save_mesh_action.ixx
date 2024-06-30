@@ -23,6 +23,8 @@
 module;
 
 #include <memory>
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 export module vclib.processing.actions.interfaces.save_mesh_action;
