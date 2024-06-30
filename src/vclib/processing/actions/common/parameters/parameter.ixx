@@ -24,7 +24,10 @@ module;
 
 #include <any>
 #include <memory>
+#include <stdexcept>
 #include <string>
+
+#include <Eigen/Core>
 
 export module vclib.processing.actions.common.parameters.parameter;
 

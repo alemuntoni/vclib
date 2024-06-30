@@ -23,6 +23,7 @@
 module;
 
 #include <memory>
+#include <string>
 
 export module vclib.processing.meshes.mesh_i;
 
