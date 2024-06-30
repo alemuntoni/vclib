@@ -91,14 +91,19 @@ void writePlyTextures(
     }
 }
 
-inline void readPlyUnknownElement(
+template<LoggerConcept LogType>
+void readPlyUnknownElement(
     std::istream&    file,
     const PlyHeader& header,
-    PlyElement       el)
+    PlyElement       el,
+    LogType&         log)
 {
+    log.startProgress("Reading unknown elements", el.numberElements);
+
     if (header.format() == ply::ASCII) {
         for (uint i = 0; i < el.numberElements; ++i) {
             readAndTokenizeNextNonEmptyLine(file);
+            log.progress(i);
         }
     }
     else {
@@ -113,8 +118,11 @@ inline void readPlyUnknownElement(
                     io::readPrimitiveType<int>(file, p.type);
                 }
             }
+            log.progress(i);
         }
     }
+
+    log.endProgress();
 }
 
 } // namespace vcl::detail

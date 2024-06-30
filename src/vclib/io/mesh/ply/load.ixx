@@ -23,13 +23,18 @@
 module;
 
 #include <fstream>
+#include <vector>
 
 export module vclib.io.mesh.ply.load;
 
 import vclib.concepts;
+import vclib.exceptions;
+import vclib.misc.logger;
+import vclib.io.file_info;
 import vclib.io.mesh.ply.detail;
 import vclib.io.mesh.settings;
 import vclib.io.read;
+import vclib.mesh.utils.mesh_info;
 
 export {
 #include <vclib/io/mesh/ply/load.h>

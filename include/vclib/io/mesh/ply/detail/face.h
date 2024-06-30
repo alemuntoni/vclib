@@ -354,15 +354,19 @@ void writePlyFaces(
     }
 }
 
-template<FaceMeshConcept MeshType>
+template<FaceMeshConcept MeshType, LoggerConcept LogType>
 void readPlyFaces(
     std::istream&    file,
     const PlyHeader& header,
     MeshType&        mesh,
-    MeshInfo&        loadedInfo)
+    MeshInfo&        loadedInfo,
+    LogType&         log)
 {
     using FaceType = MeshType::FaceType;
     mesh.reserveFaces(header.numberFaces());
+
+    log.startProgress("Reading faces", header.numberFaces());
+
     for (uint fid = 0; fid < header.numberFaces(); ++fid) {
         uint      ffid = mesh.addFace();
         FaceType& f    = mesh.face(ffid);
@@ -374,7 +378,11 @@ void readPlyFaces(
             detail::readPlyFaceBin(
                 file, f, mesh, loadedInfo, header.faceProperties());
         }
+
+        log.progress(fid);
     }
+
+    log.endProgress();
 }
 
 } // namespace vcl::detail

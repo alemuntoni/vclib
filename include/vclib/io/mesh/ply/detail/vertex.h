@@ -205,10 +205,16 @@ void writePlyVertices(
     }
 }
 
-template<MeshConcept MeshType>
-void readPlyVertices(std::istream& file, const PlyHeader& header, MeshType& m)
+template<MeshConcept MeshType, LoggerConcept LogType>
+void readPlyVertices(
+    std::istream&    file,
+    const PlyHeader& header,
+    MeshType&        m,
+    LogType&         log)
 {
     m.addVertices(header.numberVertices());
+
+    log.startProgress("Reading vertices", header.numberVertices());
 
     for (uint vid = 0; vid < header.numberVertices(); ++vid) {
         auto& v = m.vertex(vid);
@@ -218,7 +224,9 @@ void readPlyVertices(std::istream& file, const PlyHeader& header, MeshType& m)
         else if (header.format() == ply::BINARY) {
             detail::readPlyVertexBin(file, v, m, header.vertexProperties());
         }
+        log.progress(vid);
     }
+    log.endProgress();
 }
 
 } // namespace vcl::detail

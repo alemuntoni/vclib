@@ -30,6 +30,8 @@ import vclib.concepts;
 import vclib.io.mesh.ply.detail;
 import vclib.io.mesh.settings;
 import vclib.io.write;
+import vclib.mesh.utils.mesh_info;
+import vclib.misc.logger;
 
 export {
 #include <vclib/io/mesh/ply/save.h>
