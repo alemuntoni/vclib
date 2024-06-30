@@ -23,8 +23,10 @@
 #ifndef VCL_PROCESSING_ACTIONS_COMMON_MESH_VECTOR_H
 #define VCL_PROCESSING_ACTIONS_COMMON_MESH_VECTOR_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/processing/meshes/mesh_i.h>
 #include <vclib/space/polymorphic_object_vector.h>
+#endif
 
 namespace vcl::proc {
 

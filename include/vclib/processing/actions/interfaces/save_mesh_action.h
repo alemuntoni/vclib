@@ -23,6 +23,7 @@
 #ifndef VCL_PROCESSING_ACTIONS_INTERFACES_SAVE_MESH_ACTION_H
 #define VCL_PROCESSING_ACTIONS_INTERFACES_SAVE_MESH_ACTION_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "mesh_action.h"
 
 #include <vclib/mesh/utils/mesh_info.h>
@@ -30,6 +31,7 @@
 #include <vclib/processing/meshes.h>
 #include <vclib/processing/settings.h>
 #include <vclib/space/bit_set.h>
+#endif
 
 namespace vcl::proc {
 

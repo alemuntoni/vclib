@@ -23,6 +23,7 @@
 #ifndef VCL_PROCESSING_ACTIONS_INTERFACES_LOAD_MESH_ACTION_H
 #define VCL_PROCESSING_ACTIONS_INTERFACES_LOAD_MESH_ACTION_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "mesh_action.h"
 
 #include <vclib/algorithms/mesh/update.h>
@@ -30,6 +31,7 @@
 #include <vclib/processing/actions/common/file_format.h>
 #include <vclib/processing/meshes.h>
 #include <vclib/processing/settings.h>
+#endif
 
 namespace vcl::proc {
 

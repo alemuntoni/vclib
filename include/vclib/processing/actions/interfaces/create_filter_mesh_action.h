@@ -23,7 +23,9 @@
 #ifndef VCL_PROCESSING_ACTIONS_INTERFACES_CREATE_FILTER_MESH_ACTION_H
 #define VCL_PROCESSING_ACTIONS_INTERFACES_CREATE_FILTER_MESH_ACTION_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "filter_mesh_action.h"
+#endif
 
 namespace vcl::proc {
 
