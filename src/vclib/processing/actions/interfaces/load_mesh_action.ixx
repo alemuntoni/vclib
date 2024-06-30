@@ -26,6 +26,8 @@ module;
 #include <string>
 #include <vector>
 
+#include <Eigen/Core>
+
 export module vclib.processing.actions.interfaces.load_mesh_action;
 
 import vclib.algorithms.mesh.update;

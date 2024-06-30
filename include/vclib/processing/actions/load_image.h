@@ -23,10 +23,12 @@
 #ifndef VCL_PROCESSING_ACTIONS_LOAD_IMAGE_H
 #define VCL_PROCESSING_ACTIONS_LOAD_IMAGE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <memory>
 #include <vector>
 
 #include "load_image/base_load_image_action.h"
+#endif
 
 namespace vcl::proc {
 

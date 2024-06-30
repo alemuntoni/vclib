@@ -22,7 +22,17 @@
 
 module;
 
-export module vclib.processing.actions;
+#include <memory>
+#include <string>
+#include <vector>
 
-export import vclib.processing.actions.load_image;
-export import vclib.processing.actions.save_image;
+export module vclib.processing.actions.load_image.base_load_image_action;
+
+import vclib.processing.actions.common.file_format;
+import vclib.processing.actions.interfaces.load_image_action;
+import vclib.space.image;
+import vclib.types;
+
+export {
+#include <vclib/processing/actions/load_image/base_load_image_action.h>
+}
