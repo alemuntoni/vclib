@@ -304,7 +304,8 @@ void updatePrincipalCurvaturePCA(
 
             A = covarianceMatrixOfMesh(tmpMesh);
         }
-        Eigen::SelfAdjointEigenSolver<vcl::Matrix33<ScalarType>> eig(A);
+
+        Eigen::SelfAdjointEigenSolver<Eigen::Matrix<ScalarType, 3, 3>> eig(A);
         eigenvalues  = CoordType(eig.eigenvalues());
         eigenvectors = eig.eigenvectors(); // eigenvector are stored as columns.
         // get the estimate of curvatures from eigenvalues and eigenvectors
@@ -331,18 +332,20 @@ void updatePrincipalCurvaturePCA(
         angle = acos(v.principalCurvature().maxDir().dot(v.normal()));
 
         rot = vcl::rotationMatrix<vcl::Matrix33<ScalarType>>(
-            v.principalCurvature().maxDir().cross(v.normal()),
+            CoordType(v.principalCurvature().maxDir().cross(v.normal())),
             -(M_PI * 0.5 - angle));
 
-        v.principalCurvature().maxDir() = rot * v.principalCurvature().maxDir();
+        v.principalCurvature().maxDir() =
+            rot * v.principalCurvature().maxDir().transpose();
 
         angle = acos(v.principalCurvature().minDir().dot(v.normal()));
 
         rot = vcl::rotationMatrix<vcl::Matrix33<ScalarType>>(
-            v.principalCurvature().minDir().cross(v.normal()),
+            CoordType(v.principalCurvature().minDir().cross(v.normal())),
             -(M_PI * 0.5 - angle));
 
-        v.principalCurvature().minDir() = rot * v.principalCurvature().minDir();
+        v.principalCurvature().minDir() =
+            rot * v.principalCurvature().minDir().transpose();
 
         // computes the curvature values
         const ScalarType r5 = std::pow(radius, 5);

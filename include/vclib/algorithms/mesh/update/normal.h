@@ -585,7 +585,8 @@ void updatePerVertexNormalsAngleWeighted(
     LogType&              log       = nullLogger)
 {
     using VertexType  = std::remove_reference_t<decltype(mesh)>::VertexType;
-    using NScalarType = VertexType::NormalType::ScalarType;
+    using NormalType  = VertexType::NormalType;
+    using NScalarType = NormalType::ScalarType;
 
     log.log(0, "Updating per-Vertex normals...");
 
@@ -599,12 +600,14 @@ void updatePerVertexNormalsAngleWeighted(
         auto n = faceNormal(f).template cast<NScalarType>();
 
         for (uint i = 0; i < f.vertexNumber(); ++i) {
-            auto vec1 = (f.vertexMod(i - 1)->coord() - f.vertexMod(i)->coord())
-                            .normalized()
-                            .template cast<NScalarType>();
-            auto vec2 = (f.vertexMod(i + 1)->coord() - f.vertexMod(i)->coord())
-                            .normalized()
-                            .template cast<NScalarType>();
+            NormalType vec1 =
+                (f.vertexMod(i - 1)->coord() - f.vertexMod(i)->coord())
+                    .normalized()
+                    .template cast<NScalarType>();
+            NormalType vec2 =
+                (f.vertexMod(i + 1)->coord() - f.vertexMod(i)->coord())
+                    .normalized()
+                    .template cast<NScalarType>();
 
             f.vertex(i)->normal() += n * vec1.angle(vec2);
         }

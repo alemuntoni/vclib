@@ -27,7 +27,9 @@ module;
 export module vclib.space.matrix;
 
 import vclib.concepts.space;
+import vclib.io.serialization;
 
 export {
-#include <vclib/space/matrix.h>
+#include <vclib/space/matrix/affine.h>
+#include <vclib/space/matrix/matrix.h>
 }
