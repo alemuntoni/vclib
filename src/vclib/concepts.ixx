@@ -36,6 +36,7 @@ export import vclib.concepts.mesh;
 export import vclib.concepts.pointers;
 export import vclib.concepts.polymorphism;
 export import vclib.concepts.ranges;
+export import vclib.concepts.serialization;
 export import vclib.concepts.space;
 
 export {

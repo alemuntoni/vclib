@@ -20,19 +20,24 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_CONCEPTS_SERIALIZABLE_H
+#define VCL_CONCEPTS_SERIALIZABLE_H
 
-#include <algorithm>
-#include <cassert>
-#include <iosfwd>
+#ifndef VCLIB_WITH_MODULES
+#include <fstream>
+#endif
 
-export module vclib.space.box;
+namespace vcl {
 
-import vclib.concepts;
-import vclib.math;
-import vclib.space.point;
-import vclib.types;
+template<typename T>
+concept Serializable =
+    requires (T& o, const T& co, std::ofstream& ofs, std::ifstream& ifs) {
+    // clang-format off
+    { co.serialize(ofs) } -> std::same_as<void>;
+    { o.deserialize(ifs) } -> std::same_as<void>;
+    // clang-format on
+};
 
-export {
-#include <vclib/space/box.h>
-}
+} // namespace vcl
+
+#endif // VCL_CONCEPTS_SERIALIZABLE_H
