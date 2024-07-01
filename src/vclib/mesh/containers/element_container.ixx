@@ -23,6 +23,7 @@
 module;
 
 #include <any>
+#include <array>
 #include <cassert>
 #include <string>
 #include <typeindex>
