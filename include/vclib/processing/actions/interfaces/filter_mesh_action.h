@@ -192,7 +192,7 @@ protected:
         }
 
         return callFunctionForMesh(
-            function, mesh, std::forward<decltype(args)>(args)...);
+             mesh, function, std::forward<decltype(args)>(args)...);
     }
 
     auto callFunctionForSupportedInputOutputMeshTypes(
@@ -208,7 +208,7 @@ protected:
         }
 
         return callFunctionForMesh(
-            function, mesh, std::forward<decltype(args)>(args)...);
+            mesh, function, std::forward<decltype(args)>(args)...);
     }
 
     template<MeshConcept MeshType>
