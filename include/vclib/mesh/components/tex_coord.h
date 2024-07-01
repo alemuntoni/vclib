@@ -112,6 +112,10 @@ protected:
             }
         }
     }
+
+    void serialize(std::ostream& os) const { texCoord().serialize(os); }
+
+    void deserialize(std::istream& is) { texCoord().deserialize(is); }
 };
 
 /* Detector function to check if a class has TexCoord available */

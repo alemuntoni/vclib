@@ -24,11 +24,11 @@
 #define VCL_SPACE_BIT_SET_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <fstream>
 #include <stdexcept>
 #include <string>
 
 #include <vclib/concepts/types.h>
+#include <vclib/io/serialization.h>
 
 #include "bit_set/bit_proxy.h"
 #endif
@@ -248,19 +248,13 @@ public:
      * @brief Serializes the BitSet to the given output stream.
      * @param[in] os: The output stream.
      */
-    void serialize(std::ostream& os) const
-    {
-        os.write(reinterpret_cast<const char*>(&mBits), sizeof(mBits));
-    }
+    void serialize(std::ostream& os) const { vcl::serialize(os, mBits); }
 
     /**
      * @brief Deserializes the BitSet from the given input stream.
      * @param[in] is: The input stream.
      */
-    void deserialize(std::istream& is)
-    {
-        is.read(reinterpret_cast<char*>(&mBits), sizeof(mBits));
-    }
+    void deserialize(std::istream& is) { vcl::deserialize(is, mBits); }
 
     auto operator<=>(const BitSet<T>&) const = default;
 

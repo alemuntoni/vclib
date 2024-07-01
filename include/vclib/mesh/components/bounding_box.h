@@ -108,7 +108,7 @@ public:
     BoundingBoxType& boundingBox() { return Base::data(); }
 
 protected:
-    // Component interface function
+    // Component interface functions
     template<typename Element>
     void importFrom(const Element& e, bool = true)
     {
@@ -117,6 +117,10 @@ protected:
             boundingBox()    = e.boundingBox().template cast<ScalarType>();
         }
     }
+
+    void serialize(std::ostream& os) const { boundingBox().serialize(os); }
+
+    void deserialize(std::istream& is) { boundingBox().deserialize(is); }
 };
 
 /* Detector function to check if a class has BoundingBox available */

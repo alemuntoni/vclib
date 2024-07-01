@@ -23,6 +23,7 @@
 module;
 
 #include <cassert>
+#include <iosfwd>
 #include <type_traits>
 
 export module vclib.space.tex_coord;

@@ -25,6 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/mark.h>
+#include <vclib/io/serialization.h>
 
 #include "bases/component.h"
 #endif
@@ -174,6 +175,10 @@ protected:
             }
         }
     }
+
+    void serialize(std::ostream& os) const { vcl::serialize(os, mark()); }
+
+    void deserialize(std::istream& is) { vcl::deserialize(is, mark()); }
 
 private:
     int& mark() { return Base::data(); }

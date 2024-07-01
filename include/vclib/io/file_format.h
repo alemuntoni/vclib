@@ -20,24 +20,51 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_CONCEPTS_SERIALIZABLE_H
-#define VCL_CONCEPTS_SERIALIZABLE_H
+#ifndef VCL_IO_FILE_FORMAT_H
+#define VCL_IO_FILE_FORMAT_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <fstream>
+#include <bit>
 #endif
 
 namespace vcl {
 
-template<typename T>
-concept Serializable =
-    requires (T& o, const T& co, std::ofstream& ofs, std::ifstream& ifs) {
-    // clang-format off
-    { co.serialize(ofs) } -> std::same_as<void>;
-    { o.deserialize(ifs) } -> std::same_as<void>;
-    // clang-format on
+/**
+ * @brief Class that defines the format of a file.
+ *
+ * This class is used to define the format of a file, specifying if it is binary
+ * or text, and (if binary) the endianness.
+ */
+struct FileFormat
+{
+    bool isBinary = true;
+
+    std::endian endian = std::endian::little;
+
+    /**
+     * @brief Default constructor, creates a little endian binary file format.
+     */
+    FileFormat() = default;
+
+    /**
+     * @brief Constructor that creates a file format with the specified binary
+     * flag.
+     *
+     * If the file is binary, the endianness is set to little endian.
+     *
+     * @param binary: flag that specifies if the file is binary
+     */
+    FileFormat(bool binary) : isBinary(binary) {}
+
+    /**
+     * @brief Constructor that creates a binary file format with the specified
+     * endianness.
+     *
+     * @param end: endianness of the file
+     */
+    FileFormat(std::endian end) : isBinary(true), endian(end) {}
 };
 
 } // namespace vcl
 
-#endif // VCL_CONCEPTS_SERIALIZABLE_H
+#endif // VCL_IO_FILE_FORMAT_H

@@ -29,5 +29,5 @@ export module vclib.concepts.serialization;
 
 
 export {
-#include <vclib/concepts/serializable.h>
+#include <vclib/concepts/serialization.h>
 }

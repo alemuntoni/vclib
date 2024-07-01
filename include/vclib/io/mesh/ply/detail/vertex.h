@@ -43,22 +43,24 @@ void readPlyVertexProperty(
     Stream&     file,
     MeshType&   mesh,
     VertexType& v,
-    PlyProperty p)
+    PlyProperty p,
+    std::endian end = std::endian::little)
 {
     bool hasBeenRead = false;
     if (p.name >= ply::x && p.name <= ply::z) {
         using Scalar = VertexType::CoordType::ScalarType;
         int a        = p.name - ply::x;
-        v.coord()[a] = io::readPrimitiveType<Scalar>(file, p.type);
+        v.coord()[a] = io::readPrimitiveType<Scalar>(file, p.type, end);
         hasBeenRead  = true;
     }
     if (p.name >= ply::nx && p.name <= ply::nz) {
         if constexpr (vcl::HasPerVertexNormal<MeshType>) {
             if (vcl::isPerVertexNormalAvailable(mesh)) {
-                using Scalar  = VertexType::NormalType::ScalarType;
-                int a         = p.name - ply::nx;
-                v.normal()[a] = io::readPrimitiveType<Scalar>(file, p.type);
-                hasBeenRead   = true;
+                using Scalar = VertexType::NormalType::ScalarType;
+                int a        = p.name - ply::nx;
+                v.normal()[a] =
+                    io::readPrimitiveType<Scalar>(file, p.type, end);
+                hasBeenRead = true;
             }
         }
     }
@@ -67,7 +69,7 @@ void readPlyVertexProperty(
             if (vcl::isPerVertexColorAvailable(mesh)) {
                 int a = p.name - ply::red;
                 v.color()[a] =
-                    io::readPrimitiveType<unsigned char>(file, p.type);
+                    io::readPrimitiveType<unsigned char>(file, p.type, end);
                 hasBeenRead = true;
             }
         }
@@ -76,7 +78,8 @@ void readPlyVertexProperty(
         if constexpr (vcl::HasPerVertexQuality<MeshType>) {
             using QualityType = VertexType::QualityType;
             if (vcl::isPerVertexQualityAvailable(mesh)) {
-                v.quality() = io::readPrimitiveType<QualityType>(file, p.type);
+                v.quality() =
+                    io::readPrimitiveType<QualityType>(file, p.type, end);
                 hasBeenRead = true;
             }
         }
@@ -85,16 +88,18 @@ void readPlyVertexProperty(
         if constexpr (vcl::HasPerVertexTexCoord<MeshType>) {
             using Scalar = VertexType::TexCoordType::ScalarType;
             if (vcl::isPerVertexTexCoordAvailable(mesh)) {
-                int a           = p.name - ply::texture_u;
-                v.texCoord()[a] = io::readPrimitiveType<Scalar>(file, p.type);
-                hasBeenRead     = true;
+                int a = p.name - ply::texture_u;
+                v.texCoord()[a] =
+                    io::readPrimitiveType<Scalar>(file, p.type, end);
+                hasBeenRead = true;
             }
         }
     }
     if (p.name == ply::unknown) {
         if constexpr (vcl::HasPerVertexCustomComponents<MeshType>) {
             if (mesh.hasPerVertexCustomComponent(p.unknownPropertyName)) {
-                io::readCustomComponent(file, v, p.unknownPropertyName, p.type);
+                io::readCustomComponent(
+                    file, v, p.unknownPropertyName, p.type, end);
                 hasBeenRead = true;
             }
         }
@@ -103,10 +108,10 @@ void readPlyVertexProperty(
         if (p.list) {
             uint s = io::readPrimitiveType<int>(file, p.listSizeType);
             for (uint i = 0; i < s; ++i)
-                io::readPrimitiveType<int>(file, p.type);
+                io::readPrimitiveType<int>(file, p.type, end);
         }
         else {
-            io::readPrimitiveType<int>(file, p.type);
+            io::readPrimitiveType<int>(file, p.type, end);
         }
     }
 }
@@ -133,10 +138,11 @@ void readPlyVertexBin(
     std::istream&                 file,
     VertexType&                   v,
     MeshType&                     mesh,
-    const std::list<PlyProperty>& vertexProperties)
+    const std::list<PlyProperty>& vertexProperties,
+    std::endian                   end)
 {
     for (const PlyProperty& p : vertexProperties) {
-        readPlyVertexProperty(file, mesh, v, p);
+        readPlyVertexProperty(file, mesh, v, p, end);
     }
 }
 
@@ -148,39 +154,46 @@ void writePlyVertices(
 {
     using VertexType = MeshType::VertexType;
 
-    bool bin = header.format() == ply::BINARY;
+    FileFormat format;
+    if (header.format() == ply::ASCII) {
+        format.isBinary = false;
+    }
+    else if (header.format() == ply::BINARY_BIG_ENDIAN) {
+        format.endian = std::endian::big;
+    }
+
     for (const VertexType& v : mesh.vertices()) {
         for (const PlyProperty& p : header.vertexProperties()) {
             bool hasBeenWritten = false;
             if (p.name >= ply::x && p.name <= ply::z) {
                 io::writeProperty(
-                    file, v.coord()[p.name - ply::x], p.type, bin);
+                    file, v.coord()[p.name - ply::x], p.type, format);
                 hasBeenWritten = true;
             }
             if (p.name >= ply::nx && p.name <= ply::nz) {
                 if constexpr (vcl::HasPerVertexNormal<MeshType>) {
                     io::writeProperty(
-                        file, v.normal()[p.name - ply::nx], p.type, bin);
+                        file, v.normal()[p.name - ply::nx], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             if (p.name >= ply::red && p.name <= ply::alpha) {
                 if constexpr (vcl::HasPerVertexColor<MeshType>) {
                     io::writeProperty(
-                        file, v.color()[p.name - ply::red], p.type, bin);
+                        file, v.color()[p.name - ply::red], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             if (p.name == ply::quality) {
                 if constexpr (vcl::HasPerVertexQuality<MeshType>) {
-                    io::writeProperty(file, v.quality(), p.type, bin);
+                    io::writeProperty(file, v.quality(), p.type, format);
                     hasBeenWritten = true;
                 }
             }
             if (p.name >= ply::texture_u && p.name <= ply::texture_v) {
                 if constexpr (vcl::HasPerVertexTexCoord<MeshType>) {
                     const uint a = p.name - ply::texture_u;
-                    io::writeProperty(file, v.texCoord()[a], p.type, bin);
+                    io::writeProperty(file, v.texCoord()[a], p.type, format);
                     hasBeenWritten = true;
                 }
             }
@@ -189,7 +202,7 @@ void writePlyVertices(
                     if (mesh.hasPerVertexCustomComponent(p.unknownPropertyName))
                     {
                         io::writeCustomComponent(
-                            file, v, p.unknownPropertyName, p.type, bin);
+                            file, v, p.unknownPropertyName, p.type, format);
                         hasBeenWritten = true;
                     }
                 }
@@ -197,10 +210,10 @@ void writePlyVertices(
             if (!hasBeenWritten) {
                 // be sure to write something if the header declares some
                 // property that is not in the mesh
-                io::writeProperty(file, 0, p.type, bin);
+                io::writeProperty(file, 0, p.type, format);
             }
         }
-        if (!bin)
+        if (!format.isBinary)
             file << std::endl;
     }
 }
@@ -221,8 +234,12 @@ void readPlyVertices(
         if (header.format() == ply::ASCII) {
             detail::readPlyVertexTxt(file, v, m, header.vertexProperties());
         }
-        else if (header.format() == ply::BINARY) {
-            detail::readPlyVertexBin(file, v, m, header.vertexProperties());
+        else {
+            std::endian end = header.format() == ply::BINARY_BIG_ENDIAN ?
+                                  std::endian::big :
+                                  std::endian::little;
+            detail::readPlyVertexBin(
+                file, v, m, header.vertexProperties(), end);
         }
         log.progress(vid);
     }

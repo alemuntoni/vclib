@@ -20,16 +20,39 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_CONCEPTS_SERIALIZATION_H
+#define VCL_CONCEPTS_SERIALIZATION_H
 
-#include <iosfwd>
-#include <type_traits>
+#ifndef VCLIB_WITH_MODULES
+#include <istream>
+#include <ostream>
+#endif
 
-export module vclib.space.principal_curvature;
+namespace vcl {
 
-import vclib.io.serialization;
-import vclib.space.point;
+template<typename T>
+concept OutputStreamable = requires (std::ostream& os, T value) {
+    // clang-format off
+    { os << value } -> std::convertible_to<std::ostream&>;
+    // clang-format on
+};
 
-export {
-#include <vclib/space/principal_curvature.h>
-}
+template<typename T>
+concept InputStreamable = requires (std::istream& is, T& value) {
+    // clang-format off
+    { is >> value } -> std::convertible_to<std::istream&>;
+    // clang-format on
+};
+
+template<typename T>
+concept Serializable =
+    requires (T& o, const T& co, std::ofstream& ofs, std::ifstream& ifs) {
+        // clang-format off
+    { co.serialize(ofs) } -> std::same_as<void>;
+    { o.deserialize(ifs) } -> std::same_as<void>;
+        // clang-format on
+    };
+
+} // namespace vcl
+
+#endif // VCL_CONCEPTS_SERIALIZATION_H

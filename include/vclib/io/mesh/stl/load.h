@@ -46,7 +46,7 @@ inline bool isBinStlMalformed(
         // we can check if the size of the file is the expected one
         std::ifstream fp = openInputFileStream(filename);
         fp.seekg(80); // size of the header
-        uint        fnum = io::readUInt<uint>(fp);
+        uint        fnum = io::readUInt<uint>(fp, std::endian::little);
         std::size_t expectedFileSize =
             80 + 4 +                     // header and number of faces
             fnum *                       // for each face
@@ -78,15 +78,16 @@ inline bool isStlColored(std::istream& fp, bool& magicsMode)
         magicsMode = true;
     else
         magicsMode = false;
-    uint              fnum = io::readUInt<uint>(fp);
+    uint              fnum = io::readUInt<uint>(fp, std::endian::little);
     static const uint fmax = 1000;
     // 3 floats for normal and 9 for vcoords
     static const uint fdataSize = 12 * sizeof(float);
 
     for (uint i = 0; i < std::min(fnum, fmax); ++i) {
         fp.seekg(fdataSize, std::ios::cur);
-        unsigned short attr = io::readShort<unsigned short>(fp);
-        Color          c;
+        unsigned short attr =
+            io::readShort<unsigned short>(fp, std::endian::little);
+        Color c;
         c.setBgr5(attr);
         if (c != Color::White)
             colored = true;
@@ -118,7 +119,7 @@ void readStlBin(
     }
 
     fp.seekg(80); // size of the header
-    uint fnum = io::readUInt<uint>(fp);
+    uint fnum = io::readUInt<uint>(fp, std::endian::little);
     if (fnum > 0)
         loadedInfo.setTriangleMesh();
 
@@ -132,17 +133,21 @@ void readStlBin(
     uint vi = 0;
     for (uint i = 0; i < fnum; ++i) {
         Point3f norm;
-        norm.x() = io::readFloat<float>(fp);
-        norm.y() = io::readFloat<float>(fp);
-        norm.z() = io::readFloat<float>(fp);
+        norm.x() = io::readFloat<float>(fp, std::endian::little);
+        norm.y() = io::readFloat<float>(fp, std::endian::little);
+        norm.z() = io::readFloat<float>(fp, std::endian::little);
 
         for (uint j = 0; j < 3; ++j) {
-            m.vertex(vi + j).coord().x() = io::readFloat<float>(fp);
-            m.vertex(vi + j).coord().y() = io::readFloat<float>(fp);
-            m.vertex(vi + j).coord().z() = io::readFloat<float>(fp);
+            m.vertex(vi + j).coord().x() =
+                io::readFloat<float>(fp, std::endian::little);
+            m.vertex(vi + j).coord().y() =
+                io::readFloat<float>(fp, std::endian::little);
+            m.vertex(vi + j).coord().z() =
+                io::readFloat<float>(fp, std::endian::little);
         }
 
-        unsigned short attr = io::readShort<unsigned short>(fp);
+        unsigned short attr =
+            io::readShort<unsigned short>(fp, std::endian::little);
 
         if constexpr (HasFaces<MeshType>) {
             using FaceType = MeshType::FaceType;
@@ -208,9 +213,9 @@ void readStlAscii(
                 // read the normal of the face
                 Point3f normal;
 
-                normal.x() = io::readFloat<float>(token);
-                normal.y() = io::readFloat<float>(token);
-                normal.z() = io::readFloat<float>(token);
+                normal.x() = io::readFloat<float>(token, std::endian::little);
+                normal.y() = io::readFloat<float>(token, std::endian::little);
+                normal.z() = io::readFloat<float>(token, std::endian::little);
 
                 readAndTokenizeNextNonEmptyLine(fp); // outer loop
                 // vertex x y z
@@ -220,9 +225,12 @@ void readStlAscii(
                     token = tokens.begin();
                     ++token; // skip the "vertex" word
 
-                    m.vertex(vi + i).coord().x() = io::readFloat<float>(token);
-                    m.vertex(vi + i).coord().y() = io::readFloat<float>(token);
-                    m.vertex(vi + i).coord().z() = io::readFloat<float>(token);
+                    m.vertex(vi + i).coord().x() =
+                        io::readFloat<float>(token, std::endian::little);
+                    m.vertex(vi + i).coord().y() =
+                        io::readFloat<float>(token, std::endian::little);
+                    m.vertex(vi + i).coord().z() =
+                        io::readFloat<float>(token, std::endian::little);
 
                     // next vertex
                     tokens = readAndTokenizeNextNonEmptyLine(fp);

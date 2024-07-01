@@ -22,14 +22,10 @@
 
 module;
 
-#include <iosfwd>
-#include <type_traits>
+#include <bit>
 
-export module vclib.space.principal_curvature;
-
-import vclib.io.serialization;
-import vclib.space.point;
+export module vclib.io.file_format;
 
 export {
-#include <vclib/space/principal_curvature.h>
+#include <vclib/io/file_format.h>
 }

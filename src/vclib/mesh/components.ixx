@@ -37,6 +37,7 @@ import vclib.concepts.mesh.elements.element;
 import vclib.concepts.mesh.mesh_concept;
 import vclib.concepts.ranges;
 import vclib.concepts.space;
+import vclib.io.serialization;
 import vclib.iterators.mesh;
 import vclib.mesh.components.bases;
 import vclib.mesh.components.detail;

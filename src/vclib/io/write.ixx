@@ -31,7 +31,9 @@ export module vclib.io.write;
 
 import vclib.concepts.mesh.elements.element;
 import vclib.exceptions;
+import vclib.io.file_format;
 import vclib.io.file_info;
+import vclib.io.serialization;
 import vclib.types;
 
 export {

@@ -25,6 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/quality.h>
+#include <vclib/io/serialization.h>
 
 #include "bases/component.h"
 #endif
@@ -111,6 +112,10 @@ protected:
             }
         }
     }
+
+    void serialize(std::ostream& os) const { vcl::serialize(os, quality()); }
+
+    void deserialize(std::istream& is) { vcl::deserialize(is, quality()); }
 };
 
 /* Detector function to check if a class has Quality available */

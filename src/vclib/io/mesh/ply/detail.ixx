@@ -35,6 +35,7 @@ export module vclib.io.mesh.ply.detail;
 
 import vclib.concepts;
 import vclib.exceptions;
+import vclib.io.file_format;
 import vclib.io.file_info;
 import vclib.io.mesh.settings;
 import vclib.io.read;

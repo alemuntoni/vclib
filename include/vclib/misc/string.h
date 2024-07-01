@@ -30,6 +30,8 @@
 #include <string>
 #endif
 
+#include <vclib/io/serialization.h>
+
 namespace vcl {
 
 /**
@@ -127,6 +129,21 @@ inline void removeCarriageReturn(std::string& s)
 {
     if (s.size() > 0 && s[s.size() - 1] == '\r')
         s = s.substr(0, s.size() - 1);
+}
+
+inline void serialize(std::ostream& os, const std::string& s)
+{
+    std::size_t size = s.size();
+    serialize(os, size);
+    serialize(os, s.data(), size);
+}
+
+inline void deserialize(std::istream& is, std::string& s)
+{
+    std::size_t size;
+    deserialize(is, size);
+    s.resize(size);
+    deserialize(is, s.data(), size);
 }
 
 } // namespace vcl

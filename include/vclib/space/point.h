@@ -30,6 +30,7 @@
 #include <Eigen/Geometry>
 
 #include <vclib/concepts/space/point.h>
+#include <vclib/io/serialization.h>
 #include <vclib/math/base.h>
 #include <vclib/misc/hash.h>
 #endif
@@ -613,8 +614,7 @@ public:
      */
     void serialize(std::ostream& os) const
     {
-        os.write(
-            reinterpret_cast<const char*>(mP.data()), mP.size() * sizeof(Scalar));
+        vcl::serialize(os, mP.data(), mP.size());
     }
 
     /**
@@ -623,8 +623,7 @@ public:
      */
     void deserialize(std::istream& is)
     {
-        is.read(
-            reinterpret_cast<char*>(mP.data()), mP.size() * sizeof(Scalar));
+        vcl::deserialize(is, mP.data(), mP.size());
     }
 
     /**

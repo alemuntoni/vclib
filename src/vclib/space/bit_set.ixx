@@ -32,6 +32,7 @@ module;
 export module vclib.space.bit_set;
 
 import vclib.concepts;
+import vclib.io.serialization;
 import vclib.types;
 
 export {

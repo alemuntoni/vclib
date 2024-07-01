@@ -103,7 +103,7 @@ public:
     P& normal() { return Base::data(); }
 
 protected:
-    // Component interface function
+    // Component interface functions
     template<typename Element>
     void importFrom(const Element& e, bool = true)
     {
@@ -114,6 +114,10 @@ protected:
             }
         }
     }
+
+    void serialize(std::ostream& os) const { normal().serialize(os); }
+
+    void deserialize(std::istream& is) { normal().deserialize(is); }
 };
 
 /* Detector function to check if a class has Normal available */

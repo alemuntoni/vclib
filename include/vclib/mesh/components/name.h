@@ -25,6 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/name.h>
+#include <vclib/misc/string.h>
 
 #include "bases/component.h"
 #endif
@@ -97,7 +98,7 @@ public:
     const std::string& name() const { return Base::data(); }
 
 protected:
-    // Component interface function
+    // Component interface functions
     template<typename Element>
     void importFrom(const Element& e, bool = true)
     {
@@ -105,6 +106,10 @@ protected:
             name() = e.name();
         }
     }
+
+    void serialize(std::ostream& os) const { vcl::serialize(os, name()); }
+
+    void deserialize(std::istream& is) { vcl::deserialize(is, name()); }
 };
 
 /* Detector function to check if a class has Name available */

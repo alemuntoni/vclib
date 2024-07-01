@@ -29,6 +29,7 @@
 #include <vclib/misc/tokenizer.h>
 
 #include "file_info.h"
+#include "serialization.h"
 #endif
 
 namespace vcl {
@@ -192,10 +193,10 @@ namespace io {
  * @return A value of type T containing the read char.
  */
 template<typename T>
-T readChar(std::istream& file)
+T readChar(std::istream& file, std::endian end = std::endian::native)
 {
     char c;
-    file.read(&c, 1);
+    deserialize(file, c, end);
     return static_cast<T>(c);
 }
 
@@ -208,10 +209,10 @@ T readChar(std::istream& file)
  * @return A value of type T containing the read unsigned char.
  */
 template<typename T>
-T readUChar(std::istream& file)
+T readUChar(std::istream& file, std::endian end = std::endian::native)
 {
     unsigned char c;
-    file.read((char*) &c, 1);
+    deserialize(file, c, end);
     return static_cast<T>(c);
 }
 
@@ -224,10 +225,10 @@ T readUChar(std::istream& file)
  * @return A value of type T containing the read short.
  */
 template<typename T>
-T readShort(std::istream& file)
+T readShort(std::istream& file, std::endian end = std::endian::native)
 {
     short c;
-    file.read((char*) &c, 2);
+    deserialize(file, c, end);
     return static_cast<T>(c);
 }
 
@@ -240,10 +241,10 @@ T readShort(std::istream& file)
  * @return A value of type T containing the read unsigned short.
  */
 template<typename T>
-T readUShort(std::istream& file)
+T readUShort(std::istream& file, std::endian end = std::endian::native)
 {
     unsigned short c;
-    file.read((char*) &c, 2);
+    deserialize(file, c, end);
     return static_cast<T>(c);
 }
 
@@ -256,10 +257,10 @@ T readUShort(std::istream& file)
  * @return A value of type T containing the read int.
  */
 template<typename T>
-T readInt(std::istream& file)
+T readInt(std::istream& file, std::endian end = std::endian::native)
 {
     int c;
-    file.read((char*) &c, 4);
+    deserialize(file, c, end);
     return static_cast<T>(c);
 }
 
@@ -272,10 +273,10 @@ T readInt(std::istream& file)
  * @return A value of type T containing the read unsigned int.
  */
 template<typename T>
-T readUInt(std::istream& file)
+T readUInt(std::istream& file, std::endian end = std::endian::native)
 {
     uint c;
-    file.read((char*) &c, 4);
+    deserialize(file, c, end);
     return static_cast<T>(c);
 }
 
@@ -292,10 +293,13 @@ T readUInt(std::istream& file)
  * @return A value of type T containing the read float.
  */
 template<typename T>
-T readFloat(std::istream& file, bool isColor = false)
+T readFloat(
+    std::istream& file,
+    std::endian   end     = std::endian::native,
+    bool          isColor = false)
 {
     float c;
-    file.read((char*) &c, 4);
+    deserialize(file, c, end);
     if constexpr (std::integral<T>) {
         if (isColor)
             return static_cast<T>(c * 255);
@@ -316,10 +320,13 @@ T readFloat(std::istream& file, bool isColor = false)
  * @return A value of type T containing the read double.
  */
 template<typename T>
-T readDouble(std::istream& file, bool isColor = false)
+T readDouble(
+    std::istream& file,
+    std::endian   end     = std::endian::native,
+    bool          isColor = false)
 {
     double c;
-    file.read((char*) &c, 8);
+    deserialize(file, c, end);
     if constexpr (std::integral<T>) {
         if (isColor)
             return static_cast<T>(c * 255);
@@ -350,18 +357,19 @@ template<typename T>
 T readPrimitiveType(
     std::istream& file,
     PrimitiveType type,
+    std::endian   end     = std::endian::native,
     bool          isColor = false)
 {
     T p;
     switch (type) {
-    case CHAR: p = readChar<T>(file); break;
-    case UCHAR: p = readUChar<T>(file); break;
-    case SHORT: p = readShort<T>(file); break;
-    case USHORT: p = readUShort<T>(file); break;
-    case INT: p = readInt<T>(file); break;
-    case UINT: p = readUInt<T>(file); break;
-    case FLOAT: p = readFloat<T>(file, isColor); break;
-    case DOUBLE: p = readDouble<T>(file, isColor); break;
+    case CHAR: p = readChar<T>(file, end); break;
+    case UCHAR: p = readUChar<T>(file, end); break;
+    case SHORT: p = readShort<T>(file, end); break;
+    case USHORT: p = readUShort<T>(file, end); break;
+    case INT: p = readInt<T>(file, end); break;
+    case UINT: p = readUInt<T>(file, end); break;
+    case FLOAT: p = readFloat<T>(file, end, isColor); break;
+    case DOUBLE: p = readDouble<T>(file, end, isColor); break;
     default: assert(0); p = 0;
     }
     // if I read a color that must be returned as a float or double
@@ -375,33 +383,34 @@ void readCustomComponent(
     std::istream&      file,
     El&                elem,
     const std::string& cName,
-    PrimitiveType      type)
+    PrimitiveType      type,
+    std::endian        end = std::endian::native)
 {
     std::type_index ti = elem.customComponentType(cName);
     if (ti == typeid(char))
         elem.template customComponent<char>(cName) =
-            readPrimitiveType<char>(file, type);
+            readPrimitiveType<char>(file, type, end);
     else if (ti == typeid(unsigned char))
         elem.template customComponent<unsigned char>(cName) =
-            readPrimitiveType<unsigned char>(file, type);
+            readPrimitiveType<unsigned char>(file, type, end);
     else if (ti == typeid(short))
         elem.template customComponent<short>(cName) =
-            readPrimitiveType<short>(file, type);
+            readPrimitiveType<short>(file, type, end);
     else if (ti == typeid(unsigned short))
         elem.template customComponent<unsigned short>(cName) =
-            readPrimitiveType<unsigned short>(file, type);
+            readPrimitiveType<unsigned short>(file, type, end);
     else if (ti == typeid(int))
         elem.template customComponent<int>(cName) =
-            readPrimitiveType<int>(file, type);
+            readPrimitiveType<int>(file, type, end);
     else if (ti == typeid(unsigned int))
         elem.template customComponent<uint>(cName) =
-            readPrimitiveType<uint>(file, type);
+            readPrimitiveType<uint>(file, type, end);
     else if (ti == typeid(float))
         elem.template customComponent<float>(cName) =
-            readPrimitiveType<float>(file, type);
+            readPrimitiveType<float>(file, type, end);
     else if (ti == typeid(double))
         elem.template customComponent<double>(cName) =
-            readPrimitiveType<double>(file, type);
+            readPrimitiveType<double>(file, type, end);
     else
         assert(0);
 }
@@ -409,43 +418,46 @@ void readCustomComponent(
 // read/txt
 
 template<typename T>
-T readChar(vcl::Tokenizer::iterator& token)
+T readChar(vcl::Tokenizer::iterator& token, std::endian = std::endian::native)
 {
     return std::stoi(*token++);
 }
 
 template<typename T>
-T readUChar(vcl::Tokenizer::iterator& token)
+T readUChar(vcl::Tokenizer::iterator& token, std::endian = std::endian::native)
 {
     return std::stoi(*token++);
 }
 
 template<typename T>
-T readShort(vcl::Tokenizer::iterator& token)
+T readShort(vcl::Tokenizer::iterator& token, std::endian = std::endian::native)
 {
     return std::stoi(*token++);
 }
 
 template<typename T>
-T readUShort(vcl::Tokenizer::iterator& token)
+T readUShort(vcl::Tokenizer::iterator& token, std::endian = std::endian::native)
 {
     return std::stoi(*token++);
 }
 
 template<typename T>
-T readInt(vcl::Tokenizer::iterator& token)
+T readInt(vcl::Tokenizer::iterator& token, std::endian = std::endian::native)
 {
     return std::stoi(*token++);
 }
 
 template<typename T>
-T readUInt(vcl::Tokenizer::iterator& token)
+T readUInt(vcl::Tokenizer::iterator& token, std::endian = std::endian::native)
 {
     return std::stoi(*token++);
 }
 
 template<typename T>
-T readFloat(vcl::Tokenizer::iterator& token, bool isColor = false)
+T readFloat(
+    vcl::Tokenizer::iterator& token,
+    std::endian  = std::endian::native,
+    bool isColor = false)
 {
     if (isColor && std::is_integral<T>::value) {
         return std::stod(*token++) * 255;
@@ -456,7 +468,10 @@ T readFloat(vcl::Tokenizer::iterator& token, bool isColor = false)
 }
 
 template<typename T>
-T readDouble(vcl::Tokenizer::iterator& token, bool isColor = false)
+T readDouble(
+    vcl::Tokenizer::iterator& token,
+    std::endian  = std::endian::native,
+    bool isColor = false)
 {
     if (isColor && std::is_integral<T>::value) {
         return std::stod(*token++) * 255;
@@ -470,7 +485,8 @@ template<typename T>
 T readPrimitiveType(
     vcl::Tokenizer::iterator& token,
     PrimitiveType             type,
-    bool                      isColor = false)
+    std::endian  = std::endian::native,
+    bool isColor = false)
 {
     T p;
     switch (type) {
@@ -502,7 +518,8 @@ void readCustomComponent(
     vcl::Tokenizer::iterator& token,
     El&                       elem,
     const std::string&        cName,
-    PrimitiveType             type)
+    PrimitiveType             type,
+    std::endian = std::endian::native)
 {
     std::type_index ti = elem.customComponentType(cName);
     if (ti == typeid(char))
