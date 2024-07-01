@@ -23,6 +23,7 @@
 module;
 
 #include <algorithm>
+#include <bit>
 #include <cassert>
 #include <list>
 #include <ostream>

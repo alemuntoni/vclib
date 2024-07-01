@@ -22,6 +22,7 @@
 
 module;
 
+#include <bit>
 #include <fstream>
 
 #include <Eigen/Core>
