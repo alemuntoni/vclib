@@ -20,26 +20,33 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_IO_SERIALIZATION_ENDIAN_H
+#define VCL_IO_SERIALIZATION_ENDIAN_H
 
-#include <concepts>
-#include <string>
-#include <type_traits>
+#ifndef VCLIB_WITH_MODULES
+#include <cstdio>
+#endif
 
-export module vclib.concepts;
+namespace vcl::detail {
 
-import vclib.types;
+// https://stackoverflow.com/a/38141476/5851101
+template<typename T>
+T swapEndian(T u)
+{
+    union
+    {
+        T             u;
+        unsigned char u8[sizeof(T)];
+    } source, dest;
 
-export import vclib.concepts.const_correctness;
-export import vclib.concepts.iterators;
-export import vclib.concepts.mesh;
-export import vclib.concepts.pointers;
-export import vclib.concepts.polymorphism;
-export import vclib.concepts.ranges;
-export import vclib.concepts.serialization;
-export import vclib.concepts.space;
-export import vclib.concepts.types;
+    source.u = u;
 
-export {
-#include <vclib/concepts/logger.h>
+    for (std::size_t k = 0; k < sizeof(T); k++)
+        dest.u8[k] = source.u8[sizeof(T) - k - 1];
+
+    return dest.u;
 }
+
+} // namespace vcl::detail
+
+#endif // VCL_IO_SERIALIZATION_ENDIAN_H

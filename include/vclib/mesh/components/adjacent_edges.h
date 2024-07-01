@@ -652,7 +652,6 @@ protected:
         for (uint i = 0; i < adjEdgesNumber(); ++i) {
             serialize(os, adjEdgeIndex(i));
         }
-
     }
 
     void deserialize(std::istream& is)

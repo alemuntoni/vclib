@@ -22,18 +22,8 @@
 
 module;
 
-#include <array>
-#include <bit>
-#include <istream>
-#include <ostream>
-#include <stdexcept>
-#include <vector>
-
 export module vclib.io.serialization;
 
-import vclib.concepts.serialization;
-import vclib.io.file_format;
-
-export {
-#include <vclib/io/serialization.h>
-}
+export import vclib.io.serialization.deserialize;
+export import vclib.io.serialization.endian;
+export import vclib.io.serialization.serialize;

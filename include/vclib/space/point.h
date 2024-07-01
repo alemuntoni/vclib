@@ -614,7 +614,7 @@ public:
      */
     void serialize(std::ostream& os) const
     {
-        vcl::serialize(os, mP.data(), mP.size());
+        vcl::serializeN(os, mP.data(), mP.size());
     }
 
     /**
@@ -623,7 +623,7 @@ public:
      */
     void deserialize(std::istream& is)
     {
-        vcl::deserialize(is, mP.data(), mP.size());
+        vcl::deserializeN(is, mP.data(), mP.size());
     }
 
     /**

@@ -122,8 +122,7 @@ TEST_CASE("Colors Serialization")
     vcl::Color c1 = randomColor();
     vcl::Color c2 = randomColor();
 
-    c1.serialize(fo);
-    c2.serialize(fo);
+    vcl::serialize(fo, c1, c2);
     fo.close();
 
     vcl::Color c3;
@@ -132,8 +131,7 @@ TEST_CASE("Colors Serialization")
     std::ifstream fi =
         vcl::openInputFileStream(VCLIB_RESULTS_PATH "/serialization/color.bin");
 
-    c3.deserialize(fi);
-    c4.deserialize(fi);
+    vcl::deserialize(fi, c3, c4);
     fi.close();
 
     REQUIRE(c1 == c3);
@@ -172,7 +170,7 @@ TEMPLATE_TEST_CASE(
 TEST_CASE("Vector serialization")
 {
     vcl::Vector<vcl::Color, -1> vecColor1;
-    vcl::Vector<double, -1> vecDouble;
+    vcl::Vector<double, -1>     vecDouble1;
 
     uint randSizeCol = GENERATE(take(1, random(1, 10)));
     uint randSizeDbl = GENERATE(take(1, random(1, 10)));
@@ -180,37 +178,36 @@ TEST_CASE("Vector serialization")
         vecColor1.pushBack(randomColor());
 
     for (uint i = 0; i < randSizeDbl; i++)
-        vecDouble.pushBack(GENERATE(take(1, random(0.0, 1.0))));
+        vecDouble1.pushBack(GENERATE(take(1, random(0.0, 1.0))));
 
-    std::ofstream fo = vcl::openOutputFileStream(
-        VCLIB_RESULTS_PATH "/serialization/vectors.bin");
-    vecColor1.serialize(fo);
-    vecDouble.serialize(fo);
+    std::ofstream fo = vcl::openOutputFileStream(VCLIB_RESULTS_PATH
+                                                 "/serialization/vectors.bin");
+
+    vcl::serialize(fo, vecColor1, vecDouble1);
     fo.close();
 
     vcl::Vector<vcl::Color, -1> vecColor2;
-    vcl::Vector<double, -1> vecDouble2;
+    vcl::Vector<double, -1>     vecDouble2;
 
-    std::ifstream fi = vcl::openInputFileStream(
-        VCLIB_RESULTS_PATH "/serialization/vectors.bin");
-    vecColor2.deserialize(fi);
-    vecDouble2.deserialize(fi);
+    std::ifstream fi = vcl::openInputFileStream(VCLIB_RESULTS_PATH
+                                                "/serialization/vectors.bin");
+    vcl::deserialize(fi, vecColor2, vecDouble2);
     fi.close();
 
     REQUIRE(vecColor1.size() == vecColor2.size());
-    REQUIRE(vecDouble.size() == vecDouble2.size());
+    REQUIRE(vecDouble1.size() == vecDouble2.size());
 
     for (uint i = 0; i < vecColor1.size(); i++)
         REQUIRE(vecColor1[i] == vecColor2[i]);
 
-    for (uint i = 0; i < vecDouble.size(); i++)
-        REQUIRE(vecDouble[i] == vecDouble2[i]);
+    for (uint i = 0; i < vecDouble1.size(); i++)
+        REQUIRE(vecDouble1[i] == vecDouble2[i]);
 }
 
 TEST_CASE("Array serialization")
 {
     vcl::Array<double, 2> array2D1;
-    vcl::Array<float, 3> array3D1;
+    vcl::Array<float, 3>  array3D1;
 
     array2D1.resize(
         GENERATE(take(1, random(1, 10))), GENERATE(take(1, random(1, 10))));
@@ -229,17 +226,17 @@ TEST_CASE("Array serialization")
             for (uint k = 0; k < array3D1.size(2); k++)
                 array3D1(i, j, k) = GENERATE(take(1, random(0.0f, 1.0f)));
 
-    std::ofstream fo = vcl::openOutputFileStream(
-        VCLIB_RESULTS_PATH "/serialization/arrays.bin");
+    std::ofstream fo = vcl::openOutputFileStream(VCLIB_RESULTS_PATH
+                                                 "/serialization/arrays.bin");
     array2D1.serialize(fo);
     array3D1.serialize(fo);
     fo.close();
 
     vcl::Array<double, 2> array2D2;
-    vcl::Array<float, 3> array3D2;
+    vcl::Array<float, 3>  array3D2;
 
-    std::ifstream fi = vcl::openInputFileStream(
-        VCLIB_RESULTS_PATH "/serialization/arrays.bin");
+    std::ifstream fi = vcl::openInputFileStream(VCLIB_RESULTS_PATH
+                                                "/serialization/arrays.bin");
     array2D2.deserialize(fi);
     array3D2.deserialize(fi);
     fi.close();
@@ -259,23 +256,23 @@ TEST_CASE("Array serialization")
         for (uint j = 0; j < array3D1.size(1); j++)
             for (uint k = 0; k < array3D1.size(2); k++)
                 REQUIRE(array3D1(i, j, k) == array3D2(i, j, k));
-
 }
 
-TEST_CASE("std vector of strings serialization") {
+TEST_CASE("std vector of strings serialization")
+{
     std::vector<std::string> vecStr1;
     vecStr1.push_back("Hello");
     vecStr1.push_back("World");
     vecStr1.push_back("!");
 
-    std::ofstream fo = vcl::openOutputFileStream(
-        VCLIB_RESULTS_PATH "/serialization/vecStr.bin");
+    std::ofstream fo = vcl::openOutputFileStream(VCLIB_RESULTS_PATH
+                                                 "/serialization/vecStr.bin");
     vcl::serialize(fo, vecStr1);
     fo.close();
 
     std::vector<std::string> vecStr2;
-    std::ifstream fi = vcl::openInputFileStream(
-        VCLIB_RESULTS_PATH "/serialization/vecStr.bin");
+    std::ifstream            fi = vcl::openInputFileStream(VCLIB_RESULTS_PATH
+                                                "/serialization/vecStr.bin");
     vcl::deserialize(fi, vecStr2);
     fi.close();
 
@@ -283,4 +280,3 @@ TEST_CASE("std vector of strings serialization") {
     for (uint i = 0; i < vecStr1.size(); i++)
         REQUIRE(vecStr1[i] == vecStr2[i]);
 }
-

@@ -23,23 +23,9 @@
 module;
 
 #include <concepts>
-#include <string>
-#include <type_traits>
 
-export module vclib.concepts;
-
-import vclib.types;
-
-export import vclib.concepts.const_correctness;
-export import vclib.concepts.iterators;
-export import vclib.concepts.mesh;
-export import vclib.concepts.pointers;
-export import vclib.concepts.polymorphism;
-export import vclib.concepts.ranges;
-export import vclib.concepts.serialization;
-export import vclib.concepts.space;
-export import vclib.concepts.types;
+export module vclib.concepts.types;
 
 export {
-#include <vclib/concepts/logger.h>
+#include <vclib/concepts/types.h>
 }

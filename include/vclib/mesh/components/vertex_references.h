@@ -699,7 +699,6 @@ protected:
         for (uint i = 0; i < vertexNumber(); ++i) {
             serialize(os, vertexIndex(i));
         }
-
     }
 
     void deserialize(std::istream& is)
