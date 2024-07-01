@@ -23,7 +23,8 @@
 module;
 
 #include <bit>
-#include <iosfwd>
+#include <istream>
+#include <ostream>
 #include <stdexcept>
 
 export module vclib.io.serialization;

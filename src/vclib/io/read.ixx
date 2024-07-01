@@ -22,6 +22,7 @@
 
 module;
 
+#include <bit>
 #include <cassert>
 #include <fstream>
 #include <string>
