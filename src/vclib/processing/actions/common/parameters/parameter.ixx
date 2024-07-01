@@ -34,6 +34,7 @@ export module vclib.processing.actions.common.parameters.parameter;
 import vclib.processing.settings;
 import vclib.space.color;
 import vclib.space.point;
+import vclib.types;
 
 export {
 #include <vclib/processing/actions/common/parameters/parameter.h>
