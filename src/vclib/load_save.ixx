@@ -28,4 +28,5 @@ export import vclib.io.file_info;
 export import vclib.io.image;
 export import vclib.io.mesh;
 export import vclib.io.read;
+export import vclib.io.serialization;
 export import vclib.io.write;

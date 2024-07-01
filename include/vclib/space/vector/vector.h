@@ -33,6 +33,7 @@
 
 #include <vclib/concepts/ranges/range.h>
 #include <vclib/exceptions.h>
+#include <vclib/io/serialization.h>
 #include <vclib/types.h>
 #include <vclib/views/view.h>
 #endif
@@ -574,6 +575,16 @@ public:
      * specified by the concept requirement `requires (N < 0)`.
      */
     void clear() requires (N < 0) { mContainer.clear(); }
+
+    void serialize(std::ostream& os) const
+    {
+        vcl::serialize(os, mContainer);
+    }
+
+    void deserialize(std::istream& is)
+    {
+        vcl::deserialize(is, mContainer);
+    }
 
     /* Operators */
 

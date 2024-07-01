@@ -33,6 +33,7 @@ export module vclib.space.vector.vector;
 
 import vclib.concepts.ranges;
 import vclib.exceptions;
+import vclib.io.serialization;
 import vclib.types;
 import vclib.views;
 

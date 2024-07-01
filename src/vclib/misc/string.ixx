@@ -29,6 +29,7 @@ module;
 export module vclib.misc.string;
 
 import vclib.concepts.serialization; // todo remove this
+import vclib.io.serialization; // todo remove this
 import vclib.io.file_format; // todo remove this
 
 export {

@@ -22,9 +22,12 @@
 
 module;
 
+#include <array>
 #include <bit>
-#include <iosfwd>
+#include <istream>
+#include <ostream>
 #include <stdexcept>
+#include <vector>
 
 export module vclib.io.serialization;
 

@@ -32,6 +32,7 @@ module;
 export module vclib.space.array;
 
 import vclib.concepts.ranges.range;
+import vclib.io.serialization;
 import vclib.misc.nested_initializer_lists;
 import vclib.types;
 

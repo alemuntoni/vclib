@@ -27,6 +27,7 @@
 #include "image.h"
 
 #include <vclib/io/file_info.h>
+#include <vclib/io/serialization.h>
 #endif
 
 namespace vcl {
@@ -76,6 +77,18 @@ public:
      * @return the image of the texture.
      */
     Image& image() { return mImg; }
+
+    void serialize(std::ostream& os) const
+    {
+        vcl::serialize(os, mPath);
+        mImg.serialize(os);
+    }
+
+    void deserialize(std::istream& is)
+    {
+        vcl::deserialize(is, mPath);
+        mImg.deserialize(is);
+    }
 };
 
 } // namespace vcl
