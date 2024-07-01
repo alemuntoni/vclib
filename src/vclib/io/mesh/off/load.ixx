@@ -26,6 +26,8 @@ module;
 #include <string>
 #include <vector>
 
+#include <Eigen/Core>
+
 export module vclib.io.mesh.off.load;
 
 import vclib.concepts;

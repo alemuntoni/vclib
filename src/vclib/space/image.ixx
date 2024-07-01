@@ -26,6 +26,8 @@ module;
 #include <memory>
 #include <string>
 
+#include <Eigen/Core>
+
 export module vclib.space.image;
 
 import vclib.io.image;

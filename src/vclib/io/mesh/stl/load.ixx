@@ -24,6 +24,8 @@ module;
 
 #include <fstream>
 
+#include <Eigen/Core>
+
 export module vclib.io.mesh.stl.load;
 
 import vclib.concepts;

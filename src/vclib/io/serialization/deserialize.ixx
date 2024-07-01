@@ -22,6 +22,7 @@
 
 module;
 
+#include <array>
 #include <bit>
 #include <istream>
 #include <vector>
