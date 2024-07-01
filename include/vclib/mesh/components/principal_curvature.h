@@ -123,9 +123,12 @@ protected:
         }
     }
 
-    void serialize(std::ostream& os) const { principalCurvature().serialize(); }
+    void serialize(std::ostream& os) const
+    {
+        principalCurvature().serialize(os);
+    }
 
-    void deserialize(std::istream& is) { principalCurvature().deserialize(); }
+    void deserialize(std::istream& is) { principalCurvature().deserialize(is); }
 };
 
 /* Detector function to check if a class has PrincipalCurvature available */

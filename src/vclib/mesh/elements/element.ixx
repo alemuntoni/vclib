@@ -23,6 +23,8 @@
 module;
 
 #include <cassert>
+#include <istream>
+#include <ostream>
 
 export module vclib.mesh.elements.element;
 

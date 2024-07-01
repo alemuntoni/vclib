@@ -933,6 +933,20 @@ public:
         return Cont::updateElementIndices(newIndices);
     }
 
+    void serialize(std::ostream& os) const
+    {
+        (preSerialization<Args>(os), ...);
+
+        (postSerialization<Args>(os), ...);
+    }
+
+    void deserialize(std::istream& is)
+    {
+        (preDeserialization<Args>(is), ...);
+
+        (postDeserialization<Args>(is), ...);
+    }
+
     /**
      * @brief Returns an iterator to the begining of the container of the
      * elements having ID ELEM_ID in the mesh.
@@ -1745,6 +1759,48 @@ private:
                 ContainerWrapper(),
                 sizes,
                 sizes[I]);
+        }
+    }
+
+    // serialization/deserialization
+
+    template<typename Cont>
+    void preSerialization(std::ostream& os) const
+    {
+        if constexpr (mesh::ElementContainerConcept<Cont>) {
+            Cont::serializeOptionalComponentsAndElementsNumber(os);
+        }
+    }
+
+    template<typename Cont>
+    void postSerialization(std::ostream& os) const
+    {
+        if constexpr (mesh::ElementContainerConcept<Cont>) {
+            Cont::serializeElements(os);
+        }
+        else {
+            // cont is a component...
+            Cont::serialize(os);
+        }
+    }
+
+    template<typename Cont>
+    void preDeserialization(std::istream& is)
+    {
+        if constexpr (mesh::ElementContainerConcept<Cont>) {
+            Cont::deserializeOptionalComponentsAndElementsNumber(is);
+        }
+    }
+
+    template<typename Cont>
+    void postDeserialization(std::istream& is)
+    {
+        if constexpr (mesh::ElementContainerConcept<Cont>) {
+            Cont::deserializeElements(is);
+        }
+        else {
+            // cont is a component...
+            Cont::deserialize(is);
         }
     }
 

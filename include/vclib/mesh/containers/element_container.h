@@ -269,7 +269,7 @@ protected:
         else if (size < mElemNumber) {
             uint nToDelete = mElemNumber - size;
             for (uint i = mElemVec.size() - 1; nToDelete > 0; --i) {
-                if (!mElemVec[i].isDeleted()) {
+                if (!mElemVec[i].deleted()) {
                     deleteElement(i);
                 }
             }
@@ -439,6 +439,97 @@ protected:
         // importing also optional, vertical and custom components:
         appendVerticalComponents(other, vComps());
         appendCustomComponents(other);
+    }
+
+    /**
+     * @brief This function serializes, for each optional component of the
+     * element, whether it is enabled or not, and then the number of elements
+     * of the container.
+     *
+     * This function must be called by the Mesh for all the containers before
+     * serializing the actual elements (by calling serializeElements).
+     *
+     * @param out
+     */
+    void serializeOptionalComponentsAndElementsNumber(std::ostream& out) const
+    {
+        constexpr uint                 N_VERT_COMPS = vComps::size();
+        std::array<bool, N_VERT_COMPS> enabledComps;
+        uint                           i = 0;
+
+        auto forEachVertComp = [&]<typename Comp>() {
+            enabledComps[i] =
+                mVerticalCompVecTuple.template isComponentEnabled<Comp>();
+            ++i;
+        };
+
+        vcl::ForEachType<vComps>::apply(forEachVertComp);
+
+        vcl::serialize(out, elementContainerSize());
+        vcl::serialize(out, enabledComps);
+    }
+
+    /**
+     * @brief This function serializes the elements of the container.
+     *
+     * It must be called by the Mesh after calling
+     * serializeOptionalComponentsAndElementsNumber.
+     *
+     * @param out
+     */
+    void serializeElements(std::ostream& out) const
+    {
+        for (const auto& e : mElemVec) {
+            e.serialize(out);
+        }
+    }
+
+    /**
+     * @brief This function deserializes, for each optional component of the
+     * element, whether it is enabled or not, and then the number of elements
+     * of the container.
+     *
+     * This function must be called by the Mesh for all the containers before
+     * deserializing the actual elements (by calling deserializeElements).
+     *
+     * @param in
+     */
+    void deserializeOptionalComponentsAndElementsNumber(std::istream& in)
+    {
+        constexpr uint                 N_VERT_COMPS = vComps::size();
+        std::array<bool, N_VERT_COMPS> enabledComps;
+        uint                           size = 0;
+
+        vcl::deserialize(in, size);
+        vcl::deserialize(in, enabledComps);
+
+        resizeElements(size);
+
+        uint i               = 0;
+        auto forEachVertComp = [&]<typename Comp>() {
+            if (enabledComps[i])
+                mVerticalCompVecTuple.template enableComponent<Comp>();
+            else
+                mVerticalCompVecTuple.template disableComponent<Comp>();
+            ++i;
+        };
+
+        vcl::ForEachType<vComps>::apply(forEachVertComp);
+    }
+
+    /**
+     * @brief This function deserializes the elements of the container.
+     *
+     * It must be called by the Mesh after calling
+     * deserializeOptionalComponentsAndElementsNumber for ALL its containers.
+     *
+     * @param in
+     */
+    void deserializeElements(std::istream& in)
+    {
+        for (auto& e : mElemVec) {
+            e.deserialize(in);
+        }
     }
 
     /**
