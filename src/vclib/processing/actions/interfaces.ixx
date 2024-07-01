@@ -25,7 +25,6 @@ module;
 export module vclib.processing.actions.interfaces;
 
 export import vclib.processing.actions.interfaces.action;
-export import vclib.processing.actions.interfaces.create_filter_mesh_action;
 export import vclib.processing.actions.interfaces.filter_mesh_action;
 export import vclib.processing.actions.interfaces.load_image_action;
 export import vclib.processing.actions.interfaces.load_mesh_action;

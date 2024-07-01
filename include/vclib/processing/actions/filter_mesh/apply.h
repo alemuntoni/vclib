@@ -20,37 +20,27 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_INTERFACES_CREATE_FILTER_MESH_ACTION_H
-#define VCL_PROCESSING_ACTIONS_INTERFACES_CREATE_FILTER_MESH_ACTION_H
+#ifndef VCL_PROCESSING_ACTIONS_FILTER_MESH_APPLY_H
+#define VCL_PROCESSING_ACTIONS_FILTER_MESH_APPLY_H
 
 #ifndef VCLIB_WITH_MODULES
-#include "filter_mesh_action.h"
+#include <memory>
+#include <vector>
+
+#include "apply/laplacian_smoothing_filter.h"
 #endif
 
 namespace vcl::proc {
 
-class CreateFilterMeshAction : public FilterMeshAction
+std::vector<std::shared_ptr<Action>> vclibApplyFilterMeshActions()
 {
-public:
-    uint numberInputMeshes() const final { return 0; }
+    std::vector<std::shared_ptr<Action>> vec;
 
-    vcl::BitSet<short> supportedInputMeshTypes(uint) const final
-    {
-        vcl::BitSet<short> bs;
-        bs.reset();
-        return bs;
-    }
+    vec.push_back(LaplacianSmoothingFilter().clone());
 
-    uint numberInputOutputMeshes() const final { return 0; }
-
-    vcl::BitSet<short> supportedInputOutputMeshTypes(uint) const final
-    {
-        return supportedInputMeshTypes(0);
-    }
-
-    vcl::BitSet<uint> categories() const { return vcl::BitSet<uint>({CREATE}); }
-};
+    return vec;
+}
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTIONS_INTERFACES_CREATE_FILTER_MESH_ACTION_H
+#endif // VCL_PROCESSING_ACTIONS_FILTER_MESH_APPLY_H

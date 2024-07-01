@@ -24,7 +24,9 @@
 #define VCL_PROCESSING_ACTIONS_INTERFACES_FILTER_MESH_ACTION_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/algorithms/mesh/update.h>
 #include <vclib/processing/actions/common/mesh_vector.h>
+#include <vclib/processing/actions/common/parameters/mesh_parameter.h>
 #include <vclib/space/bit_set.h>
 
 #include "mesh_action.h"
@@ -35,13 +37,18 @@ namespace vcl::proc {
 class FilterMeshAction : public MeshAction
 {
 public:
+    using MeshParamVector =
+        std::vector<std::pair<MeshParameter, BitSet<short>>>;
+
     enum MeshActionCategory {
         CREATE = 0,
+        CLEANING_AND_REPAIRING,
+        SMOOTHING,
 
         N_CATEGORIES,
     };
 
-    uint type() const final { return ActionType::FILTER_MESH_ACTION; }
+    // pure virtual member functions - must be implemented in derived classes
 
     /**
      * @brief Returns the categories of the action.
@@ -60,52 +67,29 @@ public:
      */
     virtual std::string description() const = 0;
 
-    virtual uint numberInputMeshes() const = 0;
+    /**
+     * @brief Returns a vector that describes the input meshes required by the
+     * action.
+     *
+     * The vector contains pairs of MeshParameter and BitSet<short>. The
+     * MeshParameter describes the input mesh, while the BitSet<short> tells
+     * which mesh types are supported for that input mesh.
+     *
+     * @return
+     */
+    virtual MeshParamVector inputMeshParameters() const = 0;
 
     /**
-     * @brief Returns a BitSet that tells, for each mesh type, if the action
-     * supports it or not for the i-th input mesh.
+     * @brief Returns a vector that describes the input/output meshes required
+     * by the action.
      *
-     * By default, all mesh types are supported.
+     * The vector contains pairs of MeshParameter and BitSet<short>. The
+     * MeshParameter describes the input/output mesh, while the BitSet<short>
+     * tells which mesh types are supported for that input/output mesh.
      *
-     * You should override this method if your action does not support all mesh
-     * types.
-     *
-     * @return A BitSet with the supported mesh types.
+     * @return
      */
-    virtual vcl::BitSet<short> supportedInputMeshTypes(uint meshIndex) const
-    {
-        if (meshIndex >= numberInputMeshes()) {
-            throw std::runtime_error("Mesh index out of bounds.");
-        }
-        vcl::BitSet<short> bs;
-        bs.set();
-        return bs;
-    }
-
-    virtual uint numberInputOutputMeshes() const = 0;
-
-    /**
-     * @brief Returns a BitSet that tells, for each mesh type, if the action
-     * supports it or not for the i-th input/output mesh.
-     *
-     * By default, all mesh types are supported.
-     *
-     * You should override this method if your action does not support all mesh
-     * types.
-     *
-     * @return A BitSet with the supported mesh types.
-     */
-    virtual vcl::BitSet<short> supportedInputOutputMeshTypes(
-        uint meshIndex) const
-    {
-        if (meshIndex >= numberInputOutputMeshes()) {
-            throw std::runtime_error("Mesh index out of bounds.");
-        }
-        vcl::BitSet<short> bs;
-        bs.set();
-        return bs;
-    }
+    virtual MeshParamVector inputOutputMeshParameters() const = 0;
 
     virtual OutputValues applyFilter(
         const MeshVector                           inputMeshes,
@@ -113,6 +97,46 @@ public:
         MeshVector&                                outputMeshes,
         const ParameterVector&                     parameters,
         AbstractLogger&                            log = logger()) const = 0;
+
+    // member functions - provided for convenience - they mostly use the pure
+    // virtual member functions
+
+    uint type() const final { return ActionType::FILTER_MESH_ACTION; }
+
+    uint numberInputMeshes() const { return inputMeshParameters().size(); }
+
+    /**
+     * @brief Returns a BitSet that tells, for each mesh type, if the action
+     * supports it or not for the i-th input mesh.
+     *
+     * @return A BitSet with the supported mesh types.
+     */
+    vcl::BitSet<short> supportedInputMeshTypes(uint meshIndex) const
+    {
+        if (meshIndex >= numberInputMeshes()) {
+            throw std::runtime_error("Mesh index out of bounds.");
+        }
+        return inputMeshParameters()[meshIndex].second;
+    }
+
+    uint numberInputOutputMeshes() const
+    {
+        return inputOutputMeshParameters().size();
+    }
+
+    /**
+     * @brief Returns a BitSet that tells, for each mesh type, if the action
+     * supports it or not for the i-th input/output mesh.
+     *
+     * @return A BitSet with the supported mesh types.
+     */
+    vcl::BitSet<short> supportedInputOutputMeshTypes(uint meshIndex) const
+    {
+        if (meshIndex >= numberInputOutputMeshes()) {
+            throw std::runtime_error("Mesh index out of bounds.");
+        }
+        return inputOutputMeshParameters()[meshIndex].second;
+    }
 
     OutputValues applyFilter(
         const MeshVector                           inputMeshes,
@@ -152,6 +176,48 @@ public:
     OutputValues applyFilter(MeshVector& outputMeshes) const
     {
         return applyFilter(outputMeshes, parameters());
+    }
+
+protected:
+    auto callFunctionForSupportedInputMeshTypes(
+        const MeshI&         mesh,
+        const BitSet<short>& supportedMeshTypes,
+        auto&&               function,
+        auto&&... args) const
+    {
+        if (!supportedMeshTypes[mesh.type()]) {
+            throw std::runtime_error(
+                "The action " + name() + " does not support the " +
+                mesh.typeName() + " type.");
+        }
+
+        return callFunctionForMesh(
+            function, mesh, std::forward<decltype(args)>(args)...);
+    }
+
+    auto callFunctionForSupportedInputOutputMeshTypes(
+        MeshI&               mesh,
+        const BitSet<short>& supportedMeshTypes,
+        auto&&               function,
+        auto&&... args) const
+    {
+        if (!supportedMeshTypes[mesh.type()]) {
+            throw std::runtime_error(
+                "The action " + name() + " does not support the " +
+                mesh.typeName() + " type.");
+        }
+
+        return callFunctionForMesh(
+            function, mesh, std::forward<decltype(args)>(args)...);
+    }
+
+    template<MeshConcept MeshType>
+    void updateBoxAndNormals(MeshType& mesh) const
+    {
+        if constexpr (vcl::HasFaces<MeshType>) {
+            vcl::updatePerVertexAndFaceNormals(mesh);
+        }
+        vcl::updateBoundingBox(mesh);
     }
 };
 

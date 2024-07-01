@@ -28,8 +28,11 @@ module;
 
 export module vclib.processing.actions.interfaces.filter_mesh_action;
 
+import vclib.algorithms.mesh.update;
+import vclib.concepts.mesh;
 import vclib.processing.actions.common.mesh_vector;
 import vclib.processing.actions.common.parameter_vector;
+import vclib.processing.actions.common.parameters;
 import vclib.processing.actions.interfaces.action;
 import vclib.processing.actions.interfaces.mesh_action;
 import vclib.processing.meshes;
