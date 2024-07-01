@@ -20,37 +20,36 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_INTERFACES_CREATE_FILTER_MESH_ACTION_H
-#define VCL_PROCESSING_ACTIONS_INTERFACES_CREATE_FILTER_MESH_ACTION_H
+#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_UINT_PARAMETER_H
+#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_UINT_PARAMETER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include "filter_mesh_action.h"
+#include "parameter.h"
 #endif
 
 namespace vcl::proc {
 
-class CreateFilterMeshAction : public FilterMeshAction
+class UintParameter : public Parameter
 {
 public:
-    uint numberInputMeshes() const final { return 0; }
-
-    vcl::BitSet<short> supportedInputMeshTypes(uint) const final
+    UintParameter(
+        const std::string& name,
+        uint               value,
+        const std::string& description = "",
+        const std::string& tooltip     = "",
+        const std::string& category    = "") :
+            Parameter(name, value, description, tooltip, category)
     {
-        vcl::BitSet<short> bs;
-        bs.reset();
-        return bs;
     }
 
-    uint numberInputOutputMeshes() const final { return 0; }
+    ParameterType::Enum type() const override { return ParameterType::UINT; }
 
-    vcl::BitSet<short> supportedInputOutputMeshTypes(uint) const final
+    std::shared_ptr<Parameter> clone() const override
     {
-        return supportedInputMeshTypes(0);
+        return std::make_shared<UintParameter>(*this);
     }
-
-    vcl::BitSet<uint> categories() const { return vcl::BitSet<uint>({CREATE}); }
 };
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTIONS_INTERFACES_CREATE_FILTER_MESH_ACTION_H
+#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_UINT_PARAMETER_H

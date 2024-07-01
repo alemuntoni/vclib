@@ -33,6 +33,7 @@ import vclib.processing.actions.common.parameter_vector;
 import vclib.processing.actions.interfaces.action;
 import vclib.processing.actions.interfaces.mesh_action;
 import vclib.processing.meshes;
+import vclib.misc.logger;
 import vclib.space.bit_set;
 
 export {

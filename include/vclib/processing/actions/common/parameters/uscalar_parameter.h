@@ -20,72 +20,51 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_ENUM_PARAMETER_H
-#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_ENUM_PARAMETER_H
+#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_USCALAR_PARAMETER_H
+#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_USCALAR_PARAMETER_H
 
 #ifndef VCLIB_WITH_MODULES
 #include "parameter.h"
-
-#include <vclib/concepts/ranges/range.h>
 #endif
 
 namespace vcl::proc {
 
-class EnumParameter : public Parameter
+class UscalarParameter : public Parameter
 {
-    std::vector<std::string> mEnumValues;
-
 public:
-    EnumParameter(
-        const std::string&              name,
-        uint                            value,
-        const std::vector<std::string>& enumValues,
-        const std::string&              description = "",
-        const std::string&              tooltip     = "",
-        const std::string&              category    = "") :
-            Parameter(name, 0u, description, tooltip, category)
+    UscalarParameter(
+        const std::string& name,
+        Scalar             value,
+        const std::string& description = "",
+        const std::string& tooltip     = "",
+        const std::string& category    = "") :
+            Parameter(name, 0.0, description, tooltip, category)
     {
-        for (const auto& v : enumValues)
-            mEnumValues.push_back(v);
-        setUintValue(value);
+        setScalarValue(value);
     }
 
-    ParameterType::Enum type() const override { return ParameterType::ENUM; }
+    ParameterType::Enum type() const override { return ParameterType::USCALAR; }
 
     std::shared_ptr<Parameter> clone() const override
     {
-        return std::make_shared<EnumParameter>(*this);
+        return std::make_shared<UscalarParameter>(*this);
     }
 
-    void setUintValue(uint value) override
+    void setScalarValue(Scalar value) override
     {
-        checkEnumValue(value);
-        Parameter::setUintValue(value);
-    }
-
-    const std::vector<std::string>& enumValues() const { return mEnumValues; }
-
-    const std::string& enumValue() const { return mEnumValues[intValue()]; }
-
-    void setEnumValue(const std::string& value)
-    {
-        auto it = std::find(mEnumValues.begin(), mEnumValues.end(), value);
-        if (it == mEnumValues.end())
-            throw std::runtime_error("Invalid enum string value: " + value);
-        Parameter::setUintValue(it - mEnumValues.begin());
+        checkScalarValue(value);
+        Parameter::setScalarValue(value);
     }
 
 private:
-    void checkEnumValue(uint value) const
+    void checkScalarValue(Scalar value) const
     {
-        if (value >= mEnumValues.size())
+        if (value < 0.0)
             throw std::runtime_error(
-                "Invalid enum value: " + std::to_string(value) +
-                "; expected value in [0, " +
-                std::to_string(mEnumValues.size()) + ")");
+                "UscalarParameter: value cannot be negative");
     }
 };
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_ENUM_PARAMETER_H
+#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_USCALAR_PARAMETER_H

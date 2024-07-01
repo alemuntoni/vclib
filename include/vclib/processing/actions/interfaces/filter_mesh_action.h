@@ -35,7 +35,30 @@ namespace vcl::proc {
 class FilterMeshAction : public MeshAction
 {
 public:
+    enum MeshActionCategory {
+        CREATE = 0,
+
+        N_CATEGORIES,
+    };
+
     uint type() const final { return ActionType::FILTER_MESH_ACTION; }
+
+    /**
+     * @brief Returns the categories of the action.
+     *
+     * Returns a BitSet that contains, for each category listed in the
+     * MeshActionCategory enum, whether the action belongs to that category.
+     *
+     * @return The categories of the action.
+     */
+    virtual BitSet<uint> categories() const = 0;
+
+    /**
+     * @brief Returns the description of the action.
+     *
+     * @return The description of the action.
+     */
+    virtual std::string description() const = 0;
 
     virtual uint numberInputMeshes() const = 0;
 
@@ -88,20 +111,23 @@ public:
         const MeshVector                           inputMeshes,
         const std::vector<std::shared_ptr<MeshI>>& inputOutputMeshes,
         MeshVector&                                outputMeshes,
-        const ParameterVector&                     parameters) const = 0;
+        const ParameterVector&                     parameters,
+        AbstractLogger&                            log = logger()) const = 0;
 
     OutputValues applyFilter(
         const MeshVector                           inputMeshes,
         const std::vector<std::shared_ptr<MeshI>>& inputOutputMeshes,
-        MeshVector&                                outputMeshes) const
+        MeshVector&                                outputMeshes,
+        AbstractLogger&                            log = logger()) const
     {
         return applyFilter(
-            inputMeshes, inputOutputMeshes, outputMeshes, parameters());
+            inputMeshes, inputOutputMeshes, outputMeshes, parameters(), log);
     }
 
     OutputValues applyFilter(
         MeshVector&            outputMeshes,
-        const ParameterVector& parameters) const
+        const ParameterVector& parameters,
+        AbstractLogger&        log = logger()) const
     {
         if (numberInputMeshes() > 0) {
             throw std::runtime_error(
@@ -119,7 +145,8 @@ public:
             MeshVector(),
             std::vector<std::shared_ptr<MeshI>>(),
             outputMeshes,
-            parameters);
+            parameters,
+            log);
     }
 
     OutputValues applyFilter(MeshVector& outputMeshes) const

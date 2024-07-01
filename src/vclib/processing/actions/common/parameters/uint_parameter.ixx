@@ -20,37 +20,16 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_INTERFACES_CREATE_FILTER_MESH_ACTION_H
-#define VCL_PROCESSING_ACTIONS_INTERFACES_CREATE_FILTER_MESH_ACTION_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include "filter_mesh_action.h"
-#endif
+#include <memory>
+#include <string>
 
-namespace vcl::proc {
+export module vclib.processing.actions.common.parameters.uint_parameter;
 
-class CreateFilterMeshAction : public FilterMeshAction
-{
-public:
-    uint numberInputMeshes() const final { return 0; }
+import vclib.processing.actions.common.parameters.parameter;
+import vclib.types;
 
-    vcl::BitSet<short> supportedInputMeshTypes(uint) const final
-    {
-        vcl::BitSet<short> bs;
-        bs.reset();
-        return bs;
-    }
-
-    uint numberInputOutputMeshes() const final { return 0; }
-
-    vcl::BitSet<short> supportedInputOutputMeshTypes(uint) const final
-    {
-        return supportedInputMeshTypes(0);
-    }
-
-    vcl::BitSet<uint> categories() const { return vcl::BitSet<uint>({CREATE}); }
-};
-
-} // namespace vcl::proc
-
-#endif // VCL_PROCESSING_ACTIONS_INTERFACES_CREATE_FILTER_MESH_ACTION_H
+export {
+#include <vclib/processing/actions/common/parameters/uint_parameter.h>
+}

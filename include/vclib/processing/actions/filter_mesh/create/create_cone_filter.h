@@ -24,6 +24,7 @@
 #define VCL_PROCESSING_ACTIONS_FILTER_MESH_CREATE_CREATE_CONE_FILTER_H
 
 #include <vclib/algorithms/mesh/create/cone.h>
+#include <vclib/algorithms/mesh/update/normal.h>
 #include <vclib/processing/actions/common/parameters.h>
 #include <vclib/processing/actions/interfaces/create_filter_mesh_action.h>
 
@@ -39,15 +40,18 @@ public:
 
     std::string name() const override { return "Create Cone"; }
 
+    std::string description() const override { return "Creates a cone mesh."; }
+
     ParameterVector parameters() const override
     {
         ParameterVector params;
 
-        params.pushBack(IntParameter("bottom_radius", 1, "Bottom Radius", ""));
-        params.pushBack(IntParameter("top_radius", 1, "Top Radius", ""));
-        params.pushBack(ScalarParameter("height", 1, "Height", ""));
         params.pushBack(
-            IntParameter("subdivisions", 36, "N. Subdivisions", ""));
+            UscalarParameter("bottom_radius", 1, "Bottom Radius", ""));
+        params.pushBack(UscalarParameter("top_radius", 1, "Top Radius", ""));
+        params.pushBack(UscalarParameter("height", 1, "Height", ""));
+        params.pushBack(
+            UintParameter("subdivisions", 36, "N. Subdivisions", ""));
 
         return params;
     }
@@ -56,15 +60,20 @@ public:
         const MeshVector,
         const std::vector<std::shared_ptr<MeshI>>&,
         MeshVector&            outputMeshes,
-        const ParameterVector& parameters) const override
+        const ParameterVector& parameters,
+        AbstractLogger&        log = logger()) const override
     {
-        auto bottomRadius = parameters.get("bottom_radius")->intValue();
-        auto topRadius    = parameters.get("top_radius")->intValue();
+        auto bottomRadius = parameters.get("bottom_radius")->scalarValue();
+        auto topRadius    = parameters.get("top_radius")->scalarValue();
         auto height       = parameters.get("height")->scalarValue();
-        auto subdivisions = parameters.get("subdivisions")->intValue();
+        auto subdivisions = parameters.get("subdivisions")->uintValue();
 
         auto meshPtr = std::make_shared<TriMesh>(vcl::createCone<TriMesh>(
             bottomRadius, topRadius, height, subdivisions));
+
+        vcl::updatePerVertexAndFaceNormals(*meshPtr);
+
+        meshPtr->name() = "Cone";
 
         outputMeshes.pushBack(meshPtr);
 

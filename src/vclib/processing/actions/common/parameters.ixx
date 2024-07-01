@@ -27,5 +27,8 @@ export module vclib.processing.actions.common.parameters;
 export import vclib.processing.actions.common.parameters.bool_parameter;
 export import vclib.processing.actions.common.parameters.enum_parameter;
 export import vclib.processing.actions.common.parameters.int_parameter;
+export import vclib.processing.actions.common.parameters.mesh_parameter;
 export import vclib.processing.actions.common.parameters.scalar_parameter;
 export import vclib.processing.actions.common.parameters.string_parameter;
+export import vclib.processing.actions.common.parameters.uint_parameter;
+export import vclib.processing.actions.common.parameters.uscalar_parameter;
