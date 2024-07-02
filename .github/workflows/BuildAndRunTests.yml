@@ -15,7 +15,6 @@ jobs:
         exclude:
           - os: 'macos-13'
             build-with: 'modules'
-        exclude:
           - os: 'macos-latest'
             build-with: 'modules'
     steps:
