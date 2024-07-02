@@ -28,8 +28,6 @@
 #include <cctype>
 #include <sstream>
 #include <string>
-
-#include <vclib/io/serialization.h>
 #endif
 
 namespace vcl {

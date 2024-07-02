@@ -20,14 +20,41 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_CONCEPTS_SPACE_COLOR_H
+#define VCL_CONCEPTS_SPACE_COLOR_H
 
-#include <vector>
+#ifndef VCLIB_WITH_MODULES
+#include "point.h"
+#endif
 
-export module vclib.concepts.mesh.components.component;
+namespace vcl {
 
-import vclib.types;
+/**
+ * @brief ColorConcept is satisfied only if a class provides the member
+ * functions specified in this concept. These member functions allows to access
+ * to the color components of a given color.
+ *
+ * @ingroup space_concepts
+ */
+template<typename T>
+concept ColorConcept = requires (T o, const T& co) {
+    // clang-format off
+    { o.red() } -> std::same_as<uint8_t&>;
+    { o.green() } -> std::same_as<uint8_t&>;
+    { o.blue() } -> std::same_as<uint8_t&>;
+    { o.alpha() } -> std::same_as<uint8_t&>;
+    { co.red() } -> std::same_as<uint8_t>;
+    { co.green() } -> std::same_as<uint8_t>;
+    { co.blue() } -> std::same_as<uint8_t>;
+    { co.alpha() } -> std::same_as<uint8_t>;
 
-export {
-#include <vclib/concepts/mesh/components/component.h>
-}
+    { o.redF() } -> std::same_as<float>;
+    { o.greenF() } -> std::same_as<float>;
+    { o.blueF() } -> std::same_as<float>;
+    { o.alphaF() } -> std::same_as<float>;
+    // clang-format on
+};
+
+} // namespace vcl
+
+#endif // VCL_CONCEPTS_SPACE_COLOR_H

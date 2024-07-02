@@ -28,7 +28,6 @@ module;
 export module vclib.mesh.elements.face;
 
 import vclib.concepts.mesh.components;
-import vclib.concepts.mesh.components.component;
 import vclib.concepts.mesh.elements;
 import vclib.concepts.ranges.range;
 import vclib.mesh.components;

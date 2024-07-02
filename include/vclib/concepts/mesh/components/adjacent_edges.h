@@ -26,7 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vector>
 
-#include <vclib/views/view.h>
+#include <vclib/concepts/ranges/range.h>
 
 #include "component.h"
 #endif
@@ -101,12 +101,9 @@ concept HasAdjacentEdges = requires (
     { co.adjEdgeIndexEnd() } ->
         std::same_as<typename T::ConstAdjacentEdgeIndexIterator>;
 
-    { o.adjEdges() } ->
-        std::same_as<vcl::View<typename T::AdjacentEdgeIterator>>;
-    { co.adjEdges() } ->
-        std::same_as<vcl::View<typename T::ConstAdjacentEdgeIterator>>;
-    { co.adjEdgeIndices() } ->
-        std::same_as<vcl::View<typename T::ConstAdjacentEdgeIndexIterator>>;
+    { o.adjEdges() } -> vcl::RangeOf<typename T::AdjacentEdgeType*>;
+    { co.adjEdges() } -> vcl::RangeOf<const typename T::AdjacentEdgeType*>;
+    { co.adjEdgeIndices() } -> vcl::RangeOf<uint>;
     // clang-format on
 };
 

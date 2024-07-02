@@ -24,7 +24,7 @@ module;
 
 export module vclib.mesh.utils.mesh_check;
 
-import vclib.concepts.mesh.components.component;
+import vclib.concepts.mesh.components;
 import vclib.concepts.mesh.mesh_concept;
 import vclib.exceptions;
 import vclib.misc;

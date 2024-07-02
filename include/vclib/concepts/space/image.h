@@ -20,16 +20,43 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_CONCEPTS_SPACE_IMAGE_H
+#define VCL_CONCEPTS_SPACE_IMAGE_H
 
-#include <concepts>
+#ifndef VCLIB_WITH_MODULES
+#include <string>
 
-export module vclib.concepts.mesh.containers.element_container;
+#include <vclib/types.h>
 
-import vclib.concepts.mesh.components.component;
-import vclib.concepts.mesh.elements.element;
-import vclib.types;
+#include "color.h"
+#endif
 
-export {
-#include <vclib/concepts/mesh/containers/element_container.h>
-}
+namespace vcl {
+
+template<typename T>
+concept ImageConcept = requires (T&& o) {
+    // clang-format off
+    { o.isNull() } -> std::same_as<bool>;
+    { o.height() } -> std::same_as<int>;
+    { o.width() } -> std::same_as<int>;
+
+    { o.sizeInBytes() } -> std::same_as<std::size_t>;
+
+    { o.pixel(uint(), uint()) }  -> ColorConcept;
+
+    { o.data() } -> std::same_as<const unsigned char*>;
+
+    { o.load(std::string()) } -> std::same_as<bool>;
+    { o.save(std::string()) } -> std::same_as<void>;
+    { o.save(std::string(), uint()) } -> std::same_as<void>;
+
+    { o.mirror() } -> std::same_as<void>;
+    { o.mirror(bool()) } -> std::same_as<void>;
+    { o.mirror(bool(), bool()) } -> std::same_as<void>;
+
+    // clang-format on
+};
+
+} // namespace vcl
+
+#endif // VCL_CONCEPTS_SPACE_IMAGE_H

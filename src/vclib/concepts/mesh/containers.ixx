@@ -22,15 +22,19 @@
 
 module;
 
+#include <concepts>
 #include <ranges>
 #include <vector>
 
 export module vclib.concepts.mesh.containers;
 
-import vclib.concepts.mesh.containers.element_container;
+import vclib.concepts.mesh.components;
+import vclib.concepts.mesh.elements;
 import vclib.types;
 
 export {
+#include <vclib/concepts/mesh/containers/element_container.h>
+
 #include <vclib/concepts/mesh/containers/edge_container.h>
 #include <vclib/concepts/mesh/containers/face_container.h>
 #include <vclib/concepts/mesh/containers/vertex_container.h>

@@ -32,9 +32,9 @@ export module vclib.mesh.mesh;
 export import vclib.mesh.containers;
 
 import vclib.concepts.mesh;
-import vclib.concepts.mesh.components.component;
-import vclib.concepts.mesh.containers.element_container;
-import vclib.concepts.mesh.elements.element;
+import vclib.concepts.mesh.components;
+import vclib.concepts.mesh.containers;
+import vclib.concepts.mesh.elements;
 import vclib.mesh.components.detail;
 import vclib.mesh.elements.element;
 import vclib.mesh.containers.element_container;

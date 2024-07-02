@@ -20,16 +20,25 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_CONCEPTS_SPACE_TEXTURE_H
+#define VCL_CONCEPTS_SPACE_TEXTURE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <string>
 
-export module vclib.concepts.mesh.components.texture_images;
+#include "image.h"
+#endif
 
-import vclib.concepts.mesh.components.component;
-import vclib.space.texture;
-import vclib.types;
+namespace vcl {
 
-export {
-#include <vclib/concepts/mesh/components/texture_images.h>
-}
+template<typename T>
+concept TextureConcept = requires (T&& o) {
+    // clang-format off
+    { o.path() } -> std::convertible_to<std::string>;
+    { o.image() } -> ImageConcept;
+    // clang-format on
+};
+
+} // namespace vcl
+
+#endif // VCL_CONCEPTS_SPACE_TEXTURE_H

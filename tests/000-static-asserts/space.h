@@ -93,7 +93,13 @@ void spaceStaticAsserts()
     static_assert(Serializable<Box3d>, "Box3d is not serializable");
 
     // color
-    static_assert(Serializable<Color>, "Color is not serializable");
+    static_assert(
+        ColorConcept<Color>, "Color does not satisfy the ColorConcept");
+
+    // image
+    static_assert(
+        ImageConcept<Image>, "Image does not satisfy the ImageConcept");
+    static_assert(Serializable<Image>, "Image is not serializable");
 
     // plane
     static_assert(
@@ -168,11 +174,18 @@ void spaceStaticAsserts()
     //    VertexSampler<detail::TMPSimplePolyMesh::Vertex> v;
     //    auto it = std::ranges::begin(v);
 
+    // sphere
     static_assert(
         SphereConcept<Spheref>, "Spheref does not satisfy the SphereConcept");
     static_assert(
         SphereConcept<Sphered>, "Sphered does not satisfy the SphereConcept");
 
+    // texture
+    static_assert(
+        TextureConcept<Texture>, "Texture does not satisfy the TextureConcept");
+    static_assert(Serializable<Texture>, "Texture is not serializable");
+
+    // triangle
     static_assert(
         Triangle2Concept<Triangle2f>,
         "Triangle2f does not satisfy the Triangle2Concept");

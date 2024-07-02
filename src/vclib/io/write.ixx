@@ -29,7 +29,7 @@ module;
 
 export module vclib.io.write;
 
-import vclib.concepts.mesh.elements.element;
+import vclib.concepts.mesh.elements;
 import vclib.exceptions;
 import vclib.io.file_format;
 import vclib.io.file_info;

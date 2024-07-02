@@ -26,9 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vector>
 
-#include <vclib/views/view.h>
-
-#include "component.h"
+#include <vclib/concepts/ranges/range.h>
 #endif
 
 namespace vcl::comp {
@@ -97,11 +95,9 @@ concept HasVertexReferences = requires (
     { co.vertexIndexEnd() } ->
         std::same_as<typename T::ConstVertexIndexIterator>;
 
-    { o.vertices() } -> std::same_as<vcl::View<typename T::VertexIterator>>;
-    { co.vertices() } ->
-        std::same_as<vcl::View<typename T::ConstVertexIterator>>;
-    { co.vertexIndices() } ->
-        std::same_as<vcl::View<typename T::ConstVertexIndexIterator>>;
+    { o.vertices() } -> vcl::RangeOf<typename T::VertexType*>;
+    { co.vertices() } -> vcl::RangeOf<const typename T::VertexType*>;
+    { co.vertexIndices() } -> vcl::RangeOf<uint>;
     // clang-format on
 };
 

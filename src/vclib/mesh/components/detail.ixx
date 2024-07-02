@@ -31,7 +31,7 @@ module;
 
 export module vclib.mesh.components.detail;
 
-import vclib.concepts.mesh.components.component;
+import vclib.concepts.mesh.components;
 import vclib.types;
 
 export {

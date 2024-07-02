@@ -28,7 +28,7 @@ module;
 export module vclib.concepts.mesh.mesh_concept;
 
 import vclib.concepts.mesh.containers;
-import vclib.concepts.mesh.elements.element;
+import vclib.concepts.mesh.elements;
 import vclib.types;
 
 export {

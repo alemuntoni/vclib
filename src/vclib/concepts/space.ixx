@@ -22,6 +22,8 @@
 
 module;
 
+#include <cstdint>
+#include <string>
 #include <vector>
 
 export module vclib.concepts.space;
@@ -32,6 +34,8 @@ import vclib.types;
 export {
 #include <vclib/concepts/space/array.h>
 #include <vclib/concepts/space/box.h>
+#include <vclib/concepts/space/color.h>
+#include <vclib/concepts/space/image.h>
 #include <vclib/concepts/space/matrix.h>
 #include <vclib/concepts/space/plane.h>
 #include <vclib/concepts/space/point.h>
@@ -39,5 +43,6 @@ export {
 #include <vclib/concepts/space/sampler.h>
 #include <vclib/concepts/space/segment.h>
 #include <vclib/concepts/space/sphere.h>
+#include <vclib/concepts/space/texture.h>
 #include <vclib/concepts/space/triangle.h>
 }

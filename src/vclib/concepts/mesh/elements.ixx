@@ -22,15 +22,17 @@
 
 module;
 
+#include <string>
 #include <type_traits>
 
 export module vclib.concepts.mesh.elements;
 
 import vclib.concepts.mesh.components;
-import vclib.concepts.mesh.elements.element;
 import vclib.types;
 
 export {
+#include <vclib/concepts/mesh/elements/element.h>
+
 #include <vclib/concepts/mesh/elements/edge.h>
 #include <vclib/concepts/mesh/elements/face.h>
 #include <vclib/concepts/mesh/elements/vertex.h>

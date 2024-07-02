@@ -24,7 +24,7 @@
 #define VCL_CONCEPTS_MESH_COMPONENTS_WEDGE_COLORS_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/space/color.h>
+#include <vector>
 
 #include "component.h"
 #endif
@@ -47,18 +47,23 @@ namespace vcl::comp {
  */
 template<typename T>
 concept HasWedgeColors =
-    requires (T o, const T& co, vcl::Color c, std::vector<vcl::Color> v) {
-        // clang-format off
+    requires (T o, const T& co) {
+    // clang-format off
     T::WEDGE_COLOR_NUMBER;
+    typename T::WedgeColorType;
     typename T::WedgeColorsIterator;
     typename T::ConstWedgeColorsIterator;
 
-    { o.wedgeColor(uint()) } -> std::same_as<vcl::Color&>;
-    { co.wedgeColor(uint()) } -> std::same_as<const vcl::Color&>;
-    { o.wedgeColorMod(int()) } -> std::same_as<vcl::Color&>;
-    { co.wedgeColorMod(int()) } -> std::same_as<const vcl::Color&>;
-    { o.setWedgeColor(uint(), c) } -> std::same_as<void>;
-    { o.setWedgeColors(v) } -> std::same_as<void>;
+    { o.wedgeColor(uint()) } -> std::same_as<typename T::WedgeColorType&>;
+    { co.wedgeColor(uint()) } ->
+        std::same_as<const typename T::WedgeColorType&>;
+    { o.wedgeColorMod(int()) } -> std::same_as<typename T::WedgeColorType&>;
+    { co.wedgeColorMod(int()) } ->
+        std::same_as<const typename T::WedgeColorType&>;
+    { o.setWedgeColor(uint(), typename T::WedgeColorType()) } ->
+        std::same_as<void>;
+    { o.setWedgeColors(std::vector<typename T::WedgeColorType>()) } ->
+        std::same_as<void>;
 
     { o.wedgeColorBegin() } -> std::same_as<typename T::WedgeColorsIterator>;
     { o.wedgeColorEnd() } -> std::same_as<typename T::WedgeColorsIterator>;
@@ -68,7 +73,7 @@ concept HasWedgeColors =
         std::same_as<typename T::ConstWedgeColorsIterator>;
     o.wedgeColors();
     co.wedgeColors();
-        // clang-format on
+    // clang-format on
     };
 
 /**

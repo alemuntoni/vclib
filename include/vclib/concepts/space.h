@@ -25,12 +25,15 @@
 
 #include "space/array.h"
 #include "space/box.h"
+#include "space/color.h"
+#include "space/image.h"
 #include "space/matrix.h"
 #include "space/point.h"
 #include "space/polygon.h"
 #include "space/sampler.h"
 #include "space/segment.h"
 #include "space/sphere.h"
+#include "space/texture.h"
 #include "space/triangle.h"
 
 /**

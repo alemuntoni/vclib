@@ -33,7 +33,7 @@ module;
 export module vclib.mesh.components;
 
 import vclib.concepts.mesh.components;
-import vclib.concepts.mesh.elements.element;
+import vclib.concepts.mesh.elements;
 import vclib.concepts.mesh.mesh_concept;
 import vclib.concepts.ranges;
 import vclib.concepts.space;

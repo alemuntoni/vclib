@@ -27,14 +27,12 @@ module;
 
 export module vclib.concepts.mesh.components;
 
-export import vclib.concepts.mesh.components.texture_images;
-
-import vclib.concepts.mesh.components.component;
-import vclib.space.color;
+import vclib.concepts.ranges.range;
 import vclib.types;
-import vclib.views.view;
 
 export {
+#include <vclib/concepts/mesh/components/component.h>
+
 #include <vclib/concepts/mesh/components/adjacent_edges.h>
 #include <vclib/concepts/mesh/components/adjacent_faces.h>
 #include <vclib/concepts/mesh/components/adjacent_vertices.h>
@@ -49,6 +47,7 @@ export {
 #include <vclib/concepts/mesh/components/principal_curvature.h>
 #include <vclib/concepts/mesh/components/quality.h>
 #include <vclib/concepts/mesh/components/tex_coord.h>
+#include <vclib/concepts/mesh/components/texture_images.h>
 #include <vclib/concepts/mesh/components/texture_paths.h>
 #include <vclib/concepts/mesh/components/transform_matrix.h>
 #include <vclib/concepts/mesh/components/vertex_references.h>

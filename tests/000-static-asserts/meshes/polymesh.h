@@ -7,7 +7,6 @@
 #include <vclib/meshes/poly_mesh.h>
 #else
 import vclib;
-import vclib.concepts.mesh.components.component;
 #endif
 
 void polymeshStaticAsserts()

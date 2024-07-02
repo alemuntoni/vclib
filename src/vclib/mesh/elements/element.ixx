@@ -28,8 +28,8 @@ module;
 
 export module vclib.mesh.elements.element;
 
-import vclib.concepts.mesh.components.component;
-import vclib.concepts.mesh.elements.element;
+import vclib.concepts.mesh.components;
+import vclib.concepts.mesh.elements;
 import vclib.mesh.components.parent_mesh_pointer;
 import vclib.types;
 
