@@ -38,7 +38,6 @@ import vclib.mesh.containers.vertical_components_vector_tuple;
 import vclib.io.serialization;
 import vclib.iterators.mesh;
 import vclib.types;
-import vclib.views;
 
 export {
 #include <vclib/mesh/containers/element_container.h>

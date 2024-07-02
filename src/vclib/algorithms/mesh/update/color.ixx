@@ -32,10 +32,10 @@ export module vclib.algorithms.mesh.update.color;
 import vclib.concepts;
 import vclib.math;
 import vclib.mesh.requirements;
+import vclib.mesh.views;
 import vclib.space.color;
 import vclib.space.point;
 import vclib.types;
-import vclib.views.mesh;
 
 export {
 #include <vclib/algorithms/mesh/update/color.h>

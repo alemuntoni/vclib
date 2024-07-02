@@ -30,7 +30,6 @@
 #include <vclib/misc/logger.h>
 #include <vclib/misc/parallel.h>
 #include <vclib/space/grid.h>
-#include <vclib/views.h>
 #endif
 
 namespace vcl {

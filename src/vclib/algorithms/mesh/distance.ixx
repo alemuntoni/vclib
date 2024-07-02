@@ -38,7 +38,6 @@ import vclib.misc;
 import vclib.space.grid;
 import vclib.space.sampler;
 import vclib.types;
-import vclib.views;
 
 export {
 #include <vclib/algorithms/mesh/distance.h>

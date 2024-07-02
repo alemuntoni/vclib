@@ -35,7 +35,6 @@
 #include <vclib/exceptions.h>
 #include <vclib/io/serialization.h>
 #include <vclib/types.h>
-#include <vclib/views/view.h>
 #endif
 
 namespace vcl {

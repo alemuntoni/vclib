@@ -27,11 +27,13 @@ module;
 #include <limits>
 #include <memory>
 #include <numeric>
+#include <ranges>
 #include <string>
 #include <tuple>
 #include <typeindex>
 #include <type_traits>
 #include <utility>
+#include <zip_view.hpp>
 
 export module vclib.types;
 
@@ -43,4 +45,6 @@ export {
 #include <vclib/types/mesh_elements.h>
 #include <vclib/types/pointers.h>
 #include <vclib/types/variadic_templates.h>
+#include <vclib/types/view.h>
+#include <vclib/types/views.h>
 }

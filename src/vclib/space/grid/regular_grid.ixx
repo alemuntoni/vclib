@@ -32,7 +32,6 @@ import vclib.concepts;
 import vclib.iterators.space;
 import vclib.space.box;
 import vclib.space.point;
-import vclib.views;
 import vclib.types;
 
 export {

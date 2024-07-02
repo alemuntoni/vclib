@@ -2,7 +2,9 @@
 #define MESH_VIEWS_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/views.h>
+#include <ranges>
+
+#include <vclib/mesh/views.h>
 #else
 import vclib;
 #endif

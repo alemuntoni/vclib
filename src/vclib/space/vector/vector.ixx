@@ -35,7 +35,6 @@ import vclib.concepts;
 import vclib.exceptions;
 import vclib.io.serialization;
 import vclib.types;
-import vclib.views;
 
 export {
 #include <vclib/space/vector/vector.h>

@@ -31,7 +31,6 @@ module;
 export module vclib.space.graph.bipartite;
 
 import vclib.space.graph.undirected_node;
-import vclib.views;
 import vclib.types;
 
 export {

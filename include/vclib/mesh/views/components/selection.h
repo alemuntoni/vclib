@@ -20,42 +20,77 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_VIEWS_MESH_ELEMENTS_FACE_H
-#define VCL_VIEWS_MESH_ELEMENTS_FACE_H
+#ifndef VCL_MESH_VIEWS_COMPONENTS_SELECTION_H
+#define VCL_MESH_VIEWS_COMPONENTS_SELECTION_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/mesh.h>
+#include <vclib/concepts/pointers.h>
+#include <vclib/types.h>
+
+#include <ranges>
 #endif
 
 namespace vcl::views {
+
 namespace detail {
 
-template<typename T>
-concept CleanFaceMeshConcept = FaceMeshConcept<std::remove_cvref_t<T>>;
+inline constexpr auto isSelected = [](auto&& e) -> decltype(auto) {
+    if constexpr (vcl::IsPointer<decltype(e)>) {
+        return e->selected();
+    }
+    else {
+        return e.selected();
+    }
+};
 
-struct FacesView
+inline constexpr auto isNotSelected = [](auto&& e) -> decltype(auto) {
+    if constexpr (vcl::IsPointer<decltype(e)>) {
+        return !e->selected();
+    }
+    else {
+        return !e.selected();
+    }
+};
+
+struct SelectionView
 {
-    constexpr FacesView() = default;
+    constexpr SelectionView() = default;
 
-    template<CleanFaceMeshConcept R>
-    friend constexpr auto operator|(R&& r, FacesView)
+    template<std::ranges::range R>
+    friend constexpr auto operator|(R&& r, SelectionView)
     {
-        return r.faces();
+        return std::forward<R>(r) | std::views::transform(isSelected);
+    }
+};
+
+struct SelectedView
+{
+    constexpr SelectedView() = default;
+
+    template<std::ranges::range R>
+    friend constexpr auto operator|(R&& r, SelectedView)
+    {
+        return std::forward<R>(r) | std::views::filter(isSelected);
+    }
+};
+
+struct NotSelectedView
+{
+    constexpr NotSelectedView() = default;
+
+    template<std::ranges::range R>
+    friend constexpr auto operator|(R&& r, NotSelectedView)
+    {
+        return std::forward<R>(r) | std::views::filter(isNotSelected);
     }
 };
 
 } // namespace detail
 
-/**
- * @brief A view that allows to iterate overt the Face elements of an object.
- *
- * This view can be applied to objects having type that satisfies the
- * FaceMeshConcept.
- *
- * @ingroup views
- */
-inline constexpr detail::FacesView faces;
+inline constexpr detail::SelectionView   selection;
+inline constexpr detail::SelectedView    selected;
+inline constexpr detail::NotSelectedView notSelected;
 
 } // namespace vcl::views
 
-#endif // VCL_VIEWS_MESH_ELEMENTS_FACE_H
+#endif // VCL_MESH_VIEWS_COMPONENTS_SELECTION_H

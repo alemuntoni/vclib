@@ -20,20 +20,57 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_MESH_VIEWS_COMPONENTS_TEX_COORDS_H
+#define VCL_MESH_VIEWS_COMPONENTS_TEX_COORDS_H
+
+#ifndef VCLIB_WITH_MODULES
+#include <vclib/concepts/mesh.h>
+#include <vclib/concepts/pointers.h>
+#include <vclib/types.h>
 
 #include <ranges>
-#include <type_traits>
+#endif
 
-export module vclib.views.mesh.elements;
+namespace vcl::views {
 
-import vclib.concepts;
-import vclib.types;
+namespace detail {
 
-export {
-#include <vclib/views/mesh/elements/element.h>
+template<typename T>
+concept CleanWedgeTexCoordsConcept =
+    comp::HasWedgeTexCoords<std::remove_cvref_t<T>>;
 
-#include <vclib/views/mesh/elements/edge.h>
-#include <vclib/views/mesh/elements/face.h>
-#include <vclib/views/mesh/elements/vertex.h>
-}
+inline constexpr auto texCoord = [](auto&& p) -> decltype(auto) {
+    if constexpr (IsPointer<decltype(p)>)
+        return p->texCoord();
+    else
+        return p.texCoord();
+};
+
+struct TexCoordsView
+{
+    constexpr TexCoordsView() = default;
+
+    template<std::ranges::range R>
+    friend constexpr auto operator|(R&& r, TexCoordsView)
+    {
+        using ElemType = std::ranges::range_value_t<R>;
+        return std::forward<R>(r) | std::views::transform(texCoord);
+    }
+
+    template<CleanWedgeTexCoordsConcept R>
+    friend constexpr auto operator|(R&& r, TexCoordsView)
+    {
+        if constexpr (IsPointer<R>)
+            return r->wedgeTexCoords();
+        else
+            return r.wedgeTexCoords();
+    }
+};
+
+} // namespace detail
+
+inline constexpr detail::TexCoordsView texCoords;
+
+} // namespace vcl::views
+
+#endif // VCL_MESH_VIEWS_COMPONENTS_TEX_COORDS_H

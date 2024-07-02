@@ -35,7 +35,6 @@ import vclib.iterators.mesh;
 import vclib.mesh.components.detail;
 import vclib.space.vector;
 import vclib.types;
-import vclib.views.view;
 
 export {
 #include <vclib/mesh/components/bases/component.h>

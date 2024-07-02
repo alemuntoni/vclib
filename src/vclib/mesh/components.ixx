@@ -48,7 +48,6 @@ import vclib.space.tex_coord;
 import vclib.space.texture;
 import vclib.space.vector;
 import vclib.types;
-import vclib.views;
 
 export {
 #include <vclib/mesh/components/adjacent_edges.h>

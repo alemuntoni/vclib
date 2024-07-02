@@ -33,7 +33,7 @@ export module vclib.algorithms.mesh.stat.quality;
 import vclib.concepts;
 import vclib.math;
 import vclib.mesh.requirements;
-import vclib.views.mesh;
+import vclib.mesh.views;
 import vclib.types;
 
 export {

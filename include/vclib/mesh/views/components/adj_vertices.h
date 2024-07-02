@@ -20,42 +20,55 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_VIEWS_MESH_COMPONENTS_QUALITY_H
-#define VCL_VIEWS_MESH_COMPONENTS_QUALITY_H
+#ifndef VCL_MESH_VIEWS_COMPONENTS_ADJ_VERTICES_H
+#define VCL_MESH_VIEWS_COMPONENTS_ADJ_VERTICES_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/pointers.h>
+#include <vclib/concepts/mesh.h>
 #include <vclib/types.h>
-
-#include <ranges>
 #endif
 
 namespace vcl::views {
 
 namespace detail {
 
-inline constexpr auto quality = [](auto&& p) -> decltype(auto) {
-    if constexpr (IsPointer<decltype(p)>)
-        return p->quality();
-    else
-        return p.quality();
-};
+template<typename T>
+concept CleanAdjVerticesConcept =
+    comp::HasAdjacentVertices<std::remove_cvref_t<T>>;
 
-struct QualityView
+struct AdjVerticesView
 {
-    constexpr QualityView() = default;
+    constexpr AdjVerticesView() = default;
 
-    template<std::ranges::range R>
-    friend constexpr auto operator|(R&& r, QualityView)
+    template<CleanAdjVerticesConcept R>
+    friend constexpr auto operator|(R&& r, AdjVerticesView)
     {
-        return std::forward<R>(r) | std::views::transform(quality);
+        if constexpr (IsPointer<R>)
+            return r->adjVertices();
+        else
+            return r.adjVertices();
     }
 };
 
 } // namespace detail
 
-inline constexpr detail::QualityView quality;
+/**
+ * @brief The adjVertices view allows to obtain a view that access to the
+ * adjacent vertices of the object that has been piped. Every object having type
+ * that satisfies the HasAdjacentVertices concept can be applied to this view.
+ *
+ * Resulting adjacent faces will be pointers to Vertices, that may be `nullptr`.
+ * If you are interested only on the not-null pointers, you can use the
+ * `notNull` view:
+ *
+ * @code{.cpp}
+ * for (auto* av: v | views::adjVertices | views::notNull) { ... }
+ * @endcode
+ *
+ * @ingroup views
+ */
+inline constexpr detail::AdjVerticesView adjVertices;
 
 } // namespace vcl::views
 
-#endif // VCL_VIEWS_MESH_COMPONENTS_QUALITY_H
+#endif // VCL_MESH_VIEWS_COMPONENTS_ADJ_VERTICES_H

@@ -29,9 +29,9 @@ module;
 export module vclib.algorithms.mesh.filter;
 
 import vclib.concepts;
+import vclib.mesh.views;
 import vclib.misc;
 import vclib.types;
-import vclib.views.mesh;
 
 export {
 #include <vclib/algorithms/mesh/filter.h>

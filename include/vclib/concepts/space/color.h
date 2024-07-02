@@ -24,7 +24,8 @@
 #define VCL_CONCEPTS_SPACE_COLOR_H
 
 #ifndef VCLIB_WITH_MODULES
-#include "point.h"
+#include <concepts>
+#include <cstdint>
 #endif
 
 namespace vcl {

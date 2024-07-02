@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/vertex_references.h>
-#include <vclib/views/view.h>
+#include <vclib/types/view.h>
 
 #include "bases/reference_container_component.h"
 #endif

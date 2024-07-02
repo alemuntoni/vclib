@@ -20,77 +20,42 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_VIEWS_MESH_COMPONENTS_SELECTION_H
-#define VCL_VIEWS_MESH_COMPONENTS_SELECTION_H
+#ifndef VCL_MESH_VIEWS_ELEMENTS_EDGE_H
+#define VCL_MESH_VIEWS_ELEMENTS_EDGE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/pointers.h>
-#include <vclib/types.h>
-
-#include <ranges>
+#include <vclib/concepts/mesh.h>
 #endif
 
 namespace vcl::views {
-
 namespace detail {
 
-inline constexpr auto isSelected = [](auto&& e) -> decltype(auto) {
-    if constexpr (vcl::IsPointer<decltype(e)>) {
-        return e->selected();
-    }
-    else {
-        return e.selected();
-    }
-};
+template<typename T>
+concept CleanEdgeMeshConcept = EdgeMeshConcept<std::remove_cvref_t<T>>;
 
-inline constexpr auto isNotSelected = [](auto&& e) -> decltype(auto) {
-    if constexpr (vcl::IsPointer<decltype(e)>) {
-        return !e->selected();
-    }
-    else {
-        return !e.selected();
-    }
-};
-
-struct SelectionView
+struct EdgesView
 {
-    constexpr SelectionView() = default;
+    constexpr EdgesView() = default;
 
-    template<std::ranges::range R>
-    friend constexpr auto operator|(R&& r, SelectionView)
+    template<CleanEdgeMeshConcept R>
+    friend constexpr auto operator|(R&& r, EdgesView)
     {
-        return std::forward<R>(r) | std::views::transform(isSelected);
-    }
-};
-
-struct SelectedView
-{
-    constexpr SelectedView() = default;
-
-    template<std::ranges::range R>
-    friend constexpr auto operator|(R&& r, SelectedView)
-    {
-        return std::forward<R>(r) | std::views::filter(isSelected);
-    }
-};
-
-struct NotSelectedView
-{
-    constexpr NotSelectedView() = default;
-
-    template<std::ranges::range R>
-    friend constexpr auto operator|(R&& r, NotSelectedView)
-    {
-        return std::forward<R>(r) | std::views::filter(isNotSelected);
+        return r.edges();
     }
 };
 
 } // namespace detail
 
-inline constexpr detail::SelectionView   selection;
-inline constexpr detail::SelectedView    selected;
-inline constexpr detail::NotSelectedView notSelected;
+/**
+ * @brief A view that allows to iterate overt the Edge elements of an object.
+ *
+ * This view can be applied to objects having type that satisfies the
+ * EdgeMeshConcept.
+ *
+ * @ingroup views
+ */
+inline constexpr detail::EdgesView edges;
 
 } // namespace vcl::views
 
-#endif // VCL_VIEWS_MESH_COMPONENTS_SELECTION_H
+#endif // VCL_MESH_VIEWS_ELEMENTS_EDGE_H

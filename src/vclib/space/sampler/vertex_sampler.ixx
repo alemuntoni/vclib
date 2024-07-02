@@ -27,8 +27,8 @@ module;
 export module vclib.space.sampler.vertex_sampler;
 
 import vclib.concepts;
+import vclib.mesh.views;
 import vclib.types;
-import vclib.views.mesh;
 
 export {
 #include <vclib/space/sampler/vertex_sampler.h>

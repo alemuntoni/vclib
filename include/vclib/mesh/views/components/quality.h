@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_VIEWS_MESH_COMPONENTS_PRINCIPAL_CURVATURES_H
-#define VCL_VIEWS_MESH_COMPONENTS_PRINCIPAL_CURVATURES_H
+#ifndef VCL_MESH_VIEWS_COMPONENTS_QUALITY_H
+#define VCL_MESH_VIEWS_COMPONENTS_QUALITY_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/pointers.h>
@@ -34,28 +34,28 @@ namespace vcl::views {
 
 namespace detail {
 
-inline constexpr auto principalCurvature = [](auto&& p) -> decltype(auto) {
+inline constexpr auto quality = [](auto&& p) -> decltype(auto) {
     if constexpr (IsPointer<decltype(p)>)
-        return p->principalCurvature();
+        return p->quality();
     else
-        return p.principalCurvature();
+        return p.quality();
 };
 
-struct PrincipalCurvaturesView
+struct QualityView
 {
-    constexpr PrincipalCurvaturesView() = default;
+    constexpr QualityView() = default;
 
     template<std::ranges::range R>
-    friend constexpr auto operator|(R&& r, PrincipalCurvaturesView)
+    friend constexpr auto operator|(R&& r, QualityView)
     {
-        return std::forward<R>(r) | std::views::transform(principalCurvature);
+        return std::forward<R>(r) | std::views::transform(quality);
     }
 };
 
 } // namespace detail
 
-inline constexpr detail::PrincipalCurvaturesView principalCurvatures;
+inline constexpr detail::QualityView quality;
 
 } // namespace vcl::views
 
-#endif // VCL_VIEWS_MESH_COMPONENTS_PRINCIPAL_CURVATURES_H
+#endif // VCL_MESH_VIEWS_COMPONENTS_QUALITY_H

@@ -20,57 +20,25 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_VIEWS_MESH_COMPONENTS_TEX_COORDS_H
-#define VCL_VIEWS_MESH_COMPONENTS_TEX_COORDS_H
-
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/mesh.h>
-#include <vclib/concepts/pointers.h>
-#include <vclib/types.h>
+module;
 
 #include <ranges>
-#endif
+#include <type_traits>
 
-namespace vcl::views {
+export module vclib.mesh.views.components;
 
-namespace detail {
+import vclib.concepts;
+import vclib.types;
 
-template<typename T>
-concept CleanWedgeTexCoordsConcept =
-    comp::HasWedgeTexCoords<std::remove_cvref_t<T>>;
-
-inline constexpr auto texCoord = [](auto&& p) -> decltype(auto) {
-    if constexpr (IsPointer<decltype(p)>)
-        return p->texCoord();
-    else
-        return p.texCoord();
-};
-
-struct TexCoordsView
-{
-    constexpr TexCoordsView() = default;
-
-    template<std::ranges::range R>
-    friend constexpr auto operator|(R&& r, TexCoordsView)
-    {
-        using ElemType = std::ranges::range_value_t<R>;
-        return std::forward<R>(r) | std::views::transform(texCoord);
-    }
-
-    template<CleanWedgeTexCoordsConcept R>
-    friend constexpr auto operator|(R&& r, TexCoordsView)
-    {
-        if constexpr (IsPointer<R>)
-            return r->wedgeTexCoords();
-        else
-            return r.wedgeTexCoords();
-    }
-};
-
-} // namespace detail
-
-inline constexpr detail::TexCoordsView texCoords;
-
-} // namespace vcl::views
-
-#endif // VCL_VIEWS_MESH_COMPONENTS_TEX_COORDS_H
+export {
+#include <vclib/mesh/views/components/adj_edges.h>
+#include <vclib/mesh/views/components/adj_faces.h>
+#include <vclib/mesh/views/components/adj_vertices.h>
+#include <vclib/mesh/views/components/colors.h>
+#include <vclib/mesh/views/components/coords.h>
+#include <vclib/mesh/views/components/normals.h>
+#include <vclib/mesh/views/components/principal_curvatures.h>
+#include <vclib/mesh/views/components/quality.h>
+#include <vclib/mesh/views/components/selection.h>
+#include <vclib/mesh/views/components/tex_coords.h>
+}

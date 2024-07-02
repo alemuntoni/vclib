@@ -32,8 +32,8 @@ import vclib.algorithms.core.polygon;
 import vclib.concepts;
 import vclib.mesh.components;
 import vclib.mesh.requirements;
+import vclib.mesh.views;
 import vclib.types;
-import vclib.views;
 
 export {
 #include <vclib/space/sampler/mesh_sampler.h>

@@ -36,7 +36,6 @@ import vclib.exceptions;
 import vclib.iterators.const_pointer_iterator;
 import vclib.space.vector.pointer_vector;
 import vclib.types;
-import vclib.views;
 
 export {
 #include <vclib/space/vector/polymorphic_object_vector.h>

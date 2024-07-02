@@ -34,11 +34,12 @@ import vclib.exceptions;
 import vclib.iterators.mesh;
 import vclib.mesh.components;
 import vclib.mesh.utils.mesh_pos;
+import vclib.mesh.views;
 import vclib.misc;
 import vclib.space.polygon;
 import vclib.space.triangle;
 import vclib.types;
-import vclib.views.mesh;
+
 
 export {
 #include <vclib/algorithms/core/polygon/create.h>

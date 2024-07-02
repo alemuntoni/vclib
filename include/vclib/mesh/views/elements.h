@@ -20,42 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_VIEWS_MESH_ELEMENTS_EDGE_H
-#define VCL_VIEWS_MESH_ELEMENTS_EDGE_H
+#ifndef VCL_MESH_VIEWS_ELEMENTS_H
+#define VCL_MESH_VIEWS_ELEMENTS_H
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/mesh.h>
-#endif
+#include "elements/element.h"
 
-namespace vcl::views {
-namespace detail {
+#include "elements/edge.h"
+#include "elements/face.h"
+#include "elements/vertex.h"
 
-template<typename T>
-concept CleanEdgeMeshConcept = EdgeMeshConcept<std::remove_cvref_t<T>>;
-
-struct EdgesView
-{
-    constexpr EdgesView() = default;
-
-    template<CleanEdgeMeshConcept R>
-    friend constexpr auto operator|(R&& r, EdgesView)
-    {
-        return r.edges();
-    }
-};
-
-} // namespace detail
-
-/**
- * @brief A view that allows to iterate overt the Edge elements of an object.
- *
- * This view can be applied to objects having type that satisfies the
- * EdgeMeshConcept.
- *
- * @ingroup views
- */
-inline constexpr detail::EdgesView edges;
-
-} // namespace vcl::views
-
-#endif // VCL_VIEWS_MESH_ELEMENTS_EDGE_H
+#endif // VCL_MESH_VIEWS_ELEMENTS_H

@@ -43,7 +43,7 @@ import vclib.misc;
 import vclib.space.grid;
 import vclib.space.matrix;
 import vclib.space.sphere;
-import vclib.views;
+import vclib.types;
 
 export {
 #include <vclib/algorithms/mesh/update/curvature.h>

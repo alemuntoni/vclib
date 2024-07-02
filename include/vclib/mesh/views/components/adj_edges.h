@@ -20,46 +20,54 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_VIEWS_MESH_ELEMENTS_ELEMENT_H
-#define VCL_VIEWS_MESH_ELEMENTS_ELEMENT_H
+#ifndef VCL_MESH_VIEWS_COMPONENTS_ADJ_EDGES_H
+#define VCL_MESH_VIEWS_COMPONENTS_ADJ_EDGES_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/pointers.h>
+#include <vclib/concepts.h>
 #include <vclib/types.h>
-
-#include <ranges>
 #endif
 
 namespace vcl::views {
 
 namespace detail {
 
-inline constexpr auto index = [](auto&& p) -> uint {
-    if constexpr (IsPointer<decltype(p)>) {
-        if (p == nullptr) [[unlikely]]
-            return UINT_NULL;
-        else
-            return p->index();
-    }
-    else
-        return p.index();
-};
+template<typename T>
+concept CleanAdjEdgesConcept = comp::HasAdjacentEdges<std::remove_cvref_t<T>>;
 
-struct IndexView
+struct AdjEdgesView
 {
-    constexpr IndexView() = default;
+    constexpr AdjEdgesView() = default;
 
-    template<std::ranges::range R>
-    friend constexpr auto operator|(R&& r, IndexView)
+    template<CleanAdjEdgesConcept R>
+    friend constexpr auto operator|(R&& r, AdjEdgesView)
     {
-        return std::forward<R>(r) | std::views::transform(index);
+        if constexpr (IsPointer<R>)
+            return r->adjEdges();
+        else
+            return r.adjEdges();
     }
 };
 
 } // namespace detail
 
-inline constexpr detail::IndexView indices;
+/**
+ * @brief The adjEdges view allows to obtain a view that access to the adjacent
+ * edges of the object that has been piped. Every object having type that
+ * satisfies the HasAdjacentEdges concept can be applied to this view.
+ *
+ * Resulting adjacent edges will be pointers to Edges, that may be `nullptr`.
+ * If you are interested only on the not-null pointers, you can use the
+ * `notNull` view:
+ *
+ * @code{.cpp}
+ * for (auto* ae: f | views::adjEdges | views::notNull) { ... }
+ * @endcode
+ *
+ * @ingroup views
+ */
+inline constexpr detail::AdjEdgesView adjEdges;
 
 } // namespace vcl::views
 
-#endif // VCL_VIEWS_MESH_ELEMENTS_ELEMENT_H
+#endif // VCL_MESH_VIEWS_COMPONENTS_ADJ_EDGES_H

@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_VIEWS_VIEWS_H
-#define VCL_VIEWS_VIEWS_H
+#ifndef VCL_TYPES_VIEWS_H
+#define VCL_TYPES_VIEWS_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <ranges>
@@ -135,4 +135,4 @@ inline constexpr detail::ConstAddressOfView constAddrOf;
 
 } // namespace vcl::views
 
-#endif // VCL_VIEWS_VIEWS_H
+#endif // VCL_TYPES_VIEWS_H

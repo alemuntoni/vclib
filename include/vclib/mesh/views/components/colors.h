@@ -20,10 +20,55 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_VIEWS_MESH_H
-#define VCL_VIEWS_MESH_H
+#ifndef VCL_MESH_VIEWS_COMPONENTS_COLORS_H
+#define VCL_MESH_VIEWS_COMPONENTS_COLORS_H
 
-#include "mesh/components.h"
-#include "mesh/elements.h"
+#ifndef VCLIB_WITH_MODULES
+#include <vclib/concepts/mesh.h>
+#include <vclib/concepts/pointers.h>
+#include <vclib/types.h>
 
-#endif // VCL_VIEWS_MESH_H
+#include <ranges>
+#endif
+
+namespace vcl::views {
+
+namespace detail {
+
+template<typename T>
+concept CleanWedgeColorsConcept = comp::HasWedgeColors<std::remove_cvref_t<T>>;
+
+inline constexpr auto color = [](auto&& p) -> decltype(auto) {
+    if constexpr (IsPointer<decltype(p)>)
+        return p->color();
+    else
+        return p.color();
+};
+
+struct ColorsView
+{
+    constexpr ColorsView() = default;
+
+    template<std::ranges::range R>
+    friend constexpr auto operator|(R&& r, ColorsView)
+    {
+        return std::forward<R>(r) | std::views::transform(color);
+    }
+
+    template<CleanWedgeColorsConcept R>
+    friend constexpr auto operator|(R&& r, ColorsView)
+    {
+        if constexpr (IsPointer<R>)
+            return r->wedgeColors();
+        else
+            return r.wedgeColors();
+    }
+};
+
+} // namespace detail
+
+inline constexpr detail::ColorsView colors;
+
+} // namespace vcl::views
+
+#endif // VCL_MESH_VIEWS_COMPONENTS_COLORS_H

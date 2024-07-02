@@ -20,9 +20,42 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_MESH_VIEWS_COMPONENTS_COORDS_H
+#define VCL_MESH_VIEWS_COMPONENTS_COORDS_H
 
-export module vclib.views.mesh;
+#ifndef VCLIB_WITH_MODULES
+#include <vclib/concepts/pointers.h>
+#include <vclib/types.h>
 
-export import vclib.views.mesh.components;
-export import vclib.views.mesh.elements;
+#include <ranges>
+#endif
+
+namespace vcl::views {
+
+namespace detail {
+
+inline constexpr auto coord = [](auto&& p) -> decltype(auto) {
+    if constexpr (IsPointer<decltype(p)>)
+        return p->coord();
+    else
+        return p.coord();
+};
+
+struct CoordsView
+{
+    constexpr CoordsView() = default;
+
+    template<std::ranges::range R>
+    friend constexpr auto operator|(R&& r, CoordsView)
+    {
+        return std::forward<R>(r) | std::views::transform(coord);
+    }
+};
+
+} // namespace detail
+
+inline constexpr detail::CoordsView coords;
+
+} // namespace vcl::views
+
+#endif // VCL_MESH_VIEWS_COMPONENTS_COORDS_H
