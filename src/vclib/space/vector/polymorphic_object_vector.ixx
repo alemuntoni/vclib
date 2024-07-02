@@ -33,7 +33,7 @@ export module vclib.space.vector.polymorphic_object_vector;
 
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.iterators.const_pointer_iterator;
+import vclib.misc.iterators;
 import vclib.space.vector.pointer_vector;
 import vclib.types;
 

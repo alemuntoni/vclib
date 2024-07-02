@@ -24,8 +24,8 @@
 #define VCL_MESH_COMPONENTS_BASES_POINTER_CONTAINER_COMPONENT_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/iterators/const_pointer_iterator.h>
-#include <vclib/iterators/mesh/components/index_from_pointer_iterator.h>
+#include <vclib/mesh/iterators/components/index_from_pointer_iterator.h>
+#include <vclib/misc/iterators/const_pointer_iterator.h>
 
 #include "container_component.h"
 #endif

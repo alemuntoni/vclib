@@ -29,8 +29,8 @@ module;
 export module vclib.space.grid.regular_grid;
 
 import vclib.concepts;
-import vclib.iterators.space;
 import vclib.space.box;
+import vclib.space.grid.iterators;
 import vclib.space.point;
 import vclib.types;
 

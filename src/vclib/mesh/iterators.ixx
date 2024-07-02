@@ -26,13 +26,13 @@ module;
 #include <iterator>
 #include <type_traits>
 
-export module vclib.iterators.mesh;
+export module vclib.mesh.iterators;
 
 import vclib.types;
 
 export {
-#include <vclib/iterators/mesh/components/index_from_pointer_iterator.h>
-#include <vclib/iterators/mesh/components/pointer_from_index_iterator.h>
-#include <vclib/iterators/mesh/face/edge_adj_face_iterator.h>
-#include <vclib/iterators/mesh/element_container_iterator.h>
+#include <vclib/mesh/iterators/components/index_from_pointer_iterator.h>
+#include <vclib/mesh/iterators/components/pointer_from_index_iterator.h>
+#include <vclib/mesh/iterators/face/edge_adj_face_iterator.h>
+#include <vclib/mesh/iterators/element_container_iterator.h>
 }

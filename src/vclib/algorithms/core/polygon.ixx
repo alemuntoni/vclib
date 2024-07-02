@@ -31,8 +31,8 @@ export module vclib.algorithms.core.polygon;
 
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.iterators.mesh;
 import vclib.mesh.components;
+import vclib.mesh.iterators;
 import vclib.mesh.utils.mesh_pos;
 import vclib.mesh.views;
 import vclib.misc;

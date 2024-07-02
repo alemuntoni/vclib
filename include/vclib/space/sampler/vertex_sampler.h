@@ -4,7 +4,6 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/elements/vertex.h>
 #include <vclib/concepts/space/sampler.h>
-#include <vclib/iterators/mesh.h>
 #include <vclib/mesh/views/components.h>
 #endif
 

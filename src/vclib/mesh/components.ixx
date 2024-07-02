@@ -34,10 +34,10 @@ export module vclib.mesh.components;
 
 import vclib.concepts;
 import vclib.io.serialization;
-import vclib.iterators.mesh;
 import vclib.mesh.components.bases;
 import vclib.mesh.components.detail;
 import vclib.mesh.components.parent_mesh_pointer;
+import vclib.mesh.iterators;
 import vclib.space.bit_set;
 import vclib.space.box;
 import vclib.space.color;

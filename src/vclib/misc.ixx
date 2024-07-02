@@ -36,6 +36,7 @@ export module vclib.misc;
 import vclib.types;
 
 export import vclib.misc.hash;
+export import vclib.misc.iterators;
 export import vclib.misc.logger;
 export import vclib.misc.nested_initializer_lists;
 export import vclib.misc.parallel;

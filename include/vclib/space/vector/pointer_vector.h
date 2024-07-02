@@ -27,7 +27,7 @@
 #include "vector.h"
 
 #include <vclib/concepts/pointers.h>
-#include <vclib/iterators/const_pointer_iterator.h>
+#include <vclib/misc/iterators/const_pointer_iterator.h>
 #endif
 
 namespace vcl {

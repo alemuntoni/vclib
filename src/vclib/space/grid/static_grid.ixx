@@ -30,9 +30,9 @@ module;
 export module vclib.space.grid.static_grid;
 
 import vclib.concepts;
-import vclib.iterators.space;
 import vclib.misc;
 import vclib.space.grid.abstract_grid;
+import vclib.space.grid.iterators;
 import vclib.space.grid.regular_grid;
 import vclib.types;
 
