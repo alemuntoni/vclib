@@ -29,9 +29,7 @@ module;
 
 export module vclib.algorithms.core.polygon;
 
-import vclib.concepts.mesh.components;
-import vclib.concepts.mesh.elements;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.exceptions;
 import vclib.iterators.mesh;
 import vclib.mesh.components;

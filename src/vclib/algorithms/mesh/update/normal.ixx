@@ -30,7 +30,6 @@ export module vclib.algorithms.mesh.update.normal;
 
 import vclib.algorithms.core.polygon;
 import vclib.concepts;
-import vclib.concepts.mesh.containers;
 import vclib.mesh.requirements;
 import vclib.misc;
 import vclib.space.matrix;

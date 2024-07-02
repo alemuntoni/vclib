@@ -29,8 +29,7 @@ module;
 
 export module vclib.space.polygon;
 
-import vclib.concepts.ranges;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.space.point;
 import vclib.space.triangle;
 import vclib.types;

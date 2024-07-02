@@ -26,7 +26,7 @@ module;
 
 export module vclib.iterators.const_pointer_iterator;
 
-import vclib.concepts.pointers;
+import vclib.concepts;
 import vclib.types;
 
 export {

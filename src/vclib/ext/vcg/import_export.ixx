@@ -26,8 +26,7 @@ module;
 
 export module vclib.external.vcg.import_export;
 
-import vclib.concepts.mesh.elements;
-import vclib.concepts.mesh;
+import vclib.concepts;
 import vclib.external.vcg.concepts;
 import vclib.external.vcg.type_mapping;
 import vclib.mesh.requirements;

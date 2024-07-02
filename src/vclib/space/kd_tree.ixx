@@ -30,8 +30,7 @@ module;
 
 export module vclib.space.kd_tree;
 
-import vclib.concepts.mesh;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.space.box;
 
 export {

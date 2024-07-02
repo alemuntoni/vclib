@@ -31,7 +31,7 @@ module;
 export module vclib.processing.actions.interfaces.load_mesh_action;
 
 import vclib.algorithms.mesh.update;
-import vclib.concepts.mesh;
+import vclib.concepts;
 import vclib.mesh.utils.mesh_info;
 import vclib.misc.logger;
 import vclib.processing.actions.common.file_format;

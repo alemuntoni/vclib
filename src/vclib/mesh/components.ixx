@@ -32,11 +32,7 @@ module;
 
 export module vclib.mesh.components;
 
-import vclib.concepts.mesh.components;
-import vclib.concepts.mesh.elements;
-import vclib.concepts.mesh.mesh_concept;
-import vclib.concepts.ranges;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.io.serialization;
 import vclib.iterators.mesh;
 import vclib.mesh.components.bases;

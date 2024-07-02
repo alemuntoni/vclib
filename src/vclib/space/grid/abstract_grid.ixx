@@ -30,9 +30,7 @@ export module vclib.space.grid.abstract_grid;
 
 import vclib.algorithms.core.bounding_box;
 import vclib.algorithms.core.distance;
-import vclib.concepts.mesh.elements;
-import vclib.concepts.ranges;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.misc;
 import vclib.space.box;
 import vclib.space.point;

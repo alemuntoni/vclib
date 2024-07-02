@@ -41,8 +41,7 @@ module;
 
 export module vclib.algorithms.mesh.clean;
 
-import vclib.concepts.mesh;
-import vclib.concepts.ranges;
+import vclib.concepts;
 import vclib.mesh.requirements;
 import vclib.mesh.utils.mesh_edge_util;
 import vclib.mesh.utils.mesh_pos;

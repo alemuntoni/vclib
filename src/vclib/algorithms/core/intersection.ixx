@@ -28,8 +28,7 @@ module;
 export module vclib.algorithms.core.intersection;
 
 import vclib.algorithms.core.polygon;
-import vclib.concepts.mesh.elements;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.space.box;
 import vclib.space.plane;
 import vclib.space.point;

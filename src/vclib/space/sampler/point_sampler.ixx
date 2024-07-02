@@ -28,8 +28,7 @@ module;
 export module vclib.space.sampler.point_sampler;
 
 import vclib.algorithms.core.polygon;
-import vclib.concepts.mesh.elements;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.space.point;
 import vclib.types;
 

@@ -25,7 +25,7 @@ module;
 export module vclib.algorithms.mesh.update.bounding_box;
 
 import vclib.algorithms.mesh.bounding_box;
-import vclib.concepts.mesh;
+import vclib.concepts;
 
 export {
 #include <vclib/algorithms/mesh/update/bounding_box.h>

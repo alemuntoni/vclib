@@ -31,9 +31,7 @@ module;
 
 export module vclib.mesh.containers.element_container;
 
-import vclib.concepts.mesh.components;
-import vclib.concepts.mesh.containers;
-import vclib.concepts.mesh.elements;
+import vclib.concepts;
 import vclib.mesh.containers.custom_component_vector_handle;
 import vclib.mesh.containers.custom_components_vector_map;
 import vclib.mesh.containers.vertical_components_vector_tuple;

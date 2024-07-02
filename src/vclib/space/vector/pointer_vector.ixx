@@ -26,7 +26,7 @@ module;
 
 export module vclib.space.vector.pointer_vector;
 
-import vclib.concepts.pointers;
+import vclib.concepts;
 import vclib.iterators.const_pointer_iterator;
 import vclib.space.vector.vector;
 import vclib.types;

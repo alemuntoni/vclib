@@ -26,7 +26,7 @@ module;
 
 export module vclib.algorithms.mesh.create.cone;
 
-import vclib.concepts.mesh;
+import vclib.concepts;
 import vclib.math;
 import vclib.mesh.requirements;
 import vclib.types;

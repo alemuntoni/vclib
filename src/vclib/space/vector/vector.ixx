@@ -31,7 +31,7 @@ module;
 
 export module vclib.space.vector.vector;
 
-import vclib.concepts.ranges;
+import vclib.concepts;
 import vclib.exceptions;
 import vclib.io.serialization;
 import vclib.types;

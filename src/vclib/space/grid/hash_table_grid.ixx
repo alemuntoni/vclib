@@ -29,7 +29,7 @@ module;
 
 export module vclib.space.grid.hash_table_grid;
 
-import vclib.concepts.ranges;
+import vclib.concepts;
 import vclib.space.grid.abstract_grid;
 import vclib.space.grid.regular_grid;
 import vclib.space.sphere;

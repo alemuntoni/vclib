@@ -36,7 +36,7 @@ module;
 
 export module vclib.misc.parallel;
 
-import vclib.concepts.ranges;
+import vclib.concepts;
 import vclib.types;
 
 export {

@@ -27,7 +27,7 @@ module;
 
 export module vclib.mesh.utils.mesh_edge_util;
 
-import vclib.concepts.mesh.element_mesh_concept;
+import vclib.concepts;
 import vclib.types;
 
 export {

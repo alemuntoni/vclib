@@ -28,7 +28,7 @@ module;
 
 export module vclib.processing.actions.common.file_format;
 
-import vclib.concepts.ranges.range;
+import vclib.concepts;
 import vclib.misc.string;
 
 export {

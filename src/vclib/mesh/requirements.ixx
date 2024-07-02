@@ -26,10 +26,7 @@ export module vclib.mesh.requirements;
 
 export import vclib.mesh.requirements.element_requirements;
 
-import vclib.concepts.mesh.containers;
-import vclib.concepts.mesh.element_mesh_concept;
-import vclib.concepts.mesh.mesh_concept;
-import vclib.concepts.mesh.per_element;
+import vclib.concepts;
 import vclib.exceptions;
 import vclib.types;
 

@@ -28,7 +28,7 @@ module;
 
 export module vclib.mesh.containers.vertical_components_vector_tuple;
 
-import vclib.concepts.mesh.components;
+import vclib.concepts;
 import vclib.misc;
 import vclib.types;
 

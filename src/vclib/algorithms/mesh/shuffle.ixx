@@ -28,7 +28,7 @@ module;
 
 export module vclib.algorithms.mesh.shuffle;
 
-import vclib.concepts.mesh;
+import vclib.concepts;
 
 export {
 #include <vclib/algorithms/mesh/shuffle.h>

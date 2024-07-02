@@ -32,7 +32,7 @@ module;
 
 export module vclib.math;
 
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.space.point;
 import vclib.types;
 

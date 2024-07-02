@@ -27,8 +27,7 @@ module;
 export module vclib.algorithms.mesh.update.selection;
 
 import vclib.algorithms.mesh.clean;
-import vclib.concepts.mesh;
-import vclib.concepts.ranges;
+import vclib.concepts;
 import vclib.types;
 
 export {

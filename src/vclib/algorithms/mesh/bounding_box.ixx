@@ -24,7 +24,7 @@ module;
 
 export module vclib.algorithms.mesh.bounding_box;
 
-import vclib.concepts.mesh;
+import vclib.concepts;
 import vclib.mesh.requirements;
 import vclib.space.box;
 

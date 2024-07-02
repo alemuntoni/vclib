@@ -26,7 +26,7 @@ module;
 
 export module vclib.mesh.utils.mesh_pos;
 
-import vclib.concepts.mesh.elements;
+import vclib.concepts;
 import vclib.mesh.components;
 import vclib.mesh.elements.face;
 import vclib.types;

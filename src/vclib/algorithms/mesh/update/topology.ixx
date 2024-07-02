@@ -26,7 +26,7 @@ module;
 
 export module vclib.algorithms.mesh.update.topology;
 
-import vclib.concepts.mesh;
+import vclib.concepts;
 import vclib.mesh.requirements;
 import vclib.mesh.utils.mesh_edge_util;
 import vclib.types;

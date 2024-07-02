@@ -30,7 +30,7 @@ module;
 
 export module vclib.io.read;
 
-import vclib.concepts.mesh.elements;
+import vclib.concepts;
 import vclib.exceptions;
 import vclib.io.file_info;
 import vclib.io.serialization;

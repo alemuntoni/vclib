@@ -30,7 +30,7 @@ module;
 
 export module vclib.processing.actions.common.parameters.enum_parameter;
 
-import vclib.concepts.ranges.range;
+import vclib.concepts;
 import vclib.processing.actions.common.parameters.parameter;
 
 export {

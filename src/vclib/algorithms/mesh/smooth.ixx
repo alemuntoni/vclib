@@ -27,8 +27,7 @@ module;
 
 export module vclib.algorithms.mesh.smooth;
 
-import vclib.concepts.mesh;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.mesh.requirements;
 import vclib.space.kd_tree;
 import vclib.space.point;

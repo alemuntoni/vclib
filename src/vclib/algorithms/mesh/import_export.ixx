@@ -27,8 +27,7 @@ module;
 
 export module vclib.algorithms.mesh.import_export;
 
-import vclib.concepts.mesh;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.exceptions;
 import vclib.mesh.requirements;
 import vclib.space.color;

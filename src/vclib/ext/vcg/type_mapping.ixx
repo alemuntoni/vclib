@@ -28,7 +28,7 @@ module;
 
 export module vclib.external.vcg.type_mapping;
 
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.external.vcg.concepts;
 import vclib.space.point;
 import vclib.types;

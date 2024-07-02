@@ -27,7 +27,7 @@ module;
 export module vclib.algorithms.mesh.update.flag;
 
 import vclib.algorithms.mesh.sort;
-import vclib.concepts.mesh;
+import vclib.concepts;
 import vclib.mesh.utils.mesh_edge_util;
 
 export {

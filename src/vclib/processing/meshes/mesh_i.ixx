@@ -27,7 +27,7 @@ module;
 
 export module vclib.processing.meshes.mesh_i;
 
-import vclib.concepts.mesh;
+import vclib.concepts;
 
 export {
 #include <vclib/processing/meshes/mesh_i.h>

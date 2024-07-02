@@ -30,8 +30,7 @@ export module vclib.algorithms.core.distance;
 
 import vclib.algorithms.core.bounding_box;
 import vclib.algorithms.core.polygon;
-import vclib.concepts.mesh.elements;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.math;
 import vclib.space.box;
 import vclib.space.plane;

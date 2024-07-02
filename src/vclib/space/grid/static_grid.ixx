@@ -29,11 +29,7 @@ module;
 
 export module vclib.space.grid.static_grid;
 
-import vclib.concepts.const_correctness;
-import vclib.concepts.mesh.components;
-import vclib.concepts.mesh.elements;
-import vclib.concepts.ranges;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.iterators.space;
 import vclib.misc;
 import vclib.space.grid.abstract_grid;

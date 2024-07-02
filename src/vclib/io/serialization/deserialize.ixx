@@ -29,8 +29,7 @@ module;
 
 export module vclib.io.serialization.deserialize;
 
-import vclib.concepts.serialization;
-import vclib.concepts.types;
+import vclib.concepts;
 import vclib.io.serialization.endian;
 
 export {

@@ -29,9 +29,7 @@ module;
 
 export module vclib.mesh.containers;
 
-import vclib.concepts.mesh.containers;
-import vclib.concepts.mesh.elements;
-import vclib.concepts.ranges.range;
+import vclib.concepts;
 import vclib.mesh.components;
 import vclib.mesh.containers.element_container;
 import vclib.mesh.elements;

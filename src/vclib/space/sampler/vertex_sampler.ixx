@@ -26,7 +26,7 @@ module;
 
 export module vclib.space.sampler.vertex_sampler;
 
-import vclib.concepts.mesh.elements;
+import vclib.concepts;
 import vclib.types;
 import vclib.views.mesh;
 

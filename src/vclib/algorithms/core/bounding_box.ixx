@@ -26,10 +26,7 @@ module;
 
 export module vclib.algorithms.core.bounding_box;
 
-import vclib.concepts.iterators;
-import vclib.concepts.mesh.elements;
-import vclib.concepts.ranges;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.space.box;
 import vclib.space.point;
 import vclib.space.segment;

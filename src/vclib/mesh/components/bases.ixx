@@ -29,9 +29,7 @@ module;
 
 export module vclib.mesh.components.bases;
 
-import vclib.concepts.mesh.components;
-import vclib.concepts.mesh.mesh_concept;
-import vclib.concepts.ranges.range;
+import vclib.concepts;
 import vclib.iterators.const_pointer_iterator;
 import vclib.iterators.mesh;
 import vclib.mesh.components.detail;

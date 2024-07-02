@@ -30,7 +30,6 @@ module;
 export module vclib.io.mesh.obj.save;
 
 import vclib.concepts;
-import vclib.concepts.mesh.elements;
 import vclib.io.file_info;
 import vclib.io.mesh.obj.material;
 import vclib.io.mesh.settings;

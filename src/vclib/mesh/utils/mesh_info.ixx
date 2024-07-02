@@ -30,11 +30,7 @@ module;
 
 export module vclib.mesh.utils.mesh_info;
 
-import vclib.concepts.mesh.containers;
-import vclib.concepts.mesh.element_mesh_concept;
-import vclib.concepts.mesh.mesh_concept;
-import vclib.concepts.mesh.per_element;
-import vclib.concepts.mesh.per_mesh;
+import vclib.concepts;
 import vclib.mesh.requirements;
 import vclib.types;
 

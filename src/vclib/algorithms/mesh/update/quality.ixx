@@ -27,7 +27,7 @@ module;
 
 export module vclib.algorithms.mesh.update.quality;
 
-import vclib.concepts.mesh;
+import vclib.concepts;
 import vclib.mesh.requirements;
 
 export {

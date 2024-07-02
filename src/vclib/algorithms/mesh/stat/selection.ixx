@@ -26,7 +26,7 @@ module;
 
 export module vclib.algorithms.mesh.stat.selection;
 
-import vclib.concepts.mesh;
+import vclib.concepts;
 import vclib.views.mesh;
 import vclib.types;
 

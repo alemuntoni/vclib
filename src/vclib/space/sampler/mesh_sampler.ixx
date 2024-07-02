@@ -29,11 +29,7 @@ module;
 export module vclib.space.sampler.mesh_sampler;
 
 import vclib.algorithms.core.polygon;
-import vclib.concepts.mesh.elements;
-import vclib.concepts.mesh.mesh_concept;
-import vclib.concepts.mesh.per_element;
-import vclib.concepts.mesh.per_mesh;
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.mesh.components;
 import vclib.mesh.requirements;
 import vclib.types;

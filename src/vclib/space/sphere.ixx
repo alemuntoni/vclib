@@ -26,7 +26,7 @@ module;
 
 export module vclib.space.sphere;
 
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.space.box;
 import vclib.space.point;
 import vclib.types;

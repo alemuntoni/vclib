@@ -29,7 +29,7 @@ module;
 
 export module vclib.space.point;
 
-import vclib.concepts.space;
+import vclib.concepts;
 import vclib.io.serialization;
 import vclib.math.base;
 import vclib.misc.hash;
