@@ -24,9 +24,7 @@ module;
 
 export module vclib.load_save;
 
-export import vclib.io.file_info;
-export import vclib.io.image;
-export import vclib.io.mesh;
-export import vclib.io.read;
-export import vclib.io.serialization;
-export import vclib.io.write;
+export import vclib.load_save.capability;
+export import vclib.load_save.load;
+export import vclib.load_save.save;
+export import vclib.load_save.settings;

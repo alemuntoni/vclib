@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
-#include <vclib/io/mesh.h>
+#include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #else
 #include <Eigen/Core> // needed by msvc...

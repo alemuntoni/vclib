@@ -27,6 +27,7 @@ export module vclib;
 export import vclib.algorithms;
 export import vclib.concepts;
 export import vclib.exceptions;
+export import vclib.io;
 export import vclib.load_save;
 export import vclib.math;
 export import vclib.mesh;

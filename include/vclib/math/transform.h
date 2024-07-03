@@ -24,8 +24,8 @@
 #define VCL_MATH_TRANSFORM_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/space/matrix.h>
-#include <vclib/space/point.h>
+#include <vclib/concepts/space/matrix.h>
+#include <vclib/concepts/space/point.h>
 
 #include "base.h"
 #endif
@@ -45,7 +45,7 @@ namespace vcl {
  * @param axis
  * @param angleRad
  */
-template<typename MatrixType, PointConcept PointType, typename ScalarType>
+template<MatrixConcept MatrixType, Point3Concept PointType, typename ScalarType>
 void setTransformMatrixRotation(
     MatrixType&       matrix,
     PointType         axis,
@@ -79,7 +79,7 @@ void setTransformMatrixRotation(
  * @param axis
  * @param angleDeg
  */
-template<typename MatrixType, PointConcept PointType, typename ScalarType>
+template<MatrixConcept MatrixType, Point3Concept PointType, typename ScalarType>
 void setTransformMatrixRotationDeg(
     MatrixType&       matrix,
     PointType         axis,
@@ -101,7 +101,7 @@ void setTransformMatrixRotationDeg(
  * @param fromVector
  * @param toVector
  */
-template<typename MatrixType, PointConcept PointType>
+template<MatrixConcept MatrixType, Point3Concept PointType>
 void setTransformMatrixRotation(
     MatrixType&      matrix,
     const PointType& fromVector,
@@ -117,7 +117,7 @@ void setTransformMatrixRotation(
     setTransformMatrixRotation(matrix, axis, angle);
 }
 
-template<typename MatrixType, PointConcept PointType>
+template<MatrixConcept MatrixType, Point3Concept PointType>
 void setTransformMatrixTranslation(
     MatrixType&      matrix,
     const PointType& translation)
@@ -127,7 +127,7 @@ void setTransformMatrixTranslation(
     matrix(2, 3) = translation[2];
 }
 
-template<typename MatrixType, typename ScalarType>
+template<MatrixConcept MatrixType, typename ScalarType>
 void setTransformMatrixScale(MatrixType& matrix, const ScalarType& scale)
 {
     matrix(0, 0) = scale;
@@ -136,7 +136,7 @@ void setTransformMatrixScale(MatrixType& matrix, const ScalarType& scale)
     matrix(3, 3) = 1;
 }
 
-template<typename MatrixType, PointConcept PointType>
+template<MatrixConcept MatrixType, Point3Concept PointType>
 void setTransformMatrixScale(MatrixType& matrix, const PointType& scale)
 {
     matrix(0, 0) = scale[0];
@@ -158,7 +158,7 @@ void setTransformMatrixScale(MatrixType& matrix, const PointType& scale)
  * @param angleRad
  * @return
  */
-template<typename MatrixType, PointConcept PointType, typename ScalarType>
+template<MatrixConcept MatrixType, Point3Concept PointType, typename ScalarType>
 MatrixType rotationMatrix(const PointType& axis, const ScalarType& angleRad)
 {
     MatrixType matrix;
@@ -181,7 +181,7 @@ MatrixType rotationMatrix(const PointType& axis, const ScalarType& angleRad)
  * @param angleDeg
  * @return
  */
-template<typename MatrixType, PointConcept PointType, typename ScalarType>
+template<MatrixConcept MatrixType, Point3Concept PointType, typename ScalarType>
 MatrixType rotationMatrixDeg(const PointType& axis, const ScalarType& angleDeg)
 {
     return rotationMatrix<MatrixType>(axis, vcl::toRad(angleDeg));
@@ -200,7 +200,7 @@ MatrixType rotationMatrixDeg(const PointType& axis, const ScalarType& angleDeg)
  * @param toVector
  * @return
  */
-template<typename MatrixType, PointConcept PointType>
+template<MatrixConcept MatrixType, Point3Concept PointType>
 MatrixType rotationMatrix(
     const PointType& fromVector,
     const PointType& toVector)
