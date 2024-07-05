@@ -30,8 +30,7 @@ import vclib.concepts;
 import vclib.external.vcg.concepts;
 import vclib.external.vcg.type_mapping;
 import vclib.mesh.requirements;
-import vclib.space.color;
-import vclib.space.point;
+import vclib.space.core;
 import vclib.types;
 
 export {

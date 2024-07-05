@@ -24,8 +24,8 @@
 #define VCL_ALGORITHMS_CORE_DISTANCE_MISC_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/space/plane.h>
-#include <vclib/space/segment.h>
+#include <vclib/space/core/plane.h>
+#include <vclib/space/core/segment.h>
 #endif
 
 namespace vcl {

@@ -29,7 +29,7 @@
 #include <vclib/io/file_info.h>
 #include <vclib/io/read.h>
 #include <vclib/load_save/settings.h>
-#include <vclib/mesh/utils/mesh_info.h>
+#include <vclib/space/complex/mesh_info.h>
 #include <vclib/misc/logger.h>
 #include <vclib/misc/tokenizer.h>
 #endif

@@ -32,10 +32,7 @@ import vclib.algorithms.core.bounding_box;
 import vclib.algorithms.core.polygon;
 import vclib.concepts;
 import vclib.math;
-import vclib.space.box;
-import vclib.space.plane;
-import vclib.space.point;
-import vclib.space.segment;
+import vclib.space.core;
 
 export {
 #include <vclib/algorithms/core/distance/misc.h>

@@ -24,7 +24,7 @@
 #define VCL_ALGORITHMS_CORE_POLYGON_CREATE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/space/polygon.h>
+#include <vclib/space/core/polygon.h>
 #endif
 
 namespace vcl {

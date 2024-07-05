@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/load_save/settings.h>
-#include <vclib/mesh/utils/mesh_info.h>
+#include <vclib/space/complex/mesh_info.h>
 #include <vclib/misc/logger.h>
 
 #include "detail/extra.h"

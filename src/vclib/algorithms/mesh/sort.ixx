@@ -38,7 +38,7 @@ module;
 export module vclib.algorithms.mesh.sort;
 
 import vclib.concepts;
-import vclib.mesh.utils.mesh_edge_util;
+import vclib.space.complex;
 
 export {
 #include <vclib/algorithms/mesh/sort.h>

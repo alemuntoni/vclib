@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/coordinate.h>
-#include <vclib/space/point.h>
+#include <vclib/space/core/point.h>
 
 #include "bases/component.h"
 #endif

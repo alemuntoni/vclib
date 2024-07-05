@@ -31,8 +31,8 @@ import vclib.concepts;
 import vclib.exceptions;
 import vclib.load_save.settings;
 import vclib.io.write;
-import vclib.mesh.utils.mesh_info;
 import vclib.misc;
+import vclib.space.complex;
 import vclib.types;
 
 export {

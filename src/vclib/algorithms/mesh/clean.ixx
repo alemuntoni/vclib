@@ -43,9 +43,8 @@ export module vclib.algorithms.mesh.clean;
 
 import vclib.concepts;
 import vclib.mesh.requirements;
-import vclib.mesh.utils.mesh_edge_util;
-import vclib.mesh.utils.mesh_pos;
-import vclib.space.vector;
+import vclib.space.complex;
+import vclib.space.core;
 import vclib.types;
 
 export {

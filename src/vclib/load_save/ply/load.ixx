@@ -34,7 +34,7 @@ import vclib.io.file_info;
 import vclib.load_save.ply.detail;
 import vclib.load_save.settings;
 import vclib.io.read;
-import vclib.mesh.utils.mesh_info;
+import vclib.space.complex;
 
 export {
 #include <vclib/load_save/ply/load.h>

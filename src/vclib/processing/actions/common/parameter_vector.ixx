@@ -28,7 +28,7 @@ module;
 export module vclib.processing.actions.common.parameter_vector;
 
 import vclib.processing.actions.common.parameters.parameter;
-import vclib.space.vector.polymorphic_object_vector;
+import vclib.space.core;
 
 export {
 #include <vclib/processing/actions/common/parameter_vector.h>

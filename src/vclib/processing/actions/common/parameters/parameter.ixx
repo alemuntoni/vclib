@@ -32,8 +32,7 @@ module;
 export module vclib.processing.actions.common.parameters.parameter;
 
 import vclib.processing.settings;
-import vclib.space.color;
-import vclib.space.point;
+import vclib.space.core;
 import vclib.types;
 
 export {

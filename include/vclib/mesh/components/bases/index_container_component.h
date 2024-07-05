@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/iterators/components/pointer_from_index_iterator.h>
-#include <vclib/space/vector.h>
+#include <vclib/space/core/vector.h>
 
 #include "container_component.h"
 #endif

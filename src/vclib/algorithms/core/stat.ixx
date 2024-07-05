@@ -27,8 +27,7 @@ module;
 export module vclib.algorithms.core.stat;
 
 import vclib.concepts;
-import vclib.space.matrix;
-import vclib.space.polygon;
+import vclib.space.core;
 import vclib.types;
 
 export {

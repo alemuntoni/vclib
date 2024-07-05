@@ -20,15 +20,15 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_MESH_CONTAINER_FACE_CONTAINER_H
-#define VCL_MESH_CONTAINER_FACE_CONTAINER_H
+#ifndef VCL_MESH_CONTAINERS_FACE_CONTAINER_H
+#define VCL_MESH_CONTAINERS_FACE_CONTAINER_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/containers/custom_component_vector_handle.h>
 #include <vclib/mesh/elements/face.h>
 #include <vclib/mesh/elements/face_components.h>
-#include <vclib/mesh/views.h>
-#include <vclib/space/polygon.h>
+#include <vclib/space/core/polygon.h>
+#include <vclib/views/mesh.h>
 
 #include "element_container.h"
 #endif
@@ -1256,4 +1256,4 @@ private:
 
 } // namespace vcl::mesh
 
-#endif // VCL_MESH_CONTAINER_FACE_CONTAINER_H
+#endif // VCL_MESH_CONTAINERS_FACE_CONTAINER_H

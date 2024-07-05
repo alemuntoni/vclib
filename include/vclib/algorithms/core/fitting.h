@@ -26,7 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <Eigen/Eigenvalues>
 
-#include <vclib/space/plane.h>
+#include <vclib/space/core/plane.h>
 
 #include "stat.h"
 #endif

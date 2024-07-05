@@ -26,10 +26,10 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vector>
 
-#include <vclib/algorithms/core/polygon/geometry.h>
-#include <vclib/mesh/utils/mesh_inertia.h>
-#include <vclib/space/matrix.h>
-#include <vclib/space/polygon.h>
+#include <vclib/algorithms/mesh/face_topology.h>
+#include <vclib/space/complex/mesh_inertia.h>
+#include <vclib/space/core/matrix.h>
+#include <vclib/space/core/polygon.h>
 
 #include "stat/quality.h"
 #include "stat/selection.h"

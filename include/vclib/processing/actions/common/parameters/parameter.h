@@ -29,8 +29,8 @@
 #include <string>
 
 #include <vclib/processing/settings.h>
-#include <vclib/space/color.h>
-#include <vclib/space/point.h>
+#include <vclib/space/core/color.h>
+#include <vclib/space/core/point.h>
 #endif
 
 namespace vcl::proc {

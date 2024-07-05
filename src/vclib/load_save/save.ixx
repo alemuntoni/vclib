@@ -30,8 +30,8 @@ import vclib.concepts;
 import vclib.exceptions;
 import vclib.io.file_info;
 import vclib.load_save.settings;
-import vclib.mesh.utils.mesh_info;
 import vclib.misc;
+import vclib.space.complex;
 
 export import vclib.load_save.obj.save;
 export import vclib.load_save.off.save;

@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/requirements.h>
-#include <vclib/space/box.h>
+#include <vclib/space/core/box.h>
 #endif
 
 /**
@@ -69,4 +69,4 @@ auto boundingBox(const MeshType& m)
 
 } // namespace vcl
 
-#endif // VCL_ALGORITHMS_BOUNDING_BOX_H
+#endif // VCL_ALGORITHMS_MESH_BOUNDING_BOX_H

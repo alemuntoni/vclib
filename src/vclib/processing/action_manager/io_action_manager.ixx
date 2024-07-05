@@ -32,7 +32,7 @@ export module vclib.processing.action_manager.io_action_manager;
 
 import vclib.processing.actions.interfaces.action;
 import vclib.processing.actions.common.file_format;
-import vclib.space.vector.polymorphic_object_vector;
+import vclib.space.core;
 
 export {
 #include <vclib/processing/action_manager/io_action_manager.h>

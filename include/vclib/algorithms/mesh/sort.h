@@ -26,7 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <algorithm>
 
-#include <vclib/mesh/utils/mesh_edge_util.h>
+#include <vclib/space/complex/mesh_edge_util.h>
 #include <vclib/misc/parallel.h>
 #endif
 

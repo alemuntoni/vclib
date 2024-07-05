@@ -26,8 +26,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vector>
 
-#include <vclib/space/matrix.h>
-#include <vclib/space/polygon.h>
+#include <vclib/space/core/matrix.h>
+#include <vclib/space/core/polygon.h>
 #endif
 
 namespace vcl {

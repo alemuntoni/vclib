@@ -37,11 +37,9 @@ import vclib.io.file_info;
 import vclib.load_save.obj.material;
 import vclib.load_save.settings;
 import vclib.io.read;
-import vclib.mesh.utils.mesh_info;
 import vclib.misc;
-import vclib.space.point;
-import vclib.space.tex_coord;
-import vclib.space.texture;
+import vclib.space.complex;
+import vclib.space.core;
 import vclib.types;
 
 export {

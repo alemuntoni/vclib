@@ -30,7 +30,7 @@ export module vclib.external.vcg.type_mapping;
 
 import vclib.concepts;
 import vclib.external.vcg.concepts;
-import vclib.space.point;
+import vclib.space.core;
 import vclib.types;
 
 export {

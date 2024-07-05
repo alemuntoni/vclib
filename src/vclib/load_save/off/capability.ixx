@@ -26,7 +26,7 @@ module;
 
 export module vclib.load_save.off.capability;
 
-import vclib.mesh.utils.mesh_info;
+import vclib.space.complex;
 
 export {
 #include <vclib/load_save/off/capability.h>

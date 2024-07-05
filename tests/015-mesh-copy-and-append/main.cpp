@@ -24,9 +24,9 @@
 #include <catch2/catch_test_macros.hpp>
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/algorithms/mesh/check_pointers.h>
 #include <vclib/algorithms/mesh/create.h>
 #include <vclib/algorithms/mesh/update/normal.h>
-#include <vclib/mesh/utils/mesh_check.h>
 #include <vclib/meshes.h>
 #else
 #include <Eigen/Core>

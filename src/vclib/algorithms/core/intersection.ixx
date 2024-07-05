@@ -29,11 +29,7 @@ export module vclib.algorithms.core.intersection;
 
 import vclib.algorithms.core.polygon;
 import vclib.concepts;
-import vclib.space.box;
-import vclib.space.plane;
-import vclib.space.point;
-import vclib.space.sphere;
-import vclib.space.triangle_wrapper;
+import vclib.space.core;
 
 export {
 #include <vclib/algorithms/core/intersection/misc.h>

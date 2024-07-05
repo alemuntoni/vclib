@@ -36,3 +36,4 @@ export import vclib.misc;
 export import vclib.processing;
 export import vclib.space;
 export import vclib.types;
+export import vclib.views;

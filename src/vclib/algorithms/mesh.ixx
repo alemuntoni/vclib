@@ -25,9 +25,11 @@ module;
 export module vclib.algorithms.mesh;
 
 export import vclib.algorithms.mesh.bounding_box;
+export import vclib.algorithms.mesh.check_pointers;
 export import vclib.algorithms.mesh.clean;
 export import vclib.algorithms.mesh.create;
 export import vclib.algorithms.mesh.distance;
+export import vclib.algorithms.mesh.face_topology;
 export import vclib.algorithms.mesh.filter;
 export import vclib.algorithms.mesh.import_export;
 export import vclib.algorithms.mesh.intersection;

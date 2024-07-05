@@ -29,7 +29,7 @@ export module vclib.algorithms.mesh.intersection;
 
 import vclib.algorithms.core.intersection;
 import vclib.concepts;
-import vclib.space.sphere;
+import vclib.space.core;
 import vclib.types;
 
 export {

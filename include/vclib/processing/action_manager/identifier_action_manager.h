@@ -27,7 +27,7 @@
 #include <map>
 
 #include <vclib/processing/actions/interfaces/action.h>
-#include <vclib/space/vector/polymorphic_object_vector.h>
+#include <vclib/space/core/vector/polymorphic_object_vector.h>
 #endif
 
 namespace vcl::proc {

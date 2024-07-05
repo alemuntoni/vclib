@@ -26,8 +26,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/tex_coord.h>
 #include <vclib/concepts/mesh/components/wedge_tex_coords.h>
-#include <vclib/space/tex_coord.h>
-#include <vclib/space/vector.h>
+#include <vclib/space/core/tex_coord.h>
+#include <vclib/space/core/vector.h>
 #include <vclib/types/view.h>
 
 #include "bases/container_component.h"

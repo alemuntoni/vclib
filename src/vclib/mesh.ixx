@@ -31,6 +31,4 @@ export import vclib.mesh.iterators;
 export import vclib.mesh.mesh_components;
 export import vclib.mesh.mesh;
 export import vclib.mesh.requirements;
-export import vclib.mesh.utils;
-export import vclib.mesh.views;
 

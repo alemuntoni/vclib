@@ -32,7 +32,6 @@ export module vclib.processing.actions.interfaces.load_mesh_action;
 
 import vclib.algorithms.mesh.update;
 import vclib.concepts;
-import vclib.mesh.utils.mesh_info;
 import vclib.misc.logger;
 import vclib.processing.actions.common.file_format;
 import vclib.processing.actions.common.parameter_vector;
@@ -40,6 +39,7 @@ import vclib.processing.actions.interfaces.action;
 import vclib.processing.actions.interfaces.mesh_action;
 import vclib.processing.meshes;
 import vclib.processing.settings;
+import vclib.space.complex;
 
 export {
 #include <vclib/processing/actions/interfaces/load_mesh_action.h>

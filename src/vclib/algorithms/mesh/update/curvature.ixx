@@ -38,12 +38,11 @@ import vclib.algorithms.mesh.update.normal;
 import vclib.concepts;
 import vclib.math;
 import vclib.mesh.requirements;
-import vclib.mesh.utils.mesh_pos;
 import vclib.misc;
-import vclib.space.grid;
-import vclib.space.matrix;
-import vclib.space.sphere;
+import vclib.space.complex;
+import vclib.space.core;
 import vclib.types;
+import vclib.views;
 
 export {
 #include <vclib/algorithms/mesh/update/curvature.h>

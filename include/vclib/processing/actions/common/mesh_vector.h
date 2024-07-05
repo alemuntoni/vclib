@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/processing/meshes/mesh_i.h>
-#include <vclib/space/vector/pointer_vector.h>
+#include <vclib/space/core/vector/pointer_vector.h>
 #endif
 
 namespace vcl::proc {

@@ -26,7 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include "concepts.h"
 
-#include <vclib/space/point.h>
+#include <vclib/space/core/point.h>
 
 #include <vcg/space/point2.h>
 #include <vcg/space/point3.h>

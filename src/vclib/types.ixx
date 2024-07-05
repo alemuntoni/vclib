@@ -46,5 +46,4 @@ export {
 #include <vclib/types/pointers.h>
 #include <vclib/types/variadic_templates.h>
 #include <vclib/types/view.h>
-#include <vclib/types/views.h>
 }

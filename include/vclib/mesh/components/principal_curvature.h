@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/principal_curvature.h>
-#include <vclib/space/principal_curvature.h>
+#include <vclib/space/core/principal_curvature.h>
 
 #include "bases/component.h"
 #endif

@@ -29,7 +29,8 @@
 #include <vclib/mesh/requirements.h>
 #include <vclib/misc/logger.h>
 #include <vclib/misc/parallel.h>
-#include <vclib/space/grid.h>
+#include <vclib/space/complex/grid.h>
+#include <vclib/views/pointers.h>
 #endif
 
 namespace vcl {

@@ -4,7 +4,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include <ranges>
 
-#include <vclib/mesh/views.h>
+#include <vclib/views/mesh.h>
+#include <vclib/views/pointers.h>
 #else
 import vclib;
 #endif

@@ -26,7 +26,7 @@ export module vclib.algorithms.mesh.update.transform;
 
 import vclib.concepts;
 import vclib.math;
-import vclib.space.matrix;
+import vclib.space.core;
 import vclib.types;
 
 export {

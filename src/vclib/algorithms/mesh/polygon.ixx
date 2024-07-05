@@ -32,7 +32,7 @@ import vclib.algorithms.core.polygon;
 import vclib.concepts;
 import vclib.exceptions;
 import vclib.misc;
-import vclib.space.polygon;
+import vclib.space.core;
 import vclib.types;
 
 

@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/mesh/requirements.h>
-#include <vclib/mesh/views.h>
+#include <vclib/views/mesh.h>
 #endif
 
 namespace vcl {

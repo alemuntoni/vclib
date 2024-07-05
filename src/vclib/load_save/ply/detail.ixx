@@ -42,9 +42,9 @@ import vclib.load_save.settings;
 import vclib.io.read;
 import vclib.io.write;
 import vclib.mesh.requirements;
-import vclib.mesh.utils.mesh_info;
 import vclib.misc;
-import vclib.space.texture;
+import vclib.space.complex;
+import vclib.space.core;
 import vclib.types;
 
 export {

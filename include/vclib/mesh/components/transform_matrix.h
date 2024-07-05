@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/transform_matrix.h>
-#include <vclib/space/matrix.h>
+#include <vclib/space/core/matrix.h>
 
 #include "bases/component.h"
 #endif

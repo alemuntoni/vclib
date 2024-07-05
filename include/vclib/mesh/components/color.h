@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/color.h>
-#include <vclib/space/color.h>
+#include <vclib/space/core/color.h>
 
 #include "bases/component.h"
 #endif

@@ -31,7 +31,7 @@ import vclib.concepts;
 import vclib.mesh.components;
 import vclib.mesh.components.parent_mesh_pointer;
 import vclib.mesh.elements.element;
-import vclib.space.point;
+import vclib.space.core;
 import vclib.types;
 
 export {

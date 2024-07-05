@@ -28,7 +28,7 @@
 
 #include <vclib/processing/actions/common/file_format.h>
 #include <vclib/processing/actions/interfaces/action.h>
-#include <vclib/space/vector/polymorphic_object_vector.h>
+#include <vclib/space/core/vector/polymorphic_object_vector.h>
 #endif
 
 namespace vcl::proc {
@@ -91,4 +91,4 @@ private:
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTION_MANAGER_SAVE_IMAGE_ACTION_MANAGER_H
+#endif // VCL_PROCESSING_ACTION_MANAGER_IO_ACTION_MANAGER_H

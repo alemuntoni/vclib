@@ -27,8 +27,7 @@ module;
 
 export module vclib.load_save.obj.material;
 
-import vclib.space.color;
-import vclib.space.point;
+import vclib.space.core;
 
 export {
 #include <vclib/load_save/obj/material.h>

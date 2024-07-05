@@ -37,6 +37,13 @@
  * @brief List of functions that allow to load from file an input Mesh.
  */
 
+/**
+ * @defgroup load Load functions
+ * @ingroup load_save
+ *
+ * @brief List of functions that allow to load from file an input Mesh.
+ */
+
 namespace vcl {
 
 /**

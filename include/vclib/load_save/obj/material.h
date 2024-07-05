@@ -24,8 +24,8 @@
 #define VCL_LOAD_SAVE_OBJ_MATERIAL_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/space/color.h>
-#include <vclib/space/point.h>
+#include <vclib/space/core/color.h>
+#include <vclib/space/core/point.h>
 #endif
 
 namespace vcl::detail {

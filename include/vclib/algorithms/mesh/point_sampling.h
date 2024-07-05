@@ -29,7 +29,7 @@
 #include <vclib/math/random.h>
 #include <vclib/mesh/requirements.h>
 #include <vclib/misc/comparators.h>
-#include <vclib/space/sampler.h>
+#include <vclib/space/complex/sampler.h>
 #endif
 
 /**

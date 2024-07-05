@@ -33,8 +33,8 @@ export import vclib.load_save.ply.capability;
 export import vclib.load_save.stl.capability;
 
 import vclib.exceptions;
-import vclib.mesh.utils.mesh_info;
 import vclib.misc;
+import vclib.space.complex;
 
 export {
 #include <vclib/load_save/capability.h>

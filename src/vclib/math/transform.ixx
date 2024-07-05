@@ -28,8 +28,6 @@ export module vclib.math.transform;
 
 import vclib.concepts;
 import vclib.math.base;
-import vclib.space.matrix;
-import vclib.space.point;
 
 export {
 #include <vclib/math/transform.h>

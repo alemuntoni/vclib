@@ -38,15 +38,7 @@ import vclib.mesh.components.bases;
 import vclib.mesh.components.detail;
 import vclib.mesh.components.parent_mesh_pointer;
 import vclib.mesh.iterators;
-import vclib.space.bit_set;
-import vclib.space.box;
-import vclib.space.color;
-import vclib.space.matrix;
-import vclib.space.point;
-import vclib.space.principal_curvature;
-import vclib.space.tex_coord;
-import vclib.space.texture;
-import vclib.space.vector;
+import vclib.space.core;
 import vclib.types;
 
 export {

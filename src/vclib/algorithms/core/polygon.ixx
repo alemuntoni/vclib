@@ -31,14 +31,10 @@ export module vclib.algorithms.core.polygon;
 
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.mesh.components;
-import vclib.mesh.iterators;
-import vclib.mesh.utils.mesh_pos;
-import vclib.mesh.views;
 import vclib.misc;
-import vclib.space.polygon;
-import vclib.space.triangle;
+import vclib.space.core;
 import vclib.types;
+import vclib.views;
 
 
 export {

@@ -32,7 +32,7 @@ import vclib.algorithms.core.polygon;
 import vclib.concepts;
 import vclib.mesh.requirements;
 import vclib.misc;
-import vclib.space.matrix;
+import vclib.space.core;
 import vclib.types;
 
 export {

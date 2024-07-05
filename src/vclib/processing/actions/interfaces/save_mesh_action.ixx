@@ -29,7 +29,6 @@ module;
 
 export module vclib.processing.actions.interfaces.save_mesh_action;
 
-import vclib.mesh.utils.mesh_info;
 import vclib.misc.logger;
 import vclib.processing.actions.common.file_format;
 import vclib.processing.actions.common.parameter_vector;
@@ -37,7 +36,8 @@ import vclib.processing.actions.interfaces.action;
 import vclib.processing.actions.interfaces.mesh_action;
 import vclib.processing.meshes;
 import vclib.processing.settings;
-import vclib.space.bit_set;
+import vclib.space.complex;
+import vclib.space.core;
 
 export {
 #include <vclib/processing/actions/interfaces/save_mesh_action.h>

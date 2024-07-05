@@ -30,7 +30,7 @@ export module vclib.algorithms.mesh.import_export;
 import vclib.concepts;
 import vclib.exceptions;
 import vclib.mesh.requirements;
-import vclib.space.color;
+import vclib.space.core;
 import vclib.types;
 
 export {

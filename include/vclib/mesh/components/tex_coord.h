@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/mesh/components/tex_coord.h>
-#include <vclib/space/tex_coord.h>
+#include <vclib/space/core/tex_coord.h>
 
 #include "bases/component.h"
 #endif
@@ -172,4 +172,4 @@ using TexCoordd = TexCoord<double, ElementType, OPT>;
 
 } // namespace vcl::comp
 
-#endif // VCL_MESH_COMPONENTS_TEXCOORD_H
+#endif // VCL_MESH_COMPONENTS_TEX_COORD_H

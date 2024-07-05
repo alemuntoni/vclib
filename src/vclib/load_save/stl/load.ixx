@@ -34,10 +34,9 @@ import vclib.exceptions;
 import vclib.io.file_info;
 import vclib.load_save.settings;
 import vclib.io.read;
-import vclib.mesh.utils.mesh_info;
 import vclib.misc;
-import vclib.space.color;
-import vclib.space.point;
+import vclib.space.complex;
+import vclib.space.core;
 import vclib.types;
 
 export {

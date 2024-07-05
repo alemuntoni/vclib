@@ -27,7 +27,7 @@
 #include <vclib/algorithms/core/polygon.h>
 #include <vclib/io/write.h>
 #include <vclib/load_save/settings.h>
-#include <vclib/mesh/utils/mesh_info.h>
+#include <vclib/space/complex/mesh_info.h>
 #include <vclib/misc/logger.h>
 #endif
 

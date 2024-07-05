@@ -33,9 +33,9 @@ import vclib.concepts;
 import vclib.mesh.components;
 import vclib.mesh.containers.element_container;
 import vclib.mesh.elements;
-import vclib.mesh.views;
-import vclib.space.polygon;
+import vclib.space.core;
 import vclib.types;
+import vclib.views;
 
 export import vclib.mesh.containers.custom_component_vector_handle;
 

@@ -24,7 +24,7 @@
 #define VCL_LOAD_SAVE_SETTINGS_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/mesh/utils/mesh_info.h>
+#include <vclib/space/complex/mesh_info.h>
 #endif
 
 namespace vcl {

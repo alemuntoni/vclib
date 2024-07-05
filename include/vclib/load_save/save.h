@@ -37,6 +37,13 @@
  * @brief List of functions that allow to save to file an input Mesh.
  */
 
+/**
+ * @defgroup save Save functions
+ * @ingroup load_save
+ *
+ * @brief List of functions that allow to save to file an input Mesh.
+ */
+
 namespace vcl {
 
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>

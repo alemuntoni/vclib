@@ -33,7 +33,7 @@ import vclib.concepts;
 import vclib.mesh.components.detail;
 import vclib.mesh.iterators;
 import vclib.misc.iterators;
-import vclib.space.vector;
+import vclib.space.core;
 import vclib.types;
 
 export {

@@ -37,7 +37,7 @@ import vclib.processing.actions.interfaces.action;
 import vclib.processing.actions.interfaces.mesh_action;
 import vclib.processing.meshes;
 import vclib.misc.logger;
-import vclib.space.bit_set;
+import vclib.space.core;
 
 export {
 #include <vclib/processing/actions/interfaces/filter_mesh_action.h>

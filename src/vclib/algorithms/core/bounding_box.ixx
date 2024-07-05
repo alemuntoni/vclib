@@ -27,12 +27,8 @@ module;
 export module vclib.algorithms.core.bounding_box;
 
 import vclib.concepts;
-import vclib.space.box;
-import vclib.space.point;
-import vclib.space.segment;
-import vclib.space.sphere;
+import vclib.space.core;
 
 export {
 #include <vclib/algorithms/core/bounding_box.h>
 }
-

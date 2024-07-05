@@ -32,7 +32,7 @@
 #include <vclib/algorithms/core/polygon/topology.h>
 #include <vclib/algorithms/mesh/sort.h>
 #include <vclib/mesh/requirements.h>
-#include <vclib/mesh/utils/mesh_pos.h>
+#include <vclib/space/complex/mesh_pos.h>
 #endif
 
 /**

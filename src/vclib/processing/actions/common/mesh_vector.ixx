@@ -27,7 +27,7 @@ module;
 export module vclib.processing.actions.common.mesh_vector;
 
 import vclib.processing.meshes.mesh_i;
-import vclib.space.vector.pointer_vector;
+import vclib.space.core;
 
 export {
 #include <vclib/processing/actions/common/mesh_vector.h>
