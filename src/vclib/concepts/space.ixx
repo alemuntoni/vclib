@@ -23,13 +23,15 @@
 module;
 
 #include <cstdint>
+#include <concepts>
 #include <string>
 #include <vector>
 
 export module vclib.concepts.space;
 
-import vclib.concepts.iterators;
 import vclib.types;
+
+import vclib.concepts.core;
 
 export {
 #include <vclib/concepts/space/array.h>

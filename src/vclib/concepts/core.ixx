@@ -23,10 +23,26 @@
 module;
 
 #include <concepts>
+#include <cstdint>
 #include <fstream>
+#include <iterator>
+#include <memory>
+#include <ranges>
+#include <string>
+#include <type_traits>
 
-export module vclib.concepts.serialization;
+export module vclib.concepts.core;
 
 export {
+#include <vclib/concepts/const_correctness.h>
+#include <vclib/concepts/iterators.h>
+#include <vclib/concepts/logger.h>
+#include <vclib/concepts/polymorphism.h>
+#include <vclib/concepts/ranges/range.h>
 #include <vclib/concepts/serialization.h>
+#include <vclib/concepts/types.h>
+
+
+// depends on const_correctness
+#include <vclib/concepts/pointers.h>
 }

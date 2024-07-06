@@ -22,12 +22,74 @@
 
 module;
 
+#include <concepts>
+#include <ranges>
+#include <string>
+#include <type_traits>
+#include <vector>
+
 export module vclib.concepts.mesh;
 
-export import vclib.concepts.mesh.components;
-export import vclib.concepts.mesh.element_mesh_concept;
-export import vclib.concepts.mesh.elements;
-export import vclib.concepts.mesh.containers;
-export import vclib.concepts.mesh.mesh_concept;
-export import vclib.concepts.mesh.per_element;
-export import vclib.concepts.mesh.per_mesh;
+import vclib.types;
+
+import vclib.concepts.core;
+
+export {
+// components
+#include <vclib/concepts/mesh/components/component.h>
+
+#include <vclib/concepts/mesh/components/adjacent_edges.h>
+#include <vclib/concepts/mesh/components/adjacent_faces.h>
+#include <vclib/concepts/mesh/components/adjacent_vertices.h>
+#include <vclib/concepts/mesh/components/bit_flags.h>
+#include <vclib/concepts/mesh/components/bounding_box.h>
+#include <vclib/concepts/mesh/components/color.h>
+#include <vclib/concepts/mesh/components/coordinate.h>
+#include <vclib/concepts/mesh/components/custom_components.h>
+#include <vclib/concepts/mesh/components/mark.h>
+#include <vclib/concepts/mesh/components/name.h>
+#include <vclib/concepts/mesh/components/normal.h>
+#include <vclib/concepts/mesh/components/principal_curvature.h>
+#include <vclib/concepts/mesh/components/quality.h>
+#include <vclib/concepts/mesh/components/tex_coord.h>
+#include <vclib/concepts/mesh/components/texture_images.h>
+#include <vclib/concepts/mesh/components/texture_paths.h>
+#include <vclib/concepts/mesh/components/transform_matrix.h>
+#include <vclib/concepts/mesh/components/vertex_references.h>
+#include <vclib/concepts/mesh/components/wedge_colors.h>
+#include <vclib/concepts/mesh/components/wedge_tex_coords.h>
+
+// elements
+#include <vclib/concepts/mesh/elements/element.h>
+
+#include <vclib/concepts/mesh/elements/edge.h>
+#include <vclib/concepts/mesh/elements/face.h>
+#include <vclib/concepts/mesh/elements/vertex.h>
+
+// containers
+#include <vclib/concepts/mesh/containers/element_container.h>
+
+#include <vclib/concepts/mesh/containers/edge_container.h>
+#include <vclib/concepts/mesh/containers/face_container.h>
+#include <vclib/concepts/mesh/containers/vertex_container.h>
+
+// mesh_concept
+#include <vclib/concepts/mesh/mesh_concept.h>
+
+// per_element
+#include <vclib/concepts/mesh/per_edge.h>
+#include <vclib/concepts/mesh/per_face.h>
+#include <vclib/concepts/mesh/per_vertex.h>
+
+// element_mesh_concept
+#include <vclib/concepts/mesh/edge_mesh_concept.h>
+#include <vclib/concepts/mesh/face_mesh_concept.h>
+
+// per_mesh
+#include <vclib/concepts/mesh/per_mesh.h>
+
+// ranges_mesh
+#include <vclib/concepts/ranges/mesh/edge_range.h>
+#include <vclib/concepts/ranges/mesh/face_range.h>
+#include <vclib/concepts/ranges/mesh/vertex_range.h>
+}
