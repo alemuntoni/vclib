@@ -29,9 +29,7 @@ module;
 
 export module vclib.algorithms.mesh.update.curvature;
 
-import vclib.algorithms.core.bounding_box;
-import vclib.algorithms.core.polygon;
-import vclib.algorithms.core.stat;
+import vclib.algorithms.core;
 import vclib.algorithms.mesh.intersection;
 import vclib.algorithms.mesh.stat;
 import vclib.algorithms.mesh.update.normal;

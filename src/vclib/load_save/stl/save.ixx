@@ -27,7 +27,7 @@ module;
 
 export module vclib.load_save.stl.save;
 
-import vclib.algorithms.core.polygon;
+import vclib.algorithms.core;
 import vclib.concepts;
 import vclib.load_save.settings;
 import vclib.io;

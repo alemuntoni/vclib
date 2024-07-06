@@ -28,7 +28,7 @@ module;
 
 export module vclib.space.complex.sampler.mesh_sampler;
 
-import vclib.algorithms.core.polygon;
+import vclib.algorithms.core;
 import vclib.concepts;
 import vclib.mesh.components;
 import vclib.mesh.requirements;

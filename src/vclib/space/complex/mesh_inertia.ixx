@@ -26,7 +26,7 @@ module;
 
 export module vclib.space.complex.mesh_inertia;
 
-import vclib.algorithms.core.polygon;
+import vclib.algorithms.core;
 import vclib.concepts;
 import vclib.space.core;
 import vclib.types;

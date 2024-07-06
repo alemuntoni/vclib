@@ -28,7 +28,7 @@ module;
 
 export module vclib.algorithms.mesh.update.normal;
 
-import vclib.algorithms.core.polygon;
+import vclib.algorithms.core;
 import vclib.concepts;
 import vclib.mesh.requirements;
 import vclib.misc;

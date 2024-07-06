@@ -28,8 +28,7 @@ module;
 
 export module vclib.space.complex.grid.abstract_grid;
 
-import vclib.algorithms.core.bounding_box;
-import vclib.algorithms.core.distance;
+import vclib.algorithms.core;
 import vclib.concepts;
 import vclib.misc;
 import vclib.space.core;

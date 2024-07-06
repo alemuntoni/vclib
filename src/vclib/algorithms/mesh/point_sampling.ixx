@@ -28,7 +28,7 @@ module;
 
 export module vclib.algorithms.mesh.point_sampling;
 
-import vclib.algorithms.core.polygon;
+import vclib.algorithms.core;
 import vclib.algorithms.mesh.shuffle;
 import vclib.algorithms.mesh.stat;
 import vclib.concepts;

@@ -27,7 +27,7 @@ module;
 
 export module vclib.space.complex.sampler.point_sampler;
 
-import vclib.algorithms.core.polygon;
+import vclib.algorithms.core;
 import vclib.concepts;
 import vclib.space.core;
 import vclib.types;

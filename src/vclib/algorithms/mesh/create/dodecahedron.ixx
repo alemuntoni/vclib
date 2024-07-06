@@ -27,7 +27,7 @@ module;
 
 export module vclib.algorithms.mesh.create.dodecahedron;
 
-import vclib.algorithms.core.polygon;
+import vclib.algorithms.core;
 import vclib.concepts;
 import vclib.mesh.requirements;
 import vclib.meshes.detail;

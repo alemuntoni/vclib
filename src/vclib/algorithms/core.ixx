@@ -22,12 +22,44 @@
 
 module;
 
+#include <cassert>
+#include <cmath>
+#include <functional>
+#include <ranges>
+#include <set>
+#include <vector>
+
+#include <Eigen/Eigenvalues>
+
 export module vclib.algorithms.core;
 
-export import vclib.algorithms.core.bounding_box;
-export import vclib.algorithms.core.distance;
-export import vclib.algorithms.core.fitting;
-export import vclib.algorithms.core.intersection;
-export import vclib.algorithms.core.polygon;
-export import vclib.algorithms.core.stat;
+import vclib.concepts;
+import vclib.exceptions;
+import vclib.math;
+import vclib.misc;
+import vclib.space.core;
+import vclib.types;
+import vclib.views;
+
+export {
+#include <vclib/algorithms/core/bounding_box.h>
+#include <vclib/algorithms/core/polygon/create.h>
+#include <vclib/algorithms/core/polygon/geometry.h>
+#include <vclib/algorithms/core/polygon/topology.h>
+#include <vclib/algorithms/core/stat.h>
+
+// depends on stat
+#include <vclib/algorithms/core/fitting.h>
+
+// depend on bounding_box and polygon
+#include <vclib/algorithms/core/distance/misc.h>
+#include <vclib/algorithms/core/intersection/misc.h>
+
+// depend on distance/intersection misc
+#include <vclib/algorithms/core/distance/element.h>
+#include <vclib/algorithms/core/distance/functions.h>
+#include <vclib/algorithms/core/intersection/element.h>
+#include <vclib/algorithms/core/intersection/functions.h>
+
+}
 

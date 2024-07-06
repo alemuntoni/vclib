@@ -29,7 +29,7 @@ export module vclib.algorithms.mesh.stat;
 export import vclib.algorithms.mesh.stat.quality;
 export import vclib.algorithms.mesh.stat.selection;
 
-import vclib.algorithms.core.polygon;
+import vclib.algorithms.core;
 import vclib.algorithms.mesh.face_topology;
 import vclib.concepts;
 import vclib.mesh.requirements;

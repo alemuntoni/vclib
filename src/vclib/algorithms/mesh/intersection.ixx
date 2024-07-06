@@ -27,7 +27,7 @@ module;
 
 export module vclib.algorithms.mesh.intersection;
 
-import vclib.algorithms.core.intersection;
+import vclib.algorithms.core;
 import vclib.concepts;
 import vclib.space.core;
 import vclib.types;
