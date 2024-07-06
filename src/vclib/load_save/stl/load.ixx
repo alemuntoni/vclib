@@ -31,9 +31,8 @@ export module vclib.load_save.stl.load;
 
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.io.file_info;
+import vclib.io;
 import vclib.load_save.settings;
-import vclib.io.read;
 import vclib.misc;
 import vclib.space.complex;
 import vclib.space.core;

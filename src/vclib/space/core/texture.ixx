@@ -26,8 +26,7 @@ module;
 
 export module vclib.space.core.texture;
 
-import vclib.io.file_info;
-import vclib.io.serialization;
+import vclib.io;
 import vclib.space.core.image;
 
 export {

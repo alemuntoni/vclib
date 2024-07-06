@@ -30,10 +30,9 @@ export module vclib.load_save.ply.load;
 import vclib.concepts;
 import vclib.exceptions;
 import vclib.misc;
-import vclib.io.file_info;
+import vclib.io;
 import vclib.load_save.ply.detail;
 import vclib.load_save.settings;
-import vclib.io.read;
 import vclib.space.complex;
 
 export {

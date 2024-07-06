@@ -28,7 +28,7 @@ export module vclib.load_save.save;
 
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.io.file_info;
+import vclib.io;
 import vclib.load_save.settings;
 import vclib.misc;
 import vclib.space.complex;

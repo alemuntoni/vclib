@@ -30,10 +30,9 @@ module;
 export module vclib.load_save.obj.save;
 
 import vclib.concepts;
-import vclib.io.file_info;
+import vclib.io;
 import vclib.load_save.obj.material;
 import vclib.load_save.settings;
-import vclib.io.write;
 import vclib.misc;
 import vclib.space.complex;
 import vclib.space.core;

@@ -30,7 +30,7 @@ module;
 
 export module vclib.space.core.image;
 
-import vclib.io.image;
+import vclib.io;
 import vclib.space.core.array;
 import vclib.space.core.color;
 import vclib.types;

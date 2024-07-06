@@ -30,7 +30,7 @@ export module vclib.load_save.stl.save;
 import vclib.algorithms.core.polygon;
 import vclib.concepts;
 import vclib.load_save.settings;
-import vclib.io.write;
+import vclib.io;
 import vclib.misc;
 import vclib.space.complex;
 import vclib.types;

@@ -32,7 +32,7 @@ module;
 export module vclib.space.core.array;
 
 import vclib.concepts;
-import vclib.io.serialization;
+import vclib.io;
 import vclib.misc;
 import vclib.types;
 

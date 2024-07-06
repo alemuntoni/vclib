@@ -27,7 +27,7 @@ module;
 export module vclib.space.core.matrix;
 
 import vclib.concepts;
-import vclib.io.serialization;
+import vclib.io;
 import vclib.types;
 
 export {

@@ -33,7 +33,7 @@ export module vclib.space.core.vector.vector;
 
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.io.serialization;
+import vclib.io;
 import vclib.types;
 
 export {

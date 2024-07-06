@@ -22,10 +22,42 @@
 
 module;
 
+#include <array>
+#include <bit>
+#include <cassert>
+#include <cstdio>
+#include <filesystem>
+#include <fstream>
+#include <istream>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <typeindex>
+#include <vector>
+
+#include <stb/stb_image.h>
+#include <stb/stb_image_write.h>
+
 export module vclib.io;
 
-export import vclib.io.file_info;
-export import vclib.io.image;
-export import vclib.io.read;
-export import vclib.io.serialization;
-export import vclib.io.write;
+import vclib.concepts;
+import vclib.exceptions;
+import vclib.misc;
+import vclib.types;
+
+export {
+// serialization
+#include <vclib/io/serialization/endian.h>
+
+#include <vclib/io/serialization/deserialize.h>
+#include <vclib/io/serialization/serialize.h>
+
+// file_info and file_format
+#include <vclib/io/file_format.h>
+#include <vclib/io/file_info.h>
+
+// image, read, write
+#include <vclib/io/image.h>
+#include <vclib/io/read.h>
+#include <vclib/io/write.h>
+}

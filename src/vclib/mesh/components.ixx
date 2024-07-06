@@ -33,7 +33,7 @@ module;
 export module vclib.mesh.components;
 
 import vclib.concepts;
-import vclib.io.serialization;
+import vclib.io;
 import vclib.mesh.components.bases;
 import vclib.mesh.components.detail;
 import vclib.mesh.components.parent_mesh_pointer;

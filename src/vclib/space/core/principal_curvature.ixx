@@ -27,7 +27,7 @@ module;
 
 export module vclib.space.core.principal_curvature;
 
-import vclib.io.serialization;
+import vclib.io;
 import vclib.space.core.point;
 
 export {

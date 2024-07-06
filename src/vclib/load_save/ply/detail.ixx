@@ -36,11 +36,8 @@ export module vclib.load_save.ply.detail;
 
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.io.file_format;
-import vclib.io.file_info;
+import vclib.io;
 import vclib.load_save.settings;
-import vclib.io.read;
-import vclib.io.write;
 import vclib.mesh.requirements;
 import vclib.misc;
 import vclib.space.complex;
