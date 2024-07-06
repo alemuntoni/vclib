@@ -28,7 +28,7 @@ module;
 
 export module vclib.processing.actions.save_image.base_save_image_action;
 
-import vclib.misc.logger;
+import vclib.misc;
 import vclib.processing.actions.common.file_format;
 import vclib.processing.actions.interfaces.save_image_action;
 import vclib.space.core;

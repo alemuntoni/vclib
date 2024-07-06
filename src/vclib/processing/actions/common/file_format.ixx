@@ -29,7 +29,7 @@ module;
 export module vclib.processing.actions.common.file_format;
 
 import vclib.concepts;
-import vclib.misc.string;
+import vclib.misc;
 
 export {
 #include <vclib/processing/actions/common/file_format.h>

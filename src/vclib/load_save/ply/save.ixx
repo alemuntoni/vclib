@@ -30,7 +30,7 @@ import vclib.concepts;
 import vclib.load_save.ply.detail;
 import vclib.load_save.settings;
 import vclib.io.write;
-import vclib.misc.logger;
+import vclib.misc;
 import vclib.space.complex;
 
 export {

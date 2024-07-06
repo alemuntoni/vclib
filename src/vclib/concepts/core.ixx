@@ -33,6 +33,8 @@ module;
 
 export module vclib.concepts.core;
 
+import vclib.types;
+
 export {
 #include <vclib/concepts/const_correctness.h>
 #include <vclib/concepts/iterators.h>

@@ -33,7 +33,7 @@ export module vclib.space.core.array;
 
 import vclib.concepts;
 import vclib.io.serialization;
-import vclib.misc.nested_initializer_lists;
+import vclib.misc;
 import vclib.types;
 
 export {

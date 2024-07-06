@@ -32,7 +32,7 @@ export module vclib.mesh.components.bases;
 import vclib.concepts;
 import vclib.mesh.components.detail;
 import vclib.mesh.iterators;
-import vclib.misc.iterators;
+import vclib.misc;
 import vclib.space.core;
 import vclib.types;
 

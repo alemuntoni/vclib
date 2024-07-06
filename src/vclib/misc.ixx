@@ -25,28 +25,56 @@ module;
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <chrono>
+#include <cmath>
 #include <cstddef>
+#include <functional>
+#include <initializer_list>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <list>
+#include <mutex>
+#include <sstream>
+#include <stack>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
+// Apple clang does not support c++17 parallel algorithms.
+// To compensate this lack, waiting for Apple to support them, we use pstld
+// (https://github.com/mikekazakov/pstld) that implements them in the stl
+// namespace
+#if defined(__clang__) && defined(__APPLE__)
+#include <pstld/pstld.h>
+#else
+#include <execution>
+#endif
+
 export module vclib.misc;
 
+import vclib.concepts;
 import vclib.types;
-
-export import vclib.misc.hash;
-export import vclib.misc.iterators;
-export import vclib.misc.logger;
-export import vclib.misc.nested_initializer_lists;
-export import vclib.misc.parallel;
-export import vclib.misc.string;
-export import vclib.misc.timer;
 
 export {
 #include <vclib/misc/compactness.h>
 #include <vclib/misc/comparators.h>
+#include <vclib/misc/hash.h>
+#include <vclib/misc/iterators/const_pointer_iterator.h>
+#include <vclib/misc/nested_initializer_lists.h>
 #include <vclib/misc/pair.h>
+#include <vclib/misc/parallel.h>
+#include <vclib/misc/string.h>
 #include <vclib/misc/tokenizer.h>
 #include <vclib/misc/tuple.h>
+#include <vclib/misc/timer.h>
+
+// depend on timer
+#include <vclib/misc/logger/abstract_logger.h>
+
+#include <vclib/misc/logger/logger.h>
+#include <vclib/misc/logger/null_logger.h>
+
+#include <vclib/misc/logger/console_logger.h>
 }

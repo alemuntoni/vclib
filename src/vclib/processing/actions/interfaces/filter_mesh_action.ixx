@@ -36,7 +36,7 @@ import vclib.processing.actions.common.parameters;
 import vclib.processing.actions.interfaces.action;
 import vclib.processing.actions.interfaces.mesh_action;
 import vclib.processing.meshes;
-import vclib.misc.logger;
+import vclib.misc;
 import vclib.space.core;
 
 export {

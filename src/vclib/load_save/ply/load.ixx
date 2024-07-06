@@ -29,7 +29,7 @@ export module vclib.load_save.ply.load;
 
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.misc.logger;
+import vclib.misc;
 import vclib.io.file_info;
 import vclib.load_save.ply.detail;
 import vclib.load_save.settings;

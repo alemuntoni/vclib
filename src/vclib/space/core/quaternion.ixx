@@ -26,7 +26,7 @@ module;
 
 export module vclib.space.core.quaternion;
 
-import vclib.misc.hash;
+import vclib.misc;
 import vclib.space.core.matrix;
 import vclib.space.core.point;
 
