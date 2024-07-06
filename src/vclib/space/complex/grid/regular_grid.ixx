@@ -30,8 +30,7 @@ export module vclib.space.complex.grid.regular_grid;
 
 import vclib.concepts;
 import vclib.space.complex.grid.iterators;
-import vclib.space.core.box;
-import vclib.space.core.point;
+import vclib.space.core;
 import vclib.types;
 
 export {

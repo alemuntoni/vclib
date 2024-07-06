@@ -32,7 +32,7 @@ export module vclib.space.complex.grid.hash_table_grid;
 import vclib.concepts;
 import vclib.space.complex.grid.abstract_grid;
 import vclib.space.complex.grid.regular_grid;
-import vclib.space.core.sphere;
+import vclib.space.core;
 
 export {
 #include <vclib/space/complex/grid/hash_table_grid.h>

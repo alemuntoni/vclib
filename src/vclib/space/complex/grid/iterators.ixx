@@ -28,7 +28,7 @@ module;
 export module vclib.space.complex.grid.iterators;
 
 import vclib.misc;
-import vclib.space.core.point;
+import vclib.space.core;
 import vclib.types;
 
 export {

@@ -32,9 +32,7 @@ import vclib.algorithms.core.bounding_box;
 import vclib.algorithms.core.distance;
 import vclib.concepts;
 import vclib.misc;
-import vclib.space.core.box;
-import vclib.space.core.point;
-import vclib.space.core.sphere;
+import vclib.space.core;
 import vclib.types;
 
 export {

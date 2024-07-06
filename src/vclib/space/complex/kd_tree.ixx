@@ -31,7 +31,7 @@ module;
 export module vclib.space.complex.kd_tree;
 
 import vclib.concepts;
-import vclib.space.core.box;
+import vclib.space.core;
 
 export {
 #include <vclib/space/complex/kd_tree.h>

@@ -22,23 +22,84 @@
 
 module;
 
+#include <algorithm>
+#include <array>
+#include <cassert>
+#include <cmath>
+#include <compare>
+#include <concepts>
+#include <functional>
+#include <iomanip>
+#include <iosfwd>
+#include <list>
+#include <memory>
+#include <ostream>
+#include <ranges>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+#include <type_traits>
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+#include <mapbox/earcut.hpp>
+
 export module vclib.space.core;
 
-export import vclib.space.core.array;
-export import vclib.space.core.bit_set;
-export import vclib.space.core.box;
-export import vclib.space.core.color;
-export import vclib.space.core.image;
-export import vclib.space.core.matrix;
-export import vclib.space.core.plane;
-export import vclib.space.core.point;
-export import vclib.space.core.polygon;
-export import vclib.space.core.principal_curvature;
-export import vclib.space.core.quaternion;
-export import vclib.space.core.segment;
-export import vclib.space.core.sphere;
-export import vclib.space.core.tex_coord;
-export import vclib.space.core.texture;
-export import vclib.space.core.triangle;
-export import vclib.space.core.triangle_wrapper;
-export import vclib.space.core.vector;
+import vclib.concepts;
+import vclib.exceptions;
+import vclib.io;
+import vclib.math;
+import vclib.misc;
+import vclib.types;
+
+export {
+#include <vclib/space/core/array.h>
+#include <vclib/space/core/bit_set/bit_proxy.h>
+#include <vclib/space/core/bit_set.h>
+#include <vclib/space/core/matrix/affine.h>
+#include <vclib/space/core/matrix/matrix.h>
+#include <vclib/space/core/point.h>
+#include <vclib/space/core/vector/vector.h>
+
+// depend on point
+#include <vclib/space/core/box.h>
+#include <vclib/space/core/color.h>
+#include <vclib/space/core/plane.h>
+#include <vclib/space/core/principal_curvature.h>
+#include <vclib/space/core/quaternion.h>
+#include <vclib/space/core/segment.h>
+#include <vclib/space/core/tex_coord.h>
+#include <vclib/space/core/triangle.h>
+
+// depends on array, color
+#include <vclib/space/core/image.h>
+#include <vclib/space/core/texture.h>
+
+// depends on box
+#include <vclib/space/core/sphere.h>
+
+// depend on triangle
+#include <vclib/space/core/polygon.h>
+#include <vclib/space/core/triangle_wrapper.h>
+
+// depends on vector
+#include <vclib/space/core/vector/pointer_vector.h>
+
+// depends on pointer_vector
+#include <vclib/space/core/vector/polymorphic_object_vector.h>
+}
+
+// for some reason, msvc does not compile the internal calls of the cross
+// product, and therefore it is not exported.
+// Adding this operation forces the compilation inside this module.
+// Without this, on msvc you get an unresolved external symbol error every time
+// you try to use this module, and the solution would be to `#include
+// <Eigen/Geometry>` along with `import vclib;` in the client code.
+// note: these dummy objects are not exported
+// TODO: test if this is still necessary when msvc gets updated.
+vcl::Point3f dummyf
+    = vcl::Point3f(1, 0, 0).cross(vcl::Point3f(0, 1, 0));
+vcl::Point3d dummyd = vcl::Point3d(1, 0, 0).cross(vcl::Point3d(0, 1, 0));
