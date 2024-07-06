@@ -24,6 +24,7 @@ module;
 
 export module vclib.space.complex;
 
+export import vclib.space.complex.graph;
 export import vclib.space.complex.grid;
 export import vclib.space.complex.kd_tree;
 export import vclib.space.complex.mesh_edge_util;

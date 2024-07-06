@@ -20,9 +20,25 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_SPACE_CORE_GRAPH_H
-#define VCL_SPACE_CORE_GRAPH_H
+module;
 
-#include "graph/bipartite/bipartite_graph.h"
+#include <cassert>
+#include <map>
+#include <set>
+#include <unordered_set>
+#include <vector>
 
-#endif // VCL_SPACE_CORE_GRAPH_H
+export module vclib.space.complex.graph.bipartite;
+
+import vclib.space.complex.graph.undirected_node;
+import vclib.types;
+
+export {
+#include <vclib/space/complex/graph/bipartite/iterator/adjacent_node_iterator.h>
+
+#include <vclib/space/complex/graph/bipartite/iterator/adjacent_left_node_iterator.h>
+#include <vclib/space/complex/graph/bipartite/iterator/adjacent_right_node_iterator.h>
+#include <vclib/space/complex/graph/bipartite/iterator/node_iterator.h>
+
+#include <vclib/space/complex/graph/bipartite/bipartite_graph.h>
+}

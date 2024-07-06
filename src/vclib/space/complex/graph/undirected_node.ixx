@@ -20,47 +20,12 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_SPACE_CORE_GRAPH_BIPARTITE_ITERATOR_ADJACENT_NODE_ITERATOR_H
-#define VCL_SPACE_CORE_GRAPH_BIPARTITE_ITERATOR_ADJACENT_NODE_ITERATOR_H
+module;
 
-namespace vcl::detail {
+#include <unordered_set>
 
-template<typename Graph, typename Iterator>
-class AdjacentNodeIterator
-{
-protected:
-    const Graph* mGraph = nullptr;
-    Iterator     mIt;
+export module vclib.space.complex.graph.undirected_node;
 
-public:
-    AdjacentNodeIterator() {}
-
-    AdjacentNodeIterator(const Graph& g, Iterator it) : mGraph(&g), mIt(it) {}
-
-    bool operator==(const AdjacentNodeIterator& otherIterator) const
-    {
-        return (mGraph == otherIterator.mGraph && mIt == otherIterator.mIt);
-    }
-
-    bool operator!=(const AdjacentNodeIterator& otherIterator) const
-    {
-        return !(*this == otherIterator);
-    }
-
-    AdjacentNodeIterator operator++()
-    {
-        ++mIt;
-        return *this;
-    }
-
-    AdjacentNodeIterator operator++(int)
-    {
-        AdjacentNodeIterator tmp;
-        ++mIt;
-        return tmp;
-    }
-};
-
-} // namespace vcl::detail
-
-#endif // VCL_SPACE_CORE_GRAPH_BIPARTITE_ITERATOR_ADJACENT_NODE_ITERATOR_H
+export {
+#include <vclib/space/complex/graph/undirected_node.h>
+}

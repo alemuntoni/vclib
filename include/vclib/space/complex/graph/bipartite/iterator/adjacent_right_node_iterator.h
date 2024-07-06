@@ -20,12 +20,38 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATOR_ADJACENT_RIGHT_NODE_ITERATOR_H
+#define VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATOR_ADJACENT_RIGHT_NODE_ITERATOR_H
 
-#include <unordered_set>
+#ifndef VCLIB_WITH_MODULES
+#include "adjacent_node_iterator.h"
+#endif
 
-export module vclib.space.core.graph.undirected_node;
+namespace vcl::detail {
 
-export {
-#include <vclib/space/core/graph/undirected_node.h>
-}
+template<typename Graph, typename Iterator>
+class AdjacentRightNodeIterator : public AdjacentNodeIterator<Graph, Iterator>
+{
+    using Base = AdjacentNodeIterator<Graph, Iterator>;
+
+public:
+    using value_type = Graph::LeftType;
+    using reference  = const value_type&;
+    using pointer    = const value_type*;
+
+    using AdjacentNodeIterator<Graph, Iterator>::AdjacentNodeIterator;
+
+    reference operator*() const
+    {
+        return Base::mGraph->nodesL[Base::mIt].info();
+    }
+
+    pointer operator->() const
+    {
+        return &Base::mGraph->nodesL[Base::mIt].info();
+    }
+};
+
+} // namespace vcl::detail
+
+#endif // VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATOR_ADJACENT_RIGHT_NODE_ITERATOR_H

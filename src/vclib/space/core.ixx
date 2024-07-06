@@ -28,7 +28,6 @@ export import vclib.space.core.array;
 export import vclib.space.core.bit_set;
 export import vclib.space.core.box;
 export import vclib.space.core.color;
-export import vclib.space.core.graph;
 export import vclib.space.core.image;
 export import vclib.space.core.matrix;
 export import vclib.space.core.plane;

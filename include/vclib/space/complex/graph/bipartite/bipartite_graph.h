@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_SPACE_CORE_GRAPH_BIPARTITE_BIPARTITE_GRAPH_H
-#define VCL_SPACE_CORE_GRAPH_BIPARTITE_BIPARTITE_GRAPH_H
+#ifndef VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_BIPARTITE_GRAPH_H
+#define VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_BIPARTITE_GRAPH_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <cassert>
@@ -29,7 +29,7 @@
 #include <set>
 #include <vector>
 
-#include <vclib/space/core/graph/undirected_node.h>
+#include <vclib/space/complex/graph/undirected_node.h>
 #include <vclib/types.h>
 #include <vclib/types/view.h>
 
@@ -426,4 +426,4 @@ protected:
 
 } // namespace vcl
 
-#endif // VCL_SPACE_CORE_GRAPH_BIPARTITE_BIPARTITE_GRAPH_H
+#endif // VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_BIPARTITE_GRAPH_H

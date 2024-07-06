@@ -26,10 +26,10 @@
 #ifndef VCLIB_WITH_MODULES
 #include "mesh_action.h"
 
-#include <vclib/space/complex/mesh_info.h>
 #include <vclib/processing/actions/common/file_format.h>
 #include <vclib/processing/meshes.h>
 #include <vclib/processing/settings.h>
+#include <vclib/space/complex/mesh_info.h>
 #include <vclib/space/core/bit_set.h>
 #endif
 

@@ -20,25 +20,60 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-module;
+#ifndef VCL_SPACE_COMPLEX_GRAPH_UNDIRECTED_NODE_H
+#define VCL_SPACE_COMPLEX_GRAPH_UNDIRECTED_NODE_H
 
-#include <cassert>
-#include <map>
-#include <set>
+#ifndef VCLIB_WITH_MODULES
 #include <unordered_set>
-#include <vector>
+#endif
 
-export module vclib.space.core.graph.bipartite;
+namespace vcl {
 
-import vclib.space.core.graph.undirected_node;
-import vclib.types;
+template<class T>
+class UndirectedNode
+{
+protected:
+    T                                mInfo;
+    std::unordered_set<unsigned int> mAdjacentNodes;
 
-export {
-#include <vclib/space/core/graph/bipartite/iterator/adjacent_node_iterator.h>
+public:
+    using InfoType = T;
 
-#include <vclib/space/core/graph/bipartite/iterator/adjacent_left_node_iterator.h>
-#include <vclib/space/core/graph/bipartite/iterator/adjacent_right_node_iterator.h>
-#include <vclib/space/core/graph/bipartite/iterator/node_iterator.h>
+    UndirectedNode() {}
 
-#include <vclib/space/core/graph/bipartite/bipartite_graph.h>
-}
+    UndirectedNode(const T& info) : mInfo(info) {}
+
+    const T& info() const { return mInfo; }
+
+    T& info() { return mInfo; }
+
+    void addAdjacent(unsigned int node) { mAdjacentNodes.insert(node); }
+
+    bool isAdjacent(unsigned int node) const
+    {
+        return mAdjacentNodes.find(node) != mAdjacentNodes.end();
+    }
+
+    void deleteAdjacent(unsigned int node) { mAdjacentNodes.erase(node); }
+
+    void clearAdjacentNodes() { mAdjacentNodes.clear(); }
+
+    std::unordered_set<unsigned int>::const_iterator begin() const
+    {
+        return mAdjacentNodes.begin();
+    }
+
+    std::unordered_set<unsigned int>::const_iterator end() const
+    {
+        return mAdjacentNodes.end();
+    }
+
+    unsigned int sizeAdjacentNodes() const
+    {
+        return (unsigned int) mAdjacentNodes.size();
+    }
+};
+
+} // namespace vcl
+
+#endif // VCL_SPACE_COMPLEX_GRAPH_UNDIRECTED_NODE_H

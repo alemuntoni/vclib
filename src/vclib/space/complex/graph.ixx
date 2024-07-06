@@ -20,28 +20,9 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_SPACE_CORE_GRAPH_BIPARTITE_ITERATOR_NODE_ITERATOR_H
-#define VCL_SPACE_CORE_GRAPH_BIPARTITE_ITERATOR_NODE_ITERATOR_H
+module;
 
-namespace vcl {
+export module vclib.space.complex.graph;
 
-template<typename Iterator>
-class NodeIterator
-{
-public:
-    using Iterator::Iterator;
-
-    using value_type = Iterator::value_type::InfoType;
-    using reference  = const value_type&;
-    using pointer    = const value_type*;
-
-    NodeIterator(Iterator it) : Iterator(it) {}
-
-    reference operator*() const { return Iterator::operator*().info(); }
-
-    pointer operator->() const { return &Iterator::operator->().info(); }
-};
-
-} // namespace vcl
-
-#endif // VCL_SPACE_CORE_GRAPH_BIPARTITE_ITERATOR_NODE_ITERATOR_H
+export import vclib.space.complex.graph.bipartite;
+export import vclib.space.complex.graph.undirected_node;
