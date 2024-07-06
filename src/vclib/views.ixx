@@ -22,7 +22,34 @@
 
 module;
 
+#include <ranges>
+#include <type_traits>
+
 export module vclib.views;
 
-export import vclib.views.mesh;
-export import vclib.views.pointers;
+import vclib.concepts;
+import vclib.types;
+
+export {
+// mesh components
+#include <vclib/views/mesh/components/adj_edges.h>
+#include <vclib/views/mesh/components/adj_faces.h>
+#include <vclib/views/mesh/components/adj_vertices.h>
+#include <vclib/views/mesh/components/colors.h>
+#include <vclib/views/mesh/components/coords.h>
+#include <vclib/views/mesh/components/normals.h>
+#include <vclib/views/mesh/components/principal_curvatures.h>
+#include <vclib/views/mesh/components/quality.h>
+#include <vclib/views/mesh/components/selection.h>
+#include <vclib/views/mesh/components/tex_coords.h>
+
+// mesh elements
+#include <vclib/views/mesh/elements/element.h>
+
+#include <vclib/views/mesh/elements/edge.h>
+#include <vclib/views/mesh/elements/face.h>
+#include <vclib/views/mesh/elements/vertex.h>
+
+// pointers
+#include <vclib/views/pointers.h>
+}

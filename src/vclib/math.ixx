@@ -26,6 +26,7 @@ module;
 #include <cassert>
 #include <cmath>
 #include <limits>
+#include <numbers>
 #include <random>
 #include <set>
 #include <vector>
