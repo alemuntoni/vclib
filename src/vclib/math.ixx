@@ -30,19 +30,21 @@ module;
 #include <set>
 #include <vector>
 
+#include <Eigen/Core>
+
 export module vclib.math;
 
 import vclib.concepts;
 import vclib.types;
 
-export import vclib.math.base;
-export import vclib.math.transform;
-
 export {
+#include <vclib/math/base.h>
+
 #include <vclib/math/distribution.h>
 #include <vclib/math/fibonacci.h>
 #include <vclib/math/histogram.h>
 #include <vclib/math/min_max.h>
 #include <vclib/math/perlin_noise.h>
 #include <vclib/math/random.h>
+#include <vclib/math/transform.h>
 }
