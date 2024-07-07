@@ -32,9 +32,8 @@ export module vclib.mesh.mesh;
 export import vclib.mesh.containers;
 
 import vclib.concepts;
-import vclib.mesh.components.detail;
+import vclib.mesh.components;
 import vclib.mesh.elements.element;
-import vclib.mesh.containers.element_container;
 import vclib.types;
 
 export {

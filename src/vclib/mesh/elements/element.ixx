@@ -29,7 +29,7 @@ module;
 export module vclib.mesh.elements.element;
 
 import vclib.concepts;
-import vclib.mesh.components.parent_mesh_pointer;
+import vclib.mesh.components;
 import vclib.types;
 
 export {

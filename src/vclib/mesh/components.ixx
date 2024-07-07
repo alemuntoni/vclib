@@ -26,22 +26,37 @@ module;
 #include <algorithm>
 #include <cassert>
 #include <compare>
+#include <ranges>
 #include <string>
+#include <tuple>
+#include <type_traits>
 #include <typeindex>
+#include <unordered_map>
 #include <vector>
 
 export module vclib.mesh.components;
 
 import vclib.concepts;
 import vclib.io;
-import vclib.mesh.components.bases;
-import vclib.mesh.components.detail;
-import vclib.mesh.components.parent_mesh_pointer;
 import vclib.mesh.iterators;
+import vclib.misc;
 import vclib.space.core;
 import vclib.types;
 
 export {
+// base data structures:
+#include <vclib/mesh/components/detail/component_data.h>
+#include <vclib/mesh/components/detail/custom_components_data.h>
+#include <vclib/mesh/components/parent_mesh_pointer.h>
+
+#include <vclib/mesh/components/bases/component.h>
+#include <vclib/mesh/components/bases/container_component.h>
+#include <vclib/mesh/components/bases/index_container_component.h>
+#include <vclib/mesh/components/bases/pointer_container_component.h>
+
+#include <vclib/mesh/components/bases/reference_container_component.h>
+
+// components:
 #include <vclib/mesh/components/adjacent_edges.h>
 #include <vclib/mesh/components/adjacent_faces.h>
 #include <vclib/mesh/components/adjacent_vertices.h>

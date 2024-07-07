@@ -26,7 +26,6 @@ export module vclib.mesh.elements.edge;
 
 import vclib.concepts;
 import vclib.mesh.components;
-import vclib.mesh.components.parent_mesh_pointer;
 import vclib.mesh.elements.element;
 import vclib.space.core;
 import vclib.types;
