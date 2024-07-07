@@ -31,7 +31,7 @@ import vclib.algorithms.mesh.clean;
 import vclib.algorithms.mesh.create.icosahedron;
 import vclib.algorithms.mesh.update.transform;
 import vclib.concepts;
-import vclib.mesh.requirements;
+import vclib.mesh;
 import vclib.space.core;
 import vclib.types;
 

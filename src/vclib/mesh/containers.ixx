@@ -28,9 +28,10 @@ module;
 #include <string>
 #include <tuple>
 #include <typeindex>
+#include <unordered_map>
 #include <vector>
 
-export module vclib.mesh.containers;
+export module vclib.mesh:containers;
 
 import vclib.concepts;
 import vclib.exceptions;
@@ -40,11 +41,17 @@ import vclib.space.core;
 import vclib.types;
 import vclib.views;
 
-import vclib.mesh.components;
-import vclib.mesh.elements;
-import vclib.mesh.element_container;
+import :components;
+import :elements;
+import :iterators;
 
 export {
+#include <vclib/mesh/containers/custom_component_vector_handle.h>
+#include <vclib/mesh/containers/custom_components_vector_map.h>
+#include <vclib/mesh/containers/vertical_components_vector_tuple.h>
+
+#include <vclib/mesh/containers/element_container.h>
+
 #include <vclib/mesh/containers/edge_container.h>
 #include <vclib/mesh/containers/face_container.h>
 #include <vclib/mesh/containers/vertex_container.h>

@@ -30,7 +30,7 @@ export module vclib.algorithms.mesh.update.normal;
 
 import vclib.algorithms.core;
 import vclib.concepts;
-import vclib.mesh.requirements;
+import vclib.mesh;
 import vclib.misc;
 import vclib.space.core;
 import vclib.types;

@@ -35,7 +35,7 @@ import vclib.algorithms.mesh.stat;
 import vclib.algorithms.mesh.update.normal;
 import vclib.concepts;
 import vclib.math;
-import vclib.mesh.requirements;
+import vclib.mesh;
 import vclib.misc;
 import vclib.space.complex;
 import vclib.space.core;

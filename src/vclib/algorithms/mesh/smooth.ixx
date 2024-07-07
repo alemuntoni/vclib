@@ -28,7 +28,7 @@ module;
 export module vclib.algorithms.mesh.smooth;
 
 import vclib.concepts;
-import vclib.mesh.requirements;
+import vclib.mesh;
 import vclib.space.complex;
 import vclib.space.core;
 import vclib.types;

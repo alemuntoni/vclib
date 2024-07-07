@@ -31,7 +31,7 @@ module;
 export module vclib.space.complex.mesh_info;
 
 import vclib.concepts;
-import vclib.mesh.requirements;
+import vclib.mesh;
 import vclib.types;
 
 export {

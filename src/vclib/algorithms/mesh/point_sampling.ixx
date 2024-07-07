@@ -33,7 +33,7 @@ import vclib.algorithms.mesh.shuffle;
 import vclib.algorithms.mesh.stat;
 import vclib.concepts;
 import vclib.math;
-import vclib.mesh.requirements;
+import vclib.mesh;
 import vclib.misc;
 import vclib.types;
 

@@ -27,7 +27,7 @@ module;
 export module vclib.algorithms.mesh.create.icosahedron;
 
 import vclib.concepts;
-import vclib.mesh.requirements;
+import vclib.mesh;
 import vclib.types;
 
 export {

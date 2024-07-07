@@ -34,7 +34,7 @@ module;
 #include <unordered_map>
 #include <vector>
 
-export module vclib.mesh.components;
+export module vclib.mesh:components;
 
 import vclib.concepts;
 import vclib.io;
@@ -42,7 +42,7 @@ import vclib.misc;
 import vclib.space.core;
 import vclib.types;
 
-import vclib.mesh.iterators;
+import :iterators;
 
 export {
 // base data structures:

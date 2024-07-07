@@ -28,7 +28,7 @@ module;
 export module vclib.algorithms.mesh.update.quality;
 
 import vclib.concepts;
-import vclib.mesh.requirements;
+import vclib.mesh;
 
 export {
 #include <vclib/algorithms/mesh/update/quality.h>

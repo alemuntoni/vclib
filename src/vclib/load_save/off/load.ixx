@@ -34,7 +34,7 @@ import vclib.concepts;
 import vclib.exceptions;
 import vclib.io;
 import vclib.load_save.settings;
-import vclib.mesh.requirements;
+import vclib.mesh;
 import vclib.misc;
 import vclib.space.complex;
 import vclib.space.core;

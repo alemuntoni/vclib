@@ -26,7 +26,7 @@ module;
 #include <iterator>
 #include <type_traits>
 
-export module vclib.mesh.iterators;
+export module vclib.mesh:iterators;
 
 import vclib.types;
 

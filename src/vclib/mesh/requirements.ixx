@@ -24,7 +24,7 @@ module;
 
 #include <string>
 
-export module vclib.mesh.requirements;
+export module vclib.mesh:requirements;
 
 import vclib.concepts;
 import vclib.exceptions;

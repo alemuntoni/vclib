@@ -28,12 +28,13 @@ module;
 #include <ostream>
 #include <ranges>
 
-export module vclib.mesh.elements;
+export module vclib.mesh:elements;
 
 import vclib.concepts;
-import vclib.mesh.components;
 import vclib.space.core;
 import vclib.types;
+
+import :components;
 
 export {
 #include <vclib/mesh/elements/element.h>

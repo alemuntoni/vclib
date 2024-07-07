@@ -29,7 +29,7 @@ export module vclib.external.vcg.import_export;
 import vclib.concepts;
 import vclib.external.vcg.concepts;
 import vclib.external.vcg.type_mapping;
-import vclib.mesh.requirements;
+import vclib.mesh;
 import vclib.space.core;
 import vclib.types;
 

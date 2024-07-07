@@ -28,15 +28,15 @@ module;
 #include <type_traits>
 #include <vector>
 
-export module vclib.mesh.mesh;
+export module vclib.mesh:mesh;
 
-export import vclib.mesh.containers;
 
 import vclib.concepts;
-import vclib.mesh.components;
-import vclib.mesh.element_container;
-import vclib.mesh.elements;
 import vclib.types;
+
+import :components;
+import :containers;
+import :elements;
 
 export {
 #include <vclib/mesh/mesh.h>

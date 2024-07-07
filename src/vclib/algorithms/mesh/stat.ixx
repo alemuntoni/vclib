@@ -32,7 +32,7 @@ export import vclib.algorithms.mesh.stat.selection;
 import vclib.algorithms.core;
 import vclib.algorithms.mesh.face_topology;
 import vclib.concepts;
-import vclib.mesh.requirements;
+import vclib.mesh;
 import vclib.space.complex;
 import vclib.space.core;
 import vclib.types;
