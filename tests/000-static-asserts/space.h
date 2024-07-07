@@ -28,7 +28,6 @@
 #include <vclib/space.h>
 #else
 import vclib;
-import vclib.meshes.detail;
 #endif
 
 

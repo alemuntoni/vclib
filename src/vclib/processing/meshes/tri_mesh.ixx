@@ -27,7 +27,7 @@ module;
 
 export module vclib.processing.meshes.tri_mesh;
 
-import vclib.meshes.tri_mesh;
+import vclib.meshes;
 import vclib.processing.meshes.mesh_i;
 import vclib.processing.settings;
 

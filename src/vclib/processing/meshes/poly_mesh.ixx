@@ -27,7 +27,7 @@ module;
 
 export module vclib.processing.meshes.poly_mesh;
 
-import vclib.meshes.poly_mesh;
+import vclib.meshes;
 import vclib.processing.meshes.mesh_i;
 import vclib.processing.settings;
 

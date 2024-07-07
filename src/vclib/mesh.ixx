@@ -31,3 +31,7 @@ export import :iterators;
 export import :mesh;
 export import :requirements;
 
+export {
+#include <vclib/meshes/detail/tmp_meshes.h>
+}
+

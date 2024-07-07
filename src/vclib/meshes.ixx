@@ -24,10 +24,14 @@ module;
 
 export module vclib.meshes;
 
-export import vclib.meshes.edge_mesh;
-export import vclib.meshes.point_cloud;
-export import vclib.meshes.poly_edge_mesh;
-export import vclib.meshes.poly_mesh;
-export import vclib.meshes.tri_edge_mesh;
-export import vclib.meshes.tri_mesh;
+import vclib.mesh;
+
+export {
+#include <vclib/meshes/edge_mesh.h>
+#include <vclib/meshes/point_cloud.h>
+#include <vclib/meshes/poly_edge_mesh.h>
+#include <vclib/meshes/poly_mesh.h>
+#include <vclib/meshes/tri_edge_mesh.h>
+#include <vclib/meshes/tri_mesh.h>
+}
 
