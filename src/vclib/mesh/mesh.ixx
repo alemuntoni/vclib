@@ -33,7 +33,7 @@ export import vclib.mesh.containers;
 
 import vclib.concepts;
 import vclib.mesh.components;
-import vclib.mesh.elements.element;
+import vclib.mesh.elements;
 import vclib.types;
 
 export {

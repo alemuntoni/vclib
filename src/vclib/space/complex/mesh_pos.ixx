@@ -28,7 +28,7 @@ export module vclib.space.complex.mesh_pos;
 
 import vclib.concepts;
 import vclib.mesh.components;
-import vclib.mesh.elements.face;
+import vclib.mesh.elements;
 import vclib.types;
 
 export {

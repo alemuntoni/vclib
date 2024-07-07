@@ -22,10 +22,28 @@
 
 module;
 
+#include <cassert>
+#include <istream>
+#include <list>
+#include <ostream>
+#include <ranges>
+
 export module vclib.mesh.elements;
 
-export import vclib.mesh.elements.edge;
-export import vclib.mesh.elements.face;
-export import vclib.mesh.elements.vertex;
+import vclib.concepts;
+import vclib.mesh.components;
+import vclib.space.core;
+import vclib.types;
+
+export {
+#include <vclib/mesh/elements/element.h>
+
+#include <vclib/mesh/elements/edge.h>
+#include <vclib/mesh/elements/edge_components.h>
+#include <vclib/mesh/elements/face.h>
+#include <vclib/mesh/elements/face_components.h>
+#include <vclib/mesh/elements/vertex.h>
+#include <vclib/mesh/elements/vertex_components.h>
+}
 
 
