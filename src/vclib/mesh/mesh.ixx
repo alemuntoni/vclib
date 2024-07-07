@@ -25,6 +25,7 @@ module;
 #include <array>
 #include <string>
 #include <typeindex>
+#include <type_traits>
 #include <vector>
 
 export module vclib.mesh.mesh;
@@ -33,9 +34,11 @@ export import vclib.mesh.containers;
 
 import vclib.concepts;
 import vclib.mesh.components;
+import vclib.mesh.element_container;
 import vclib.mesh.elements;
 import vclib.types;
 
 export {
 #include <vclib/mesh/mesh.h>
+#include <vclib/mesh/mesh_components.h>
 }

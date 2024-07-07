@@ -26,9 +26,9 @@ export module vclib.mesh;
 
 export import vclib.mesh.components;
 export import vclib.mesh.containers;
+export import vclib.mesh.element_container;
 export import vclib.mesh.elements;
 export import vclib.mesh.iterators;
-export import vclib.mesh.mesh_components;
 export import vclib.mesh.mesh;
 export import vclib.mesh.requirements;
 

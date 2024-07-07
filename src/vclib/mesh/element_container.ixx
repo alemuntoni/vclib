@@ -22,16 +22,30 @@
 
 module;
 
+#include <any>
+#include <array>
+#include <cassert>
 #include <string>
+#include <typeindex>
+#include <unordered_map>
+#include <vector>
 
-export module vclib.mesh.requirements.element_requirements;
+export module vclib.mesh.element_container;
 
 import vclib.concepts;
 import vclib.exceptions;
+import vclib.io;
+import vclib.misc;
 import vclib.types;
 
+import vclib.mesh.iterators;
+
 export {
-#include <vclib/mesh/requirements/element_requirements.h>
+#include <vclib/mesh/containers/custom_component_vector_handle.h>
+#include <vclib/mesh/containers/custom_components_vector_map.h>
+#include <vclib/mesh/containers/vertical_components_vector_tuple.h>
+
+#include <vclib/mesh/containers/element_container.h>
 }
 
 

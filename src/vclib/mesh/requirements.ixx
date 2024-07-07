@@ -22,15 +22,17 @@
 
 module;
 
-export module vclib.mesh.requirements;
+#include <string>
 
-export import vclib.mesh.requirements.element_requirements;
+export module vclib.mesh.requirements;
 
 import vclib.concepts;
 import vclib.exceptions;
 import vclib.types;
 
 export {
+#include <vclib/mesh/requirements/element_requirements.h>
+
 #include <vclib/mesh/requirements/edge_requirements.h>
 #include <vclib/mesh/requirements/face_requirements.h>
 #include <vclib/mesh/requirements/mesh_requirements.h>

@@ -22,22 +22,27 @@
 
 module;
 
+#include <any>
+#include <array>
 #include <cassert>
 #include <string>
+#include <tuple>
 #include <typeindex>
 #include <vector>
 
 export module vclib.mesh.containers;
 
 import vclib.concepts;
-import vclib.mesh.components;
-import vclib.mesh.containers.element_container;
-import vclib.mesh.elements;
+import vclib.exceptions;
+import vclib.io;
+import vclib.misc;
 import vclib.space.core;
 import vclib.types;
 import vclib.views;
 
-export import vclib.mesh.containers.custom_component_vector_handle;
+import vclib.mesh.components;
+import vclib.mesh.elements;
+import vclib.mesh.element_container;
 
 export {
 #include <vclib/mesh/containers/edge_container.h>

@@ -38,10 +38,11 @@ export module vclib.mesh.components;
 
 import vclib.concepts;
 import vclib.io;
-import vclib.mesh.iterators;
 import vclib.misc;
 import vclib.space.core;
 import vclib.types;
+
+import vclib.mesh.iterators;
 
 export {
 // base data structures:
