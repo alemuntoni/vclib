@@ -27,11 +27,11 @@ module;
 #include <string>
 #include <vector>
 
-export module vclib.concepts.space;
+export module vclib.concepts:space;
 
 import vclib.types;
 
-import vclib.concepts.core;
+import :core;
 
 export {
 #include <vclib/concepts/space/array.h>

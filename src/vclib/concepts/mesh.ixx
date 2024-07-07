@@ -28,11 +28,11 @@ module;
 #include <type_traits>
 #include <vector>
 
-export module vclib.concepts.mesh;
+export module vclib.concepts:mesh;
 
 import vclib.types;
 
-import vclib.concepts.core;
+import :core;
 
 export {
 // components

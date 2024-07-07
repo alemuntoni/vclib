@@ -31,7 +31,7 @@ module;
 #include <string>
 #include <type_traits>
 
-export module vclib.concepts.core;
+export module vclib.concepts:core;
 
 import vclib.types;
 

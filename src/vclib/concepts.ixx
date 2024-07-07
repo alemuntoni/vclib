@@ -24,6 +24,6 @@ module;
 
 export module vclib.concepts;
 
-export import vclib.concepts.core;
-export import vclib.concepts.space;
-export import vclib.concepts.mesh;
+export import :core;
+export import :space;
+export import :mesh;
