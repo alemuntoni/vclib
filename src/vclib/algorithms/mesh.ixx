@@ -24,19 +24,13 @@ module;
 
 export module vclib.algorithms.mesh;
 
-export import vclib.algorithms.mesh.check_pointers;
-export import vclib.algorithms.mesh.clean;
-export import vclib.algorithms.mesh.create;
-export import vclib.algorithms.mesh.distance;
-export import vclib.algorithms.mesh.face_topology;
-export import vclib.algorithms.mesh.filter;
-export import vclib.algorithms.mesh.import_export;
-export import vclib.algorithms.mesh.intersection;
-export import vclib.algorithms.mesh.point_sampling;
-export import vclib.algorithms.mesh.polygon;
-export import vclib.algorithms.mesh.shuffle;
-export import vclib.algorithms.mesh.smooth;
-export import vclib.algorithms.mesh.sort;
-export import vclib.algorithms.mesh.stat;
-export import vclib.algorithms.mesh.update;
-
+export import :base;
+export import :clean;
+export import :create;
+export import :distance;
+export import :filter;
+export import :intersection;
+export import :point_sampling;
+export import :smooth;
+export import :stat;
+export import :update;

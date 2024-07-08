@@ -28,6 +28,7 @@
 #include <vclib/meshes.h>
 #else
 #include <list>
+#include <set>
 import vclib;
 #endif
 

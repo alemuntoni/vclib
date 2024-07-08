@@ -30,6 +30,7 @@
 #else
 #include <Eigen/Core>
 #include <fstream>
+#include <set>
 import vclib;
 #endif
 

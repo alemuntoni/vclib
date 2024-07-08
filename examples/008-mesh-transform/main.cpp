@@ -29,6 +29,7 @@
 #else
 #include <filesystem>
 #include <fstream>
+#include <set>
 import vclib;
 #endif
 

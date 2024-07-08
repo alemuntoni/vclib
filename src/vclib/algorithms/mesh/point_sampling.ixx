@@ -26,16 +26,17 @@ module;
 #include <random>
 #include <vector>
 
-export module vclib.algorithms.mesh.point_sampling;
+export module vclib.algorithms.mesh:point_sampling;
 
 import vclib.algorithms.core;
-import vclib.algorithms.mesh.shuffle;
-import vclib.algorithms.mesh.stat;
 import vclib.concepts;
 import vclib.math;
 import vclib.mesh;
 import vclib.misc;
 import vclib.types;
+
+import :base;
+import :stat;
 
 export {
 #include <vclib/algorithms/mesh/point_sampling.h>

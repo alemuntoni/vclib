@@ -29,15 +29,16 @@ module;
 #include <string>
 #include <vector>
 
-export module vclib.algorithms.mesh.distance;
+export module vclib.algorithms.mesh:distance;
 
-import vclib.algorithms.mesh.point_sampling;
 import vclib.concepts;
 import vclib.math;
 import vclib.misc;
 import vclib.space.complex;
 import vclib.types;
 import vclib.views;
+
+import :point_sampling;
 
 export {
 #include <vclib/algorithms/mesh/distance.h>

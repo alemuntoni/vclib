@@ -22,11 +22,30 @@
 
 module;
 
-export module vclib.algorithms.mesh.create;
+#include <cmath>
+#include <cstdint>
+#include <vector>
 
-export import vclib.algorithms.mesh.create.cone;
-export import vclib.algorithms.mesh.create.dodecahedron;
-export import vclib.algorithms.mesh.create.hexahedron;
-export import vclib.algorithms.mesh.create.icosahedron;
-export import vclib.algorithms.mesh.create.sphere;
-export import vclib.algorithms.mesh.create.tetrahedron;
+export module vclib.algorithms.mesh:create;
+
+import vclib.algorithms.core;
+import vclib.concepts;
+import vclib.math;
+import vclib.mesh;
+import vclib.misc;
+import vclib.space.core;
+import vclib.types;
+
+import :clean;
+import :update;
+
+export {
+#include <vclib/algorithms/mesh/create/cone.h>
+#include <vclib/algorithms/mesh/create/dodecahedron.h>
+#include <vclib/algorithms/mesh/create/hexahedron.h>
+#include <vclib/algorithms/mesh/create/icosahedron.h>
+#include <vclib/algorithms/mesh/create/tetrahedron.h>
+
+// depends on icosahedron
+#include <vclib/algorithms/mesh/create/sphere.h>
+}

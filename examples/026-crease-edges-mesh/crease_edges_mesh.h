@@ -30,6 +30,7 @@
 #else
 #include <fstream>
 #include <ranges>
+#include <set>
 import vclib;
 #endif
 

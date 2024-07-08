@@ -30,10 +30,9 @@ module;
 
 #include <Eigen/Core>
 
-export module vclib.algorithms.mesh.stat;
+export module vclib.algorithms.mesh:stat;
 
 import vclib.algorithms.core;
-import vclib.algorithms.mesh.face_topology;
 import vclib.concepts;
 import vclib.math;
 import vclib.mesh;
@@ -41,6 +40,8 @@ import vclib.space.complex;
 import vclib.space.core;
 import vclib.types;
 import vclib.views;
+
+import :base;
 
 export {
 #include <vclib/algorithms/mesh/stat/barycenter.h>

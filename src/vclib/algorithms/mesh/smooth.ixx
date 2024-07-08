@@ -25,7 +25,7 @@ module;
 #include <cmath>
 #include <vector>
 
-export module vclib.algorithms.mesh.smooth;
+export module vclib.algorithms.mesh:smooth;
 
 import vclib.concepts;
 import vclib.mesh;

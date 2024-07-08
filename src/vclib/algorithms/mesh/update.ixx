@@ -22,15 +22,47 @@
 
 module;
 
-export module vclib.algorithms.mesh.update;
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <exception>
+#include <mutex>
+#include <set>
+#include <string>
+#include <vector>
 
-export import vclib.algorithms.mesh.update.bounding_box;
-export import vclib.algorithms.mesh.update.color;
-export import vclib.algorithms.mesh.update.curvature;
-export import vclib.algorithms.mesh.update.flag;
-export import vclib.algorithms.mesh.update.normal;
-export import vclib.algorithms.mesh.update.quality;
-export import vclib.algorithms.mesh.update.selection;
-export import vclib.algorithms.mesh.update.topology;
-export import vclib.algorithms.mesh.update.transform;
+#include <Eigen/Core>
+#include <Eigen/Eigenvalues>
+
+export module vclib.algorithms.mesh:update;
+
+import vclib.algorithms.core;
+import vclib.concepts;
+import vclib.math;
+import vclib.mesh;
+import vclib.misc;
+import vclib.space.complex;
+import vclib.space.core;
+import vclib.types;
+import vclib.views;
+
+import :base;
+import :clean;
+import :intersection;
+import :point_sampling;
+import :stat;
+
+export {
+#include <vclib/algorithms/mesh/update/bounding_box.h>
+#include <vclib/algorithms/mesh/update/color.h>
+#include <vclib/algorithms/mesh/update/flag.h>
+#include <vclib/algorithms/mesh/update/normal.h>
+#include <vclib/algorithms/mesh/update/quality.h>
+#include <vclib/algorithms/mesh/update/selection.h>
+#include <vclib/algorithms/mesh/update/topology.h>
+#include <vclib/algorithms/mesh/update/transform.h>
+
+// depends on update/normal
+#include <vclib/algorithms/mesh/update/curvature.h>
+}
 

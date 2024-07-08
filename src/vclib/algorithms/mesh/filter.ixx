@@ -26,7 +26,7 @@ module;
 #include <set>
 #include <zip_view.hpp>
 
-export module vclib.algorithms.mesh.filter;
+export module vclib.algorithms.mesh:filter;
 
 import vclib.concepts;
 import vclib.misc;

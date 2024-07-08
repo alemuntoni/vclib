@@ -30,6 +30,7 @@
 #else
 #include <Eigen/Core> // needed by msvc...
 #include <fstream>
+#include <set>
 import vclib;
 #endif
 

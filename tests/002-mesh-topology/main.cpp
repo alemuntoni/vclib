@@ -29,6 +29,7 @@
 #include <vclib/meshes.h>
 #else
 #include <fstream>
+#include <set>
 import vclib;
 #endif
 

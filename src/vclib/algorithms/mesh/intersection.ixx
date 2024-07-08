@@ -25,7 +25,7 @@ module;
 #include <cmath>
 #include <vector>
 
-export module vclib.algorithms.mesh.intersection;
+export module vclib.algorithms.mesh:intersection;
 
 import vclib.algorithms.core;
 import vclib.concepts;

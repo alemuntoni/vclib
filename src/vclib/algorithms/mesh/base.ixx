@@ -22,16 +22,46 @@
 
 module;
 
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <random>
+#include <set>
+#include <string>
 #include <vector>
 
-export module vclib.algorithms.mesh.update.topology;
+#include <Eigen/Core>
 
+// Apple clang does not support c++17 parallel algorithms.
+// To compensate this lack, waiting for Apple to support them, we use pstld
+// (https://github.com/mikekazakov/pstld) that implements them in the stl
+// namespace
+#if defined(__clang__) && defined(__APPLE__)
+#include <pstld/pstld.h>
+#else
+#include <execution>
+#endif
+
+export module vclib.algorithms.mesh:base;
+
+import vclib.algorithms.core;
 import vclib.concepts;
+import vclib.exceptions;
 import vclib.mesh;
+import vclib.misc;
+import vclib.space.core;
 import vclib.space.complex;
 import vclib.types;
 
 export {
-#include <vclib/algorithms/mesh/update/topology.h>
+#include <vclib/algorithms/mesh/check_pointers.h>
+#include <vclib/algorithms/mesh/face_topology.h>
+#include <vclib/algorithms/mesh/import_export/export_matrix.h>
+#include <vclib/algorithms/mesh/import_export/import_matrix.h>
+#include <vclib/algorithms/mesh/sort.h>
+#include <vclib/algorithms/mesh/shuffle.h>
+
+// depends on face_topology
+#include <vclib/algorithms/mesh/polygon.h>
 }
 

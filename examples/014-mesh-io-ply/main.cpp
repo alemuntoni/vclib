@@ -30,6 +30,7 @@
 #include <vclib/load_save.h>
 #else
 #include <fstream>
+#include <set>
 import vclib;
 #endif
 

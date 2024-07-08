@@ -29,6 +29,7 @@
 #else
 #include <fstream>
 #include <ranges> // needed by msvc...
+#include <set>
 import vclib;
 #endif
 

@@ -39,13 +39,15 @@ module;
 #include <execution>
 #endif
 
-export module vclib.algorithms.mesh.clean;
+export module vclib.algorithms.mesh:clean;
 
 import vclib.concepts;
 import vclib.mesh;
 import vclib.space.complex;
 import vclib.space.core;
 import vclib.types;
+
+import :base;
 
 export {
 #include <vclib/algorithms/mesh/clean.h>

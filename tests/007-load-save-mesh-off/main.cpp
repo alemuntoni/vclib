@@ -31,6 +31,7 @@
 #else
 #include <Eigen/Core>
 #include <ranges>
+#include <set>
 import vclib;
 #endif
 

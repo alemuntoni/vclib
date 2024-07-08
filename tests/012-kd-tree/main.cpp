@@ -28,6 +28,7 @@
 #include <vclib/space/complex/kd_tree.h>
 #else
 #include <fstream>
+#include <set>
 import vclib;
 #endif
 

@@ -30,6 +30,7 @@
 #include <Eigen/Core> // needed by msvc...
 #include <fstream>
 #include <ranges>     // needed by msvc...
+#include <set>
 import vclib;
 #endif
 
