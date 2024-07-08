@@ -28,7 +28,6 @@
 #include "stat/geometry.h"
 #include "stat/quality.h"
 #include "stat/selection.h"
-#endif
 
 /**
  * @defgroup mesh_stat Mesh Statistic Algorithms
