@@ -20,71 +20,18 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_MESHES_DETAIL_TMP_MESHES_H
-#define VCL_MESHES_DETAIL_TMP_MESHES_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/mesh/mesh.h>
-#endif
+#include <string>
 
-namespace vcl::detail {
+export module vclib.mesh:tmp_meshes;
 
-class TMPSimpleTriMesh;
-class TMPSimplePolyMesh;
+import :containers;
+import :elements;
+import :mesh;
 
-namespace tmpMesh {
+export {
+#include <vclib/mesh/tmp_meshes.h>
+}
 
-class TriVertex :
-        public vcl::Vertex<
-            TMPSimpleTriMesh,
-            vcl::vert::BitFlags,
-            vcl::vert::Coordinate3d>
-{
-};
 
-class PolyVertex :
-        public vcl::Vertex<
-            TMPSimplePolyMesh,
-            vcl::vert::BitFlags,
-            vcl::vert::Coordinate3d>
-{
-};
-
-class TriFace;
-class PolyFace;
-
-class TriFace :
-        public vcl::Face<
-            TMPSimpleTriMesh,
-            vcl::face::TriangleBitFlags,
-            vcl::face::TriangleVertexPtrs<TriVertex, TriFace>>
-{
-};
-
-class PolyFace :
-        public vcl::Face<
-            TMPSimplePolyMesh,
-            vcl::face::PolygonBitFlags,
-            vcl::face::PolygonVertexPtrs<PolyVertex, PolyFace>>
-{
-};
-
-} // namespace tmpMesh
-
-class TMPSimpleTriMesh :
-        public vcl::Mesh<
-            mesh::VertexContainer<tmpMesh::TriVertex>,
-            mesh::FaceContainer<tmpMesh::TriFace>>
-{
-};
-
-class TMPSimplePolyMesh :
-        public vcl::Mesh<
-            mesh::VertexContainer<tmpMesh::PolyVertex>,
-            mesh::FaceContainer<tmpMesh::PolyFace>>
-{
-};
-
-} // namespace vcl::detail
-
-#endif // VCL_MESHES_DETAIL_TMP_MESHES_H

@@ -24,7 +24,7 @@
 #define SPACE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/meshes/detail/tmp_meshes.h>
+#include <vclib/mesh/tmp_meshes.h>
 #include <vclib/space.h>
 #else
 import vclib;
