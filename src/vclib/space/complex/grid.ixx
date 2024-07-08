@@ -22,8 +22,32 @@
 
 module;
 
-export module vclib.space.complex.grid;
+#include <algorithm>
+#include <array>
+#include <cassert>
+#include <cmath>
+#include <cstddef>
+#include <functional>
+#include <ranges>
+#include <set>
+#include <unordered_map>
+#include <vector>
 
-export import vclib.space.complex.grid.hash_table_grid;
-export import vclib.space.complex.grid.regular_grid;
-export import vclib.space.complex.grid.static_grid;
+export module vclib.space.complex:grid;
+
+import vclib.algorithms.core;
+import vclib.concepts;
+import vclib.misc;
+import vclib.space.core;
+import vclib.types;
+
+#include <vclib/space/complex/grid/abstract_grid.h>
+#include <vclib/space/complex/grid/iterators/cell_iterator.h>
+#include <vclib/space/complex/grid/iterators/static_grid_iterator.h>
+
+export {
+#include <vclib/space/complex/grid/regular_grid.h>
+
+#include <vclib/space/complex/grid/hash_table_grid.h>
+#include <vclib/space/complex/grid/static_grid.h>
+}

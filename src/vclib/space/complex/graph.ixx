@@ -22,7 +22,24 @@
 
 module;
 
-export module vclib.space.complex.graph;
+#include <cassert>
+#include <map>
+#include <set>
+#include <unordered_set>
+#include <vector>
 
-export import vclib.space.complex.graph.bipartite;
-export import vclib.space.complex.graph.undirected_node;
+export module vclib.space.complex:graph;
+
+import vclib.types;
+
+export {
+#include <vclib/space/complex/graph/undirected_node.h>
+
+#include <vclib/space/complex/graph/bipartite/iterator/adjacent_node_iterator.h>
+
+#include <vclib/space/complex/graph/bipartite/iterator/adjacent_left_node_iterator.h>
+#include <vclib/space/complex/graph/bipartite/iterator/adjacent_right_node_iterator.h>
+#include <vclib/space/complex/graph/bipartite/iterator/node_iterator.h>
+
+#include <vclib/space/complex/graph/bipartite/bipartite_graph.h>
+}

@@ -22,14 +22,36 @@
 
 module;
 
+#include <algorithm>
+#include <bitset>
+#include <cassert>
+#include <cmath>
+#include <numeric>
+#include <queue>
+#include <string>
+#include <typeindex>
+#include <vector>
+
+#include <Eigen/Core>
+#include <Eigen/Eigenvalues>
+
 export module vclib.space.complex;
 
-export import vclib.space.complex.graph;
-export import vclib.space.complex.grid;
-export import vclib.space.complex.kd_tree;
-export import vclib.space.complex.mesh_edge_util;
-export import vclib.space.complex.mesh_inertia;
-export import vclib.space.complex.mesh_info;
-export import vclib.space.complex.mesh_pos;
-export import vclib.space.complex.sampler;
-export import vclib.space.complex.tri_poly_index_bimap;
+import vclib.algorithms.core;
+import vclib.concepts;
+import vclib.mesh;
+import vclib.space.core;
+import vclib.types;
+
+export import :graph;
+export import :grid;
+export import :sampler;
+
+export {
+#include <vclib/space/complex/kd_tree.h>
+#include <vclib/space/complex/mesh_edge_util.h>
+#include <vclib/space/complex/mesh_inertia.h>
+#include <vclib/space/complex/mesh_info.h>
+#include <vclib/space/complex/mesh_pos.h>
+#include <vclib/space/complex/tri_poly_index_bimap.h>
+}

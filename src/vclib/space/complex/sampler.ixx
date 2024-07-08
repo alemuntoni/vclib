@@ -22,8 +22,21 @@
 
 module;
 
-export module vclib.space.complex.sampler;
+#include <cassert>
+#include <ranges>
+#include <vector>
 
-export import vclib.space.complex.sampler.mesh_sampler;
-export import vclib.space.complex.sampler.point_sampler;
-export import vclib.space.complex.sampler.vertex_sampler;
+export module vclib.space.complex:sampler;
+
+import vclib.algorithms.core;
+import vclib.concepts;
+import vclib.mesh;
+import vclib.space.core;
+import vclib.types;
+import vclib.views;
+
+export {
+#include <vclib/space/complex/sampler/mesh_sampler.h>
+#include <vclib/space/complex/sampler/point_sampler.h>
+#include <vclib/space/complex/sampler/vertex_sampler.h>
+}
