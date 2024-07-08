@@ -22,22 +22,31 @@
 
 module;
 
+#include <algorithm>
+#include <cassert>
+#include <ranges>
+#include <utility>
+#include <vector>
+
 #include <Eigen/Core>
 
 export module vclib.algorithms.mesh.stat;
 
-export import vclib.algorithms.mesh.stat.quality;
-export import vclib.algorithms.mesh.stat.selection;
-
 import vclib.algorithms.core;
 import vclib.algorithms.mesh.face_topology;
 import vclib.concepts;
+import vclib.math;
 import vclib.mesh;
 import vclib.space.complex;
 import vclib.space.core;
 import vclib.types;
+import vclib.views;
 
 export {
-#include <vclib/algorithms/mesh/stat.h>
+#include <vclib/algorithms/mesh/stat/barycenter.h>
+#include <vclib/algorithms/mesh/stat/bounding_box.h>
+#include <vclib/algorithms/mesh/stat/geometry.h>
+#include <vclib/algorithms/mesh/stat/quality.h>
+#include <vclib/algorithms/mesh/stat/selection.h>
 }
 

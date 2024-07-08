@@ -24,7 +24,7 @@ module;
 
 export module vclib.algorithms.mesh.update.bounding_box;
 
-import vclib.algorithms.mesh.bounding_box;
+import vclib.algorithms.mesh.stat;
 import vclib.concepts;
 
 export {

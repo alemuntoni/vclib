@@ -24,7 +24,6 @@ module;
 
 export module vclib.algorithms.mesh;
 
-export import vclib.algorithms.mesh.bounding_box;
 export import vclib.algorithms.mesh.check_pointers;
 export import vclib.algorithms.mesh.clean;
 export import vclib.algorithms.mesh.create;
