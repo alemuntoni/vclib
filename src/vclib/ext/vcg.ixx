@@ -22,8 +22,23 @@
 
 module;
 
+#include <vcg/space/point2.h>
+#include <vcg/space/point3.h>
+#include <vcg/space/point4.h>
+
+#include <vcg/complex/complex.h>
+
 export module vclib.external.vcg;
 
-export import vclib.external.vcg.concepts;
-export import vclib.external.vcg.import_export;
-export import vclib.external.vcg.type_mapping;
+import vclib.concepts;
+import vclib.mesh;
+import vclib.space.core;
+import vclib.types;
+
+export {
+#include <vclib/ext/vcg/concepts.h>
+#include <vclib/ext/vcg/type_mapping.h>
+
+#include <vclib/ext/vcg/export.h>
+#include <vclib/ext/vcg/import.h>
+}
