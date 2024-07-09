@@ -22,9 +22,16 @@
 
 module;
 
+#include <memory>
+#include <vector>
+
 export module vclib.processing:actions;
 
 export import :load_save_image_actions;
 export import :load_mesh_actions;
 export import :save_mesh_actions;
 export import :filter_mesh_actions;
+
+export {
+#include <vclib/processing/actions.h>
+}

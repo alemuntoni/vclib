@@ -20,9 +20,15 @@
  * for more details.                                                         *
  ****************************************************************************/
 
+#include <cassert>
+
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/processing.h>
 
 #include <vclib/load_save.h>
+#else
+import vclib;
+#endif
 
 int main()
 {

@@ -23,10 +23,12 @@
 #ifndef VCL_PROCESSING_ACTIONS_FILTER_MESH_CREATE_CREATE_CONE_FILTER_H
 #define VCL_PROCESSING_ACTIONS_FILTER_MESH_CREATE_CREATE_CONE_FILTER_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/create/cone.h>
 #include <vclib/algorithms/mesh/update/normal.h>
 #include <vclib/processing/action_interfaces/filter_mesh_action.h>
 #include <vclib/processing/parameters.h>
+#endif
 
 namespace vcl::proc {
 

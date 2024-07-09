@@ -57,9 +57,9 @@ if (VCLIB_BUILD_EXAMPLES)
     add_subdirectory(025-grid)
     add_subdirectory(026-crease-edges-mesh)
 
-    #add_subdirectory(700-processing-save-mesh)
-    #add_subdirectory(701-processing-load-mesh)
-    #add_subdirectory(702-processing-create-mesh)
+    add_subdirectory(700-processing-save-mesh)
+    add_subdirectory(701-processing-load-mesh)
+    add_subdirectory(702-processing-create-mesh)
 
     add_subdirectory(999-misc)
 

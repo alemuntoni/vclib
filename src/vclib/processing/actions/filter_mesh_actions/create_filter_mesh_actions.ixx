@@ -23,15 +23,22 @@
 module;
 
 #include <memory>
+#include <string>
 #include <vector>
 
-export module vclib.processing:filter_mesh_actions;
+export module vclib.processing:create_filter_mesh_actions;
 
-export import :action_interfaces;
+import vclib.algorithms.mesh;
+import vclib.concepts;
+import vclib.misc;
+import vclib.space.core;
 
-export import :apply_filter_mesh_actions;
-export import :create_filter_mesh_actions;
+import :action_interfaces;
+import :meshes;
+import :parameters;
 
 export {
-#include <vclib/processing/actions/filter_mesh.h>
+#include <vclib/processing/actions/filter_mesh/create/create_cone_filter.h>
+
+#include <vclib/processing/actions/filter_mesh/create.h>
 }
