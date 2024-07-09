@@ -22,9 +22,33 @@
 
 module;
 
-export module vclib.processing;
+#include <algorithm>
+#include <memory>
+#include <vector>
 
-export import :action_interfaces;
-export import :meshes;
-export import :parameters;
-export import :settings;
+export module vclib.processing:action_interfaces;
+
+import vclib.algorithms.mesh;
+import vclib.concepts;
+import vclib.io;
+import vclib.misc;
+import vclib.space.core;
+import vclib.space.complex;
+import vclib.types;
+
+import :meshes;
+import :parameters;
+
+export {
+#include <vclib/processing/action_interfaces/action.h>
+
+// depend on action
+#include <vclib/processing/action_interfaces/load_image_action.h>
+#include <vclib/processing/action_interfaces/mesh_action.h>
+#include <vclib/processing/action_interfaces/save_image_action.h>
+
+// depend on mesh_action
+#include <vclib/processing/action_interfaces/filter_mesh_action.h>
+#include <vclib/processing/action_interfaces/load_mesh_action.h>
+#include <vclib/processing/action_interfaces/save_mesh_action.h>
+}

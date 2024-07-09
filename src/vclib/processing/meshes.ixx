@@ -29,6 +29,7 @@ export module vclib.processing:meshes;
 
 import vclib.concepts;
 import vclib.meshes;
+import vclib.space.core;
 
 import :settings;
 
@@ -36,4 +37,6 @@ export {
 #include <vclib/processing/meshes/mesh_i.h>
 #include <vclib/processing/meshes/poly_mesh.h>
 #include <vclib/processing/meshes/tri_mesh.h>
+
+#include <vclib/processing/mesh_vector.h>
 }
