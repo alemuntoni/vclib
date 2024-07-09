@@ -20,16 +20,20 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_H
-#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_H
+#ifndef VCL_PROCESSING_MESH_VECTOR_H
+#define VCL_PROCESSING_MESH_VECTOR_H
 
-#include "parameters/bool_parameter.h"
-#include "parameters/enum_parameter.h"
-#include "parameters/int_parameter.h"
-#include "parameters/mesh_parameter.h"
-#include "parameters/scalar_parameter.h"
-#include "parameters/string_parameter.h"
-#include "parameters/uint_parameter.h"
-#include "parameters/uscalar_parameter.h"
+#ifndef VCLIB_WITH_MODULES
+#include <vclib/processing/meshes/mesh_i.h>
+#include <vclib/space/core/vector/pointer_vector.h>
+#endif
 
-#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_H
+namespace vcl::proc {
+
+class MeshVector : public PointerVector<std::shared_ptr<MeshI>>
+{
+};
+
+} // namespace vcl::proc
+
+#endif // VCL_PROCESSING_MESH_VECTOR_H

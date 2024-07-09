@@ -26,7 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/polygon.h>
 #include <vclib/exceptions/io.h>
-#include <vclib/io/file_format.h>
+#include <vclib/io/file_type.h>
 #include <vclib/io/read.h>
 #include <vclib/io/write.h>
 #include <vclib/mesh/requirements.h>
@@ -44,7 +44,7 @@ void writePlyFaceIndices(
     const MeshType&          m,
     const std::vector<uint>& vIndices,
     const FaceType&          f,
-    FileFormat               format)
+    FileType               format)
 {
     using VertexType = MeshType::VertexType;
 
@@ -290,7 +290,7 @@ void writePlyFaces(
 {
     using FaceType = MeshType::FaceType;
 
-    FileFormat format;
+    FileType format;
     if (header.format() == ply::ASCII) {
         format.isBinary = false;
     }

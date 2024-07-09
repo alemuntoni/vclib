@@ -20,59 +20,16 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_LOAD_SAVE_PLY_DETAIL_EDGE_H
-#define VCL_LOAD_SAVE_PLY_DETAIL_EDGE_H
+#ifndef VCL_PROCESSING_PARAMETERS_H
+#define VCL_PROCESSING_PARAMETERS_H
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/io/write.h>
-#include <vclib/misc/tokenizer.h>
+#include "parameters/bool_parameter.h"
+#include "parameters/enum_parameter.h"
+#include "parameters/int_parameter.h"
+#include "parameters/mesh_parameter.h"
+#include "parameters/scalar_parameter.h"
+#include "parameters/string_parameter.h"
+#include "parameters/uint_parameter.h"
+#include "parameters/uscalar_parameter.h"
 
-#include "header.h"
-#endif
-
-namespace vcl::detail {
-
-template<EdgeMeshConcept MeshType>
-void writePlyEdges(
-    std::ostream&    file,
-    const PlyHeader& header,
-    const MeshType&  mesh)
-{
-    using EdgeType = MeshType::EdgeType;
-
-    FileType format;
-    if (header.format() == ply::ASCII) {
-        format.isBinary = false;
-    }
-    else if (header.format() == ply::BINARY_BIG_ENDIAN) {
-        format.endian = std::endian::big;
-    }
-
-    // indices of vertices that do not consider deleted vertices
-    std::vector<uint> vIndices = mesh.vertexCompactIndices();
-
-    for (const EdgeType& e : mesh.edges()) {
-        for (const PlyProperty& p : header.edgeProperties()) {
-            bool hasBeenWritten = false;
-            if (p.name == ply::vertex1) {
-                io::writeProperty(
-                    file, vIndices[mesh.index(e.vertex(0))], p.type, format);
-                hasBeenWritten = true;
-            }
-            if (p.name == ply::vertex2) {
-                io::writeProperty(
-                    file, vIndices[mesh.index(e.vertex(1))], p.type, format);
-                hasBeenWritten = true;
-            }
-            if (!hasBeenWritten) {
-                // be sure to write something if the header declares some
-                // property that is not in the mesh
-                io::writeProperty(file, 0, p.type, format);
-            }
-        }
-    }
-}
-
-} // namespace vcl::detail
-
-#endif // VCL_LOAD_SAVE_PLY_DETAIL_EDGE_H
+#endif // VCL_PROCESSING_PARAMETERS_H

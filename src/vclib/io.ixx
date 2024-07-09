@@ -22,6 +22,7 @@
 
 module;
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <cassert>
@@ -55,6 +56,7 @@ export {
 // file_info and file_format
 #include <vclib/io/file_format.h>
 #include <vclib/io/file_info.h>
+#include <vclib/io/file_type.h>
 
 // image, read, write
 #include <vclib/io/image.h>

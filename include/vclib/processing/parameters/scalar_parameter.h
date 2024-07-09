@@ -20,20 +20,36 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_MESH_VECTOR_H
-#define VCL_PROCESSING_ACTIONS_COMMON_MESH_VECTOR_H
+#ifndef VCL_PROCESSING_PARAMETERS_SCALAR_PARAMETER_H
+#define VCL_PROCESSING_PARAMETERS_SCALAR_PARAMETER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/processing/meshes/mesh_i.h>
-#include <vclib/space/core/vector/pointer_vector.h>
+#include "parameter.h"
 #endif
 
 namespace vcl::proc {
 
-class MeshVector : public PointerVector<std::shared_ptr<MeshI>>
+class ScalarParameter : public Parameter
 {
+public:
+    ScalarParameter(
+        const std::string& name,
+        Scalar             value,
+        const std::string& description = "",
+        const std::string& tooltip     = "",
+        const std::string& category    = "") :
+            Parameter(name, value, description, tooltip, category)
+    {
+    }
+
+    ParameterType::Enum type() const override { return ParameterType::SCALAR; }
+
+    std::shared_ptr<Parameter> clone() const override
+    {
+        return std::make_shared<ScalarParameter>(*this);
+    }
 };
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTIONS_COMMON_MESH_VECTOR_H
+#endif // VCL_PROCESSING_PARAMETERS_SCALAR_PARAMETER_H

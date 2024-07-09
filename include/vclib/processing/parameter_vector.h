@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETER_VECTOR_H
-#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETER_VECTOR_H
+#ifndef VCL_PROCESSING_PARAMETER_VECTOR_H
+#define VCL_PROCESSING_PARAMETER_VECTOR_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/space/core/vector/polymorphic_object_vector.h>
@@ -61,4 +61,4 @@ using OutputValues = ParameterVector;
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETER_VECTOR_H
+#endif // VCL_PROCESSING_PARAMETER_VECTOR_H

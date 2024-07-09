@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_BOOL_PARAMETER_H
-#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_BOOL_PARAMETER_H
+#ifndef VCL_PROCESSING_PARAMETERS_UINT_PARAMETER_H
+#define VCL_PROCESSING_PARAMETERS_UINT_PARAMETER_H
 
 #ifndef VCLIB_WITH_MODULES
 #include "parameter.h"
@@ -29,12 +29,12 @@
 
 namespace vcl::proc {
 
-class BoolParameter : public Parameter
+class UintParameter : public Parameter
 {
 public:
-    BoolParameter(
+    UintParameter(
         const std::string& name,
-        bool               value,
+        uint               value,
         const std::string& description = "",
         const std::string& tooltip     = "",
         const std::string& category    = "") :
@@ -42,14 +42,14 @@ public:
     {
     }
 
-    ParameterType::Enum type() const override { return ParameterType::BOOL; }
+    ParameterType::Enum type() const override { return ParameterType::UINT; }
 
     std::shared_ptr<Parameter> clone() const override
     {
-        return std::make_shared<BoolParameter>(*this);
+        return std::make_shared<UintParameter>(*this);
     }
 };
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_BOOL_PARAMETER_H
+#endif // VCL_PROCESSING_PARAMETERS_UINT_PARAMETER_H

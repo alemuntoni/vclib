@@ -20,51 +20,72 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_USCALAR_PARAMETER_H
-#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_USCALAR_PARAMETER_H
+#ifndef VCL_PROCESSING_PARAMETERS_MESH_PARAMETER_H
+#define VCL_PROCESSING_PARAMETERS_MESH_PARAMETER_H
 
 #ifndef VCLIB_WITH_MODULES
 #include "parameter.h"
+
+#include <vclib/concepts/ranges/range.h>
 #endif
 
 namespace vcl::proc {
 
-class UscalarParameter : public Parameter
+class MeshParameter : public Parameter
 {
+    std::vector<std::pair<std::string, bool>> mMeshValues;
+
 public:
-    UscalarParameter(
-        const std::string& name,
-        Scalar             value,
+    MeshParameter(
+        const std::string& name        = "",
         const std::string& description = "",
         const std::string& tooltip     = "",
         const std::string& category    = "") :
-            Parameter(name, 0.0, description, tooltip, category)
+            Parameter(name, UINT_NULL, description, tooltip, category)
     {
-        setScalarValue(value);
     }
 
-    ParameterType::Enum type() const override { return ParameterType::USCALAR; }
+    ParameterType::Enum type() const override { return ParameterType::MESH; }
 
     std::shared_ptr<Parameter> clone() const override
     {
-        return std::make_shared<UscalarParameter>(*this);
+        return std::make_shared<MeshParameter>(*this);
     }
 
-    void setScalarValue(Scalar value) override
+    void setUintValue(uint value) override
     {
-        checkScalarValue(value);
-        Parameter::setScalarValue(value);
+        checkMeshValue(value);
+        Parameter::setUintValue(value);
+    }
+
+    const std::vector<std::pair<std::string, bool>>& meshValues() const
+    {
+        return mMeshValues;
+    }
+
+    void setMeshValues(
+        const std::vector<std::pair<std::string, bool>>& meshValues)
+    {
+        mMeshValues = meshValues;
     }
 
 private:
-    void checkScalarValue(Scalar value) const
+    void checkMeshValue(uint value) const
     {
-        if (value < 0.0)
+        if (value >= mMeshValues.size()) {
             throw std::runtime_error(
-                "UscalarParameter: value cannot be negative");
+                "Invalid mesh value: " + std::to_string(value) +
+                "; expected value in [0, " +
+                std::to_string(mMeshValues.size()) + ")");
+        }
+        if (!mMeshValues[value].second) {
+            throw std::runtime_error(
+                "Invalid mesh value: Mesh " + mMeshValues[value].first + " (" +
+                std::to_string(value) + ") is disabled");
+        }
     }
 };
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_USCALAR_PARAMETER_H
+#endif // VCL_PROCESSING_PARAMETERS_MESH_PARAMETER_H

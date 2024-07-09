@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_UINT_PARAMETER_H
-#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_UINT_PARAMETER_H
+#ifndef VCL_PROCESSING_PARAMETERS_USCALAR_PARAMETER_H
+#define VCL_PROCESSING_PARAMETERS_USCALAR_PARAMETER_H
 
 #ifndef VCLIB_WITH_MODULES
 #include "parameter.h"
@@ -29,27 +29,42 @@
 
 namespace vcl::proc {
 
-class UintParameter : public Parameter
+class UscalarParameter : public Parameter
 {
 public:
-    UintParameter(
+    UscalarParameter(
         const std::string& name,
-        uint               value,
+        Scalar             value,
         const std::string& description = "",
         const std::string& tooltip     = "",
         const std::string& category    = "") :
-            Parameter(name, value, description, tooltip, category)
+            Parameter(name, 0.0, description, tooltip, category)
     {
+        setScalarValue(value);
     }
 
-    ParameterType::Enum type() const override { return ParameterType::UINT; }
+    ParameterType::Enum type() const override { return ParameterType::USCALAR; }
 
     std::shared_ptr<Parameter> clone() const override
     {
-        return std::make_shared<UintParameter>(*this);
+        return std::make_shared<UscalarParameter>(*this);
+    }
+
+    void setScalarValue(Scalar value) override
+    {
+        checkScalarValue(value);
+        Parameter::setScalarValue(value);
+    }
+
+private:
+    void checkScalarValue(Scalar value) const
+    {
+        if (value < 0.0)
+            throw std::runtime_error(
+                "UscalarParameter: value cannot be negative");
     }
 };
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_UINT_PARAMETER_H
+#endif // VCL_PROCESSING_PARAMETERS_USCALAR_PARAMETER_H

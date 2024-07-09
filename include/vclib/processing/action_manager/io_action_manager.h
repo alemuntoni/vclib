@@ -26,7 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <map>
 
-#include <vclib/processing/actions/common/file_format.h>
+#include <vclib/io/file_format.h>
 #include <vclib/processing/actions/interfaces/action.h>
 #include <vclib/space/core/vector/polymorphic_object_vector.h>
 #endif

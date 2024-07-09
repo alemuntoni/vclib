@@ -20,72 +20,36 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_MESH_PARAMETER_H
-#define VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_MESH_PARAMETER_H
+#ifndef VCL_PROCESSING_PARAMETERS_STRING_PARAMETER_H
+#define VCL_PROCESSING_PARAMETERS_STRING_PARAMETER_H
 
 #ifndef VCLIB_WITH_MODULES
 #include "parameter.h"
-
-#include <vclib/concepts/ranges/range.h>
 #endif
 
 namespace vcl::proc {
 
-class MeshParameter : public Parameter
+class StringParameter : public Parameter
 {
-    std::vector<std::pair<std::string, bool>> mMeshValues;
-
 public:
-    MeshParameter(
-        const std::string& name        = "",
+    StringParameter(
+        const std::string& name,
+        const std::string& value,
         const std::string& description = "",
         const std::string& tooltip     = "",
         const std::string& category    = "") :
-            Parameter(name, UINT_NULL, description, tooltip, category)
+            Parameter(name, value, description, tooltip, category)
     {
     }
 
-    ParameterType::Enum type() const override { return ParameterType::MESH; }
+    ParameterType::Enum type() const override { return ParameterType::STRING; }
 
     std::shared_ptr<Parameter> clone() const override
     {
-        return std::make_shared<MeshParameter>(*this);
-    }
-
-    void setUintValue(uint value) override
-    {
-        checkMeshValue(value);
-        Parameter::setUintValue(value);
-    }
-
-    const std::vector<std::pair<std::string, bool>>& meshValues() const
-    {
-        return mMeshValues;
-    }
-
-    void setMeshValues(
-        const std::vector<std::pair<std::string, bool>>& meshValues)
-    {
-        mMeshValues = meshValues;
-    }
-
-private:
-    void checkMeshValue(uint value) const
-    {
-        if (value >= mMeshValues.size()) {
-            throw std::runtime_error(
-                "Invalid mesh value: " + std::to_string(value) +
-                "; expected value in [0, " +
-                std::to_string(mMeshValues.size()) + ")");
-        }
-        if (!mMeshValues[value].second) {
-            throw std::runtime_error(
-                "Invalid mesh value: Mesh " + mMeshValues[value].first + " (" +
-                std::to_string(value) + ") is disabled");
-        }
+        return std::make_shared<StringParameter>(*this);
     }
 };
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTIONS_COMMON_PARAMETERS_MESH_PARAMETER_H
+#endif // VCL_PROCESSING_PARAMETERS_STRING_PARAMETER_H
