@@ -20,67 +20,99 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_INTERFACES_LOAD_MESH_ACTION_H
-#define VCL_PROCESSING_ACTIONS_INTERFACES_LOAD_MESH_ACTION_H
+#ifndef VCL_PROCESSING_ACTION_INTERFACES_SAVE_MESH_ACTION_H
+#define VCL_PROCESSING_ACTION_INTERFACES_SAVE_MESH_ACTION_H
 
 #ifndef VCLIB_WITH_MODULES
 #include "mesh_action.h"
 
 #include <vclib/io/file_format.h>
-#include <vclib/algorithms/mesh/update.h>
 #include <vclib/processing/meshes.h>
 #include <vclib/processing/settings.h>
 #include <vclib/space/complex/mesh_info.h>
+#include <vclib/space/core/bit_set.h>
 #endif
 
 namespace vcl::proc {
 
-class LoadMeshAction : public MeshAction
+class SaveMeshAction : public MeshAction
 {
 public:
-    uint type() const final { return ActionType::LOAD_MESH_ACTION; }
+    uint type() const final { return ActionType::SAVE_MESH_ACTION; }
+
+    /**
+     * @brief Returns a BitSet that tells, for each mesh type, if the action
+     * supports it or not.
+     *
+     * By default, all mesh types are supported.
+     *
+     * You should override this method if your action does not support all mesh
+     * types.
+     *
+     * @return A BitSet with the supported mesh types.
+     */
+    virtual vcl::BitSet<short> supportedInputMeshType() const
+    {
+        vcl::BitSet<short> bs;
+        bs.set();
+        return bs;
+    }
 
     virtual std::vector<FileFormat> formats() const = 0;
 
-    virtual std::shared_ptr<MeshI> load(
+    virtual MeshInfo formatCapability() const = 0;
+
+    virtual void save(
         const std::string&     filename,
+        const MeshI&           mesh,
+        const MeshInfo&        info,
         const ParameterVector& parameters,
-        vcl::MeshInfo&         loadedInfo,
         AbstractLogger&        log = logger()) const = 0;
 
-    virtual std::shared_ptr<MeshI> load(
-        const std::string&     filename,
-        const ParameterVector& parameter,
-        AbstractLogger&        log = logger()) const
-    {
-        MeshInfo info;
-        auto     mesh = load(filename, parameter, info, log);
-        return mesh;
-    }
-
-    std::shared_ptr<MeshI> load(
+    void save(
         const std::string& filename,
+        const MeshI&       mesh,
         AbstractLogger&    log = logger()) const
     {
-        return load(filename, parameters(), log);
+        save(filename, mesh, formatCapability(), parameters(), log);
+    }
+
+    void save(
+        const std::string& filename,
+        const MeshI&       mesh,
+        const MeshInfo&    info,
+        AbstractLogger&    log = logger()) const
+    {
+        save(filename, mesh, info, parameters(), log);
+    }
+
+    void save(
+        const std::string&     filename,
+        const MeshI&           mesh,
+        const ParameterVector& parameters,
+        AbstractLogger&        log = logger()) const
+    {
+        save(filename, mesh, formatCapability(), parameters, log);
     }
 
 protected:
-    template<MeshConcept MeshType>
-    void postLoad(MeshType& mesh, const MeshInfo& loadedInfo) const
+    void callFunctionForSupportedMesheTypes(
+        const MeshI& mesh,
+        auto&&       function,
+        auto&&... args) const
     {
-        if constexpr (vcl::HasFaces<MeshType>) {
-            if (!loadedInfo.hasFaceNormals()) {
-                vcl::updatePerFaceNormals(mesh);
-            }
-            if (!loadedInfo.hasVertexNormals()) {
-                vcl::updatePerVertexNormalsFromFaceNormals(mesh);
-            }
+        auto supportedMeshTypes = supportedInputMeshType();
+        if (!supportedMeshTypes[mesh.type()]) {
+            throw std::runtime_error(
+                "The action " + name() + " does not support the " +
+                mesh.typeName() + " type.");
         }
-        vcl::updateBoundingBox(mesh);
+
+        callFunctionForMesh(
+            mesh, function, std::forward<decltype(args)>(args)...);
     }
 };
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTIONS_INTERFACES_LOAD_MESH_ACTION_H
+#endif // VCL_PROCESSING_ACTION_INTERFACES_SAVE_MESH_ACTION_H

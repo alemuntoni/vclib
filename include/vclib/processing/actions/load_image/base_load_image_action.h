@@ -24,7 +24,7 @@
 #define VCL_PROCESSING_ACTIONS_LOAD_IMAGE_BASE_LOAD_IMAGE_ACTION_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/processing/actions/interfaces/load_image_action.h>
+#include <vclib/processing/action_interfaces/load_image_action.h>
 #endif
 
 namespace vcl::proc {

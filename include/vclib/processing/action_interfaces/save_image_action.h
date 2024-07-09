@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_INTERFACES_LOAD_IMAGE_ACTION_H
-#define VCL_PROCESSING_ACTIONS_INTERFACES_LOAD_IMAGE_ACTION_H
+#ifndef VCL_PROCESSING_ACTION_INTERFACES_SAVE_IMAGE_ACTION_H
+#define VCL_PROCESSING_ACTION_INTERFACES_SAVE_IMAGE_ACTION_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <vector>
@@ -34,18 +34,19 @@
 
 namespace vcl::proc {
 
-class LoadImageAction : public Action
+class SaveImageAction : public Action
 {
 public:
-    uint type() const final { return ActionType::LOAD_IMAGE_ACTION; }
+    uint type() const final { return ActionType::SAVE_IMAGE_ACTION; }
 
     virtual std::vector<FileFormat> formats() const = 0;
 
-    virtual Image load(
+    virtual void save(
         const std::string& filename,
+        const Image&       image,
         AbstractLogger&    log = logger()) const = 0;
 };
 
 } // namespace vcl::proc
 
-#endif // VCL_PROCESSING_ACTIONS_INTERFACES_LOAD_IMAGE_ACTION_H
+#endif // VCL_PROCESSING_ACTION_INTERFACES_SAVE_IMAGE_ACTION_H
