@@ -22,11 +22,7 @@
 
 module;
 
-export module vclib.processing;
+export module vclib.processing:actions;
 
-export import :action_manager;
-export import :action_interfaces;
-export import :actions;
-export import :meshes;
-export import :parameters;
-export import :settings;
+export import :load_save_image_actions;
+export import :load_mesh_actions;

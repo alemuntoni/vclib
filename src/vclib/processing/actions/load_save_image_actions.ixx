@@ -22,11 +22,22 @@
 
 module;
 
-export module vclib.processing;
+#include <memory>
+#include <string>
+#include <vector>
 
-export import :action_manager;
-export import :action_interfaces;
-export import :actions;
-export import :meshes;
-export import :parameters;
-export import :settings;
+export module vclib.processing:load_save_image_actions;
+
+import vclib.io;
+import vclib.misc;
+import vclib.space.core;
+
+import :action_interfaces;
+
+export {
+#include <vclib/processing/actions/load_image/base_load_image_action.h>
+#include <vclib/processing/actions/save_image/base_save_image_action.h>
+
+#include <vclib/processing/actions/load_image.h>
+#include <vclib/processing/actions/save_image.h>
+}

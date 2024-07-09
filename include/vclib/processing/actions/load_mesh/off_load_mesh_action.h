@@ -23,12 +23,14 @@
 #ifndef VCL_PROCESSING_ACTIONS_LOAD_MESH_OFF_LOAD_MESH_ACTION_H
 #define VCL_PROCESSING_ACTIONS_LOAD_MESH_OFF_LOAD_MESH_ACTION_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <string>
 #include <vclib/load_save/off/load.h>
 #include <vclib/processing/action_interfaces/load_mesh_action.h>
 #include <vclib/processing/functions.h>
 #include <vclib/processing/meshes.h>
 #include <vclib/processing/parameters.h>
+#endif
 
 namespace vcl::proc {
 
