@@ -22,8 +22,18 @@
 
 module;
 
-export module vclib.processing.meshes;
+#include <memory>
+#include <string>
 
-export import vclib.processing.meshes.mesh_i;
-export import vclib.processing.meshes.poly_mesh;
-export import vclib.processing.meshes.tri_mesh;
+export module vclib.processing:meshes;
+
+import vclib.concepts;
+import vclib.meshes;
+
+import :settings;
+
+export {
+#include <vclib/processing/meshes/mesh_i.h>
+#include <vclib/processing/meshes/poly_mesh.h>
+#include <vclib/processing/meshes/tri_mesh.h>
+}

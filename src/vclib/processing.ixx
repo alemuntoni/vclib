@@ -24,5 +24,5 @@ module;
 
 export module vclib.processing;
 
-export import vclib.processing.meshes;
-export import vclib.processing.settings;
+export import :meshes;
+export import :settings;

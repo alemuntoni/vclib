@@ -22,7 +22,7 @@
 
 module;
 
-export module vclib.processing.settings;
+export module vclib.processing:settings;
 
 import vclib.types;
 
