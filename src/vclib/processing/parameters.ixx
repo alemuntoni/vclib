@@ -22,8 +22,30 @@
 
 module;
 
-export module vclib.processing;
+#include <algorithm>
+#include <any>
+#include <memory>
+#include <string>
+#include <vector>
 
-export import :meshes;
-export import :parameters;
-export import :settings;
+export module vclib.processing:parameters;
+
+import vclib.space.core;
+import vclib.types;
+
+import :settings;
+
+export {
+#include <vclib/processing/parameters/parameter.h>
+
+#include <vclib/processing/parameters/bool_parameter.h>
+#include <vclib/processing/parameters/enum_parameter.h>
+#include <vclib/processing/parameters/int_parameter.h>
+#include <vclib/processing/parameters/mesh_parameter.h>
+#include <vclib/processing/parameters/scalar_parameter.h>
+#include <vclib/processing/parameters/string_parameter.h>
+#include <vclib/processing/parameters/uint_parameter.h>
+#include <vclib/processing/parameters/uscalar_parameter.h>
+
+#include <vclib/processing/parameter_vector.h>
+}
