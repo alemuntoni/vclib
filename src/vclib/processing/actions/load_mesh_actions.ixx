@@ -46,4 +46,6 @@ export {
 #include <vclib/processing/actions/load_mesh/off_load_mesh_action.h>
 #include <vclib/processing/actions/load_mesh/ply_load_mesh_action.h>
 #include <vclib/processing/actions/load_mesh/stl_load_mesh_action.h>
+
+#include <vclib/processing/actions/load_mesh.h>
 }

@@ -22,9 +22,30 @@
 
 module;
 
-export module vclib.processing:actions;
+#include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
-export import :load_save_image_actions;
-export import :load_mesh_actions;
-export import :save_mesh_actions;
-export import :filter_mesh_actions;
+export module vclib.processing:save_mesh_actions;
+
+import vclib.concepts;
+import vclib.io;
+import vclib.load_save;
+import vclib.mesh;
+import vclib.misc;
+import vclib.space.complex;
+
+import :action_interfaces;
+import :functions;
+import :meshes;
+import :parameters;
+
+export {
+#include <vclib/processing/actions/save_mesh/obj_save_mesh_action.h>
+#include <vclib/processing/actions/save_mesh/off_save_mesh_action.h>
+#include <vclib/processing/actions/save_mesh/ply_save_mesh_action.h>
+#include <vclib/processing/actions/save_mesh/stl_save_mesh_action.h>
+
+#include <vclib/processing/actions/save_mesh.h>
+}

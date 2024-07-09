@@ -23,8 +23,10 @@
 #ifndef VCL_PROCESSING_ACTIONS_FILTER_MESH_H
 #define VCL_PROCESSING_ACTIONS_FILTER_MESH_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "filter_mesh/apply.h"
 #include "filter_mesh/create.h"
+#endif
 
 namespace vcl::proc {
 

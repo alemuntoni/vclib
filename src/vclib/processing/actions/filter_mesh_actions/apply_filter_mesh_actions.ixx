@@ -22,9 +22,23 @@
 
 module;
 
-export module vclib.processing:actions;
+#include <memory>
+#include <string>
+#include <vector>
 
-export import :load_save_image_actions;
-export import :load_mesh_actions;
-export import :save_mesh_actions;
-export import :filter_mesh_actions;
+export module vclib.processing:apply_filter_mesh_actions;
+
+import vclib.algorithms.mesh;
+import vclib.concepts;
+import vclib.misc;
+import vclib.space.core;
+
+import :action_interfaces;
+import :meshes;
+import :parameters;
+
+export {
+#include <vclib/processing/actions/filter_mesh/apply/laplacian_smoothing_filter.h>
+
+#include <vclib/processing/actions/filter_mesh/apply.h>
+}

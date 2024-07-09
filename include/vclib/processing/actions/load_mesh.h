@@ -23,10 +23,12 @@
 #ifndef VCL_PROCESSING_ACTIONS_LOAD_MESH_H
 #define VCL_PROCESSING_ACTIONS_LOAD_MESH_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "load_mesh/obj_load_mesh_action.h"
 #include "load_mesh/off_load_mesh_action.h"
 #include "load_mesh/ply_load_mesh_action.h"
 #include "load_mesh/stl_load_mesh_action.h"
+#endif
 
 namespace vcl::proc {
 
