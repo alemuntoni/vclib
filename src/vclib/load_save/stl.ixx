@@ -22,22 +22,27 @@
 
 module;
 
-#include <string>
+#include <bit>
+#include <fstream>
+#include <vector>
 
-export module vclib.load_save.load;
+#include <Eigen/Core>
 
+export module vclib.load_save:stl;
+
+import vclib.algorithms.core;
 import vclib.concepts;
 import vclib.exceptions;
 import vclib.io;
-import vclib.load_save.settings;
 import vclib.misc;
 import vclib.space.complex;
+import vclib.space.core;
+import vclib.types;
 
-export import vclib.load_save.obj.load;
-export import vclib.load_save.off.load;
-export import vclib.load_save.ply.load;
-export import vclib.load_save.stl.load;
+import :settings;
 
 export {
-#include <vclib/load_save/load.h>
+#include <vclib/load_save/stl/capability.h>
+#include <vclib/load_save/stl/load.h>
+#include <vclib/load_save/stl/save.h>
 }

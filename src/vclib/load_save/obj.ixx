@@ -29,18 +29,24 @@ module;
 #include <string>
 #include <vector>
 
-export module vclib.load_save.obj.load;
+#include <Eigen/Core>
+
+export module vclib.load_save:obj;
 
 import vclib.concepts;
 import vclib.exceptions;
 import vclib.io;
-import vclib.load_save.obj.material;
-import vclib.load_save.settings;
 import vclib.misc;
-import vclib.space.complex;
 import vclib.space.core;
+import vclib.space.complex;
 import vclib.types;
 
+import :settings;
+
 export {
+#include <vclib/load_save/obj/material.h>
+
+#include <vclib/load_save/obj/capability.h>
 #include <vclib/load_save/obj/load.h>
+#include <vclib/load_save/obj/save.h>
 }

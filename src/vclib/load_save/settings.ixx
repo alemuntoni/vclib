@@ -22,7 +22,7 @@
 
 module;
 
-export module vclib.load_save.settings;
+export module vclib.load_save:settings;
 
 import vclib.space.complex;
 

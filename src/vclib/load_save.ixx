@@ -22,9 +22,27 @@
 
 module;
 
+#include <string>
+
 export module vclib.load_save;
 
-export import vclib.load_save.capability;
-export import vclib.load_save.load;
-export import vclib.load_save.save;
-export import vclib.load_save.settings;
+export import :settings;
+
+export import :obj;
+export import :off;
+export import :ply;
+export import :stl;
+
+import vclib.concepts;
+import vclib.exceptions;
+import vclib.io;
+import vclib.misc;
+import vclib.space.complex;
+import vclib.types;
+
+export {
+#include <vclib/load_save/capability.h>
+#include <vclib/load_save/load.h>
+#include <vclib/load_save/save.h>
+}
+
