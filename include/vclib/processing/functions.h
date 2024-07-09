@@ -23,10 +23,12 @@
 #ifndef VCL_PROCESSING_FUNCTIONS_H
 #define VCL_PROCESSING_FUNCTIONS_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "action_manager.h"
 
 #include <vclib/io/file_format.h>
 #include <vclib/io/file_info.h>
+#endif
 
 namespace vcl::proc {
 

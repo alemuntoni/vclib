@@ -22,10 +22,23 @@
 
 module;
 
-export module vclib.processing;
+#include <map>
+#include <memory>
+#include <ranges>
+#include <string>
+#include <vector>
 
-export import :action_manager;
-export import :action_interfaces;
-export import :meshes;
-export import :parameters;
-export import :settings;
+export module vclib.processing:action_manager;
+
+import vclib.concepts;
+import vclib.io;
+import vclib.space.core;
+
+import :action_interfaces;
+
+export {
+#include <vclib/processing/action_manager/identifier_action_manager.h>
+#include <vclib/processing/action_manager/io_action_manager.h>
+
+#include <vclib/processing/action_manager.h>
+}
