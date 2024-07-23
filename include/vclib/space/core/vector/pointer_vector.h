@@ -135,7 +135,7 @@ public:
 
     ConstPointer data() const { return Base::data(); }
 
-    ConstIterator find(const typename MakeConstPointer<T>::type& e) const
+    ConstIterator find(const MakeConstPointer<T>& e) const
     {
         return Base::find(e);
     }

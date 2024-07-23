@@ -39,7 +39,8 @@ static_assert(
     !vcl::LoggerConcept<int>, "int is a Logger");
 
 static_assert(
-    vcl::IntegralOrEnum<vcl::PrimitiveType>, "PrimitiveType is not an integral or enum");
+    vcl::IntegralOrEnum<vcl::PrimitiveType::Enum>,
+    "PrimitiveType is not an integral or enum");
 
 static_assert(
     !vcl::NonBoolIntegralOrEnum<bool>, "bool is a NonBoolIntegralOrEnum");

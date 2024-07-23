@@ -112,18 +112,13 @@ public:
 
         std::shared_ptr<MeshI> mesh = inputOutputMeshes[0];
 
-        auto fun = [&](auto& mesh, auto&& ss, auto&& cw, auto&& os) {
+        auto fun = [&](auto& mesh) {
             laplacianSmooth(
                 mesh, smoothingSteps, cotangentWeighting, onlySelected);
         };
 
         callFunctionForSupportedInputOutputMeshTypes(
-            *mesh,
-            supportedMeshTypes,
-            fun,
-            smoothingSteps,
-            cotangentWeighting,
-            onlySelected);
+            *mesh, supportedMeshTypes, fun);
 
         return OutputValues();
     }

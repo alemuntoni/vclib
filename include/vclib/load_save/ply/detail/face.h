@@ -44,7 +44,7 @@ void writePlyFaceIndices(
     const MeshType&          m,
     const std::vector<uint>& vIndices,
     const FaceType&          f,
-    FileType               format)
+    FileType                 format)
 {
     using VertexType = MeshType::VertexType;
 

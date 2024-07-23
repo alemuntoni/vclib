@@ -21,6 +21,7 @@
  ****************************************************************************/
 
 #include <cassert>
+#include <memory>
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/processing.h>
@@ -32,15 +33,12 @@ import vclib;
 
 int main()
 {
-    vcl::LoadSettings s;
-    s.loadTextureImages = true;
-
     vcl::proc::ActionManager manager;
 
     manager.add(vcl::proc::vclibActions());
 
-    auto pm0 = manager.loadMeshAction("obj")->load(VCLIB_ASSETS_PATH
-                                                   "/TextureDouble.obj");
+    std::shared_ptr<vcl::proc::MeshI> pm0 = manager.loadMeshAction("obj")->load(
+        VCLIB_ASSETS_PATH "/TextureDouble.obj");
 
     assert(pm0->is<vcl::proc::TriMesh>());
 
@@ -50,7 +48,7 @@ int main()
     assert(pm1->is<vcl::proc::PolyMesh>());
 
     auto params = manager.loadMeshAction("obj")->parameters();
-    params.get("mesh_type")->setIntValue(1);
+    params.get("mesh_type")->setUintValue(1);
 
     auto pm2 = manager.loadMeshAction("obj")->load(
         VCLIB_ASSETS_PATH "/greek_helmet.obj", params);

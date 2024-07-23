@@ -42,15 +42,10 @@ module;
 #include <utility>
 #include <vector>
 
-// Apple clang does not support c++17 parallel algorithms.
-// To compensate this lack, waiting for Apple to support them, we use pstld
-// (https://github.com/mikekazakov/pstld) that implements them in the stl
-// namespace
-#if defined(__clang__) && defined(__APPLE__)
-#include <pstld/pstld.h>
-#else
-#include <execution>
-#endif
+// Hack to compensate lack of support for c++17 parallel algorithms by 
+// several compilers. We use poolSTL.
+#define POOLSTL_STD_SUPPLEMENT
+#include <poolstl/poolstl.hpp>
 
 export module vclib.misc;
 

@@ -178,12 +178,58 @@ public:
         return applyFilter(outputMeshes, parameters());
     }
 
+    OutputValues applyFilter(
+        const std::vector<std::shared_ptr<MeshI>>& inputOutputMeshes,
+        MeshVector&                                outputMeshes,
+        const ParameterVector&                     parameters,
+        AbstractLogger&                            log = logger())
+    {
+        if (numberInputMeshes() > 0) {
+            throw std::runtime_error(
+                "This action requires input meshes. You called the wrong "
+                "overload of the applyFilter member function.");
+        }
+
+        if (numberInputOutputMeshes() == 0) {
+            throw std::runtime_error(
+                "This action does not require input/output meshes. You called "
+                "the wrong overload of the applyFilter member function.");
+        }
+
+        return applyFilter(
+            MeshVector(), inputOutputMeshes, outputMeshes, parameters, log);
+    }
+
+    OutputValues applyFilter(
+        const std::vector<std::shared_ptr<MeshI>>& inputOutputMeshes,
+        MeshVector&                                outputMeshes,
+        AbstractLogger&                            log = logger())
+    {
+        return applyFilter(inputOutputMeshes, outputMeshes, parameters(), log);
+    }
+
+    OutputValues applyFilter(
+        const std::vector<std::shared_ptr<MeshI>>& inputOutputMeshes,
+        const ParameterVector&                     parameters,
+        AbstractLogger&                            log = logger())
+    {
+        MeshVector outputMeshes;
+
+        return applyFilter(inputOutputMeshes, outputMeshes, parameters, log);
+    }
+
+    OutputValues applyFilter(
+        const std::vector<std::shared_ptr<MeshI>>& inputOutputMeshes,
+        AbstractLogger&                            log = logger())
+    {
+        return applyFilter(inputOutputMeshes, parameters(), log);
+    }
+
 protected:
     auto callFunctionForSupportedInputMeshTypes(
         const MeshI&         mesh,
         const BitSet<short>& supportedMeshTypes,
-        auto&&               function,
-        auto&&... args) const
+        auto&&               function) const
     {
         if (!supportedMeshTypes[mesh.type()]) {
             throw std::runtime_error(
@@ -191,15 +237,13 @@ protected:
                 mesh.typeName() + " type.");
         }
 
-        return callFunctionForMesh(
-            mesh, function, std::forward<decltype(args)>(args)...);
+        return callFunctionForMesh(mesh, function);
     }
 
     auto callFunctionForSupportedInputOutputMeshTypes(
         MeshI&               mesh,
         const BitSet<short>& supportedMeshTypes,
-        auto&&               function,
-        auto&&... args) const
+        auto&&               function) const
     {
         if (!supportedMeshTypes[mesh.type()]) {
             throw std::runtime_error(
@@ -207,8 +251,7 @@ protected:
                 mesh.typeName() + " type.");
         }
 
-        return callFunctionForMesh(
-            mesh, function, std::forward<decltype(args)>(args)...);
+        return callFunctionForMesh(mesh, function);
     }
 
     template<MeshConcept MeshType>
