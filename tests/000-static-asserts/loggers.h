@@ -26,6 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/misc/logger.h>
 #else
+#include <Eigen/Core>
 import vclib;
 #endif
 

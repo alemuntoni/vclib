@@ -24,6 +24,8 @@ module;
 
 #include <string>
 
+#include <Eigen/Core>
+
 export module vclib.load_save;
 
 export import :settings;

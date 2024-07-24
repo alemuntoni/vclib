@@ -22,10 +22,16 @@
 
 module;
 
+#include <filesystem>
+#include <fstream>
 #include <memory>
+#include <ranges>
 #include <set>
 #include <string>
 #include <vector>
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 export module vclib.processing:save_mesh_actions;
 

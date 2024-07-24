@@ -27,6 +27,7 @@
 #include <vclib/mesh/tmp_meshes.h>
 #include <vclib/space.h>
 #else
+#include <Eigen/Core>
 import vclib;
 #endif
 

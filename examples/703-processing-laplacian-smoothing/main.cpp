@@ -28,6 +28,10 @@
 
 #include <vclib/load_save.h>
 #else
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+#include <ranges>
+#include <string>
 import vclib;
 #endif
 

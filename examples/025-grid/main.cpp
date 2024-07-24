@@ -31,6 +31,7 @@
 #include <vclib/miscellaneous.h>
 #else
 #include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <fstream>
 import vclib;
 #endif

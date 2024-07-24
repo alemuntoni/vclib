@@ -7,6 +7,7 @@
 #include <vclib/views/mesh.h>
 #include <vclib/views/pointers.h>
 #else
+#include <Eigen/Core>
 import vclib;
 #endif
 

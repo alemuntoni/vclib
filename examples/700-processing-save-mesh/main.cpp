@@ -25,6 +25,8 @@
 
 #include <vclib/load_save.h>
 #else
+#include <Eigen/Geometry>
+#include <fstream>
 import vclib;
 #endif
 

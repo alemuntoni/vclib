@@ -26,6 +26,8 @@ module;
 #include <memory>
 #include <vector>
 
+#include <Eigen/Core>
+
 export module vclib.processing:action_interfaces;
 
 import vclib.algorithms.mesh;

@@ -6,6 +6,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes/tri_mesh.h>
 #else
+#include <Eigen/Core>
 import vclib;
 #endif
 

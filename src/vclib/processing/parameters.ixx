@@ -25,8 +25,11 @@ module;
 #include <algorithm>
 #include <any>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
+
+#include <Eigen/Core>
 
 export module vclib.processing:parameters;
 

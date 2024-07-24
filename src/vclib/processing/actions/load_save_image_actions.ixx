@@ -26,6 +26,8 @@ module;
 #include <string>
 #include <vector>
 
+#include <Eigen/Core>
+
 export module vclib.processing:load_save_image_actions;
 
 import vclib.io;

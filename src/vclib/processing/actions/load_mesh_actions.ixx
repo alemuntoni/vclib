@@ -22,9 +22,14 @@
 
 module;
 
+#include <fstream>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <vector>
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 export module vclib.processing:load_mesh_actions;
 

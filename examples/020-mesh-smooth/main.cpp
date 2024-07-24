@@ -29,6 +29,8 @@
 #include <vclib/misc/timer.h>
 #else
 #include <Eigen/Core>
+#include <Eigen/Geometry>
+#include <filesystem>
 #include <fstream>
 #include <set>
 import vclib;

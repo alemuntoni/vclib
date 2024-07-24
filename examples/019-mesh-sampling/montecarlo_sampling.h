@@ -27,6 +27,8 @@
 #include <vclib/algorithms.h>
 #include <vclib/meshes.h>
 #else
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <fstream>
 #include <ranges> // needed by msvc...
 #include <set>

@@ -25,6 +25,8 @@ module;
 #include <iostream>
 #include <string>
 
+#include <Eigen/Core>
+
 export module vclib.processing:functions;
 
 import vclib.concepts;

@@ -32,6 +32,7 @@
 #include <vclib/meshes.h>
 #include <vclib/space.h>
 #else
+#include <Eigen/Geometry>
 import vclib;
 #endif
 

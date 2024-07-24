@@ -26,6 +26,9 @@ module;
 #include <string>
 #include <vector>
 
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
 export module vclib.processing:create_filter_mesh_actions;
 
 import vclib.algorithms.mesh;

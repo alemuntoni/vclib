@@ -29,6 +29,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/types.h>
 #else
+#include <Eigen/Core>
 import vclib;
 #endif
 

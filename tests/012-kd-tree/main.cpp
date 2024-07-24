@@ -27,6 +27,8 @@
 #include <vclib/meshes.h>
 #include <vclib/space/complex/kd_tree.h>
 #else
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <fstream>
 #include <set>
 import vclib;

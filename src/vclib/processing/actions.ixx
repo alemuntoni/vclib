@@ -22,8 +22,13 @@
 
 module;
 
+#include <filesystem>
+#include <fstream>
 #include <memory>
+#include <ranges>
 #include <vector>
+
+#include <Eigen/Core>
 
 export module vclib.processing:actions;
 

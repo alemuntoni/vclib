@@ -22,6 +22,12 @@
 
 module;
 
+#include <filesystem>
+#include <fstream>
+#include <ranges>
+
+#include <Eigen/Core>
+
 export module vclib.processing;
 
 export import :action_manager;
