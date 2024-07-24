@@ -126,7 +126,7 @@ TEMPLATE_TEST_CASE(
         REQUIRE(tm.vertexNumber() == 7);
         REQUIRE(tm.faceNumber() == 9);
 
-        uint nr = vcl::removeDuplicatedFaces(tm);
+        unsigned int nr = vcl::removeDuplicatedFaces(tm);
         REQUIRE(nr == 5);
         REQUIRE(tm.vertexNumber() == 7);
         REQUIRE(tm.faceNumber() == 4);
@@ -141,7 +141,7 @@ TEMPLATE_TEST_CASE(
         REQUIRE(pm.vertexNumber() == 7);
         REQUIRE(pm.faceNumber() == 9);
 
-        uint nr = vcl::removeDuplicatedFaces(pm);
+        unsigned int nr = vcl::removeDuplicatedFaces(pm);
         REQUIRE(nr == 5);
         REQUIRE(pm.vertexNumber() == 7);
         REQUIRE(pm.faceNumber() == 4);
@@ -156,7 +156,7 @@ TEMPLATE_TEST_CASE(
         REQUIRE(pm.vertexNumber() == 5);
         REQUIRE(pm.faceNumber() == 6);
 
-        uint nr = vcl::removeDuplicatedFaces(pm);
+        unsigned int nr = vcl::removeDuplicatedFaces(pm);
 
         REQUIRE(nr == 3);
         REQUIRE(pm.vertexNumber() == 5);
@@ -211,7 +211,7 @@ TEMPLATE_TEST_CASE(
 
     REQUIRE(tm.face(5).vertex(1) == &tm.vertex(4));
 
-    uint nv = vcl::removeDuplicatedVertices(tm);
+    unsigned int nv = vcl::removeDuplicatedVertices(tm);
 
     REQUIRE(nv == 1);
 
@@ -229,7 +229,7 @@ TEMPLATE_TEST_CASE("Unreferenced Vertices", "", Meshes, Meshesf)
 
         populateTriMesh(tm);
 
-        uint nv = vcl::numberUnreferencedVertices(tm);
+        unsigned int nv = vcl::numberUnreferencedVertices(tm);
 
         REQUIRE(nv == 1);
     }
@@ -240,7 +240,7 @@ TEMPLATE_TEST_CASE("Unreferenced Vertices", "", Meshes, Meshesf)
 
         populateEdgeMesh(em);
 
-        uint nv = vcl::numberUnreferencedVertices(em);
+        unsigned int nv = vcl::numberUnreferencedVertices(em);
 
         REQUIRE(nv == 1);
     }
@@ -258,7 +258,7 @@ TEMPLATE_TEST_CASE(
 
     TriMesh t = vcl::load<TriMesh>(VCLIB_ASSETS_PATH "/brain.ply");
 
-    uint nv = vcl::removeDuplicatedVertices(t);
+    unsigned int nv = vcl::removeDuplicatedVertices(t);
 
     SECTION("Test number duplicated vertices")
     {

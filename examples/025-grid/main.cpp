@@ -40,9 +40,9 @@ int main()
     vcl::RegularGrid3<double> g(
         vcl::Point3d(0, 0, 0),
         vcl::Point3d(1, 1, 1),
-        vcl::Point3<uint>(10, 10, 10));
+        vcl::Point3<unsigned int>(10, 10, 10));
 
-    vcl::Point3<uint> first(2, 2, 2), last(5, 4, 7);
+    vcl::Point3<unsigned int> first(2, 2, 2), last(5, 4, 7);
 
     vcl::HashTableGrid3<vcl::Point3d, double, false> sht(g);
 
@@ -67,7 +67,7 @@ int main()
 
     std::cerr << "Values in cell 0, 1, 2: \n";
 
-    auto p = sht.valuesInCell(vcl::Point3<uint>(0, 1, 2));
+    auto p = sht.valuesInCell(vcl::Point3<unsigned int>(0, 1, 2));
     for (auto& it = p.first; it != p.second; ++it) {
         std::cerr << it->second << "; ";
     }
@@ -119,7 +119,7 @@ int main()
 
     std::cerr << "Values in cell 0, 1, 2: \n";
 
-    auto pp = sg.valuesInCell(vcl::Point3<uint>(0, 1, 2));
+    auto pp = sg.valuesInCell(vcl::Point3<unsigned int>(0, 1, 2));
     for (auto& it = pp.first; it != pp.second; ++it) {
         std::cerr << it->second << "; ";
     }

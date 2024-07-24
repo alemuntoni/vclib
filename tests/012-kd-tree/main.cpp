@@ -36,9 +36,9 @@ import vclib;
 #include <catch2/catch_test_macros.hpp>
 
 template<typename MeshType, typename PointType>
-std::vector<uint> getKNearestNeighbors(
+std::vector<unsigned int> getKNearestNeighbors(
     const PointType& p,
-    uint             k,
+    unsigned int     k,
     std::string      mesh = "bone.ply")
 {
     MeshType m = vcl::loadPly<MeshType>(VCLIB_ASSETS_PATH "/" + mesh);
@@ -63,5 +63,5 @@ TEMPLATE_TEST_CASE(
     REQUIRE(getKNearestNeighbors<TriMesh>(p, 1)[0] == 1558);
     REQUIRE(
         getKNearestNeighbors<TriMesh>(p, 5) ==
-        std::vector<uint> {1558, 1613, 1720, 1576, 163});
+        std::vector<unsigned int> {1558, 1613, 1720, 1576, 163});
 }

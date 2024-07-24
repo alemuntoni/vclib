@@ -35,16 +35,16 @@
 import vclib;
 #endif
 
-template<typename Scalar, uint N>
+template<typename Scalar, unsigned int N>
 vcl::Point<Scalar, N> randomPoint()
 {
     vcl::Point<Scalar, N> p;
-    for (uint i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; i++)
         p[i] = GENERATE(take(1, random<Scalar>(-100, 100)));
     return p;
 }
 
-template<typename Scalar, uint N>
+template<typename Scalar, unsigned int N>
 vcl::Box<vcl::Point<Scalar, N>> randomBox()
 {
     vcl::Box<vcl::Point<Scalar, N>> b(
@@ -57,7 +57,7 @@ vcl::Color randomColor()
     // generate random color using std::mt19937
 
     std::mt19937                        gen;
-    std::uniform_int_distribution<uint> dist(0, 255);
+    std::uniform_int_distribution<unsigned int> dist(0, 255);
     return vcl::Color(dist(gen), dist(gen), dist(gen), dist(gen));
 }
 
@@ -65,7 +65,7 @@ template<std::integral T>
 vcl::BitSet<T> randomBitSet()
 {
     vcl::BitSet<T> bs;
-    for (uint i = 0; i < bs.size(); i++)
+    for (unsigned int i = 0; i < bs.size(); i++)
         bs.set(i, GENERATE(take(1, random(0, 1))));
     return bs;
 }
@@ -174,12 +174,12 @@ TEST_CASE("Vector serialization")
     vcl::Vector<vcl::Color, -1> vecColor1;
     vcl::Vector<double, -1>     vecDouble1;
 
-    uint randSizeCol = GENERATE(take(1, random(1, 10)));
-    uint randSizeDbl = GENERATE(take(1, random(1, 10)));
-    for (uint i = 0; i < randSizeCol; i++)
+    unsigned int randSizeCol = GENERATE(take(1, random(1, 10)));
+    unsigned int randSizeDbl = GENERATE(take(1, random(1, 10)));
+    for (unsigned int i = 0; i < randSizeCol; i++)
         vecColor1.pushBack(randomColor());
 
-    for (uint i = 0; i < randSizeDbl; i++)
+    for (unsigned int i = 0; i < randSizeDbl; i++)
         vecDouble1.pushBack(GENERATE(take(1, random(0.0, 1.0))));
 
     std::ofstream fo = vcl::openOutputFileStream(VCLIB_RESULTS_PATH
@@ -199,10 +199,10 @@ TEST_CASE("Vector serialization")
     REQUIRE(vecColor1.size() == vecColor2.size());
     REQUIRE(vecDouble1.size() == vecDouble2.size());
 
-    for (uint i = 0; i < vecColor1.size(); i++)
+    for (unsigned int i = 0; i < vecColor1.size(); i++)
         REQUIRE(vecColor1[i] == vecColor2[i]);
 
-    for (uint i = 0; i < vecDouble1.size(); i++)
+    for (unsigned int i = 0; i < vecDouble1.size(); i++)
         REQUIRE(vecDouble1[i] == vecDouble2[i]);
 }
 
@@ -219,13 +219,13 @@ TEST_CASE("Array serialization")
         GENERATE(take(1, random(1, 10))),
         GENERATE(take(1, random(1, 10))));
 
-    for (uint i = 0; i < array2D1.size(0); i++)
-        for (uint j = 0; j < array2D1.size(1); j++)
+    for (unsigned int i = 0; i < array2D1.size(0); i++)
+        for (unsigned int j = 0; j < array2D1.size(1); j++)
             array2D1(i, j) = GENERATE(take(1, random(0.0f, 1.0f)));
 
-    for (uint i = 0; i < array3D1.size(0); i++)
-        for (uint j = 0; j < array3D1.size(1); j++)
-            for (uint k = 0; k < array3D1.size(2); k++)
+    for (unsigned int i = 0; i < array3D1.size(0); i++)
+        for (unsigned int j = 0; j < array3D1.size(1); j++)
+            for (unsigned int k = 0; k < array3D1.size(2); k++)
                 array3D1(i, j, k) = GENERATE(take(1, random(0.0f, 1.0f)));
 
     std::ofstream fo = vcl::openOutputFileStream(VCLIB_RESULTS_PATH
@@ -250,13 +250,13 @@ TEST_CASE("Array serialization")
     REQUIRE(array3D1.size(1) == array3D2.size(1));
     REQUIRE(array3D1.size(2) == array3D2.size(2));
 
-    for (uint i = 0; i < array2D1.size(0); i++)
-        for (uint j = 0; j < array2D1.size(1); j++)
+    for (unsigned int i = 0; i < array2D1.size(0); i++)
+        for (unsigned int j = 0; j < array2D1.size(1); j++)
             REQUIRE(array2D1(i, j) == array2D2(i, j));
 
-    for (uint i = 0; i < array3D1.size(0); i++)
-        for (uint j = 0; j < array3D1.size(1); j++)
-            for (uint k = 0; k < array3D1.size(2); k++)
+    for (unsigned int i = 0; i < array3D1.size(0); i++)
+        for (unsigned int j = 0; j < array3D1.size(1); j++)
+            for (unsigned int k = 0; k < array3D1.size(2); k++)
                 REQUIRE(array3D1(i, j, k) == array3D2(i, j, k));
 }
 
@@ -279,7 +279,7 @@ TEST_CASE("std vector of strings serialization")
     fi.close();
 
     REQUIRE(vecStr1.size() == vecStr2.size());
-    for (uint i = 0; i < vecStr1.size(); i++)
+    for (unsigned int i = 0; i < vecStr1.size(); i++)
         REQUIRE(vecStr1[i] == vecStr2[i]);
 }
 
@@ -289,8 +289,8 @@ TEMPLATE_TEST_CASE("Matrix serialization", "", int, float, double)
 
     vcl::Matrix<Scalar, 2, 2> mat1;
 
-    for (uint i = 0; i < 2; i++)
-        for (uint j = 0; j < 2; j++)
+    for (unsigned int i = 0; i < 2; i++)
+        for (unsigned int j = 0; j < 2; j++)
             mat1(i, j) = GENERATE(take(1, random(0.0, 1.0)));
 
     std::ofstream fo =
@@ -304,8 +304,8 @@ TEMPLATE_TEST_CASE("Matrix serialization", "", int, float, double)
     mat2.deserialize(fi);
     fi.close();
 
-    for (uint i = 0; i < 2; i++)
-        for (uint j = 0; j < 2; j++)
+    for (unsigned int i = 0; i < 2; i++)
+        for (unsigned int j = 0; j < 2; j++)
             REQUIRE(mat1(i, j) == mat2(i, j));
 }
 
@@ -316,7 +316,7 @@ TEMPLATE_TEST_CASE("Mesh serialization", "", vcl::PolyMesh, vcl::TriMesh)
     Mesh mesh1 = vcl::load<Mesh>(VCLIB_ASSETS_PATH "/bunny.obj");
 
     mesh1.enablePerVertexColor();
-    for (uint i = 0; i < mesh1.vertexNumber(); i++)
+    for (unsigned int i = 0; i < mesh1.vertexNumber(); i++)
         mesh1.vertex(i).color() = randomColor();
 
     std::ofstream fo =
@@ -334,14 +334,14 @@ TEMPLATE_TEST_CASE("Mesh serialization", "", vcl::PolyMesh, vcl::TriMesh)
     REQUIRE(mesh1.faceNumber() == mesh2.faceNumber());
     REQUIRE(mesh2.isPerVertexColorEnabled());
 
-    for (uint i = 0; i < mesh1.vertexNumber(); i++) {
+    for (unsigned int i = 0; i < mesh1.vertexNumber(); i++) {
         REQUIRE(mesh1.vertex(i).coord() == mesh2.vertex(i).coord());
         REQUIRE(mesh1.vertex(i).color() == mesh2.vertex(i).color());
     }
 
-    for (uint i = 0; i < mesh1.faceNumber(); i++) {
+    for (unsigned int i = 0; i < mesh1.faceNumber(); i++) {
         REQUIRE(mesh1.face(i).vertexNumber() == mesh2.face(i).vertexNumber());
-        for (uint j = 0; j < mesh1.face(i).vertexNumber(); j++)
+        for (unsigned int j = 0; j < mesh1.face(i).vertexNumber(); j++)
             REQUIRE(
                 mesh1.face(i).vertexIndex(j) == mesh2.face(i).vertexIndex(j));
     }
