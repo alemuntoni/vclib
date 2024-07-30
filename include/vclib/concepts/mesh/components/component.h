@@ -29,48 +29,18 @@
 
 namespace vcl::comp {
 
-namespace detail {
-
 /**
- * @brief Given the ID of a Component and a list of Component types,
- * this predicate sets its bool `value` to `true` if there exists a Component in
- * the list having the COMP_ID, and sets `type` to the TypeWrapper of the
- * found component.
+ * @brief The ComponentConcept is evaluated to true whenever the type `T` is a
+ * valid component, i.e., it has a static constexpr member `COMPONENT_ID` of
+ * type `unsigned int`.
  *
- * If no Component was found, value will be set to `false` and type will contain
- * an empty TypeWrapper.
- */
-template<uint COMP_ID, typename... Components>
-struct ComponentOfTypePred
-{
-private:
-    template<typename Comp>
-    struct SameCompPred
-    {
-        static constexpr bool value = Comp::COMPONENT_ID == COMP_ID;
-    };
-
-public:
-    // TypeWrapper of the found container, if any
-    using type =
-        typename vcl::FilterTypesByCondition<SameCompPred, Components...>::type;
-    static constexpr bool value = NumberOfTypes<type>::value == 1;
-};
-
-// TypeWrapper specialization
-template<uint COMP_ID, typename... Components>
-struct ComponentOfTypePred<COMP_ID, TypeWrapper<Components...>> :
-        public ComponentOfTypePred<COMP_ID, Components...>
-{
-};
-
-} // namespace detail
-
-/**
- * @brief The ComponentConcept is evaluated to true whenever the type T is a
- * valid component.
+ * The `COMPONENT_ID` is used to identify the component type in the mesh or in
+ * the mesh element. Its value should be one of the values defined in the
+ * @ref vcl::CompId enum.
  *
- * @tparam T: the type to be evaluated
+ * @tparam T The type to be evaluated.
+ *
+ * @ingroup components_concepts
  */
 template<typename T>
 concept ComponentConcept = requires {
@@ -80,21 +50,50 @@ concept ComponentConcept = requires {
 };
 
 /**
- * @brief The predicate struct IsComponentPred sets its bool `value` to `true`
- * when the type T satisfies the ComponentConcept concept
+ * @brief Evaluates to true if the type `T` is a component that is stored
+ * vertically in its element container.
  *
- * @tparam T: the type to be evaluated
+ * @tparam T The type to be evaluated.
+ *
+ * @ingroup components_concepts
  */
 template<typename T>
-struct IsComponentPred
-{
-    static const bool value = ComponentConcept<T>;
+concept IsVerticalComponent = T::IS_VERTICAL == true && requires {
+    // clang-format off
+    typename T::DataValueType;
+    { T::IS_VERTICAL } -> std::same_as<const bool&>;
+    // clang-format on
 };
 
-template<uint COMP_ID, typename... Components>
-using ComponentOfType = FirstTypeT<
-    typename detail::ComponentOfTypePred<COMP_ID, Components...>::type>;
+/**
+ * @brief Evaluates to true if the type `T` is a component that is stored
+ * vertically in its element container, and it is optional.
+ *
+ * @tparam T The type to be evaluated.
+ *
+ * @ingroup components_concepts
+ */
+template<typename T>
+concept IsOptionalComponent =
+    IsVerticalComponent<T> && T::IS_OPTIONAL == true && requires {
+        // clang-format off
+        { T::IS_OPTIONAL } -> std::same_as<const bool&>;
+        // clang-format on
+    };
 
+/**
+ * @private
+ * @brief Evaluates to true if the type `T` is a component that has a `init()`
+ * member function, that must be called to initialize the component.
+ *
+ * The `init()` function is necessary in components that may be optional and,
+ * when enabled, they need to be initialized.
+ *
+ * @note Only components that store data that require non-default initialization
+ * should have the `init()` function.
+ *
+ * @tparam T The type to be evaluated.
+ */
 template<typename T>
 concept HasInitMemberFunction = requires (T o) {
     // clang-format off
@@ -102,6 +101,14 @@ concept HasInitMemberFunction = requires (T o) {
     // clang-format on
 };
 
+/**
+ * @private
+ * @brief Evaluates to true if the type `T` is a component that has a
+ * `isAvailable()` member function, that must be called to check if the
+ * component is available (i.e. it could be optional and not enabled).
+ *
+ * @tparam T The type to be evaluated.
+ */
 template<typename T>
 concept HasIsAvailableMemberFunction = requires (T o) {
     // clang-format off
@@ -109,44 +116,32 @@ concept HasIsAvailableMemberFunction = requires (T o) {
     // clang-format on
 };
 
+/**
+ * @private
+ * @brief Evaluates to true if the type `T` is tied to the number of vertices in
+ * the face.
+ *
+ * A component that is tied to the vertex number if it belongs to a face element
+ * and its data is composed of a number of elements that must be equal to the
+ * number of vertices in the face.
+ *
+ * To be evaluated as true, the component must have a static constexpr member
+ * `TIED_TO_VERTEX_NUMBER` of type `bool` set to `true`.
+ *
+ * @tparam T the type to be evaluated.
+ */
 template<typename T>
 concept IsTiedToVertexNumber = T::TIED_TO_VERTEX_NUMBER;
 
-template<typename T>
-concept IsVerticalComponent = T::IS_VERTICAL == true && requires (T o) {
-    // clang-format off
-    typename T::DataValueType;
-    { o.IS_VERTICAL } -> std::same_as<const bool&>;
-    // clang-format on
-};
-
-template<typename T>
-struct IsVerticalComponentPred
-{
-    static const bool value = IsVerticalComponent<T>;
-};
-
-template<typename T>
-concept IsOptionalComponent =
-    IsVerticalComponent<T> && T::IS_OPTIONAL == true && requires (T o) {
-        // clang-format off
-        { o.IS_OPTIONAL } -> std::same_as<const bool&>;
-        // clang-format on
-    };
-
-template<typename T>
-class ReferencesComponentTriggerer
-{
-};
-
 /**
- * @brief The HasReferencesOfType concept checks whether a type T stores
- * references (pointers or indices) of a type R.
+ * @private
+ * @brief The HasReferencesOfType concept checks whether a component T stores
+ * references (pointers or indices) of a type (element) R.
  *
  * Each component that store pointers/indices of a type R, must:
  *
- * - inherit from ReferencesComponentTriggerer<R> (automatic from Component
- *   class)
+ * - inherit from ReferencesComponentTriggerer<R> (automatically inherited by
+ *   inheriting from Component class)
  * - provide the following **protected** member functions:
  *   - void updateReferences(const R* oldBase, std::size_t offset = 0);
  *
@@ -158,28 +153,77 @@ class ReferencesComponentTriggerer
  *
  *     the function updates the stored R pointers/indices having, for each old
  *     element index, its new index in the container.
+ *
+ * @tparam T the type to be evaluated.
+ * @tparam R the type of the references.
  */
 template<typename T, typename R>
 concept HasReferencesOfType =
     std::is_base_of<ReferencesComponentTriggerer<R>, T>::value;
 
+/**
+ * @private
+ * @brief See @ref vcl::comp::HasReferencesOfType and @ref
+ * vcl::comp::IsOptionalComponent.
+ *
+ * @tparam T the type to be evaluated.
+ * @tparam R the type of the references.
+ */
 template<typename T, typename R>
 concept HasOptionalReferencesOfType =
     HasReferencesOfType<T, R> && IsOptionalComponent<T>;
 
+/**
+ * @private
+ * @brief The HasPointersOfType concept checks whether a component T stores
+ * pointers of a type (element) R.
+ *
+ * The constraints are the same of @ref vcl::comp::HasReferencesOfType, but this
+ * concept requires the component stores only pointers (not indices).
+ *
+ * @tparam T the type to be evaluated.
+ * @tparam R the type of the pointers.
+ */
 template<typename T, typename R>
 concept HasPointersOfType =
     HasReferencesOfType<T, R> && requires (T o) { o.template pointers<R>(); };
 
+/**
+ * @private
+ * @brief See @ref vcl::comp::HasPointersOfType and @ref
+ * vcl::comp::IsOptionalComponent.
+ *
+ * @tparam T the type to be evaluated.
+ * @tparam R the type of the pointers.
+ */
 template<typename T, typename R>
 concept HasOptionalPointersOfType =
     HasOptionalReferencesOfType<T, R> &&
     requires (T o) { o.template pointers<R>(); };
 
+/**
+ * @private
+ * @brief The HasIndicesOfType concept checks whether a component T stores
+ * indices of a type (element) R.
+ *
+ * The constraints are the same of @ref vcl::comp::HasReferencesOfType, but this
+ * concept requires the component stores only indices (not pointers).
+ *
+ * @tparam T the type to be evaluated.
+ * @tparam R the type of the indices.
+ */
 template<typename T, typename R>
 concept HasIndicesOfType =
     HasReferencesOfType<T, R> && requires (T o) { o.template indices<R>(); };
 
+/**
+ * @private
+ * @brief See @ref vcl::comp::HasIndicesOfType and @ref
+ * vcl::comp::IsOptionalComponent.
+ *
+ * @tparam T the type to be evaluated.
+ * @tparam R the type of the indices.
+ */
 template<typename T, typename R>
 concept HasOptionalIndicesOfType = HasOptionalReferencesOfType<T, R> &&
                                    requires (T o) { o.template indices<R>(); };
@@ -189,15 +233,62 @@ concept HasOptionalIndicesOfType = HasOptionalReferencesOfType<T, R> &&
 // defined as a TypeWrapper of components. The type T is generally a Mesh or a
 // MeshElement.
 
+/**
+ * @brief The HasComponentOfType concept checks whether a type `T` (that may be
+ * a Mesh or a MeshElement) has a component having its @ref vcl::CompId equal to
+ * `COMP_ID`.
+ *
+ * The concept looks for the component having `COMP_ID` in the inner type
+ * `Components` type defined in the type `T`, that must be a @ref
+ * vcl::TypeWrapper of components.
+ *
+ * @tparam T The type to be evaluated.
+ * @tparam COMP_ID The id of the component to be checked.
+ *
+ * @ingroup components_concepts
+ * @ingroup elements_concepts
+ */
 template<typename T, uint COMP_ID>
 concept HasComponentOfType =
     detail::ComponentOfTypePred<COMP_ID, typename T::Components>::value;
 
+/**
+ * @brief The HasVerticalComponentOfType concept checks whether a type `T` (that
+ * should be a MeshElement) has a vertical component having its @ref vcl::CompId
+ * equal to `COMP_ID`.
+ *
+ * The concept looks for the component having `COMP_ID` in the inner type
+ * `Components` type defined in the type `T`, that must be a @ref
+ * vcl::TypeWrapper of components. If the component exists, it checks if it is
+ * vertical.
+ *
+ * @tparam T The type to be evaluated.
+ * @tparam COMP_ID The id of the component to be checked.
+ *
+ * @ingroup components_concepts
+ * @ingroup elements_concepts
+ */
 template<typename T, uint COMP_ID>
 concept HasVerticalComponentOfType =
     HasComponentOfType<T, COMP_ID> &&
     IsVerticalComponent<ComponentOfType<COMP_ID, typename T::Components>>;
 
+/**
+ * @brief The HasOptionalComponentOfType concept checks whether a type `T` (that
+ * should be a MeshElement) has an optional component having its @ref
+ * vcl::CompId equal to `COMP_ID`.
+ *
+ * The concept looks for the component having `COMP_ID` in the inner type
+ * `Components` type defined in the type `T`, that must be a @ref
+ * vcl::TypeWrapper of components. If the component exists, it checks if it is
+ * optional.
+ *
+ * @tparam T The type to be evaluated.
+ * @tparam COMP_ID The id of the component to be checked.
+ *
+ * @ingroup components_concepts
+ * @ingroup elements_concepts
+ */
 template<typename T, uint COMP_ID>
 concept HasOptionalComponentOfType =
     HasComponentOfType<T, COMP_ID> &&

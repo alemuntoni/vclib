@@ -5,7 +5,9 @@ RUN apt-get -y update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
     clang-18 \
     clang-tidy-18 \
     cmake \
+    doxygen \
     git \
+    graphviz \
     libtbb-dev \
     ninja-build \
     python3 \

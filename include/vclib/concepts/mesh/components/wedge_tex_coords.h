@@ -34,8 +34,8 @@ namespace vcl::comp {
 /**
  * @brief HasWedgeTexCoords concept is satisfied only if a Element class
  * provides the types and member functions specified in this concept. These
- * types and member functions allow to access to an WedgeTexCoords component of
- * a given element.
+ * types and member functions allow to access to an @ref
+ * vcl::comp::WedgeTexCoords component of a given element.
  *
  * Note that this concept does not discriminate between the Horizontal
  * WedgeTexCoords component and the vertical OptionalWedgeTexCoords component,
@@ -84,8 +84,8 @@ concept HasWedgeTexCoords = requires (
 
 /**
  * @brief HasOptionalWedgeTexCoords concept is satisfied only if a class
- * satisfied the HasWedgeCoordsComponent and has the static boolean constant
- * IS_OPTIONAL is set to true.
+ * satisfied the @ref vcl::comp::HasWedgeCoords and has the static
+ * boolean constant `IS_OPTIONAL` is set to `true`.
  *
  * @ingroup components_concepts
  */

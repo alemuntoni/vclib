@@ -58,7 +58,6 @@ protected:
      *
      * @param function
      * @param mesh
-     * @param args
      */
     auto callFunctionForMesh(const MeshI& mesh, auto&& function) const
     {

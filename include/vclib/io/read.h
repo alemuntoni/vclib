@@ -190,6 +190,7 @@ namespace io {
  *
  * @tparam T: the type to return.
  * @param[in] file: the stream to read from.
+ * @param[in] end: the endianness of the stream.
  * @return A value of type T containing the read char.
  */
 template<typename T>
@@ -206,6 +207,7 @@ T readChar(std::istream& file, std::endian end = std::endian::native)
  *
  * @tparam T: the type to return.
  * @param[in] file: the stream to read from.
+ * @param[in] end: the endianness of the stream.
  * @return A value of type T containing the read unsigned char.
  */
 template<typename T>
@@ -222,6 +224,7 @@ T readUChar(std::istream& file, std::endian end = std::endian::native)
  *
  * @tparam T: the type to return.
  * @param[in] file: the stream to read from.
+ * @param[in] end: the endianness of the stream.
  * @return A value of type T containing the read short.
  */
 template<typename T>
@@ -238,6 +241,7 @@ T readShort(std::istream& file, std::endian end = std::endian::native)
  *
  * @tparam T: the type to return.
  * @param[in] file: the stream to read from.
+ * @param[in] end: the endianness of the stream.
  * @return A value of type T containing the read unsigned short.
  */
 template<typename T>
@@ -254,6 +258,7 @@ T readUShort(std::istream& file, std::endian end = std::endian::native)
  *
  * @tparam T: the type to return.
  * @param[in] file: the stream to read from.
+ * @param[in] end: the endianness of the stream.
  * @return A value of type T containing the read int.
  */
 template<typename T>
@@ -270,6 +275,7 @@ T readInt(std::istream& file, std::endian end = std::endian::native)
  *
  * @tparam T: the type to return.
  * @param[in] file: the stream to read from.
+ * @param[in] end: the endianness of the stream.
  * @return A value of type T containing the read unsigned int.
  */
 template<typename T>
@@ -290,6 +296,9 @@ T readUInt(std::istream& file, std::endian end = std::endian::native)
  *
  * @tparam T: the type to return.
  * @param[in] file: the stream to read from.
+ * @param[in] end: the endianness of the stream.
+ * @param[in] isColor: whether the primitive is a color (in which case it is
+ * converted in a value that makes sense depending on T).
  * @return A value of type T containing the read float.
  */
 template<typename T>
@@ -317,6 +326,9 @@ T readFloat(
  *
  * @tparam T: the type to return.
  * @param[in] file: the stream to read from.
+ * @param[in] end: the endianness of the stream.
+ * @param[in] isColor: whether the primitive is a color (in which case it is
+ * converted in a value that makes sense depending on T).
  * @return A value of type T containing the read double.
  */
 template<typename T>
@@ -349,6 +361,7 @@ T readDouble(
  * @tparam T: the type to return.
  * @param[in] file: the stream to read from.
  * @param[in] type: the type of the primitive to read.
+ * @param[in] end: the endianness of the stream.
  * @param[in] isColor: whether the primitive is a color (in which case it is
  * converted in a value that makes sense depending on T and type).
  * @return A value of type T containing the read primitive.

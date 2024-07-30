@@ -38,6 +38,8 @@ namespace vcl {
  * shared pointer type.
  *
  * @tparam T The type to be converted to a const pointer.
+ *
+ * @ingroup types
  */
 template<typename T>
 struct MakeConstPointer
@@ -67,6 +69,8 @@ struct MakeConstPointer<std::shared_ptr<T>>
  * @brief Utility alias for the MakeConstPointer type.
  *
  * @tparam T The type to be converted to a const pointer.
+ *
+ * @ingroup types
  */
 template<typename T>
 using MakeConstPointerT = typename MakeConstPointer<T>::type;
@@ -89,7 +93,9 @@ using MakeConstPointerT = typename MakeConstPointer<T>::type;
  *
  * @tparam T The type of the pointer/reference.
  * @param[in] value: The const pointer/reference to be const-casted.
- * @return constexpr T& The non-const pointer/reference.
+ * @return The non-const pointer/reference.
+ *
+ * @ingroup types
  */
 template<typename T>
 constexpr T& asConst(const T& value) noexcept

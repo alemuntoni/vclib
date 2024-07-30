@@ -1,0 +1,21 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "cSpell.words": [
+        "AABB",
+        "circumcenter",
+        "cloneable",
+        "copydoc",
+        "earcut",
+        "Eigen",
+        "illum",
+        "Montecarlo",
+        "nameaspace",
+        "newmtl",
+        "Triggerer",
+        "tris",
+        "TTVN",
+        "Unwrapper",
+        "vclib"
+    ],
+    "doxygen_runner.configuration_file_override": "${workspaceFolder}/docs/Doxyfile"
+}

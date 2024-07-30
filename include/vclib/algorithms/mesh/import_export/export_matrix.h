@@ -31,7 +31,7 @@
 namespace vcl {
 
 /**
- * @brief Get a #V*3 Matrix of scalars containing the coordinates of the
+ * @brief Get a \#V*3 Matrix of scalars containing the coordinates of the
  * vertices of a Mesh. The function is templated on the Matrix itself.
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
@@ -52,7 +52,7 @@ namespace vcl {
  * @tparam MeshType: type of the input mesh, it must satisfy the MeshConcept.
  *
  * @param[in] mesh: input mesh
- * @return #V*3 matrix of scalars (vertex coordinates)
+ * @return \#V*3 matrix of scalars (vertex coordinates)
  */
 template<MatrixConcept Matrix, MeshConcept MeshType>
 Matrix vertexMatrix(const MeshType& mesh)
@@ -70,8 +70,8 @@ Matrix vertexMatrix(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #F*max(size(F)) Matrix of integers containing the vertex indices
- * for each face of a Mesh.
+ * @brief Get a \#F*max(size(F)) Matrix of integers containing the vertex
+ * indices for each face of a Mesh.
  *
  * If the mesh is polygonal, the matrix will have a number of rows equal to the
  * greatest polygon of the mesh, and unused values will be set to -1.
@@ -98,7 +98,7 @@ Matrix vertexMatrix(const MeshType& mesh)
  * FaceMeshConcept.
  *
  * @param[in] mesh: input mesh
- * @return #F*max(size(F)) matrix of vertex indices
+ * @return \#F*max(size(F)) matrix of vertex indices
  */
 template<MatrixConcept Matrix, FaceMeshConcept MeshType>
 Matrix faceMatrix(const MeshType& mesh)
@@ -132,7 +132,7 @@ Matrix faceMatrix(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #F Vector of integers containing the sizes of the faces of a
+ * @brief Get a \#F Vector of integers containing the sizes of the faces of a
  * Mesh.
  *
  * It could be useful when dealing with polygonal meshes.
@@ -159,7 +159,7 @@ Matrix faceMatrix(const MeshType& mesh)
  * FaceMeshConcept.
  *
  * @param[in] mesh: input mesh
- * @return #F vector of integers (face sizes)
+ * @return \#F vector of integers (face sizes)
  */
 template<typename Vect, FaceMeshConcept MeshType>
 Vect faceSizesVector(const MeshType& mesh)
@@ -177,7 +177,7 @@ Vect faceSizesVector(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #E*2 Matrix of integers containing the indices of the vertices
+ * @brief Get a \#E*2 Matrix of integers containing the indices of the vertices
  * of the edges of a Mesh. The function is templated on the Matrix itself.
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
@@ -202,7 +202,7 @@ Vect faceSizesVector(const MeshType& mesh)
  * EdgeMeshConcept.
  *
  * @param[in] mesh: input mesh
- * @return #E*2 matrix of integers (edge indices)
+ * @return \#E*2 matrix of integers (edge indices)
  */
 template<MatrixConcept Matrix, EdgeMeshConcept MeshType>
 Matrix edgeMatrix(const MeshType& mesh)
@@ -221,7 +221,7 @@ Matrix edgeMatrix(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #E Vector of booleans (or integers) containing the selection
+ * @brief Get a \#E Vector of booleans (or integers) containing the selection
  * status of the elements identified by `ELEM_ID` of a Mesh. The function is
  * templated on the Vector itself.
  *
@@ -245,7 +245,7 @@ Matrix edgeMatrix(const MeshType& mesh)
  * @tparam MeshType: type of the input mesh, it must satisfy the MeshConcept.
  *
  * @param[in] mesh: input mesh
- * @return #E vector of booleans or integers (element selection)
+ * @return \#E vector of booleans or integers (element selection)
  */
 template<uint ELEM_ID, typename Vect, MeshConcept MeshType>
 Vect elementSelectionVector(const MeshType& mesh)
@@ -259,7 +259,7 @@ Vect elementSelectionVector(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #V Vector of booleans (or integers) containing the selection
+ * @brief Get a \#V Vector of booleans (or integers) containing the selection
  * status of the vertices of a Mesh. The function is templated on the Vector
  * itself.
  *
@@ -281,7 +281,7 @@ Vect elementSelectionVector(const MeshType& mesh)
  * @tparam MeshType: type of the input mesh, it must satisfy the MeshConcept.
  *
  * @param[in] mesh: input mesh
- * @return #V vector of booleans or integers (vertex selection)
+ * @return \#V vector of booleans or integers (vertex selection)
  */
 template<typename Vect, MeshConcept MeshType>
 Vect vertexSelectionVector(const MeshType& mesh)
@@ -290,7 +290,7 @@ Vect vertexSelectionVector(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #F Vector of booleans (or integers) containing the selection
+ * @brief Get a \#F Vector of booleans (or integers) containing the selection
  * status of the faces of a Mesh. The function is templated on the Vector
  * itself.
  *
@@ -313,7 +313,7 @@ Vect vertexSelectionVector(const MeshType& mesh)
  * FaceMeshConcept.
  *
  * @param[in] mesh: input mesh
- * @return #F vector of booleans or integers (face selection)
+ * @return \#F vector of booleans or integers (face selection)
  */
 template<typename Vect, FaceMeshConcept MeshType>
 Vect faceSelectionVector(const MeshType& mesh)
@@ -322,7 +322,7 @@ Vect faceSelectionVector(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #E*3 Matrix of scalars containing the normals of the elements
+ * @brief Get a \#E*3 Matrix of scalars containing the normals of the elements
  * identified by `ELEM_ID` of a Mesh. The function is templated on the Matrix
  * itself.
  *
@@ -346,7 +346,7 @@ Vect faceSelectionVector(const MeshType& mesh)
  *
  * @tparam ELEM_ID: the ID of the element.
  * @param[in] mesh: input mesh
- * @return #E*3 matrix of scalars (element normals)
+ * @return \#E*3 matrix of scalars (element normals)
  */
 template<uint ELEM_ID, MatrixConcept Matrix, MeshConcept MeshType>
 Matrix elementNormalsMatrix(const MeshType& mesh)
@@ -366,8 +366,8 @@ Matrix elementNormalsMatrix(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #V*3 Matrix of scalars containing the normals of the vertices of
- * a Mesh. The function is templated on the Matrix itself.
+ * @brief Get a \#V*3 Matrix of scalars containing the normals of the vertices
+ * of a Mesh. The function is templated on the Matrix itself.
  *
  * This function works with every Matrix type that satisfies the MatrixConcept,
  * and requires that the mesh has per-vertex normals.
@@ -387,7 +387,7 @@ Matrix elementNormalsMatrix(const MeshType& mesh)
  * correspondence, compact the vertex container before calling this function.
  *
  * @param[in] mesh: input mesh
- * @return #V*3 matrix of scalars (vertex normals)
+ * @return \#V*3 matrix of scalars (vertex normals)
  */
 template<MatrixConcept Matrix, MeshConcept MeshType>
 Matrix vertexNormalsMatrix(const MeshType& mesh)
@@ -396,7 +396,7 @@ Matrix vertexNormalsMatrix(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #F*3 Matrix of scalars containing the normals of the faces of
+ * @brief Get a \#F*3 Matrix of scalars containing the normals of the faces of
  * a Mesh. The function is templated on the Matrix itself.
  *
  * This function works with every Matrix type that satisfies the MatrixConcept,
@@ -417,7 +417,7 @@ Matrix vertexNormalsMatrix(const MeshType& mesh)
  * correspondence, compact the face container before calling this function.
  *
  * @param[in] mesh: input mesh
- * @return #F*3 matrix of scalars (face normals)
+ * @return \#F*3 matrix of scalars (face normals)
  */
 template<MatrixConcept Matrix, FaceMeshConcept MeshType>
 Matrix faceNormalsMatrix(const MeshType& mesh)
@@ -426,7 +426,7 @@ Matrix faceNormalsMatrix(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #E*4 Matrix of integers containing the colors of the elements
+ * @brief Get a \#E*4 Matrix of integers containing the colors of the elements
  * identified by `ELEM_ID` of a Mesh. The function is templated on the Matrix
  * itself.
  *
@@ -450,7 +450,7 @@ Matrix faceNormalsMatrix(const MeshType& mesh)
  *
  * @tparam ELEM_ID: the ID of the element.
  * @param[in] mesh: input mesh
- * @return #E*4 matrix of integers (element colors)
+ * @return \#E*4 matrix of integers (element colors)
  */
 template<uint ELEM_ID, MatrixConcept Matrix, MeshConcept MeshType>
 Matrix elementColorsMatrix(const MeshType& mesh)
@@ -470,8 +470,8 @@ Matrix elementColorsMatrix(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #V*4 Matrix of integers containing the colors of the vertices of
- * a Mesh. The function is templated on the Matrix itself.
+ * @brief Get a \#V*4 Matrix of integers containing the colors of the vertices
+ * of a Mesh. The function is templated on the Matrix itself.
  *
  * This function works with every Matrix type that satisfies the MatrixConcept,
  * and requires that the mesh has per-vertex colors.
@@ -491,7 +491,7 @@ Matrix elementColorsMatrix(const MeshType& mesh)
  * correspondence, compact the vertex container before calling this function.
  *
  * @param[in] mesh: input mesh
- * @return #V*4 matrix of integers (vertex colors)
+ * @return \#V*4 matrix of integers (vertex colors)
  */
 template<MatrixConcept Matrix, MeshConcept MeshType>
 Matrix vertexColorsMatrix(const MeshType& mesh)
@@ -500,7 +500,7 @@ Matrix vertexColorsMatrix(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #F*4 Matrix of integers containing the colors of the faces of
+ * @brief Get a \#F*4 Matrix of integers containing the colors of the faces of
  * a Mesh. The function is templated on the Matrix itself.
  *
  * This function works with every Matrix type that satisfies the MatrixConcept,
@@ -521,7 +521,7 @@ Matrix vertexColorsMatrix(const MeshType& mesh)
  * correspondence, compact the face container before calling this function.
  *
  * @param[in] mesh: input mesh
- * @return #F*4 matrix of integers (face colors)
+ * @return \#F*4 matrix of integers (face colors)
  */
 template<MatrixConcept Matrix, FaceMeshConcept MeshType>
 Matrix faceColorsMatrix(const MeshType& mesh)
@@ -530,7 +530,7 @@ Matrix faceColorsMatrix(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #E Vector of scalars containing the quality of the elements
+ * @brief Get a \#E Vector of scalars containing the quality of the elements
  * identified by `ELEM_ID` of a Mesh. The function is templated on the Vector
  * itself.
  *
@@ -555,7 +555,7 @@ Matrix faceColorsMatrix(const MeshType& mesh)
  *
  * @tparam ELEM_ID: the ID of the element.
  * @param[in] mesh: input mesh
- * @return #V vector of scalars (element quality)
+ * @return \#V vector of scalars (element quality)
  */
 template<uint ELEM_ID, typename Vect, MeshConcept MeshType>
 Vect elementQualityVector(const MeshType& mesh)
@@ -574,7 +574,7 @@ Vect elementQualityVector(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #V Vector of scalars containing the quality of the vertices of
+ * @brief Get a \#V Vector of scalars containing the quality of the vertices of
  * a Mesh. The function is templated on the Vector itself.
  *
  * This function works with every Vector type that has a constructor with a
@@ -596,7 +596,7 @@ Vect elementQualityVector(const MeshType& mesh)
  * correspondence, compact the vertex container before calling this function.
  *
  * @param[in] mesh: input mesh
- * @return #V vector of scalars (vertex quality)
+ * @return \#V vector of scalars (vertex quality)
  */
 template<typename Vect, MeshConcept MeshType>
 Vect vertexQualityVector(const MeshType& mesh)
@@ -605,7 +605,7 @@ Vect vertexQualityVector(const MeshType& mesh)
 }
 
 /**
- * @brief Get a #F Vector of scalars containing the quality of the faces of
+ * @brief Get a \#F Vector of scalars containing the quality of the faces of
  * a Mesh. The function is templated on the Vector itself.
  *
  * This function works with every Vector type that has a constructor with a
@@ -627,7 +627,7 @@ Vect vertexQualityVector(const MeshType& mesh)
  * correspondence, compact the face container before calling this function.
  *
  * @param[in] mesh: input mesh
- * @return #F vector of scalars (face quality)
+ * @return \#F vector of scalars (face quality)
  */
 template<typename Vect, FaceMeshConcept MeshType>
 Vect faceQualityVector(const MeshType& mesh)

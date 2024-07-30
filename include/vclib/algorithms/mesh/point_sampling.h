@@ -35,18 +35,18 @@
 /**
  * @defgroup point_sampling Point Sampling Algorithms
  *
- * @ingroup algorithms
- *
  * @brief List of functions that compute point samplings.
  *
  * These functions compute saplings using various simple and complex methods,
- * and return objects that satisfy the @ref SamplerConcept. A Sampler is an
+ * and return objects that satisfy the @ref vcl::SamplerConcept. A Sampler is an
  * object that allows to store points that can be results of some geometric
  * function (e.g. a point sample that is computed as the barycentric coordinate
  * of a triangle).
  *
  * You can access these algorithms by including `#include
  * <vclib/algorithms/point_sampling.h>`
+ *
+ * @ingroup algorithms_mesh
  */
 
 namespace vcl {
@@ -630,6 +630,7 @@ SamplerType faceWeightedPointSampling(
  *
  * @param m
  * @param nSamples
+ * @param deterministic
  * @return
  *
  * @ingroup point_sampling
@@ -662,6 +663,7 @@ SamplerType vertexQualityWeightedPointSampling(
  *
  * @param m
  * @param nSamples
+ * @param deterministic
  * @return
  *
  * @ingroup point_sampling
@@ -694,6 +696,7 @@ SamplerType faceQualityWeightedPointSampling(
  *
  * @param m
  * @param nSamples
+ * @param deterministic
  * @return
  *
  * @ingroup point_sampling
@@ -738,6 +741,7 @@ SamplerType vertexAreaWeightedPointSampling(
  *
  * @param m
  * @param nSamples
+ * @param deterministic
  * @return
  *
  * @ingroup point_sampling
@@ -910,10 +914,11 @@ SamplerType stratifiedMontecarloPointSampling(
  *
  * For a given triangle t of area a_t, in a Mesh of area A,
  * if we take n_s sample over the mesh, the number of samples that falls in t
- * follows the poisson distribution of P(lambda ) with lambda = n_s * (a_t/A).
+ * follows the poisson distribution of `P(lambda)` with `lambda = n_s *
+ * (a_t/A)`.
  *
  * To approximate the Binomial we use a Poisson distribution with parameter
- * \lambda = np can be used as an approximation to B(n,p)
+ * `lambda = np` can be used as an approximation to `B(n,p)`
  * (it works if n is sufficiently large and p is sufficiently small).
  *
  *

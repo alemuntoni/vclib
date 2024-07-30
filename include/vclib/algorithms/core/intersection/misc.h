@@ -64,7 +64,7 @@ inline bool axisTestX01(
     ScalarType       fb,
     const PointType& v0,
     const PointType& v2,
-    const PointType& bHalfSixe)
+    const PointType& bHalfSize)
 {
     ScalarType p0 = a * v0.y() - b * v0.z();
     ScalarType p2 = a * v2.y() - b * v2.z();
@@ -77,7 +77,7 @@ inline bool axisTestX01(
         min = p2;
         max = p0;
     }
-    ScalarType rad = fa * bHalfSixe.y() + fb * bHalfSixe.z();
+    ScalarType rad = fa * bHalfSize.y() + fb * bHalfSize.z();
     if (min > rad || max < -rad)
         return false;
     return true;
@@ -91,7 +91,7 @@ inline bool axisTestX2(
     ScalarType       fb,
     const PointType& v0,
     const PointType& v1,
-    const PointType& bHalfSixe)
+    const PointType& bHalfSize)
 {
     ScalarType p0 = a * v0.y() - b * v0.z();
     ScalarType p1 = a * v1.y() - b * v1.z();
@@ -104,7 +104,7 @@ inline bool axisTestX2(
         min = p1;
         max = p0;
     }
-    ScalarType rad = fa * bHalfSixe.y() + fb * bHalfSixe.z();
+    ScalarType rad = fa * bHalfSize.y() + fb * bHalfSize.z();
     if (min > rad || max < -rad)
         return false;
     return true;
@@ -119,7 +119,7 @@ inline bool axisTestY02(
     ScalarType       fb,
     const PointType& v0,
     const PointType& v2,
-    const PointType& bHalfSixe)
+    const PointType& bHalfSize)
 {
     ScalarType p0 = -a * v0.x() + b * v0.z();
     ScalarType p2 = -a * v2.x() + b * v2.z();
@@ -132,7 +132,7 @@ inline bool axisTestY02(
         min = p2;
         max = p0;
     }
-    ScalarType rad = fa * bHalfSixe.x() + fb * bHalfSixe.z();
+    ScalarType rad = fa * bHalfSize.x() + fb * bHalfSize.z();
     if (min > rad || max < -rad)
         return false;
     return true;
@@ -146,7 +146,7 @@ inline bool axisTestY1(
     ScalarType       fb,
     const PointType& v0,
     const PointType& v1,
-    const PointType& bHalfSixe)
+    const PointType& bHalfSize)
 {
     ScalarType p0 = -a * v0.x() + b * v0.z();
     ScalarType p1 = -a * v1.x() + b * v1.z();
@@ -159,7 +159,7 @@ inline bool axisTestY1(
         min = p1;
         max = p0;
     }
-    ScalarType rad = fa * bHalfSixe.x() + fb * bHalfSixe.z();
+    ScalarType rad = fa * bHalfSize.x() + fb * bHalfSize.z();
     if (min > rad || max < -rad)
         return false;
     return true;
@@ -174,7 +174,7 @@ inline bool axisTestZ12(
     ScalarType       fb,
     const PointType& v1,
     const PointType& v2,
-    const PointType& bHalfSixe)
+    const PointType& bHalfSize)
 {
     ScalarType p1 = a * v1.x() - b * v1.y();
     ScalarType p2 = a * v2.x() - b * v2.y();
@@ -187,7 +187,7 @@ inline bool axisTestZ12(
         min = p2;
         max = p1;
     }
-    ScalarType rad = fa * bHalfSixe.x() + fb * bHalfSixe.y();
+    ScalarType rad = fa * bHalfSize.x() + fb * bHalfSize.y();
     if (min > rad || max < -rad)
         return false;
     return true;
@@ -201,7 +201,7 @@ inline bool axisTestZ0(
     ScalarType       fb,
     const PointType& v0,
     const PointType& v1,
-    const PointType& bHalfSixe)
+    const PointType& bHalfSize)
 {
     ScalarType p0 = a * v0.x() - b * v0.y();
     ScalarType p1 = a * v1.x() - b * v1.y();
@@ -214,7 +214,7 @@ inline bool axisTestZ0(
         min = p1;
         max = p0;
     }
-    ScalarType rad = fa * bHalfSixe.x() + fb * bHalfSixe.y();
+    ScalarType rad = fa * bHalfSize.x() + fb * bHalfSize.y();
     if (min > rad || max < -rad)
         return false;
     return true;
@@ -352,37 +352,37 @@ bool sphereBoxIntersect(const SphereType& s, const BoxType& box)
  * concept.
  * @tparam PointType: A type that satisfies the Point2Concept concept.
  *
- * @param[in] tr: The triangle to test for intersection.
+ * @param[in] t: The triangle to test for intersection.
  * @param[in] p: The point to test for intersection with the triangle.
  * @return True if the point intersects with/is inside the triangle, false
  * otherwise.
  */
 template<ConstTriangle2Concept TriangleType, Point2Concept PointType>
-bool trianglePointIntersect(const TriangleType& tr, const PointType& p)
+bool trianglePointIntersect(const TriangleType& t, const PointType& p)
 {
     using TP         = TriangleType::PointType;
     using ScalarType = TP::ScalarType;
 
-    const TP& p0 = tr.point(0);
-    const TP& p1 = tr.point(1);
-    const TP& p2 = tr.point(2);
+    const TP& p0 = t.point(0);
+    const TP& p1 = t.point(1);
+    const TP& p2 = t.point(2);
 
-    ScalarType A    = tr.area();
+    ScalarType A    = t.area();
     ScalarType sign = A < 0 ? -1 : 1;
 
     ScalarType s = (p0.y() * p2.x() - p0.x() * p2.y() +
                     (p2.y() - p0.y()) * p.x() + (p0.x() - p2.x()) * p.y()) *
                    sign;
-    ScalarType t = (p0.x() * p1.y() - p0.y() * p1.x() +
-                    (p0.y() - p1.y()) * p.x() + (p1.x() - p0.x()) * p.y()) *
-                   sign;
+    ScalarType tt = (p0.x() * p1.y() - p0.y() * p1.x() +
+                     (p0.y() - p1.y()) * p.x() + (p1.x() - p0.x()) * p.y()) *
+                    sign;
 
-    return s > 0 && t > 0 && (s + t) < 2 * A * sign;
+    return s > 0 && tt > 0 && (s + tt) < 2 * A * sign;
 }
 
 /**
- * Checks if a 3D point intersects/is inside a 3D triangle having its points in
- * counterclockwise order.
+ * @brief Checks if a 3D point intersects/is inside a 3D triangle having its
+ * points in counterclockwise order.
  *
  * @tparam TriangleType: A type that satisfies the ConstTriangle3Concept
  * concept.
@@ -413,25 +413,25 @@ bool triangleBoxIntersect(const TriangleType& t, const BoxType& box)
     using PointType  = TriangleType::PointType;
     using ScalarType = PointType::ScalarType;
 
-    PointType boxcenter = box.center();
-    PointType bHalfSixe = box.size() / 2;
+    PointType boxCenter = box.center();
+    PointType bHalfSize = box.size() / 2;
 
     /* use separating axis theorem to test overlap between triangle and box
      * need to test for overlap in these directions:
      *    1) the {x,y,z}-directions (actually, since we use the AABB of the
      *       triangle we do not even need to test these)
      *    2) normal of the triangle
-     *    3) crossproduct(edge from tri, {x,y,z}-directin)
+     *    3) cross product(edge from tri, {x,y,z}-direction)
      *       this gives 3x3=9 more tests
      */
     ScalarType min, max;
     PointType  normal;
 
     /* This is the fastest branch on Sun */
-    /* move everything so that the boxcenter is in (0,0,0) */
-    PointType v0 = t.point(0) - boxcenter;
-    PointType v1 = t.point(1) - boxcenter;
-    PointType v2 = t.point(2) - boxcenter;
+    /* move everything so that the boxCenter is in (0,0,0) */
+    PointType v0 = t.point(0) - boxCenter;
+    PointType v1 = t.point(1) - boxCenter;
+    PointType v2 = t.point(2) - boxCenter;
 
     /* compute triangle edges */
     PointType e0 = v1 - v0;
@@ -444,32 +444,32 @@ bool triangleBoxIntersect(const TriangleType& t, const BoxType& box)
     ScalarType fey = std::abs(e0.y());
     ScalarType fez = std::abs(e0.z());
 
-    if (!detail::axisTestX01(e0.z(), e0.y(), fez, fey, v0, v2, bHalfSixe))
+    if (!detail::axisTestX01(e0.z(), e0.y(), fez, fey, v0, v2, bHalfSize))
         return false;
-    if (!detail::axisTestY02(e0.z(), e0.x(), fez, fex, v0, v2, bHalfSixe))
+    if (!detail::axisTestY02(e0.z(), e0.x(), fez, fex, v0, v2, bHalfSize))
         return false;
-    if (!detail::axisTestZ12(e0.y(), e0.x(), fey, fex, v1, v2, bHalfSixe))
+    if (!detail::axisTestZ12(e0.y(), e0.x(), fey, fex, v1, v2, bHalfSize))
         return false;
 
     fex = std::abs(e1.x());
     fey = std::abs(e1.y());
     fez = std::abs(e1.z());
 
-    if (!detail::axisTestX01(e1.z(), e1.y(), fez, fey, v0, v2, bHalfSixe))
+    if (!detail::axisTestX01(e1.z(), e1.y(), fez, fey, v0, v2, bHalfSize))
         return false;
-    if (!detail::axisTestY02(e1.z(), e1.x(), fez, fex, v0, v2, bHalfSixe))
+    if (!detail::axisTestY02(e1.z(), e1.x(), fez, fex, v0, v2, bHalfSize))
         return false;
-    if (!detail::axisTestZ0(e1.y(), e1.x(), fey, fex, v0, v1, bHalfSixe))
+    if (!detail::axisTestZ0(e1.y(), e1.x(), fey, fex, v0, v1, bHalfSize))
         return false;
 
     fex = std::abs(e2.x());
     fey = std::abs(e2.y());
     fez = std::abs(e2.z());
-    if (!detail::axisTestX2(e2.z(), e2.y(), fez, fey, v0, v1, bHalfSixe))
+    if (!detail::axisTestX2(e2.z(), e2.y(), fez, fey, v0, v1, bHalfSize))
         return false;
-    if (!detail::axisTestY1(e2.z(), e2.x(), fez, fex, v0, v1, bHalfSixe))
+    if (!detail::axisTestY1(e2.z(), e2.x(), fez, fex, v0, v1, bHalfSize))
         return false;
-    if (!detail::axisTestZ12(e2.y(), e2.x(), fey, fex, v1, v2, bHalfSixe))
+    if (!detail::axisTestZ12(e2.y(), e2.x(), fey, fex, v1, v2, bHalfSize))
         return false;
 
     /* Bullet 1:
@@ -481,17 +481,17 @@ bool triangleBoxIntersect(const TriangleType& t, const BoxType& box)
 
     /* test in X-direction */
     detail::findMinMax(v0.x(), v1.x(), v2.x(), min, max);
-    if (min > bHalfSixe.x() || max < -bHalfSixe.x())
+    if (min > bHalfSize.x() || max < -bHalfSize.x())
         return false;
 
     /* test in Y-direction */
     detail::findMinMax(v0.y(), v1.y(), v2.y(), min, max);
-    if (min > bHalfSixe.y() || max < -bHalfSixe.y())
+    if (min > bHalfSize.y() || max < -bHalfSize.y())
         return false;
 
     /* test in Z-direction */
     detail::findMinMax(v0.z(), v1.z(), v2.z(), min, max);
-    if (min > bHalfSixe.z() || max < -bHalfSixe.z())
+    if (min > bHalfSize.z() || max < -bHalfSize.z())
         return false;
 
     /* Bullet 2:
@@ -522,7 +522,7 @@ template<
     SphereConcept         SphereType,
     Point3Concept         PointType,
     typename ScalarType>
-bool triangleSphereItersect(
+bool triangleSphereIntersect(
     const TriangleType&                t,
     const SphereType&                  sphere,
     PointType&                         witness,
@@ -611,7 +611,7 @@ bool triangleSphereItersect(
  * @return true iff there is an intersection between the sphere and the triangle
  */
 template<ConstTriangle3Concept TriangleType, SphereConcept SphereType>
-bool triangleSphereItersect(const TriangleType& t, const SphereType& sphere)
+bool triangleSphereIntersect(const TriangleType& t, const SphereType& sphere)
 {
     using SScalar = SphereType::ScalarType;
     typename TriangleType::PointType witness;

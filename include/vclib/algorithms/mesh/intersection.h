@@ -197,7 +197,7 @@ MeshType meshSphereIntersection(
     using FaceType   = MeshType::FaceType;
 
     auto ffilter = [&sphere](const FaceType& f) -> bool {
-        return faceSphereItersect(f, sphere);
+        return faceSphereIntersect(f, sphere);
     };
 
     MeshType res = perFaceMeshFilter(m, ffilter);
@@ -213,7 +213,7 @@ MeshType meshSphereIntersection(
         for (const auto* v : f.vertices()) {
             allIn = allIn && sphere.isInside(v->coord());
         }
-        if (!allIn && faceSphereItersect(f, sphere, witness, ires)) {
+        if (!allIn && faceSphereIntersect(f, sphere, witness, ires)) {
             if (faceArea(f) > tol) {
                 uint v0 = res.addVertices(3);
                 uint v1 = v0 + 1;

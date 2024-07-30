@@ -32,8 +32,8 @@ namespace vcl::comp {
 /**
  * @brief HasPrincipalCurvature concept is satisfied only if a Element class
  * provides the types and member functions specified in this concept. These
- * types and member functions allow to access to a PrincipalCurvature component
- * of a given element.
+ * types and member functions allow to access to a @ref
+ * vcl::comp::PrincipalCurvature component of a given element.
  *
  * Note that this concept does not discriminate between the Horizontal
  * PrincipalCurvature component and the vertical OptionalPrincipalCurvature
@@ -57,8 +57,8 @@ concept HasPrincipalCurvature = requires (T o, const T& co) {
 
 /**
  * @brief HasOptionalPrincipalCurvature concept is satisfied only if a class
- * satisfis the HasPrincipalCurvature concept and the static boolean constant
- * IS_OPTIONAL is set to true.
+ * satisfies the HasPrincipalCurvature concept and the static boolean constant
+ * `IS_OPTIONAL` is set to `true`.
  *
  * @ingroup components_concepts
  */

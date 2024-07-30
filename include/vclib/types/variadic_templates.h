@@ -32,10 +32,14 @@
 
 namespace vcl {
 
+// TODO: write documentation for all the functions and classes in this file
+
 /**
  * @brief A simple structure that wraps a list of variadic templates, without
  * instantiating anything. Useful when you need to wrap a list of types, and
  * consider them as a single type.
+ *
+ * @ingroup types
  */
 template<typename... Args>
 struct TypeWrapper
@@ -52,6 +56,8 @@ struct TypeWrapper
  * using ResType = FirstType<int, float, double>::type;
  * static_assert(std::is_same<ResType, int>::value, "");
  * @endcode
+ *
+ * @ingroup types
  */
 template<typename... Args>
 struct FirstType
@@ -76,6 +82,8 @@ struct FirstType<TypeWrapper<Args...>>
  * using ResType = FirstTypeT<int, float, double>;
  * static_assert(std::is_same<ResType, int>::value, "");
  * @endcode
+ *
+ * @ingroup types
  */
 template<typename... Args>
 using FirstTypeT = typename FirstType<Args...>::type;
@@ -83,6 +91,8 @@ using FirstTypeT = typename FirstType<Args...>::type;
 /**
  * @brief Function that returns the index of a Type T in a pack of types
  * (variadic templates). The pack is composed of U and Us...
+ *
+ * @ingroup types
  */
 // https://stackoverflow.com/a/71477756/5851101
 template<typename T, typename U, typename... Us>
@@ -113,6 +123,8 @@ constexpr uint indexInTypePack()
  * The pack is composed of U and Us...
  *
  * @param ti: the type_index of the type to search.
+ *
+ * @ingroup types
  */
 template<typename U, typename... Us>
 uint indexInTypePack(std::type_index ti)
@@ -178,6 +190,8 @@ struct NumberOfTypes<TypeWrapper<Args...>> : public NumberOfTypes<Args...>
  * // call a function for each type in a parameter pack
  * vcl::ForEachType<int, float, double>::apply(f);
  * @endcode
+ *
+ * @ingroup types
  */
 template<typename... T>
 struct ForEachType
@@ -194,9 +208,6 @@ struct ForEachType<TypeWrapper<T...>> : public ForEachType<T...>
 {
 };
 
-/* Remove all types that do not satisfy a condition, and get them as a
- * TypeWrapper. */
-
 namespace detail {
 
 template<typename, typename>
@@ -210,15 +221,17 @@ struct TypeWrapperConstructor<T, TypeWrapper<Args...>>
 
 } // namespace detail
 
-template<template<class> class, typename...>
-struct FilterTypesByCondition
-{
-    using type = TypeWrapper<>;
-};
-
 /**
  * @brief Removes all types that do not satisfy a condition, and get them as a
  * tuple.
+ *
+ * The condition is a templated predicate struct that must have a static member
+ * bool `value` that is true if the type satisfies the condition.
+ *
+ * The result is the `type` type alias, that is a TypeWrapper containing the
+ * types that satisfy the condition.
+ *
+ * The input types can be a pack of types or a TypeWrapper.
  *
  * Usage:
  *
@@ -229,7 +242,18 @@ struct FilterTypesByCondition
  * @endcode
  *
  * ResTuple will be a TypeWrapper<int, char> (int and char are the only integral
- * types)
+ * types).
+ *
+ * @ingroup types
+ */
+template<template<class> class, typename...>
+struct FilterTypesByCondition
+{
+    using type = TypeWrapper<>;
+};
+
+/**
+ * @copydoc FilterTypesByCondition
  */
 template<template<class> class Pred, typename Head, typename... Tail>
 struct FilterTypesByCondition<Pred, Head, Tail...>
@@ -242,6 +266,9 @@ struct FilterTypesByCondition<Pred, Head, Tail...>
         typename FilterTypesByCondition<Pred, Tail...>::type>::type;
 };
 
+/**
+ * @copydoc FilterTypesByCondition
+ */
 // TypeWrapper specialization
 template<template<class> class Pred, typename... Tail>
 struct FilterTypesByCondition<Pred, TypeWrapper<Tail...>>
@@ -258,16 +285,18 @@ struct FilterTypesByCondition<Pred, TypeWrapper<Tail...>>
  * @code{.cpp}
  * // there is a type (int) that is integral
  * static const bool res =
- *     TypesContainConditionType<std::is_integral, int, float, double>::value;
+ *     TypesSatisfyCondition<std::is_integral, int, float, double>::value;
  * static_assert(res == true, "");
  *
- * static const bool res2
- *     = TypesContainConditionType<std::is_integral, float, double>::value;
+ * static const bool res2 =
+ *     TypesSatisfyCondition<std::is_integral, float, double>::value;
  * static_assert(res2 != true, "");
  * @endcode
+ *
+ * @ingroup types
  */
 template<template<class> class Pred, typename... Args>
-struct TypesContainConditionType
+struct TypesSatisfyCondition
 {
 private:
     using ResTypes = FilterTypesByCondition<Pred, Args...>::type;
@@ -276,15 +305,18 @@ public:
     static constexpr bool value = NumberOfTypes<ResTypes>::value != 0;
 };
 
+/**
+ * @copydoc TypesSatisfyCondition
+ */
 // TypeWrapper specialization
 template<template<class> class Pred, typename... Args>
-struct TypesContainConditionType<Pred, TypeWrapper<Args...>>
+struct TypesSatisfyCondition<Pred, TypeWrapper<Args...>>
 {
-    using type = TypesContainConditionType<Pred, Args...>::type;
+    using type = TypesSatisfyCondition<Pred, Args...>::type;
 };
 
 /**
- * @brief The the first type of a pack that satisties the given condition
+ * @brief The the first type of a pack that satisfies the given condition.
  *
  * Usage:
  * @code{.cpp}
@@ -293,6 +325,8 @@ struct TypesContainConditionType<Pred, TypeWrapper<Args...>>
  *     GetTypeByCondition<std::is_integral, float, double, char, int>::type;
  * static_assert(std::is_same<ResType, char>::value, "");
  * @endcode
+ *
+ * @ingroup types
  */
 template<template<class> class Pred, typename... Args>
 struct GetTypeByCondition
@@ -304,6 +338,9 @@ public:
     using type = FirstTypeT<ResTypes>;
 };
 
+/**
+ * @copydoc GetTypeByCondition
+ */
 // TypeWrapper specialization
 template<template<class> class Pred, typename... Args>
 struct GetTypeByCondition<Pred, TypeWrapper<Args...>>

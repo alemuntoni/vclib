@@ -65,9 +65,9 @@ public:
     PointerFromIndexIterator() = default;
 
     /**
-     * @brief Constructor for the begin iterator - ParentMesh required
+     * @brief Constructor for the begin iterator - ParentElement required
      * @param it
-     * @param mesh
+     * @param pElem
      */
     PointerFromIndexIterator(Iterator it, PE pElem) :
             mIt(it), parentElement(pElem)
@@ -75,9 +75,8 @@ public:
     }
 
     /**
-     * @brief Constructor for the end iterator, ParentMesh not required
+     * @brief Constructor for the end iterator, ParentElement not required
      * @param it
-     * @param end
      */
     PointerFromIndexIterator(Iterator it) : mIt(it) {}
 
