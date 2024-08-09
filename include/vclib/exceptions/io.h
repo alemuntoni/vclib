@@ -30,6 +30,11 @@
 
 namespace vcl {
 
+/**
+ * @brief Exception thrown when the file format is unknown.
+ *
+ * @ingroup exceptions
+ */
 class UnknownFileFormatException : public std::runtime_error
 {
 public:
@@ -46,6 +51,11 @@ public:
     }
 };
 
+/**
+ * @brief Exception thrown when the file cannot be opened.
+ *
+ * @ingroup exceptions
+ */
 class CannotOpenFileException : public std::runtime_error
 {
 public:
@@ -59,6 +69,11 @@ public:
     }
 };
 
+/**
+ * @brief Exception thrown when the file is malformed.
+ *
+ * @ingroup exceptions
+ */
 class MalformedFileException : public std::runtime_error
 {
 public:

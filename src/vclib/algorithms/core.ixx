@@ -25,6 +25,7 @@ module;
 #include <cassert>
 #include <cmath>
 #include <functional>
+#include <optional>
 #include <ranges>
 #include <set>
 #include <vector>

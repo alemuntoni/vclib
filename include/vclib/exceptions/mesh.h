@@ -30,6 +30,11 @@
 
 namespace vcl {
 
+/**
+ * @brief Exception thrown when the mesh is inconsistent.
+ *
+ * @ingroup exceptions
+ */
 class InconsistentMeshException : public std::runtime_error
 {
 public:
@@ -46,6 +51,12 @@ public:
     }
 };
 
+/**
+ * @brief Exception thrown when a precondition on an input/output mesh is
+ * missing.
+ *
+ * @ingroup exceptions
+ */
 class MissingPreconditionException : public std::runtime_error
 {
 public:
@@ -63,6 +74,11 @@ public:
     }
 };
 
+/**
+ * @brief Exception thrown when the mesh is not compact.
+ *
+ * @ingroup exceptions
+ */
 class MissingCompactnessException : public std::runtime_error
 {
 public:
@@ -80,6 +96,12 @@ public:
     }
 };
 
+/**
+ * @brief Exception thrown when a mesh/element component is missing (not
+ * enabled).
+ *
+ * @ingroup exceptions
+ */
 class MissingComponentException : public std::runtime_error
 {
 public:
@@ -96,6 +118,12 @@ public:
     }
 };
 
+/**
+ * @brief Exception thrown when an input/output mesh is not composed of
+ * triangles.
+ *
+ * @ingroup exceptions
+ */
 class MissingTriangularRequirementException : public std::runtime_error
 {
 public:
@@ -113,6 +141,11 @@ public:
     }
 };
 
+/**
+ * @brief Exception thrown when an input/output mesh is not composed of quads.
+ *
+ * @ingroup exceptions
+ */
 class MissingQuadRequirementException : public std::runtime_error
 {
 public:
@@ -130,23 +163,11 @@ public:
     }
 };
 
-class MissingPolygonalRequirementException : public std::runtime_error
-{
-public:
-    MissingPolygonalRequirementException(const std::string& err) :
-            std::runtime_error(err)
-    {
-    }
-
-    virtual const char* what() const throw()
-    {
-        static std::string error;
-        error = std::string("Missing Polygonal Mesh Requirement - ") +
-                std::runtime_error::what();
-        return error.c_str();
-    }
-};
-
+/**
+ * @brief Exception thrown when an index is out of bounds in a vertex container.
+ *
+ * @ingroup exceptions
+ */
 class BadVertexIndexException : public std::runtime_error
 {
 public:
@@ -160,6 +181,12 @@ public:
     }
 };
 
+/**
+ * @brief Exception thrown when the type of a custom component is not the one
+ * expected.
+ *
+ * @ingroup exceptions
+ */
 class BadCustomComponentTypeException : public std::runtime_error
 {
 public:

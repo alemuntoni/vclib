@@ -49,6 +49,8 @@ struct MakeConstPointer
 
 /**
  * @copydoc MakeConstPointer
+ *
+ * @ingroup types
  */
 template<typename T>
 struct MakeConstPointer<T*>
@@ -58,6 +60,8 @@ struct MakeConstPointer<T*>
 
 /**
  * @copydoc MakeConstPointer
+ *
+ * @ingroup types
  */
 template<typename T>
 struct MakeConstPointer<std::shared_ptr<T>>
@@ -105,6 +109,8 @@ constexpr T& asConst(const T& value) noexcept
 
 /**
  * @copydoc asConst
+ *
+ * @ingroup types
  */
 template<typename T>
 constexpr T* asConst(const T* value) noexcept
@@ -114,6 +120,8 @@ constexpr T* asConst(const T* value) noexcept
 
 /**
  * @copydoc asConst
+ *
+ * @ingroup types
  */
 template<typename T>
 constexpr T* asConst(T* value) noexcept
