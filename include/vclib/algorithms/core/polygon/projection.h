@@ -20,64 +20,68 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_ALGORITHMS_CORE_STAT_H
-#define VCL_ALGORITHMS_CORE_STAT_H
+#ifndef VCL_ALGORITHMS_CORE_POLYGON_PROJECTION_H
+#define VCL_ALGORITHMS_CORE_POLYGON_PROJECTION_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vector>
-
-#include <vclib/space/core/matrix.h>
+#include <vclib/concepts/space/point.h>
 #include <vclib/space/core/polygon.h>
 #endif
 
 namespace vcl {
 
 /**
- * @brief Compute the covariance matrix of a set of points.
- * @param pointVec
- * @return The 3x3 covariance matrix of the given set of points.
+ * @brief Project a 3D polygon onto a plane, and return the 2D polygon.
+ *
+ * @tparam Iterator: Iterator type, it must iterate over 3D points.
+ * @param[in] begin: Iterator to the first point of the polygon.
+ * @param[in] end: Iterator to the past-the-end point of the polygon.
+ * @return The projected polygon.
+ * 
+ * @ingroup algorithms_core_polygon
  */
-template<Point3Concept PointType>
-auto covarianceMatrixOfPointCloud(const std::vector<PointType>& pointVec)
+template<Point3IteratorConcept Iterator>
+auto project(Iterator begin, Iterator end)
 {
-    Matrix33<typename PointType::ScalarType> m;
-    m.setZero();
-    PointType barycenter = Polygon<PointType>::barycenter(pointVec);
+    using PointType = Iterator::value_type;
+    using ScalarType = PointType::ScalarType;
 
-    // compute covariance matrix
-    for (const PointType& p : pointVec) {
-        PointType e = p - barycenter;
-        m += e.outerProduct(e);
+    Polygon2<ScalarType> projectedPolygon;
+
+    // Calculate the normal vector of the polygon and an orthonormal basis
+    // for the plane containing the polygon.
+    PointType normal = Polygon3<ScalarType>::normal(begin, end);
+    PointType u, v;
+    normal.orthoBase(u, v);
+
+    projectedPolygon.reserve(std::distance(begin, end));
+
+    // Project each vertex onto the plane defined by the orthonormal basis.
+    for (auto it = begin; it != end; ++it) {
+        ScalarType x = (*it).dot(u);
+        ScalarType y = (*it).dot(v);
+        projectedPolygon.pushBack(Point2<ScalarType>(x, y));
     }
-    return m;
+
+    return projectedPolygon;
 }
 
 /**
- * @brief Compute the weighted covariance matrix of a set of points.
- * @param pointVec
- * @param weights
- * @return
+ * @brief Project a 3D polygon defined by the given range onto a plane, and
+ * return the 2D polygon.
+ *
+ * @tparam R: A range of 3D points.
+ * @param[in] polygon: The input polygon.
+ * @return The projected polygon.
+ *
+ * @ingroup algorithms_core_polygon
  */
-template<Point3Concept PointType>
-auto weightedCovarianceMatrixOfPointCloud(
-    const std::vector<PointType>&                      pointVec,
-    const std::vector<typename PointType::ScalarType>& weights)
+template<vcl::Range R>
+auto project(R&& polygon) requires Point3Concept<std::ranges::range_value_t<R>>
 {
-    Matrix33<typename PointType::ScalarType> m;
-    m.setZero();
-    PointType barycenter =
-        Polygon<PointType>::weightedBarycenter(pointVec, weights);
-
-    // compute covariance matrix
-    typename PointType::ScalarType wsum = 0;
-    for (uint i = 0; i < pointVec.size(); ++i) {
-        PointType e = (pointVec[i] - barycenter) * weights[i];
-        m += e.outerProduct(e);
-        wsum += weights[i];
-    }
-    return m / wsum;
+    return project(polygon.begin(), polygon.end());
 }
 
 } // namespace vcl
 
-#endif // VCL_ALGORITHMS_CORE_STAT_H
+#endif // VCL_ALGORITHMS_CORE_POLYGON_PROJECTION_H

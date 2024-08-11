@@ -31,7 +31,18 @@ import vclib;
 
 int main()
 {
-    std::vector<vcl::Point2d> polygon = {
+    /*
+     *  3 6------------------5
+     *    |                  |
+     *  2 |                  |
+     *    |                  |
+     *  1 |  1--+--2         |
+     *    |  |     |         |
+     *  0 7--0     3--+--+---4
+     *    0  1     2  3
+     */
+
+    vcl::Polygon2d polygon = {
         vcl::Point2d(1, 0),
         vcl::Point2d(1, 1),
         vcl::Point2d(2, 1),
@@ -41,8 +52,7 @@ int main()
         vcl::Point2d(0, 3),
         vcl::Point2d(0, 0)};
 
-    std::vector<unsigned int> tri =
-        vcl::Polygon<vcl::Point2d>::earCut(polygon.begin(), polygon.end());
+    std::vector<unsigned int> tri = vcl::earCut(polygon.begin(), polygon.end());
 
     std::cerr << "Triangle indices: \n";
     for (unsigned int i = 0; i < tri.size(); i += 3) {

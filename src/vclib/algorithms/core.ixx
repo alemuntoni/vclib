@@ -32,6 +32,8 @@ module;
 
 #include <Eigen/Eigenvalues>
 
+#include <mapbox/earcut.hpp>
+
 export module vclib.algorithms.core;
 
 import vclib.concepts;
@@ -46,6 +48,7 @@ export {
 #include <vclib/algorithms/core/bounding_box.h>
 #include <vclib/algorithms/core/polygon/create.h>
 #include <vclib/algorithms/core/polygon/geometry.h>
+#include <vclib/algorithms/core/polygon/projection.h>
 #include <vclib/algorithms/core/polygon/topology.h>
 #include <vclib/algorithms/core/stat.h>
 

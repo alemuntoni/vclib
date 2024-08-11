@@ -40,6 +40,8 @@ namespace vcl {
  *
  * @param[in] f: the input face.
  * @return the normal of the face.
+ * 
+ * @ingroup algorithms_core_polygon
  */
 template<FaceConcept FaceType>
 typename FaceType::VertexType::CoordType faceNormal(const FaceType& f)
@@ -70,6 +72,8 @@ typename FaceType::VertexType::CoordType faceNormal(const FaceType& f)
  *
  * @param[in] f: the input face.
  * @return the barycenter of the face.
+ * 
+ * @ingroup algorithms_core_polygon
  */
 template<FaceConcept FaceType>
 typename FaceType::VertexType::CoordType faceBarycenter(const FaceType& f)
@@ -92,6 +96,8 @@ typename FaceType::VertexType::CoordType faceBarycenter(const FaceType& f)
  *
  * @param[in] f: the input face.
  * @return the area of the face.
+ * 
+ * @ingroup algorithms_core_polygon
  */
 template<FaceConcept FaceType>
 auto faceArea(const FaceType& f)
@@ -122,6 +128,8 @@ auto faceArea(const FaceType& f)
  *
  * @param[in] f: the input face.
  * @return the perimeter of the face.
+ * 
+ * @ingroup algorithms_core_polygon
  */
 template<FaceConcept FaceType>
 auto facePerimeter(const FaceType& f)
@@ -154,6 +162,8 @@ auto facePerimeter(const FaceType& f)
  * @param[in] vi: the index of the vertex in the face on which calculate the
  * angle
  * @return the angle in radians at the vi-th vertex.
+ * 
+ * @ingroup algorithms_core_polygon
  */
 template<FaceConcept FaceType>
 auto faceAngleOnVertexRad(const FaceType& f, uint vi)

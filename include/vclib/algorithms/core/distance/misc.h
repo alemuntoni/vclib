@@ -32,14 +32,14 @@ namespace vcl {
 
 /**
  * @brief Compute the distance between two Points of any dimension.
- * 
+ *
  * @tparam PointType: The type of the input points.
- * 
+ *
  * @param[in] point0: The first input point.
  * @param[in] point1: The second input point.
- * 
+ *
  * @return The distance between the two points.
- * 
+ *
  * @ingroup distance_core
  */
 template<PointConcept PointType>
@@ -336,7 +336,7 @@ auto boundedDistance(
  * @param[in] signedDist: Whether to calculate the signed distance. Default is
  * false.
  * @return The distance between the point and the triangle.
- * 
+ *
  * @ingroup distance_core
  */
 template<
@@ -365,7 +365,7 @@ auto boundedDistance(
  * @param[in] signedDist: Whether to calculate the signed distance. Default is
  * false.
  * @return The distance between the point and the triangle.
- * 
+ *
  * @ingroup distance_core
  */
 template<
@@ -393,7 +393,7 @@ auto distance(
  * @param[in] signedDist: Whether to calculate the signed distance. Default is
  * false.
  * @return The distance between the point and the triangle.
- * 
+ *
  * @ingroup distance_core
  */
 template<
@@ -413,7 +413,7 @@ auto distance(
 
 /**
  * @copydoc vcl::distance(const PointType&, const TriangleType&, bool)
- * 
+ *
  * @ingroup distance_core
  */
 template<

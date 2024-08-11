@@ -24,10 +24,10 @@
 #define VCL_MESH_CONTAINERS_FACE_CONTAINER_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/algorithms/core/polygon/topology.h>
 #include <vclib/mesh/containers/custom_component_vector_handle.h>
 #include <vclib/mesh/elements/face.h>
 #include <vclib/mesh/elements/face_components.h>
-#include <vclib/space/core/polygon.h>
 #include <vclib/views/mesh.h>
 
 #include "element_container.h"
@@ -1165,8 +1165,8 @@ protected:
                         // triangulation will be this->face(m.index(mf)); the
                         // other triangles will be added at the end of the
                         // container
-                        std::vector<uint> tris = Polygon<MCoordType>::earCut(
-                            mf.vertices() | vcl::views::coords);
+                        std::vector<uint> tris =
+                            vcl::earCut(mf.vertices() | vcl::views::coords);
                         FaceType& f = face(m.index(mf));
                         importTriPointersHelper(f, mf, base, mvbase, tris, 0);
 

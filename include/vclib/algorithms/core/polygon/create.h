@@ -35,6 +35,8 @@ namespace vcl {
  * @param[in] n: The number of vertices.
  * @param[in] radius: The radius of the circle.
  * @return The circle polygon.
+ * 
+ * @ingroup algorithms_core_polygon
  */
 template<Polygon2Concept PolygonType>
 PolygonType createCircle(uint n, typename PolygonType::ScalarType radius = 1.0)

@@ -33,6 +33,7 @@ module;
 
 export module vclib.mesh:containers;
 
+import vclib.algorithms.core;
 import vclib.concepts;
 import vclib.exceptions;
 import vclib.io;
