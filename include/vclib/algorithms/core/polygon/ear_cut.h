@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_ALGORITHMS_CORE_POLYGON_TOPOLOGY_H
-#define VCL_ALGORITHMS_CORE_POLYGON_TOPOLOGY_H
+#ifndef VCL_ALGORITHMS_CORE_POLYGON_EAR_CUT_H
+#define VCL_ALGORITHMS_CORE_POLYGON_EAR_CUT_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <set>
@@ -89,8 +89,8 @@ namespace vcl {
  * that is a Point2 object with a ScalarType member representing the scalar
  * type used to represent the coordinates of the point. If the polygon is
  * not simple or has holes, the function throws a std::logic_error.
- * 
- * @ingroup algorithms_core_polygon
+ *
+ * @ingroup core_polygon
  */
 template<Point2IteratorConcept Iterator>
 std::vector<uint> earCut(Iterator begin, Iterator end)
@@ -143,8 +143,8 @@ std::vector<uint> earCut(Iterator begin, Iterator end)
  * that is a Point3 object with a ScalarType member representing the scalar
  * type used to represent the coordinates of the point. If the polygon is
  * not simple or has holes, the function throws a std::logic_error.
- * 
- * @ingroup algorithms_core_polygon
+ *
+ * @ingroup core_polygon
  */
 template<Point3IteratorConcept Iterator>
 std::vector<uint> earCut(Iterator begin, Iterator end)
@@ -164,8 +164,8 @@ std::vector<uint> earCut(Iterator begin, Iterator end)
  * @param[in] range: the range of points that define the polygon.
  * @return A vector containing the indices of the vertices that form
  * triangles in the triangulated polygon.
- * 
- * @ingroup algorithms_core_polygon
+ *
+ * @ingroup core_polygon
  */
 template<vcl::Range R>
 std::vector<uint> earCut(R&& range)
@@ -190,8 +190,8 @@ std::vector<uint> earCut(R&& range)
  *
  * @return A vector of indices, representing the triplets of the triangulation
  * of the polygon.
- * 
- * @ingroup algorithms_core_polygon
+ *
+ * @ingroup core_polygon
  */
 template<FaceConcept Face>
 std::vector<uint> earCut(const Face& polygon)
@@ -202,4 +202,4 @@ std::vector<uint> earCut(const Face& polygon)
 
 } // namespace vcl
 
-#endif // VCL_ALGORITHMS_CORE_POLYGON_TOPOLOGY_H
+#endif // VCL_ALGORITHMS_CORE_POLYGON_EAR_CUT_H

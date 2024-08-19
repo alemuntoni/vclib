@@ -81,10 +81,7 @@ public:
      *
      * @param[in] points: the list of points that define the polygon.
      */
-    Polygon(std::initializer_list<PointT> points)
-        : mPoints(points)
-    {
-    }
+    Polygon(std::initializer_list<PointT> points) : mPoints(points) {}
 
     /**
      * @brief Construct a new Polygon object from a range of points.
@@ -224,6 +221,22 @@ public:
      * @return The perimeter of the polygon.
      */
     ScalarType perimeter() const { return perimeter(mPoints); }
+
+    /**
+     * @brief Returns the i-th point of the polygon.
+     *
+     * @param i: the index of the point to return.
+     * @return The i-th point of the polygon.
+     */
+    PointType& operator[](uint i) { return mPoints[i]; }
+
+    /**
+     * @brief Returns the i-th point of the polygon.
+     *
+     * @param i: the index of the point to return.
+     * @return The i-th point of the polygon.
+     */
+    const PointType& operator[](uint i) const { return mPoints[i]; }
 
     /**
      * @brief Returns the area of the polygon.

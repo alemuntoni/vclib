@@ -33,13 +33,13 @@ export module vclib.space.complex:graph;
 import vclib.types;
 
 export {
-#include <vclib/space/complex/graph/undirected_node.h>
+#include <vclib/space/complex/graph/nodes/undirected_node.h>
 
-#include <vclib/space/complex/graph/bipartite/iterator/adjacent_node_iterator.h>
+#include <vclib/space/complex/graph/bipartite_iterators/adjacent_node_iterator.h>
 
-#include <vclib/space/complex/graph/bipartite/iterator/adjacent_left_node_iterator.h>
-#include <vclib/space/complex/graph/bipartite/iterator/adjacent_right_node_iterator.h>
-#include <vclib/space/complex/graph/bipartite/iterator/node_iterator.h>
+#include <vclib/space/complex/graph/bipartite_iterators/adjacent_left_node_iterator.h>
+#include <vclib/space/complex/graph/bipartite_iterators/adjacent_right_node_iterator.h>
+#include <vclib/space/complex/graph/bipartite_iterators/node_iterator.h>
 
-#include <vclib/space/complex/graph/bipartite/bipartite_graph.h>
+#include <vclib/space/complex/graph/bipartite_graph.h>
 }

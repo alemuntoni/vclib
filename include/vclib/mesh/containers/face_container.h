@@ -24,7 +24,7 @@
 #define VCL_MESH_CONTAINERS_FACE_CONTAINER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/algorithms/core/polygon/topology.h>
+#include <vclib/algorithms/core/polygon/ear_cut.h>
 #include <vclib/mesh/containers/custom_component_vector_handle.h>
 #include <vclib/mesh/elements/face.h>
 #include <vclib/mesh/elements/face_components.h>

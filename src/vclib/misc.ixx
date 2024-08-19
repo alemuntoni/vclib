@@ -35,6 +35,7 @@ module;
 #include <iterator>
 #include <list>
 #include <mutex>
+#include <random>
 #include <sstream>
 #include <stack>
 #include <string>
@@ -60,6 +61,7 @@ export {
 #include <vclib/misc/nested_initializer_lists.h>
 #include <vclib/misc/pair.h>
 #include <vclib/misc/parallel.h>
+#include <vclib/misc/shuffle.h>
 #include <vclib/misc/string.h>
 #include <vclib/misc/tokenizer.h>
 #include <vclib/misc/tuple.h>

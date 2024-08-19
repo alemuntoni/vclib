@@ -20,38 +20,34 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATOR_ADJACENT_RIGHT_NODE_ITERATOR_H
-#define VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATOR_ADJACENT_RIGHT_NODE_ITERATOR_H
+#ifndef VCL_MISC_SHUFFLE_H
+#define VCL_MISC_SHUFFLE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include "adjacent_node_iterator.h"
+#include <random>
+
+#include <vclib/concepts/ranges/range.h>
 #endif
 
-namespace vcl::detail {
+namespace vcl {
 
-template<typename Graph, typename Iterator>
-class AdjacentRightNodeIterator : public AdjacentNodeIterator<Graph, Iterator>
+/**
+ * @brief Shuffle the elements of a range.
+ *
+ * @tparam R: Type of the range.
+ * @param[in] range: Range to shuffle.
+ * @param[in] deterministic: If true, the shuffle will be deterministic.
+ *
+ * @ingroup miscellaneous
+ */
+template<vcl::Range R>
+void shuffle(R&& range, bool deterministic = false)
 {
-    using Base = AdjacentNodeIterator<Graph, Iterator>;
+    std::random_device rd;
+    std::mt19937       generator(deterministic ? 0 : rd());
+    std::shuffle(range.begin(), range.end(), generator);
+}
 
-public:
-    using value_type = Graph::LeftType;
-    using reference  = const value_type&;
-    using pointer    = const value_type*;
+} // namespace vcl
 
-    using AdjacentNodeIterator<Graph, Iterator>::AdjacentNodeIterator;
-
-    reference operator*() const
-    {
-        return Base::mGraph->nodesL[Base::mIt].info();
-    }
-
-    pointer operator->() const
-    {
-        return &Base::mGraph->nodesL[Base::mIt].info();
-    }
-};
-
-} // namespace vcl::detail
-
-#endif // VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATOR_ADJACENT_RIGHT_NODE_ITERATOR_H
+#endif // VCL_MISC_SHUFFLE_H

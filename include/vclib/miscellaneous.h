@@ -28,6 +28,7 @@
 #include "misc/iterators.h"
 #include "misc/logger.h"
 #include "misc/parallel.h"
+#include "misc/shuffle.h"
 #include "misc/string.h"
 #include "misc/timer.h"
 #include "misc/tokenizer.h"

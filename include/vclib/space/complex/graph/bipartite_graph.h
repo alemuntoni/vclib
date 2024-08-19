@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_BIPARTITE_GRAPH_H
-#define VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_BIPARTITE_GRAPH_H
+#ifndef VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_GRAPH_H
+#define VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_GRAPH_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <cassert>
@@ -29,20 +29,35 @@
 #include <set>
 #include <vector>
 
-#include <vclib/space/complex/graph/undirected_node.h>
 #include <vclib/types.h>
-#include <vclib/types/view.h>
 
-#include "iterator/adjacent_left_node_iterator.h"
-#include "iterator/adjacent_right_node_iterator.h"
-#include "iterator/node_iterator.h"
+#include "bipartite_iterators/adjacent_left_node_iterator.h"
+#include "bipartite_iterators/adjacent_right_node_iterator.h"
+#include "bipartite_iterators/node_iterator.h"
+#include "nodes/undirected_node.h"
 #endif
 
 namespace vcl {
 
+namespace detail {
+
+template<typename Graph, typename Iterator>
+class AdjacentLeftNodeIterator;
+
+template<typename Graph, typename Iterator>
+class AdjacentRightNodeIterator;
+
+} // namespace detail
+
 template<class T1, class T2>
 class BipartiteGraph
 {
+    template<typename Graph, typename Iterator>
+    friend class detail::AdjacentLeftNodeIterator;
+
+    template<typename Graph, typename Iterator>
+    friend class detail::AdjacentRightNodeIterator;
+
 protected:
     std::map<T1, unsigned int> mMapL;
     std::map<T2, unsigned int> mMapR;
@@ -199,7 +214,7 @@ public:
      */
     bool deleteLeftNode(const T1& lNode)
     {
-        if (clearAdjacencesLeftNode(lNode)) {
+        if (clearAdjacenciesLeftNode(lNode)) {
             mUnusedLNodes.insert(mMapL[lNode]);
             mMapL.erase(lNode);
             return true;
@@ -215,7 +230,7 @@ public:
      */
     bool deleteRightNode(const T2& rNode)
     {
-        if (clearAdjacencesRightNode(rNode)) {
+        if (clearAdjacenciesRightNode(rNode)) {
             mUnusedRNodes.insert(mMapR[rNode]);
             mMapR.erase(rNode);
             return true;
@@ -276,7 +291,7 @@ public:
      * @param lNode
      * @return true if all the arcs are successfully removes
      */
-    bool clearAdjacencesLeftNode(const T1& lNode)
+    bool clearAdjacenciesLeftNode(const T1& lNode)
     {
         try {
             int uid = getIdLeftNode(lNode);
@@ -297,7 +312,7 @@ public:
      * @param rNode
      * @return true if all the arcs are successfully removes
      */
-    bool clearAdjacencesRightNode(const T2& rNode)
+    bool clearAdjacenciesRightNode(const T2& rNode)
     {
         try {
             int vid = getIdRightNode(rNode);
@@ -426,4 +441,4 @@ protected:
 
 } // namespace vcl
 
-#endif // VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_BIPARTITE_GRAPH_H
+#endif // VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_GRAPH_H

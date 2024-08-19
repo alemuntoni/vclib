@@ -20,28 +20,28 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_ALGORITHMS_CORE_H
-#define VCL_ALGORITHMS_CORE_H
+#ifndef VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATORS_NODE_ITERATOR_H
+#define VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATORS_NODE_ITERATOR_H
 
-#include "core/bounding_box.h"
-#include "core/box.h"
-#include "core/distance.h"
-#include "core/fitting.h"
-#include "core/intersection.h"
-#include "core/polygon.h"
-#include "core/stat.h"
-#include "core/visibility.h"
+namespace vcl {
 
-/**
- * @defgroup algorithms_core Core Algorithms
- *
- * @brief List of Core algorithms.
- *
- * In this module, you can find the core algorithms of VCLib, that generally
- * involve simple geometric primitives, like points, vectors, and matrices.
- *
- * You can access these algorithms by including `#include
- * <vclib/algorithms/core.h>`
- */
+template<typename Iterator>
+class NodeIterator : public Iterator
+{
+public:
+    using Iterator::Iterator;
 
-#endif // VCL_ALGORITHMS_CORE_H
+    using value_type = Iterator::value_type::InfoType;
+    using reference  = const value_type&;
+    using pointer    = const value_type*;
+
+    NodeIterator(Iterator it) : Iterator(it) {}
+
+    reference operator*() const { return Iterator::operator*().info(); }
+
+    pointer operator->() const { return &Iterator::operator->().info(); }
+};
+
+} // namespace vcl
+
+#endif // VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATORS_NODE_ITERATOR_H

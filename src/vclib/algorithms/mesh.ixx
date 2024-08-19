@@ -26,6 +26,7 @@ export module vclib.algorithms.mesh;
 
 export import :base;
 export import :clean;
+export import :convex_hull;
 export import :create;
 export import :distance;
 export import :filter;

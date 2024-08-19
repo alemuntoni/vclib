@@ -23,16 +23,18 @@
 #ifndef VCL_ALGORITHMS_CORE_POLYGON_H
 #define VCL_ALGORITHMS_CORE_POLYGON_H
 
+#include "polygon/convex_hull.h"
+#include "polygon/core2.h"
 #include "polygon/create.h"
+#include "polygon/ear_cut.h"
 #include "polygon/geometry.h"
 #include "polygon/projection.h"
-#include "polygon/topology.h"
 
 /**
- * @defgroup algorithms_core_polygon Polygon Core Algorithms
- * 
+ * @defgroup core_polygon Polygon Core Algorithms
+ *
  * @ingroup algorithms_core
- * 
+ *
  * @brief List of Core Polygon algorithms.
  */
 

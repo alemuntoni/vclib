@@ -48,6 +48,7 @@ if (VCLIB_BUILD_TESTS)
     add_subdirectory(015-mesh-copy-and-append)
     add_subdirectory(016-mesh-crease-edges)
     add_subdirectory(017-serialization)
+    add_subdirectory(018-polygon)
 
 
     if (TARGET vclib-external-vcg)

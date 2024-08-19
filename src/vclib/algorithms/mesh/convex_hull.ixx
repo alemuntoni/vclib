@@ -20,28 +20,25 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_ALGORITHMS_CORE_H
-#define VCL_ALGORITHMS_CORE_H
+module;
 
-#include "core/bounding_box.h"
-#include "core/box.h"
-#include "core/distance.h"
-#include "core/fitting.h"
-#include "core/intersection.h"
-#include "core/polygon.h"
-#include "core/stat.h"
-#include "core/visibility.h"
+#include <algorithm>
+#include <ranges>
+#include <set>
+#include <vector>
 
-/**
- * @defgroup algorithms_core Core Algorithms
- *
- * @brief List of Core algorithms.
- *
- * In this module, you can find the core algorithms of VCLib, that generally
- * involve simple geometric primitives, like points, vectors, and matrices.
- *
- * You can access these algorithms by including `#include
- * <vclib/algorithms/core.h>`
- */
+export module vclib.algorithms.mesh:convex_hull;
 
-#endif // VCL_ALGORITHMS_CORE_H
+import vclib.algorithms.core;
+import vclib.concepts;
+import vclib.mesh;
+import vclib.misc;
+import vclib.space;
+import vclib.types;
+
+import :create;
+import :update;
+
+export {
+#include <vclib/algorithms/mesh/convex_hull.h>
+}

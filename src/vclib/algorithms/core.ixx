@@ -45,12 +45,16 @@ import vclib.types;
 import vclib.views;
 
 export {
+#include <vclib/algorithms/core/polygon/core2.h>
+
 #include <vclib/algorithms/core/bounding_box.h>
+#include <vclib/algorithms/core/polygon/convex_hull.h>
 #include <vclib/algorithms/core/polygon/create.h>
+#include <vclib/algorithms/core/polygon/ear_cut.h>
 #include <vclib/algorithms/core/polygon/geometry.h>
 #include <vclib/algorithms/core/polygon/projection.h>
-#include <vclib/algorithms/core/polygon/topology.h>
 #include <vclib/algorithms/core/stat.h>
+#include <vclib/algorithms/core/visibility.h>
 
 // depends on stat
 #include <vclib/algorithms/core/fitting.h>

@@ -24,9 +24,8 @@
 #define VCL_ALGORITHMS_MESH_SHUFFLE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <random>
-
 #include <vclib/mesh/requirements.h>
+#include <vclib/misc/shuffle.h>
 #endif
 
 namespace vcl {
@@ -49,11 +48,8 @@ std::vector<V*> genericFASVPV(M m, bool deterministic)
         vec.push_back(&v);
     }
 
-    std::random_device rd;
-    std::mt19937       gen(rd());
-    if (deterministic)
-        gen = std::mt19937(0);
-    std::shuffle(vec.begin(), vec.end(), gen);
+    vcl::shuffle(vec, deterministic);
+
     return vec;
 }
 
@@ -73,11 +69,8 @@ std::vector<F*> genericFASFPV(M m, bool deterministic)
         vec.push_back(&f);
     }
 
-    std::random_device rd;
-    std::mt19937       gen(rd());
-    if (deterministic)
-        gen = std::mt19937(0);
-    std::shuffle(vec.begin(), vec.end(), gen);
+    vcl::shuffle(vec, deterministic);
+
     return vec;
 }
 
@@ -116,11 +109,8 @@ std::vector<uint> fillAndShuffleVertexIndexVector(
         vec.push_back(m.index(v));
     }
 
-    std::random_device rd;
-    std::mt19937       gen(rd());
-    if (deterministic)
-        gen = std::mt19937(0);
-    std::shuffle(vec.begin(), vec.end(), gen);
+    vcl::shuffle(vec, deterministic);
+
     return vec;
 }
 
@@ -159,11 +149,8 @@ std::vector<uint> fillAndShuffleFaceIndexVector(
         vec.push_back(m.index(f));
     }
 
-    std::random_device rd;
-    std::mt19937       gen(rd());
-    if (deterministic)
-        gen = std::mt19937(0);
-    std::shuffle(vec.begin(), vec.end(), gen);
+    vcl::shuffle(vec, deterministic);
+
     return vec;
 }
 

@@ -24,7 +24,7 @@
 #define VCL_ALGORITHMS_MESH_POLYGON_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/algorithms/core/polygon/topology.h>
+#include <vclib/algorithms/core/polygon/ear_cut.h>
 #include <vclib/algorithms/mesh/face_topology.h>
 #endif
 

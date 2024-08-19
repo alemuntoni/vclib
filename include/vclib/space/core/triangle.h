@@ -24,6 +24,7 @@
 #define VCL_SPACE_CORE_TRIANGLE_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/concepts/range.h>
 #include <vclib/concepts/space/triangle.h>
 #include <vclib/space/core/point.h>
 #endif

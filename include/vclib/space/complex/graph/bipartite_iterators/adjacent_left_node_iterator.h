@@ -20,28 +20,38 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATOR_NODE_ITERATOR_H
-#define VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATOR_NODE_ITERATOR_H
+#ifndef VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATORS_ADJACENT_LEFT_NODE_ITERATOR_H
+#define VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATORS_ADJACENT_LEFT_NODE_ITERATOR_H
 
-namespace vcl {
+#ifndef VCLIB_WITH_MODULES
+#include "adjacent_node_iterator.h"
+#endif
 
-template<typename Iterator>
-class NodeIterator
+namespace vcl::detail {
+
+template<typename Graph, typename Iterator>
+class AdjacentLeftNodeIterator : public AdjacentNodeIterator<Graph, Iterator>
 {
-public:
-    using Iterator::Iterator;
+    using Base = AdjacentNodeIterator<Graph, Iterator>;
 
-    using value_type = Iterator::value_type::InfoType;
+public:
+    using value_type = Graph::RightType;
     using reference  = const value_type&;
     using pointer    = const value_type*;
 
-    NodeIterator(Iterator it) : Iterator(it) {}
+    using AdjacentNodeIterator<Graph, Iterator>::AdjacentNodeIterator;
 
-    reference operator*() const { return Iterator::operator*().info(); }
+    reference operator*() const
+    {
+        return Base::mGraph->mNodesR[*(Base::mIt)].info();
+    }
 
-    pointer operator->() const { return &Iterator::operator->().info(); }
+    pointer operator->() const
+    {
+        return &Base::mGraph->mNodesR[*(Base::mIt)].info();
+    }
 };
 
-} // namespace vcl
+} // namespace vcl::detail
 
-#endif // VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATOR_NODE_ITERATOR_H
+#endif // VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_ITERATORS_ADJACENT_LEFT_NODE_ITERATOR_H

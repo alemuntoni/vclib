@@ -37,13 +37,13 @@ namespace vcl {
  * @param[in] begin: Iterator to the first point of the polygon.
  * @param[in] end: Iterator to the past-the-end point of the polygon.
  * @return The projected polygon.
- * 
- * @ingroup algorithms_core_polygon
+ *
+ * @ingroup core_polygon
  */
 template<Point3IteratorConcept Iterator>
 auto project(Iterator begin, Iterator end)
 {
-    using PointType = Iterator::value_type;
+    using PointType  = Iterator::value_type;
     using ScalarType = PointType::ScalarType;
 
     Polygon2<ScalarType> projectedPolygon;
@@ -74,7 +74,7 @@ auto project(Iterator begin, Iterator end)
  * @param[in] polygon: The input polygon.
  * @return The projected polygon.
  *
- * @ingroup algorithms_core_polygon
+ * @ingroup core_polygon
  */
 template<vcl::Range R>
 auto project(R&& polygon) requires Point3Concept<std::ranges::range_value_t<R>>
