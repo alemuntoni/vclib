@@ -25,6 +25,7 @@ module;
 #include <algorithm>
 #include <ranges>
 #include <set>
+#include <stdexcept>
 #include <vector>
 
 export module vclib.algorithms.mesh:convex_hull;

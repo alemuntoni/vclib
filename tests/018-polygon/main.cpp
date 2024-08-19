@@ -31,6 +31,7 @@
 #include <vclib/algorithms/core.h>
 #include <vclib/space/core.h>
 #else
+#include <Eigen/Core>
 import vclib;
 #endif
 

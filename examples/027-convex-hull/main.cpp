@@ -27,6 +27,10 @@
 #include <vclib/load_save.h>
 #include <vclib/meshes/tri_mesh.h>
 #else
+#include <Eigen/Core>
+#include <filesystem>
+#include <fstream>
+#include <ranges>
 #include <unordered_set>
 import vclib;
 #endif
