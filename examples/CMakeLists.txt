@@ -63,6 +63,7 @@ if (VCLIB_BUILD_EXAMPLES)
     add_subdirectory(701-processing-load-mesh)
     add_subdirectory(702-processing-create-mesh)
     add_subdirectory(703-processing-laplacian-smoothing)
+    add_subdirectory(704-processing-convex-hull)
 
     add_subdirectory(999-misc)
 

@@ -34,6 +34,7 @@ export import :action_interfaces;
 
 export import :apply_filter_mesh_actions;
 export import :create_filter_mesh_actions;
+export import :generate_filter_mesh_actions;
 
 export {
 #include <vclib/processing/actions/filter_mesh.h>

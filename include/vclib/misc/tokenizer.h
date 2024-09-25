@@ -37,7 +37,7 @@ namespace vcl {
  */
 class Tokenizer
 {
-    char mSeparator = '\0';
+    std::vector<char> mSeparators = {'\0'};
 
     std::vector<std::string> mSplitted;
 
@@ -47,7 +47,16 @@ public:
     Tokenizer() = default;
 
     Tokenizer(const char* string, char separator, bool jumpEmptyTokens = true) :
-            mSeparator(separator)
+            mSeparators({separator})
+    {
+        split(string, jumpEmptyTokens);
+    }
+
+    Tokenizer(
+        const char*              string,
+        const std::vector<char>& separators,
+        bool                     jumpEmptyTokens = true) :
+            mSeparators(separators)
     {
         split(string, jumpEmptyTokens);
     }
@@ -56,7 +65,16 @@ public:
         const std::string& string,
         char               separator,
         bool               jumpEmptyTokens = true) :
-            mSeparator(separator)
+            mSeparators({separator})
+    {
+        split(string.c_str(), jumpEmptyTokens);
+    }
+
+    Tokenizer(
+        const std::string&       string,
+        const std::vector<char>& separators,
+        bool                     jumpEmptyTokens = true) :
+            mSeparators(separators)
     {
         split(string.c_str(), jumpEmptyTokens);
     }
@@ -77,7 +95,8 @@ private:
         if (*str != '\0') {
             do {
                 const char* begin = str;
-                while (*str != mSeparator && *str)
+
+                while (isDiffFromAllSeparators(str) && *str)
                     str++;
                 if (begin != str)
                     mSplitted.push_back(std::string(begin, str));
@@ -86,6 +105,18 @@ private:
                 }
             } while ('\0' != *str++);
         }
+    }
+
+    bool isDiffFromAllSeparators(const char* str)
+    {
+        bool diffFromAllSeparators = true;
+
+        uint i = 0;
+        while (diffFromAllSeparators && i < mSeparators.size()) {
+            diffFromAllSeparators = *str != mSeparators[i++];
+        }
+
+        return diffFromAllSeparators;
     }
 };
 

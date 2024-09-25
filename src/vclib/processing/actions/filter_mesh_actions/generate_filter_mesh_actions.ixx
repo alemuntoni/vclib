@@ -20,36 +20,30 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_PROCESSING_ACTIONS_FILTER_MESH_H
-#define VCL_PROCESSING_ACTIONS_FILTER_MESH_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include "filter_mesh/apply.h"
-#include "filter_mesh/create.h"
-#include "filter_mesh/generate.h"
-#endif
+#include <memory>
+#include <ranges>
+#include <string>
+#include <unordered_set>
+#include <vector>
 
-namespace vcl::proc {
+#include <Eigen/Core>
 
-std::vector<std::shared_ptr<Action>> vclibFilterMeshActions()
-{
-    std::vector<std::shared_ptr<Action>> vec;
+export module vclib.processing:generate_filter_mesh_actions;
 
-    // Apply filters
-    auto applyFilters = vclibApplyFilterMeshActions();
-    vec.insert(vec.end(), applyFilters.begin(), applyFilters.end());
+import vclib.algorithms.mesh;
+import vclib.concepts;
+import vclib.misc;
+import vclib.space.core;
+import vclib.views;
 
-    // Create filters
-    auto createFilters = vclibCreateFilterMeshActions();
-    vec.insert(vec.end(), createFilters.begin(), createFilters.end());
+import :action_interfaces;
+import :meshes;
+import :parameters;
 
-    // Generate filters
-    auto generateFilters = vclibGenerateFilterMeshActions();
-    vec.insert(vec.end(), generateFilters.begin(), generateFilters.end());
+export {
+#include <vclib/processing/actions/filter_mesh/generate/convex_hull_filter.h>
 
-    return vec;
+#include <vclib/processing/actions/filter_mesh/generate.h>
 }
-
-} // namespace vcl::proc
-
-#endif // VCL_PROCESSING_ACTIONS_FILTER_MESH_H

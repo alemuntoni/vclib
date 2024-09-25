@@ -24,6 +24,7 @@ module;
 
 #include <cassert>
 #include <ranges>
+#include <string>
 #include <vector>
 
 export module vclib.space.complex:sampler;
