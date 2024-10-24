@@ -36,9 +36,9 @@ import vclib.space.core;
 import vclib.types;
 
 export {
-#include <vclib/ext/vcg/concepts.h>
-#include <vclib/ext/vcg/type_mapping.h>
+#include <vclib/vcg/concepts.h>
+#include <vclib/vcg/type_mapping.h>
 
-#include <vclib/ext/vcg/export.h>
-#include <vclib/ext/vcg/import.h>
+#include <vclib/vcg/export.h>
+#include <vclib/vcg/import.h>
 }

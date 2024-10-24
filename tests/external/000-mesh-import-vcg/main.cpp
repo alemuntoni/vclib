@@ -35,7 +35,7 @@
 #include <vclib/vcg/import.h>
 #else
 import vclib.core;
-import vclib.external.vcg;
+import vclib.external;
 #endif
 
 TEMPLATE_TEST_CASE(
