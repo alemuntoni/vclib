@@ -1,38 +1,73 @@
-function(_vclib_add_test_example name header_only test)
-    cmake_parse_arguments(ARG "" "" "" ${ARGN})
+set(VCLIB_ASSETS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets")
 
-    if (${test})
-        set(TARGET_NAME "vclib-test-${name}")
-    else()
-        set(TARGET_NAME "vclib-example-${name}")
+add_library(vclib-tests-examples-common INTERFACE)
+
+target_compile_definitions(vclib-tests-examples-common INTERFACE
+    VCLIB_ASSETS_PATH="${VCLIB_ASSETS_PATH}")
+
+target_compile_definitions(vclib-tests-examples-common INTERFACE
+    VCLIB_EXAMPLE_MESHES_PATH="${VCLIB_ASSETS_PATH}/example_meshes")
+
+target_compile_definitions(vclib-tests-examples-common INTERFACE
+    VCLIB_RESULTS_PATH="${VCLIB_ASSETS_PATH}/results")
+
+function(_vclib_add_test_example name)
+    set(options TEST HEADER_ONLY)
+    set(oneValueArgs VCLIB_MODULE VCLIB_CORE_EXAMPLE)
+    set(multiValueArgs SOURCES)
+
+    cmake_parse_arguments(ARG
+        "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if (NOT ARG_VCLIB_MODULE)
+        set(ARG_VCLIB_MODULE "core")
     endif()
 
-    add_executable(${TARGET_NAME} ${ARG_UNPARSED_ARGUMENTS})
-    target_link_libraries(${TARGET_NAME} PRIVATE vclib-examples-common)
-    if (NOT ${header_only})
-        target_link_libraries(${TARGET_NAME} PRIVATE vclib)
+    if (${ARG_TEST})
+        set(TARGET_NAME "vclib-${ARG_VCLIB_MODULE}-test-${name}")
+    else()
+        set(TARGET_NAME "vclib-${ARG_VCLIB_MODULE}-example-${name}")
+    endif()
+
+    add_executable(${TARGET_NAME} ${ARG_SOURCES})
+    target_link_libraries(${TARGET_NAME} PRIVATE vclib-tests-examples-common)
+
+    # if ARG_VCLIB_MODULE is "render"
+    if (ARG_VCLIB_MODULE STREQUAL "render")
+        target_link_libraries(${TARGET_NAME} PRIVATE vclib-render-examples-common)
+    endif()
+
+    if (ARG_VCLIB_CORE_EXAMPLE)
+        set(VCLIB_INCLUDE_EXAMPLES_DIR ${VCLIB_EXAMPLES_DIR}/core/${ARG_VCLIB_CORE_EXAMPLE})
+        target_include_directories(${TARGET_NAME} PUBLIC
+                ${VCLIB_INCLUDE_EXAMPLES_DIR})
+    endif()
+
+    if (NOT ${ARG_HEADER_ONLY})
+        target_link_libraries(${TARGET_NAME} PRIVATE vclib-${ARG_VCLIB_MODULE})
     else()
         # additional include and links required when using header only:
 
-        # vclib
-        target_include_directories(${TARGET_NAME} PRIVATE ${VCLIB_INCLUDE_DIR})
+        # vclib-core
+        target_include_directories(${TARGET_NAME} PRIVATE
+            ${VCLIB_CORE_INCLUDE_DIR})
 
         # eigen
-        set(EIGEN_DIR ${VCLIB_INCLUDE_DIR}/../external/eigen-3.4.0/)
+        set(EIGEN_DIR ${VCLIB_CORE_INCLUDE_DIR}/../external/eigen-3.4.0/)
         target_include_directories(${TARGET_NAME} PRIVATE ${EIGEN_DIR})
 
         # Tbb and Threads if available - needed for gcc
-        if (TARGET vclib-external-tbb)
-            target_link_libraries(${TARGET_NAME} PRIVATE vclib-external-tbb)
+        if (TARGET vclib-3rd-tbb)
+            target_link_libraries(${TARGET_NAME} PRIVATE vclib-3rd-tbb)
         endif()
 
         if (${test})
             # Catch2
-            target_link_libraries(${TARGET_NAME} PRIVATE vclib-external-catch2)
+            target_link_libraries(${TARGET_NAME} PRIVATE vclib-3rd-catch2)
         endif()
     endif()
 
-    if (${test})
+    if (${ARG_TEST})
         set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "tests")
         enable_testing()
         add_test(NAME ${name} COMMAND ${TARGET_NAME})
@@ -41,22 +76,36 @@ function(_vclib_add_test_example name header_only test)
     endif()
 endfunction()
 
-function(vclib_add_example name header_only)
+# example of call of this function
+# vclib_add_example(
+#     000-mesh-basic # name of the example
+#     [HEADER_ONLY] # optional - to build the example with includepath
+#                     (no cmake targets)
+#     [VCLIB_MODULE core] # optional - to specify the module of the example
+#                           (default is core)
+#     [VCLIB_CORE_EXAMPLE 000-mesh-basic] # optional - to specify the example of
+#                                     the core module from which reuse some code
+#     SOURCES main.cpp # sources of the example
+# )
+function(vclib_add_example name)
     cmake_parse_arguments(ARG "" "" "" ${ARGN})
 
-    _vclib_add_test_example(${name} ${header_only} FALSE ${ARG_UNPARSED_ARGUMENTS})
+    _vclib_add_test_example(${name} ${ARG_UNPARSED_ARGUMENTS})
 endfunction()
 
-function(vclib_add_test name header_only)
+# example of call of this function
+# vclib_add_test(
+#     000-mesh-basic # name of the test
+#     [HEADER_ONLY] # optional - to build the test with includepath
+#                     (no cmake targets)
+#     [VCLIB_MODULE core] # optional - to specify the module of the test
+#                           (default is core)
+#     [VCLIB_CORE_EXAMPLE 000-mesh-basic] # optional - to specify the example of
+#                                     the core module from which reuse some code
+#     SOURCES main.cpp # sources of the test
+# )
+function(vclib_add_test name)
     cmake_parse_arguments(ARG "" "" "" ${ARGN})
 
-    _vclib_add_test_example(${name} ${header_only} TRUE ${ARG_UNPARSED_ARGUMENTS})
+    _vclib_add_test_example(${name} TEST ${ARG_UNPARSED_ARGUMENTS})
 endfunction()
-
-set(VCLIB_ASSETS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/examples/assets")
-
-add_library(vclib-examples-common INTERFACE)
-target_compile_definitions(vclib-examples-common INTERFACE
-    VCLIB_ASSETS_PATH="${VCLIB_ASSETS_PATH}")
-target_compile_definitions(vclib-examples-common INTERFACE
-    VCLIB_RESULTS_PATH="${VCLIB_ASSETS_PATH}/results")

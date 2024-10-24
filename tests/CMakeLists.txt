@@ -23,36 +23,32 @@
 cmake_minimum_required(VERSION 3.24)
 project(vclib-tests)
 
-if (VCLIB_BUILD_CXX20_MODULES)
-    set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
+option(VCLIB_ALLOW_DOWNLOAD_CATCH2
+    "Allow use of downloaded Catch2 source" ON)
+option(VCLIB_ALLOW_SYSTEM_CATCH2 "Allow use of system-provided Catch2" ON)
+
+option(VCLIB_CORE_BUILD_TESTS
+    "If true, the tests of VCLib-core will be built." ON)
+
+option(VCLIB_EXTERNAL_BUILD_TESTS
+    "If true, the tests of VCLib-external will be built." ON)
+
+set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
+
+### Catch2
+include(catch2.cmake)
+
+# examples
+if (VCLIB_CORE_BUILD_TESTS)
+    add_subdirectory(core)
 endif()
 
-# tests
-if (VCLIB_BUILD_TESTS)
-
-    add_subdirectory(000-static-asserts)
-    add_subdirectory(001-trimesh-base)
-    add_subdirectory(002-mesh-topology)
-    add_subdirectory(003-mesh-conversions)
-    add_subdirectory(004-mesh-custom-components)
-    add_subdirectory(005-mesh-new-user-component)
-    add_subdirectory(006-load-save-mesh-obj)
-    add_subdirectory(007-load-save-mesh-off)
-    add_subdirectory(008-load-save-mesh-ply)
-    add_subdirectory(009-load-save-mesh-stl)
-    add_subdirectory(010-mesh-clean)
-    add_subdirectory(011-mesh-filter)
-    add_subdirectory(012-kd-tree)
-    add_subdirectory(013-mesh-update-normal)
-    add_subdirectory(014-polymesh-base)
-    add_subdirectory(015-mesh-copy-and-append)
-    add_subdirectory(016-mesh-crease-edges)
-    add_subdirectory(017-serialization)
-    add_subdirectory(018-polygon)
-
-
-    if (TARGET vclib-external-vcg)
-        add_subdirectory(900-mesh-import-vcg)
-    endif()
+if (VCLIB_BUILD_MODULE_EXTERNAL AND VCLIB_EXTERNAL_BUILD_TESTS)
+    add_subdirectory(external)
 endif()
+
+# if (VCLIB_BUILD_MODULE_PROCESSING)
+#     add_subdirectory(processing)
+# endif()
+
 

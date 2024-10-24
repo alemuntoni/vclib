@@ -1,0 +1,104 @@
+name: Core - Build and run Tests
+
+on:
+  [push, pull_request]
+
+jobs:
+  core_build_and_run_tests:
+    name: Core - Build and run Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-22.04', 'ubuntu-24.04', 'macos-13', 'macos-latest', 'windows-latest']
+        build-with: ['headers', 'modules']
+        exclude:
+          - os: 'macos-13'
+            build-with: 'modules'
+          - os: 'macos-latest'
+            build-with: 'modules'
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+    - name: Install dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get install cmake ninja-build libtbb-dev catch2
+    - name: Update Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+      if: runner.os == 'Linux' && matrix.build-with == 'modules'
+    - name: Install newer Clang
+      if: runner.os == 'Linux' && matrix.build-with == 'modules'
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x ./llvm.sh
+        sudo ./llvm.sh 18
+        sudo apt-get install clang-tidy-18
+    - name: Install dependencies
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        brew install ninja
+    - name: Install newer Clang
+      if: runner.os == 'macOS' && matrix.build-with == 'modules'
+      shell: bash
+      run: |
+        brew install llvm@18
+    - name: Install dependencies
+      if: runner.os == 'Windows'
+      run: |
+        choco upgrade ccache ninja
+    - name: Ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: core-${{ matrix.os }}-${{ matrix.build-with }}-${{ github.ref }}
+    - name: Setup cmake arguments
+      shell: bash
+      run: |
+        # if modules are enabled, we need to set the CMake arguments
+        CMAKE_ARGUMENTS=""
+        if [ "${{ matrix.build-with }}" == "modules" ]; then
+          CMAKE_ARGUMENTS="-DVCLIB_BUILD_CXX20_MODULES=ON"
+          # if we are on linux, we need to set the CMake arguments
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            CMAKE_ARGUMENTS="$CMAKE_ARGUMENTS -DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18"
+          fi
+        fi
+        echo "Additional cmake arguments: $CMAKE_ARGUMENTS"
+        # make CMAKE_ARGUMENTS available to the next steps
+        echo "CMAKE_ARGUMENTS=$CMAKE_ARGUMENTS" >> $GITHUB_ENV
+    - name: Build
+      shell: bash
+      run: |
+        # if we are on macos and modules are enabled, we need to set the CMake arguments
+        if [ "${{ runner.os }}" == "macOS" ] && [ "${{ matrix.build-with }}" == "modules" ]; then
+          BREW_PATH="$(brew --prefix)"
+          LLVM_PATH="$(brew --prefix llvm)"
+          export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+          export LIBRARY_PATH="$LIBRARY_PATH:$SDKROOT/usr/lib"
+          export PATH="$LLVM_PATH/bin:$PATH"
+          export CC="$LLVM_PATH/bin/clang"
+          export CXX="$LLVM_PATH/bin/clang++"
+          export COMPILER=${CXX}
+          export CFLAGS="-I $BREW_PATH/include -I $LLVM_PATH/include"
+          export CXXFLAGS="-I $BREW_PATH/include -I $LLVM_PATH/include"
+          export LDFLAGS="-L $LIBRARY_PATH -L $BREW_PATH/lib -L $LLVM_PATH/lib"
+        fi
+
+        mkdir build
+        cd build
+        cmake -GNinja \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+          -DCMAKE_BUILD_TYPE=Release \
+          $CMAKE_ARGUMENTS \
+          ..
+        ninja
+    - name: Run Tests
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        cd build
+        ctest --verbose
