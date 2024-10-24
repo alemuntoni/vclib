@@ -29,7 +29,7 @@
 #else
 #include <Eigen/Core>
 #include <sstream>
-import vclib;
+import vclib.core;
 #endif
 
 class MyVertex :

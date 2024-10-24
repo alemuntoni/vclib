@@ -31,7 +31,7 @@
 #include <Eigen/Geometry>
 #include <fstream>
 #include <set>
-import vclib;
+import vclib.core;
 #endif
 
 int main()

@@ -30,7 +30,7 @@
 #include <vclib/types.h>
 #else
 #include <Eigen/Core>
-import vclib;
+import vclib.core;
 #endif
 
 /*

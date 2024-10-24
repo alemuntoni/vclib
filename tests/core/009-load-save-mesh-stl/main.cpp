@@ -31,7 +31,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <ranges>
-import vclib;
+import vclib.core;
 #endif
 
 std::istringstream stlCube()

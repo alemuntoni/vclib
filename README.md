@@ -50,7 +50,7 @@ If you use CMake, the minimum required version is 3.24.
 
 ### Modules Library
 
-To use C++20 modules (`import vclib;`), the following compilers are supported:
+To use C++20 modules (`import vclib.core;`), the following compilers are supported:
   - LLVM Clang 18 (available [here](https://apt.llvm.org/) for Ubuntu)
   - MSVC 19.36
   

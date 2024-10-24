@@ -5,7 +5,7 @@
 #include <vclib/meshes/edge_mesh.h>
 #else
 #include <Eigen/Core>
-import vclib;
+import vclib.core;
 #endif
 
 #include "mesh_views.h"

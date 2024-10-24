@@ -32,7 +32,7 @@
 #include <vclib/space/core.h>
 #else
 #include <Eigen/Core>
-import vclib;
+import vclib.core;
 #endif
 
 template<typename Scalar, unsigned int N>

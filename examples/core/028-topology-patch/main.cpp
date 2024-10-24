@@ -31,7 +31,7 @@
 #include <filesystem>
 #include <fstream>
 #include <ranges>
-import vclib;
+import vclib.core;
 #endif
 
 int main()

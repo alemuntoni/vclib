@@ -95,7 +95,7 @@ export {
 // Adding this operation forces the compilation inside this module.
 // Without this, on msvc you get an unresolved external symbol error every time
 // you try to use this module, and the solution would be to `#include
-// <Eigen/Geometry>` along with `import vclib;` in the client code.
+// <Eigen/Geometry>` along with `import vclib.core;` in the client code.
 // note: these dummy objects are not exported
 // TODO: test if this is still necessary when msvc gets updated.
 vcl::Point3f dummyf

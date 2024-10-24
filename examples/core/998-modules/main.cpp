@@ -27,7 +27,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-import vclib;
+import vclib.core;
 
 static_assert(
     vcl::IteratorConcept<std::vector<int>::iterator>,

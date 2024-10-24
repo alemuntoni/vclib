@@ -28,7 +28,7 @@
 #include <vclib/space.h>
 #else
 #include <Eigen/Core>
-import vclib;
+import vclib.core;
 #endif
 
 

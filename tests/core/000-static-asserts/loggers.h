@@ -27,7 +27,7 @@
 #include <vclib/misc/logger.h>
 #else
 #include <Eigen/Core>
-import vclib;
+import vclib.core;
 #endif
 
 void loggersStaticAsserts()

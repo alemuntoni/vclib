@@ -31,7 +31,7 @@
 #include <Eigen/Geometry>
 #include <fstream>
 #include <set>
-import vclib;
+import vclib.core;
 #endif
 
 #include <catch2/catch_template_test_macros.hpp>

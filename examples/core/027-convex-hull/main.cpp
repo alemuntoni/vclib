@@ -32,7 +32,7 @@
 #include <fstream>
 #include <ranges>
 #include <unordered_set>
-import vclib;
+import vclib.core;
 #endif
 
 int main()

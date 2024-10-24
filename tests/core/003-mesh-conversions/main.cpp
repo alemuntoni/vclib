@@ -32,7 +32,7 @@
 #include <fstream>
 #include <ranges>
 #include <set>
-import vclib;
+import vclib.core;
 #endif
 
 using Meshes         = std::pair<vcl::TriMesh, vcl::PolyMesh>;

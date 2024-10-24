@@ -32,7 +32,8 @@
 #include <Eigen/Geometry>
 #include <ranges>
 #include <string>
-import vclib;
+import vclib.core;
+import vclib.processing;
 #endif
 
 int main()

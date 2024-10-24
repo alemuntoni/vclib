@@ -33,7 +33,7 @@
 #include <vclib/space.h>
 #else
 #include <Eigen/Geometry>
-import vclib;
+import vclib.core;
 #endif
 
 template<typename Scalar, unsigned int N>

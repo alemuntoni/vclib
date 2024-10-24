@@ -27,7 +27,8 @@
 #else
 #include <Eigen/Geometry>
 #include <fstream>
-import vclib;
+import vclib.core;
+import vclib.processing;
 #endif
 
 int main()

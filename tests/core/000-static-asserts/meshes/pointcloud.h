@@ -7,7 +7,7 @@
 #include <vclib/meshes/point_cloud.h>
 #else
 #include <Eigen/Core>
-import vclib;
+import vclib.core;
 #endif
 
 void pointcloudStaticAsserts()

@@ -31,7 +31,7 @@
 #include <Eigen/Geometry>
 #include <list>
 #include <set>
-import vclib;
+import vclib.core;
 #endif
 
 std::istringstream plyPolyCube()

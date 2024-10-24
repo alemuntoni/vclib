@@ -34,7 +34,7 @@
 #include <fstream>
 #include <ranges>
 #include <set>
-import vclib;
+import vclib.core;
 #endif
 
 template<vcl::EdgeMeshConcept OutMeshType, vcl::FaceMeshConcept InMeshType>

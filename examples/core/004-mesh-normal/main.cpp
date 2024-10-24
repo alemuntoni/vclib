@@ -32,7 +32,7 @@
 #include <fstream>
 #include <ranges>     // needed by msvc...
 #include <set>
-import vclib;
+import vclib.core;
 #endif
 
 template<typename MeshType>

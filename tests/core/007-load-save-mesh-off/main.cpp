@@ -33,7 +33,7 @@
 #include <Eigen/Geometry>
 #include <ranges>
 #include <set>
-import vclib;
+import vclib.core;
 #endif
 
 std::istringstream offPolyCube()

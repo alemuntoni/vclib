@@ -30,7 +30,7 @@
 #else
 #include <Eigen/Core>
 #include <ranges>
-import vclib;
+import vclib.core;
 #endif
 
 TEMPLATE_TEST_CASE(

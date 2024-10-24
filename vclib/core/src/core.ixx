@@ -22,7 +22,7 @@
 
 module;
 
-export module vclib;
+export module vclib.core;
 
 export import vclib.algorithms;
 export import vclib.concepts;

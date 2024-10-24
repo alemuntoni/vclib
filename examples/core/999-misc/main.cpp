@@ -29,7 +29,7 @@
 #include <vclib/space.h>
 #else
 #include <ranges>
-import vclib;
+import vclib.core;
 #endif
 
 struct Shape

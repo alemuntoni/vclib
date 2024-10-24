@@ -9,7 +9,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <fstream>
-import vclib;
+import vclib.core;
 #endif
 
 void loadBimbaAndBunnyMeshes(vcl::TriMesh& m1, vcl::TriMesh& m2)

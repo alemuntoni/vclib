@@ -33,7 +33,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <fstream>
-import vclib;
+import vclib.core;
 #endif
 
 int main()

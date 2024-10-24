@@ -26,7 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
 #else
-import vclib;
+import vclib.core;
 #endif
 
 int main()

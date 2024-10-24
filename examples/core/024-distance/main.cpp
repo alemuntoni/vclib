@@ -33,7 +33,7 @@
 #include <fstream>
 #include <ranges>
 #include <set>
-import vclib;
+import vclib.core;
 #endif
 
 int main()

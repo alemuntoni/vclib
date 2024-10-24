@@ -33,7 +33,7 @@
 #include <Eigen/Geometry>
 #include <fstream>
 #include <ranges>     // needed by msvc...
-import vclib;
+import vclib.core;
 #endif
 
 int main()

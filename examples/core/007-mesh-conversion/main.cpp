@@ -34,7 +34,7 @@
 #include <fstream>
 #include <map>    // needed by clang...
 #include <ranges> // needed by msvc...
-import vclib;
+import vclib.core;
 #endif
 
 int main()

@@ -30,7 +30,7 @@
 #include <vclib/meshes.h>
 #else
 #include <Eigen/Core>
-import vclib;
+import vclib.core;
 #endif
 
 int main()

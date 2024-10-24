@@ -27,7 +27,8 @@
 #else
 #include <Eigen/Core>
 #include <string>
-import vclib;
+import vclib.core;
+import vclib.processing;
 #endif
 
 int main()

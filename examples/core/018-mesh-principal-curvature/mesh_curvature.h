@@ -37,7 +37,7 @@
 #include <filesystem>
 #include <fstream>
 #include <ranges>            // needed by msvc...
-import vclib;
+import vclib.core;
 #endif
 
 template<vcl::MeshConcept MeshType>

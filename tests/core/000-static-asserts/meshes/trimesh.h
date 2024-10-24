@@ -7,7 +7,7 @@
 #include <vclib/meshes/tri_mesh.h>
 #else
 #include <Eigen/Core>
-import vclib;
+import vclib.core;
 #endif
 
 void trimeshStaticAsserts()

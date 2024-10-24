@@ -30,7 +30,7 @@
 #include <filesystem>
 #include <fstream>
 #include <set>
-import vclib;
+import vclib.core;
 #endif
 
 int main()
