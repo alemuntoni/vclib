@@ -27,67 +27,41 @@
 #include <vclib/types.h>
 #endif
 
+#include "point.h"
+
 namespace vcl {
-
-/**
- * @brief Concept for types representing const triangles in Euclidean space.
- *
- * This concept is less strict than the vcl::TriangleConcept as it does not
- * require the type to be mutable (i.e., it does not require the type to provide
- * non-const member functions).
- *
- * @ingroup space_concepts
- */
-template<typename T>
-concept ConstTriangleConcept = requires (const T& co) {
-    // clang-format off
-    typename T::ScalarType;
-    typename T::PointType;
-
-    co.DIM;
-    co.size() == 3;
-
-    { co.point(uint()) } -> std::same_as<const typename T::PointType&>;
-    { co.sideLength(uint()) } -> std::same_as<typename T::ScalarType>;
-    { co.barycenter() } -> std::same_as<typename T::PointType>;
-    { co.perimeter() } -> std::same_as<typename T::ScalarType>;
-    { co.area() } -> std::same_as<typename T::ScalarType>;
-    // clang-format on
-};
 
 /**
  * @brief Concept for types representing triangles in Euclidean space.
  *
- * This concept is more strict than the vcl::ConstTriangleConcept as it requires
- * the type to be mutable (i.e., it requires the type to provide non-const
- * member functions).
- *
  * @ingroup space_concepts
  */
 template<typename T>
-concept TriangleConcept =
-    ConstTriangleConcept<T> && requires (T o, const T& co) {
-        // clang-format off
-    { o.point(uint()) } -> std::same_as<typename T::PointType&>;
-        // clang-format on
+concept TriangleConcept = requires (
+    T&&                               obj,
+    typename RemoveRef<T>::PointType& pR,
+    typename RemoveRef<T>::ScalarType s) {
+    typename RemoveRef<T>::ScalarType;
+    typename RemoveRef<T>::PointType;
+
+    obj.DIM;
+    obj.size() == 3;
+
+    { obj.point(uint()) } -> PointConcept;
+    { obj.sideLength(uint()) } -> std::same_as<decltype(s)>;
+    { obj.barycenter() } -> PointConcept;
+    { obj.perimeter() } -> std::same_as<decltype(s)>;
+    { obj.area() } -> std::same_as<decltype(s)>;
+};
+
+template<typename T>
+concept Triangle2Concept = TriangleConcept<T> && RemoveRef<T>::DIM == 2;
+
+template<typename T>
+concept Triangle3Concept =
+    TriangleConcept<T> && RemoveRef<T>::DIM == 3 && requires (T&& obj) {
+        { obj.normal() } -> Point3Concept;
     };
-
-template<typename T>
-concept ConstTriangle2Concept = ConstTriangleConcept<T> && T::DIM == 2;
-
-template<typename T>
-concept Triangle2Concept = ConstTriangle2Concept<T> && TriangleConcept<T>;
-
-template<typename T>
-concept ConstTriangle3Concept =
-    ConstTriangleConcept<T> && T::DIM == 3 && requires (const T& co) {
-        // clang-format off
-    { co.normal() } -> std::same_as<typename T::PointType>;
-        // clang-format on
-    };
-
-template<typename T>
-concept Triangle3Concept = ConstTriangle3Concept<T> && TriangleConcept<T>;
 
 } // namespace vcl
 

@@ -26,6 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <string>
 
+#include <vclib/concepts/const_correctness.h>
 #include <vclib/types.h>
 #endif
 
@@ -44,50 +45,56 @@ namespace vcl {
  * @ingroup miscellaneous
  */
 template<typename T>
-concept LoggerConcept =
-    requires (T& o, const T& co, std::string msg, typename T::LogLevel lvl) {
-        // clang-format off
-        typename T::LogLevel;
+concept LoggerConcept = requires (
+    T&&                  obj,
+    std::string          str,
+    uint                 n,
+    typename RemoveRef<T>::LogLevel lvl) {
 
-        { o.enableIndentation() } -> std::same_as<void>;
-        { o.disableIndentation() } -> std::same_as<void>;
-        { o.enablePrintPercentage() } -> std::same_as<void>;
-        { o.disablePrintPercentage() } -> std::same_as<void>;
-        { o.setPrintLevel(lvl) } -> std::same_as<void>;
-        { o.enablePrintMessageDuringProgress() } -> std::same_as<void>;
-        { o.disablePrintMessageDuringProgress() } -> std::same_as<void>;
-        { o.enablePrintTimer() } -> std::same_as<void>;
-        { o.disablePrintTimer() } -> std::same_as<void>;
+    // inner types
+    typename RemoveRef<T>::LogLevel;
 
-        { o.reset() } -> std::same_as<void>;
+    { obj.time() } -> std::same_as<double>;
+    { obj.percentage() } -> std::same_as<double>;
 
-        { o.setMaxLineWidth(uint()) } -> std::same_as<void>;
-        { o.startTimer() } -> std::same_as<void>;
-        { o.stopTimer() } -> std::same_as<void>;
-        { o.getTime() } -> std::same_as<double>;
+    { obj.log(str) } -> std::same_as<void>;
+    { obj.log(str, lvl) } -> std::same_as<void>;
 
-        { o.startNewTask(double(), double(), msg) } -> std::same_as<void>;
-        { o.endTask(msg) } -> std::same_as<void>;
+    // non const requirements
+    requires vcl::IsConst<T> || requires {
+        { obj.enableIndentation() } -> std::same_as<void>;
+        { obj.disableIndentation() } -> std::same_as<void>;
+        { obj.enablePrintPercentage() } -> std::same_as<void>;
+        { obj.disablePrintPercentage() } -> std::same_as<void>;
+        { obj.setPrintLevel(lvl) } -> std::same_as<void>;
+        { obj.enablePrintMessageDuringProgress() } -> std::same_as<void>;
+        { obj.disablePrintMessageDuringProgress() } -> std::same_as<void>;
+        { obj.enablePrintTimer() } -> std::same_as<void>;
+        { obj.disablePrintTimer() } -> std::same_as<void>;
 
-        { co.percentage() } -> std::same_as<double>;
-        { o.setPercentage(uint()) } -> std::same_as<void>;
+        { obj.reset() } -> std::same_as<void>;
 
-        { o.log(msg) } -> std::same_as<void>;
-        { o.log(lvl, msg) } -> std::same_as<void>;
-        { o.log(uint(), msg) } -> std::same_as<void>;
-        { o.log(uint(), lvl, msg) } -> std::same_as<void>;
+        { obj.setMaxLineWidth(n) } -> std::same_as<void>;
+        { obj.startTimer() } -> std::same_as<void>;
+        { obj.stopTimer() } -> std::same_as<void>;
 
+        { obj.startNewTask(double(), double(), str) } -> std::same_as<void>;
+        { obj.endTask(str) } -> std::same_as<void>;
 
-        { o.startProgress(msg, uint()) } -> std::same_as<void>;
-        { o.startProgress(msg, uint(), uint()) } -> std::same_as<void>;
-        { o.startProgress(msg, uint(), uint(), uint()) } -> std::same_as<void>;
-        { o.startProgress(msg, uint(), uint(), uint(), uint()) } ->
-            std::same_as<void>;
-        { o.endProgress() }  -> std::same_as<void>;
-        { o.progress(uint()) }  -> std::same_as<void>;
-        // clang-format off
+        { obj.setPercentage(n) } -> std::same_as<void>;
+
+        { obj.log(n, str) } -> std::same_as<void>;
+        { obj.log(n, str, lvl) } -> std::same_as<void>;
+
+        { obj.startProgress(str, n) } -> std::same_as<void>;
+        { obj.startProgress(str, n, n) } -> std::same_as<void>;
+        { obj.startProgress(str, n, n, n) } -> std::same_as<void>;
+        { obj.startProgress(str, n, n, n, n) } -> std::same_as<void>;
+        { obj.endProgress() } -> std::same_as<void>;
+        { obj.progress(n) } -> std::same_as<void>;
+    };
 };
 
-} // nameaspace vcl
+} // namespace vcl
 
 #endif // VCL_CONCEPTS_LOGGER_H

@@ -59,21 +59,27 @@ private:
     Point3<Scalar> mDefaultTrackBallCenter;
     float          mDefaultTrackBallRadius = 1.0;
 
+    // current modifiers state (must be updated using setKeyModifiers)
     KeyModifiers mCurrentKeyModifiers = {KeyModifier::NO_MODIFIER};
+    // current mouse button (automatically updated)
+    // if dragging holds the current mouse button
+    MouseButton::Enum mCurrentMouseButton = MouseButton::NO_BUTTON;
 
     std::map<std::pair<MouseButton::Enum, KeyModifiers>, MotionType>
         mDragMotionMap = {
+            // clang-format off
             {{MouseButton::LEFT, {KeyModifier::NO_MODIFIER}},
-             TrackBallType::ARC                                                                   },
-            {{MouseButton::LEFT, {KeyModifier::CONTROL}},                     TrackBallType::PAN  },
-            {{MouseButton::LEFT, {KeyModifier::ALT}},                         TrackBallType::ZMOVE},
-            {{MouseButton::LEFT, {KeyModifier::SHIFT}},                       TrackBallType::SCALE},
+             TrackBallType::ARC                                               },
+            {{MouseButton::LEFT, {KeyModifier::CONTROL}}, TrackBallType::PAN  },
+            {{MouseButton::LEFT, {KeyModifier::ALT}},     TrackBallType::ZMOVE},
+            {{MouseButton::LEFT, {KeyModifier::SHIFT}},   TrackBallType::SCALE},
             {{MouseButton::MIDDLE, {KeyModifier::NO_MODIFIER}},
-             TrackBallType::PAN                                                                   },
+             TrackBallType::PAN                                               },
             {{MouseButton::MIDDLE, {KeyModifier::CONTROL}},
-             TrackBallType::ROLL                                                                  },
+             TrackBallType::ROLL                                              },
             {{MouseButton::LEFT, {KeyModifier::SHIFT, KeyModifier::CONTROL}},
-             TrackBallType::DIR_LIGHT_ARC                                                         },
+             TrackBallType::DIR_LIGHT_ARC                                     },
+            // clang-format on
     };
 
     using Axis = unsigned char;
@@ -81,6 +87,9 @@ private:
         {{{KeyModifier::NO_MODIFIER}, 1}, TrackBallType::SCALE},
         {{{KeyModifier::CONTROL}, 1},     TrackBallType::ROLL },
         {{{KeyModifier::SHIFT}, 1},       TrackBallType::FOV  },
+#ifdef __APPLE__
+        {{{KeyModifier::SHIFT}, 0},       TrackBallType::FOV  },
+#endif
     };
 
     std::map<
@@ -97,7 +106,7 @@ private:
                  t.resetDirectionalLight();
              }},
 
- // rotate
+            // rotate
             {{Key::NP_2, {KeyModifier::NO_MODIFIER}},
              [](TrackBallType& t) {
                  rotate(t, UNIT_X, DISCRETE_ROTATION_STEP);
@@ -115,7 +124,7 @@ private:
                  rotate(t, UNIT_X, -DISCRETE_ROTATION_STEP);
              }},
 
- // translate
+            // translate
             {{Key::UP, {KeyModifier::NO_MODIFIER}},
              [](TrackBallType& t) {
                  translate(t, UNIT_Y * DISCRETE_TRANSLATION_STEP);
@@ -133,7 +142,7 @@ private:
                  translate(t, UNIT_X * DISCRETE_TRANSLATION_STEP);
              }},
 
- // set view
+            // set view
             {{Key::NP_1, {KeyModifier::NO_MODIFIER}},
              [](TrackBallType& t) { // front
                  t.reset();
@@ -163,7 +172,7 @@ private:
                  t.reset();
                  rotate(t, UNIT_Y, M_PI_2);
              }},
- // projection mode
+            // projection mode
             {{Key::NP_5, {KeyModifier::NO_MODIFIER}},
              [](TrackBallType& t) { // reset
                  const auto v =
@@ -174,7 +183,7 @@ private:
                  t.setProjectionMode(v);
              }},
 
- // rotate light
+            // rotate light
             {{Key::NP_2, {KeyModifier::CONTROL, KeyModifier::SHIFT}},
              [](TrackBallType& t) {
                  rotateLight(t, UNIT_X, DISCRETE_ROTATION_STEP);
@@ -200,6 +209,8 @@ public:
     }
 
     bool isDragging() const { return mTrackball.isDragging(); }
+
+    MotionType currentMotion() const { return mTrackball.currentMotion(); }
 
     DirectionalLight<Scalar> light() const { return mTrackball.light(); }
 
@@ -244,22 +255,42 @@ public:
 
     void moveMouse(int x, int y)
     {
+        // ugly AF
+        auto it = mDragMotionMap.find(
+            std::make_pair(mCurrentMouseButton, mCurrentKeyModifiers));
+        if (it != mDragMotionMap.end()) {
+            mTrackball.beginDragMotion(it->second);
+        }
         mTrackball.setMousePosition(x, y);
         mTrackball.update();
     }
 
     void pressMouse(MouseButton::Enum button)
     {
+        // if dragging, do not update the current mouse button
+        if (mTrackball.isDragging()) {
+            return;
+        }
+
+        mCurrentMouseButton = button;
+
         auto it =
             mDragMotionMap.find(std::make_pair(button, mCurrentKeyModifiers));
         if (it != mDragMotionMap.end()) {
             mTrackball.beginDragMotion(it->second);
-            mTrackball.update();
+            // no need to update here, it will be updated in moveMouse
+            // for event driven rendering (e.g., Qt) this can trigger
+            // an unwanted drag motion using the previous mouse position
         }
     }
 
     void releaseMouse(MouseButton::Enum button)
     {
+        // if dragging, update the current mouse button only if it matches
+        if (mTrackball.isDragging() && mCurrentMouseButton == button) {
+            mCurrentMouseButton = MouseButton::NO_BUTTON;
+        }
+
         auto it =
             mDragMotionMap.find(std::make_pair(button, mCurrentKeyModifiers));
         if (it != mDragMotionMap.end()) {
@@ -291,9 +322,39 @@ public:
 
     void keyPress(Key::Enum key)
     {
-        auto it = mKeyAtomicMap.find({key, mCurrentKeyModifiers});
-        if (it != mKeyAtomicMap.end()) {
-            it->second(mTrackball);
+        // atomic motions are enabled while dragging
+        auto atomicOp = mKeyAtomicMap.find({key, mCurrentKeyModifiers});
+        if (atomicOp != mKeyAtomicMap.end()) {
+            atomicOp->second(mTrackball);
+        }
+
+        // dragging
+        auto it = mDragMotionMap.find(
+            std::make_pair(mCurrentMouseButton, mCurrentKeyModifiers));
+        if (it != mDragMotionMap.end()) {
+            mTrackball.beginDragMotion(it->second);
+        }
+        else {
+            mTrackball.endDragMotion(currentMotion());
+            mTrackball.update();
+        }
+    }
+
+    void keyRelease(Key::Enum key)
+    {
+        // ugly solution to end drag motion when a key is released
+        if (!mTrackball.isDragging())
+            return;
+
+        // dragging
+        auto it = mDragMotionMap.find(
+            std::make_pair(mCurrentMouseButton, mCurrentKeyModifiers));
+        if (it != mDragMotionMap.end()) {
+            mTrackball.beginDragMotion(it->second);
+        }
+        else {
+            mTrackball.endDragMotion(currentMotion());
+            mTrackball.update();
         }
     }
 

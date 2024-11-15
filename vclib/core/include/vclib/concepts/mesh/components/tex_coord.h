@@ -44,12 +44,10 @@ namespace vcl::comp {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasTexCoord = requires (T o, const T& co) {
-    // clang-format off
+concept HasTexCoord = requires (T obj, const T& cObj) {
     typename T::TexCoordType;
-    { o.texCoord() } -> std::same_as<typename T::TexCoordType&>;
-    { co.texCoord() } -> std::same_as<const typename T::TexCoordType&>;
-    // clang-format on
+    { obj.texCoord() } -> std::same_as<typename T::TexCoordType&>;
+    { cObj.texCoord() } -> std::same_as<const typename T::TexCoordType&>;
 };
 
 /**

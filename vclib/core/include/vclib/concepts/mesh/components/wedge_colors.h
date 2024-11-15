@@ -26,6 +26,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vector>
 
+#include <vclib/concepts/ranges/range.h>
+
 #include "component.h"
 #endif
 
@@ -46,33 +48,33 @@ namespace vcl::comp {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasWedgeColors = requires (T o, const T& co) {
-    // clang-format off
+concept HasWedgeColors = requires (
+    T                                       obj,
+    const T&                                cObj,
+    typename T::WedgeColorType              c,
+    typename T::WedgeColorType&             cR,
+    const typename T::WedgeColorType&       cCR,
+    typename T::WedgeColorsIterator         it,
+    typename T::ConstWedgeColorsIterator    cIt,
+    std::vector<typename T::WedgeColorType> vec) {
     T::WEDGE_COLOR_NUMBER;
     typename T::WedgeColorType;
     typename T::WedgeColorsIterator;
     typename T::ConstWedgeColorsIterator;
 
-    { o.wedgeColor(uint()) } -> std::same_as<typename T::WedgeColorType&>;
-    { co.wedgeColor(uint()) } ->
-        std::same_as<const typename T::WedgeColorType&>;
-    { o.wedgeColorMod(int()) } -> std::same_as<typename T::WedgeColorType&>;
-    { co.wedgeColorMod(int()) } ->
-        std::same_as<const typename T::WedgeColorType&>;
-    { o.setWedgeColor(uint(), typename T::WedgeColorType()) } ->
-        std::same_as<void>;
-    { o.setWedgeColors(std::vector<typename T::WedgeColorType>()) } ->
-        std::same_as<void>;
+    { obj.wedgeColor(uint()) } -> std::same_as<decltype(cR)>;
+    { cObj.wedgeColor(uint()) } -> std::same_as<decltype(cCR)>;
+    { obj.wedgeColorMod(int()) } -> std::same_as<decltype(cR)>;
+    { cObj.wedgeColorMod(int()) } -> std::same_as<decltype(cCR)>;
+    { obj.setWedgeColor(uint(), cCR) } -> std::same_as<void>;
+    { obj.setWedgeColors(vec) } -> std::same_as<void>;
 
-    { o.wedgeColorBegin() } -> std::same_as<typename T::WedgeColorsIterator>;
-    { o.wedgeColorEnd() } -> std::same_as<typename T::WedgeColorsIterator>;
-    { co.wedgeColorBegin() } ->
-        std::same_as<typename T::ConstWedgeColorsIterator>;
-    { co.wedgeColorEnd() } ->
-        std::same_as<typename T::ConstWedgeColorsIterator>;
-    o.wedgeColors();
-    co.wedgeColors();
-    // clang-format on
+    { obj.wedgeColorBegin() } -> std::same_as<decltype(it)>;
+    { obj.wedgeColorEnd() } -> std::same_as<decltype(it)>;
+    { cObj.wedgeColorBegin() } -> std::same_as<decltype(cIt)>;
+    { cObj.wedgeColorEnd() } -> std::same_as<decltype(cIt)>;
+    { obj.wedgeColors() } -> vcl::RangeOf<decltype(c)>;
+    { cObj.wedgeColors() } -> vcl::RangeOf<decltype(c)>;
 };
 
 /**

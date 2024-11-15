@@ -35,6 +35,8 @@ class EventManagerWindow : public virtual vcl::EventManagerI
 
 protected:
     GLFWwindow* mWindow = nullptr;
+    float       mScaleX = 1.0f; // content scaling
+    float       mScaleY = 1.0f;
 
 public:
     EventManagerWindow(
@@ -52,13 +54,25 @@ public:
 
     uint height() const;
 
+    float contentScaleX() const;
+
+    float contentScaleY() const;
+
 protected:
     void* winId();
 
     void* displayId();
 
     // callbacks
-    virtual void glfwWindowSizeCallback(GLFWwindow*, int width, int height);
+    virtual void glfwFramebufferSizeCallback(
+        GLFWwindow*,
+        int width,
+        int height);
+
+    virtual void glfwContentScaleCallback(
+        GLFWwindow*,
+        float xscale,
+        float yscale);
 
     virtual void glfwKeyCallback(
         GLFWwindow*,

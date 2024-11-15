@@ -59,13 +59,9 @@ namespace vcl {
 template<typename Scalar, uint N>
 class Point : public Eigen::Matrix<Scalar, 1, N>
 {
+public:
     using Base = Eigen::Matrix<Scalar, 1, N>;
 
-    // hide Base begin and end members
-    using Base::begin;
-    using Base::end;
-
-public:
     // inherit Base operators
     using Base::operator+;
     using Base::operator-;
@@ -679,6 +675,11 @@ public:
         *this = *this * m;
         return *this;
     }
+
+private:
+    // hide Base begin and end members
+    using Base::begin;
+    using Base::end;
 };
 
 /**

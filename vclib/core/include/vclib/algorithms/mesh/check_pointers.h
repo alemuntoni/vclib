@@ -109,8 +109,7 @@ bool checkElementPointersInElementContainerOnComponent(
         if constexpr (comp::HasOptionalPointersOfType<Comp, ElemType>) {
             if (mesh.template isPerElementComponentEnabled<
                     ELEM_ID,
-                    Comp::COMPONENT_ID>())
-            {
+                    Comp::COMPONENT_ID>()) {
                 return pointersLoop();
             }
             return true;
@@ -156,8 +155,7 @@ bool checkElementPointersInElementContainerOnComponent(
         if constexpr (comp::HasOptionalIndicesOfType<Comp, ElemType>) {
             if (mesh.template isPerElementComponentEnabled<
                     ELEM_ID,
-                    Comp::COMPONENT_ID>())
-            {
+                    Comp::COMPONENT_ID>()) {
                 return indicesLoop();
             }
             return true;

@@ -49,62 +49,58 @@ namespace vcl::comp {
  */
 template<typename T>
 concept HasAdjacentFaces = requires (
-    T                                          o,
-    const T&                                   co,
+    T                                          obj,
+    const T&                                   cObj,
     typename T::AdjacentFaceType               f,
-    std::vector<typename T::AdjacentFaceType*> v) {
-    // clang-format off
+    typename T::AdjacentFaceIterator           it,
+    typename T::ConstAdjacentFaceIterator      cIt,
+    typename T::ConstAdjacentFaceIndexIterator cIIt,
+    typename T::AdjacentFaceType*              fP,
+    const typename T::AdjacentFaceType*        cFP,
+    std::vector<typename T::AdjacentFaceType*> vec) {
     T::ADJ_FACE_NUMBER;
     typename T::AdjacentFaceType;
     typename T::AdjacentFaceIterator;
     typename T::ConstAdjacentFaceIterator;
     typename T::ConstAdjacentFaceIndexIterator;
 
-    { o.adjFacesNumber() } -> std::same_as<uint>;
-    { o.adjFace(uint()) } -> std::same_as<typename T::AdjacentFaceType*>;
-    { co.adjFace(uint()) } -> std::same_as<const typename T::AdjacentFaceType*>;
-    { co.adjFaceIndex(uint()) } -> std::same_as<uint>;
-    { o.adjFaceMod(int()) } -> std::same_as<typename T::AdjacentFaceType*>;
-    { co.adjFaceMod(int()) } ->
-        std::same_as<const typename T::AdjacentFaceType*>;
-    { co.adjFaceIndexMod(uint()) } -> std::same_as<uint>;
+    { obj.adjFacesNumber() } -> std::same_as<uint>;
+    { obj.adjFace(uint()) } -> std::same_as<decltype(fP)>;
+    { cObj.adjFace(uint()) } -> std::same_as<decltype(cFP)>;
+    { cObj.adjFaceIndex(uint()) } -> std::same_as<uint>;
+    { obj.adjFaceMod(int()) } -> std::same_as<decltype(fP)>;
+    { cObj.adjFaceMod(int()) } -> std::same_as<decltype(cFP)>;
+    { cObj.adjFaceIndexMod(uint()) } -> std::same_as<uint>;
 
-    { o.setAdjFace(uint(), &f) } -> std::same_as<void>;
-    { o.setAdjFace(uint(), uint()) } -> std::same_as<void>;
-    { o.setAdjFace(typename T::AdjacentFaceIterator(), &f) } ->
-        std::same_as<void>;
-    { o.setAdjFace(typename T::AdjacentFaceIterator(), uint()) } ->
-        std::same_as<void>;
-    { o.setAdjFace(typename T::ConstAdjacentFaceIterator(), &f) } ->
-        std::same_as<void>;
-    { o.setAdjFace(typename T::ConstAdjacentFaceIterator(), uint()) } ->
-        std::same_as<void>;
-    { o.setAdjFace(typename T::ConstAdjacentFaceIndexIterator(), &f) } ->
-        std::same_as<void>;
-    { o.setAdjFace(typename T::ConstAdjacentFaceIndexIterator(), uint()) } ->
-        std::same_as<void>;
-    { o.setAdjFaceMod(int(), &f) } -> std::same_as<void>;
-    { o.setAdjFaceMod(int(), uint()) } -> std::same_as<void>;
-    { o.setAdjFaces(v) } -> std::same_as<void>;
+    { obj.setAdjFace(uint(), &f) } -> std::same_as<void>;
+    { obj.setAdjFace(uint(), uint()) } -> std::same_as<void>;
+    { obj.setAdjFace(it, &f) } -> std::same_as<void>;
+    { obj.setAdjFace(it, uint()) } -> std::same_as<void>;
+    { obj.setAdjFace(cIt, &f) } -> std::same_as<void>;
+    { obj.setAdjFace(cIt, uint()) } -> std::same_as<void>;
+    { obj.setAdjFace(cIIt, &f) } -> std::same_as<void>;
+    { obj.setAdjFace(cIIt, uint()) } -> std::same_as<void>;
+    { obj.setAdjFaceMod(int(), &f) } -> std::same_as<void>;
+    { obj.setAdjFaceMod(int(), uint()) } -> std::same_as<void>;
+    { obj.setAdjFaces(vec) } -> std::same_as<void>;
 
-    { co.containsAdjFace(&f) } -> std::same_as<bool>;
-    { co.containsAdjFace(uint()) } -> std::same_as<bool>;
-    { co.indexOfAdjFace(&f) } -> std::same_as<uint>;
-    { co.indexOfAdjFace(uint()) } -> std::same_as<uint>;
+    { cObj.containsAdjFace(&f) } -> std::same_as<bool>;
+    { cObj.containsAdjFace(uint()) } -> std::same_as<bool>;
+    { cObj.indexOfAdjFace(&f) } -> std::same_as<uint>;
+    { cObj.indexOfAdjFace(uint()) } -> std::same_as<uint>;
 
-    { co.adjFaceBegin() } ->
-        std::same_as<typename T::ConstAdjacentFaceIterator>;
-    { co.adjFaceEnd() } -> std::same_as<typename T::ConstAdjacentFaceIterator>;
+    { obj.adjFaceBegin() } -> std::same_as<decltype(it)>;
+    { obj.adjFaceEnd() } -> std::same_as<decltype(it)>;
 
-    { co.adjFaceIndexBegin() } ->
-        std::same_as<typename T::ConstAdjacentFaceIndexIterator>;
-    { co.adjFaceIndexEnd() } ->
-        std::same_as<typename T::ConstAdjacentFaceIndexIterator>;
+    { cObj.adjFaceBegin() } -> std::same_as<decltype(cIt)>;
+    { cObj.adjFaceEnd() } -> std::same_as<decltype(cIt)>;
 
-    { o.adjFaces() } -> vcl::RangeOf<typename T::AdjacentFaceType*>;
-    { co.adjFaces() } -> vcl::RangeOf<const typename T::AdjacentFaceType*>;
-    { co.adjFaceIndices() } -> vcl::RangeOf<uint>;
-    // clang-format on
+    { cObj.adjFaceIndexBegin() } -> std::same_as<decltype(cIIt)>;
+    { cObj.adjFaceIndexEnd() } -> std::same_as<decltype(cIIt)>;
+
+    { obj.adjFaces() } -> vcl::RangeOf<decltype(fP)>;
+    { cObj.adjFaces() } -> vcl::RangeOf<decltype(cFP)>;
+    { cObj.adjFaceIndices() } -> vcl::RangeOf<uint>;
 };
 
 /**

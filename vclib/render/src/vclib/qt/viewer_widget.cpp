@@ -88,10 +88,6 @@ void ViewerWidget::onKeyPress(Key::Enum key)
 #if defined(VCLIB_RENDER_BACKEND_BGFX)
 bool ViewerWidget::event(QEvent* event)
 {
-    // if (event->type() == QEvent::UpdateRequest) {
-    //     frame();
-    //     return true;
-    // }
     return EventManagerWidget::event(event);
 }
 #endif
@@ -100,9 +96,9 @@ bool ViewerWidget::event(QEvent* event)
 void ViewerWidget::paintEvent(QPaintEvent* event)
 {
     frame();
-#ifdef __APPLE__
-    bgfx::frame(); // needed for macos
-#endif             // __APPLE__
+#if defined(__APPLE__) || defined(__linux__)
+    bgfx::frame(); // needed on unix systems
+#endif             // __APPLE__ || __linux__
     QWidget::paintEvent(event);
 }
 #elif defined(VCLIB_RENDER_BACKEND_OPENGL2)

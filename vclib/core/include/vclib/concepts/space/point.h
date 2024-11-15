@@ -24,6 +24,7 @@
 #define VCL_CONCEPTS_SPACE_POINT_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/concepts/const_correctness.h>
 #include <vclib/concepts/iterators.h>
 #include <vclib/types.h>
 #endif
@@ -38,55 +39,65 @@ namespace vcl {
  * @ingroup space_concepts
  */
 template<typename T>
-concept PointConcept = requires (T o, const T& co) {
-    // clang-format off
-    typename T::ScalarType;
-    o.DIM;
-    o.isDegenerate();
-    { co.dot(co) } -> std::same_as<typename T::ScalarType>;
-    { co.angle(co) } -> std::same_as<typename T::ScalarType>;
-    { co.dist(co) } -> std::same_as<typename T::ScalarType>;
-    { co.squaredDist(co) } -> std::same_as<typename T::ScalarType>;
-    { co.norm() } -> std::same_as<typename T::ScalarType>;
-    { co.squaredNorm() } -> std::same_as<typename T::ScalarType>;
-    { co.size() } -> std::same_as<uint>;
-    o.setConstant(typename T::ScalarType());
-    o.setZero();
-    o.setOnes();
-    o.normalize();
-    { co.hash() } -> std::same_as<std::size_t>;
+concept PointConcept = requires (
+    T&&                                obj,
+    typename RemoveRef<T>::ScalarType  s,
+    typename RemoveRef<T>::ScalarType& sR,
+    typename RemoveRef<T>::Base&       baseObjR) {
+    typename RemoveRef<T>::ScalarType;
+    typename RemoveRef<T>::Base;
+    obj.DIM;
 
-    o(uint());
-    co(uint());
-    o[uint()];
-    co[uint()];
+    { obj.isDegenerate() } -> std::same_as<bool>;
+    { obj.dot(obj) } -> std::same_as<decltype(s)>;
+    { obj.angle(obj) } -> std::same_as<decltype(s)>;
+    { obj.dist(obj) } -> std::same_as<decltype(s)>;
+    { obj.squaredDist(obj) } -> std::same_as<decltype(s)>;
+    { obj.norm() } -> std::same_as<decltype(s)>;
+    { obj.squaredNorm() } -> std::same_as<decltype(s)>;
+    { obj.size() } -> std::same_as<uint>;
 
-    o = co;
+    { obj.hash() } -> std::same_as<std::size_t>;
 
-    { co == co } -> std::same_as<bool>;
-    co <=> co;
+    { obj(uint()) } -> std::convertible_to<decltype(s)>;
+    { obj[uint()] } -> std::convertible_to<decltype(s)>;
 
-    o += typename T::ScalarType();
-    o += co;
+    { obj == obj } -> std::same_as<bool>;
+    { obj <=> obj } -> std::convertible_to<std::partial_ordering>;
 
-    o -= typename T::ScalarType();
-    o -= co;
+    { obj.normalized() } -> std::convertible_to<RemoveRef<T>>;
+    { obj + s } -> std::convertible_to<RemoveRef<T>>;
+    { obj + obj } -> std::convertible_to<RemoveRef<T>>;
 
-    o *= typename T::ScalarType();
-    o /= typename T::ScalarType();
+    { -obj } -> std::convertible_to<RemoveRef<T>>;
+    { obj - s } -> std::convertible_to<RemoveRef<T>>;
+    { obj - obj } -> std::convertible_to<RemoveRef<T>>;
 
-    { co.normalized() } -> std::convertible_to<T>;
-    { co + typename T::ScalarType() } -> std::convertible_to<T>;
-    { co + co } -> std::convertible_to<T>;
+    { obj* s } -> std::convertible_to<RemoveRef<T>>;
 
-    { -co } -> std::convertible_to<T>;
-    { co - typename T::ScalarType() } -> std::convertible_to<T>;
-    { co - co } -> std::convertible_to<T>;
+    { obj / s } -> std::convertible_to<RemoveRef<T>>;
 
-    { co * typename T::ScalarType() } -> std::convertible_to<T>;
+    // non const requirements
+    requires vcl::IsConst<T> || requires {
+        { obj.setConstant(s) } -> std::same_as<decltype(baseObjR)>;
+        { obj.setZero() } -> std::same_as<decltype(baseObjR)>;
+        { obj.setOnes() } -> std::same_as<decltype(baseObjR)>;
+        { obj.normalize() } -> std::same_as<void>;
 
-    { co / typename T::ScalarType() } -> std::convertible_to<T>;
-    // clang-format on
+        { obj(uint()) } -> std::same_as<decltype(sR)>;
+        { obj[uint()] } -> std::same_as<decltype(sR)>;
+
+        { obj = obj } -> std::same_as<T&>;
+
+        { obj += s } -> std::same_as<T&>;
+        { obj += obj } -> std::same_as<decltype(baseObjR)>;
+
+        { obj -= s } -> std::same_as<T&>;
+        { obj -= obj } -> std::same_as<decltype(baseObjR)>;
+
+        { obj *= s } -> std::same_as<decltype(baseObjR)>;
+        { obj /= s } -> std::same_as<decltype(baseObjR)>;
+    };
 };
 
 /**
@@ -100,7 +111,7 @@ concept PointConcept = requires (T o, const T& co) {
  * @ingroup space_concepts
  */
 template<typename T>
-concept Point2Concept = PointConcept<T> && T::DIM == 2;
+concept Point2Concept = PointConcept<T> && RemoveRef<T>::DIM == 2;
 
 /**
  * @brief Concept for points in three-dimensional space.
@@ -113,7 +124,10 @@ concept Point2Concept = PointConcept<T> && T::DIM == 2;
  * @ingroup space_concepts
  */
 template<typename T>
-concept Point3Concept = PointConcept<T> && T::DIM == 3;
+concept Point3Concept =
+    PointConcept<T> && RemoveRef<T>::DIM == 3 && requires (T&& obj) {
+        { obj.cross(obj) } -> std::convertible_to<RemoveRef<T>>;
+    };
 
 /**
  * @brief Concept for points in four-dimensional space.
@@ -126,7 +140,7 @@ concept Point3Concept = PointConcept<T> && T::DIM == 3;
  * @ingroup space_concepts
  */
 template<typename T>
-concept Point4Concept = PointConcept<T> && T::DIM == 4;
+concept Point4Concept = PointConcept<T> && RemoveRef<T>::DIM == 4;
 
 /**
  * @brief Concept for iterators that iterate over Points (class that satisfies

@@ -134,8 +134,7 @@ private:
     {
         if constexpr (
             comp::IsVerticalComponent<Comp> &&
-            comp::HasInitMemberFunction<Comp>)
-        {
+            comp::HasInitMemberFunction<Comp>) {
             if constexpr (comp::HasIsAvailableMemberFunction<Comp>) {
                 if (Comp::isAvailable()) {
                     Comp::init();

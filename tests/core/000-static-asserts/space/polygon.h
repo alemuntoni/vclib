@@ -20,44 +20,56 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BGFX_RENDER_CONTEXT_PROGRAM_MANGER_H
-#define VCL_BGFX_RENDER_CONTEXT_PROGRAM_MANGER_H
+#ifndef POLYGON_H
+#define POLYGON_H
 
-#include <map>
-#include <string>
+#ifndef VCLIB_WITH_MODULES
+#include <vclib/space.h>
+#else
+#include <Eigen/Core>
+import vclib.core;
+#endif
 
-#include "embedded_shaders/embedded_shader.h"
-
-namespace vcl {
-
-class ProgramManager
+void polygonStaticAsserts()
 {
-    bgfx::RendererType::Enum mRenderType = bgfx::RendererType::Count;
-    std::map<std::string, bgfx::ProgramHandle> mPrograms;
+    using namespace vcl;
 
-public:
-    ProgramManager(bgfx::RendererType::Enum renderType) :
-            mRenderType(renderType)
-    {
-    }
+    using Polygon2Type = Polygon2f;
+    using Polygon3Type = Polygon3d;
 
-    ~ProgramManager();
+    // polygon2
+    static_assert(
+        Polygon2Concept<Polygon2Type>,
+        "Polygon2 does not satisfy the Polygon2Concept");
+    static_assert(
+        Polygon2Concept<const Polygon2Type>,
+        "const Polygon2 does not satisfy the Polygon2Concept");
+    static_assert(
+        Polygon2Concept<Polygon2Type&>,
+        "Polygon2& does not satisfy the Polygon2Concept");
+    static_assert(
+        Polygon2Concept<const Polygon2Type&>,
+        "const Polygon2& does not satisfy the Polygon2Concept");
+    static_assert(
+        Polygon2Concept<Polygon2Type&&>,
+        "Polygon2&& does not satisfy the Polygon2Concept");
 
-    bgfx::ProgramHandle getProgram(VclProgram::Enum program);
+    // polygon3
+    static_assert(
+        Polygon3Concept<Polygon3Type>,
+        "Polygon3 does not satisfy the Polygon3Concept");
+    static_assert(
+        Polygon3Concept<const Polygon3Type>,
+        "const Polygon3 does not satisfy the Polygon3Concept");
+    static_assert(
+        Polygon3Concept<Polygon3Type&>,
+        "Polygon3& does not satisfy the Polygon3Concept");
+    static_assert(
+        Polygon3Concept<const Polygon3Type&>,
+        "const Polygon3& does not satisfy the Polygon3Concept");
+    static_assert(
+        Polygon3Concept<Polygon3Type&&>,
+        "Polygon3&& does not satisfy the Polygon3Concept");
+}
 
-    bgfx::ProgramHandle getProgram(const std::string& name) const;
-
-    bgfx::ProgramHandle loadProgram(
-        const std::string& name,
-        const std::string& vs,
-        const std::string& fs);
-
-private:
-    static bgfx::ProgramHandle loadProgram(
-        VclProgram::Enum         program,
-        bgfx::RendererType::Enum type);
-};
-
-} // namespace vcl
-
-#endif // VCL_BGFX_RENDER_CONTEXT_PROGRAM_MANGER_H
+#endif // POLYGON_H

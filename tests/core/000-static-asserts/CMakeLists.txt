@@ -28,12 +28,26 @@ project(vclib-test-${TEST_NAME})
 set(HEADERS
     meshes.h
     loggers.h
+    ranges.h
     space.h
     meshes/edgemesh.h
     meshes/mesh_views.h
     meshes/pointcloud.h
     meshes/polymesh.h
     meshes/trimesh.h
+    space/array.h
+    space/box.h
+    space/color.h
+    space/image.h
+    space/matrix.h
+    space/plane.h
+    space/point.h
+    space/polygon.h
+    space/sampler.h
+    space/segment.h
+    space/sphere.h
+    space/texture.h
+    space/triangle.h
 )
 
 set(SOURCES

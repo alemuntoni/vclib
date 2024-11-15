@@ -32,11 +32,18 @@
 namespace vcl {
 
 template<typename T>
-concept TextureConcept = requires (T&& o) {
-    // clang-format off
-    { o.path() } -> std::convertible_to<std::string>;
-    { o.image() } -> ImageConcept;
-    // clang-format on
+concept TextureConcept = requires (T&& obj) {
+    // constructors
+    RemoveRef<T>();
+    RemoveRef<T>(std::string());
+
+    { obj.path() } -> std::convertible_to<std::string>;
+    { obj.image() } -> ImageConcept;
+
+    // non const requirements
+    requires vcl::IsConst<T> || requires {
+        { obj.path() } -> std::same_as<std::string&>;
+    };
 };
 
 } // namespace vcl

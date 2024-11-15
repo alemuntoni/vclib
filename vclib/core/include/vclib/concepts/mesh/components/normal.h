@@ -44,12 +44,10 @@ namespace vcl::comp {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasNormal = requires (T o, const T& co) {
-    // clang-format off
+concept HasNormal = requires (T obj, const T& cObj) {
     typename T::NormalType;
-    { o.normal() } -> std::same_as<typename T::NormalType&>;
-    { co.normal() } -> std::same_as<const typename T::NormalType&>;
-    // clang-format on
+    { obj.normal() } -> std::same_as<typename T::NormalType&>;
+    { cObj.normal() } -> std::same_as<const typename T::NormalType&>;
 };
 
 /**

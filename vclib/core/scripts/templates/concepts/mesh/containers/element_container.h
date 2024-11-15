@@ -27,7 +27,6 @@ concept Has%EL_UC%Container = requires(
     const T& co,
     typename T::%EL_UC%Type* e)
 {
-    // clang-format off
     typename T::%EL_UC%Type;
     typename T::%EL_UC%Iterator;
     typename T::Const%EL_UC%Iterator;
@@ -55,7 +54,6 @@ concept Has%EL_UC%Container = requires(
 
     requires std::ranges::range<decltype(o.%EL_C%s())>;
     requires std::ranges::range<decltype(co.%EL_C%s())>;
-    // clang-format on
 };
 
 } // namespace vcl::mesh

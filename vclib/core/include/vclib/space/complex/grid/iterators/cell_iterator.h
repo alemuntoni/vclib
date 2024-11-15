@@ -50,9 +50,7 @@ public:
 
     CellIterator(
         const vcl::Point<uint, N>& first,
-        const vcl::Point<uint, N>& end) :
-            mIt(first),
-            mFirst(first), mEnd(end)
+        const vcl::Point<uint, N>& end) : mIt(first), mFirst(first), mEnd(end)
     {
     }
 

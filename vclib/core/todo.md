@@ -2,16 +2,21 @@
 
 - General:
   - [ ] Enumerations should be declared in a struct to avoid name collisions
+  - [ ] Fix scripts to add a mesh element
+    - [ ] Add documentation on how to add a new mesh element using scripts
 - Concepts:
+  - [ ] add constructor constraints on all concepts
+  - [ ] concepts should work for all type of cvref qualified types
   - [ ] complete space data structures concepts
-  - [ ] remove clang-format on and off when [this issue](https://github.com/llvm/llvm-project/issues/59412) will be fixed
+  - [x] fix ranges in texture and wedge concepts -> missing std::same_as<...>
+  - [x] remove clang-format on and off when [this issue](https://github.com/llvm/llvm-project/issues/59412) will be fixed
 - Mesh:
   - Elements:
     - [ ] set properly elements concepts
   - Containers:
-    - Element container should provide fast compact function, that does not preserve elements order
+    - [ ] Element container should provide fast compact function, that does not preserve elements order
   - Components:
-    - references to elements should be available using ELEMENT_ID
+    - [ ] references to elements should be available using ELEM_ID
   - Mesh:
     - [ ] manage clean() for all components of mesh, not only element containers
   - Utils:
@@ -24,12 +29,11 @@
 - IO:
   - [ ] Manage read and write colors from integral to non integral types
 - Algorithms:
-  - [ ] Separate Mesh algorithms from core(?) algorithms
+  - [x] Separate Mesh algorithms from core(?) algorithms
   - [ ] Take views arguments instead of vectors- allows to be more general on algorithms
     - [ ] core/fitting
     - [ ] core/stat
-  - [ ] Implement convex hull algorithm that uses bipartite graph
-  - [ ] Implement exporter to VCG
+  - [x] Implement exporter to VCG
   - [ ] Implement importer/exporter from buffer
   - [ ] Shuffle algorithms should be all made using views
   - [ ] Shuffle algorithms should take as input a random_device instead of a boolean 'deterministic', and they should log the seed at debug level
@@ -38,6 +42,7 @@
     - [ ] uniform all the function, that should take an out argument of birthVertices/birthFaces
     - [ ] weights input argument of all the function should be a range
 - Space:
+  - [ ] add assert(!isNull()) on Box member functions like volume()
   - [ ] improve documentation for Grid data structures
   - [ ] move bipartite graph iterators from space to iterators (see iterators todo list)
 - Misc:

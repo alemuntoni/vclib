@@ -23,208 +23,39 @@
 #ifndef SPACE_H
 #define SPACE_H
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/mesh/tmp_meshes.h>
-#include <vclib/space.h>
-#else
-#include <Eigen/Core>
-import vclib.core;
-#endif
-
+#include "space/array.h"
+#include "space/box.h"
+#include "space/color.h"
+#include "space/image.h"
+#include "space/matrix.h"
+#include "space/plane.h"
+#include "space/point.h"
+#include "space/polygon.h"
+#include "space/sampler.h"
+#include "space/segment.h"
+#include "space/sphere.h"
+#include "space/texture.h"
 
 void spaceStaticAsserts()
 {
+    arrayStaticAsserts();
+    boxStaticAsserts();
+    colorStaticAsserts();
+    imageStaticAsserts();
+    matrixStaticAsserts();
+    planeStaticAsserts();
+    pointStaticAsserts();
+    polygonStaticAsserts();
+    samplerStaticAsserts();
+    segmentStaticAsserts();
+    sphereStaticAsserts();
+    textureStaticAsserts();
+
     using namespace vcl;
-
-    // array
-    static_assert(
-        ArrayConcept<Array<int, 2>>, "Array does not satisfy the ArrayConcept");
-
-    // array2
-    static_assert(
-        Array2Concept<Array2<int>>,
-        "Array2i does not satisfy the Array2Concept");
-    static_assert(
-        Array2Concept<Array2<float>>,
-        "Array2f does not satisfy the Array2Concept");
-    static_assert(
-        Array2Concept<Array2<double>>,
-        "Array2d does not satisfy the Array2Concept");
-    static_assert(Serializable<Array2<double>>, "Array2d is not serializable");
-
-    // array3
-    static_assert(
-        Array3Concept<Array3<int>>,
-        "Array3i does not satisfy the Array3Concept");
-    static_assert(
-        Array3Concept<Array3<float>>,
-        "Array3f does not satisfy the Array3Concept");
-    static_assert(
-        Array3Concept<Array3<double>>,
-        "Array3d does not satisfy the Array3Concept");
-    static_assert(Serializable<Array3<double>>, "Array3d is not serializable");
-
-    // array4
-    static_assert(
-        Array4Concept<Array4<int>>,
-        "Array4i does not satisfy the Array4Concept");
-    static_assert(
-        Array4Concept<Array4<float>>,
-        "Array4f does not satisfy the Array4Concept");
-    static_assert(
-        Array4Concept<Array4<double>>,
-        "Array4d does not satisfy the Array4Concept");
-    static_assert(Serializable<Array4<double>>, "Array4d is not serializable");
 
     // bitset
     static_assert(
         Serializable<BitSet<char>>, "Bitset<char> is not serializable");
-
-    // box2
-    static_assert(Box2Concept<Box2i>, "Box2i does not satisfy the Box2Concept");
-    static_assert(Box2Concept<Box2f>, "Box2f does not satisfy the Box2Concept");
-    static_assert(Box2Concept<Box2d>, "Box2d does not satisfy the Box2Concept");
-    static_assert(Serializable<Box2d>, "Box2d is not serializable");
-
-    // box3
-    static_assert(Box3Concept<Box3i>, "Box3i does not satisfy the Box3Concept");
-    static_assert(Box3Concept<Box3f>, "Box3f does not satisfy the Box3Concept");
-    static_assert(Box3Concept<Box3d>, "Box3d does not satisfy the Box3Concept");
-    static_assert(Serializable<Box3d>, "Box3d is not serializable");
-
-    // color
-    static_assert(
-        ColorConcept<Color>, "Color does not satisfy the ColorConcept");
-
-    // image
-    static_assert(
-        ImageConcept<Image>, "Image does not satisfy the ImageConcept");
-    static_assert(Serializable<Image>, "Image is not serializable");
-
-    // plane
-    static_assert(
-        PlaneConcept<Planef>, "Planef does not satisfy the PlaneConcept");
-    static_assert(
-        PlaneConcept<Planed>, "Planed does not satisfy the PlaneConcept");
-
-    // point2
-    static_assert(
-        Point2Concept<Point2i>, "Point2i does not satisfy the Point2Concept");
-    static_assert(
-        Point2Concept<Point2f>, "Point2f does not satisfy the Point2Concept");
-    static_assert(
-        Point2Concept<Point2d>, "Point2d does not satisfy the Point2Concept");
-    static_assert(Serializable<Point2d>, "Point2d is not serializable");
-
-    // point3
-    static_assert(
-        Point3Concept<Point3i>, "Point3i does not satisfy the Point3Concept");
-    static_assert(
-        Point3Concept<Point3f>, "Point3f does not satisfy the Point3Concept");
-    static_assert(
-        Point3Concept<Point3d>, "Point3d does not satisfy the Point3Concept");
-    static_assert(Serializable<Point3d>, "Point3d is not serializable");
-
-    static_assert(
-        Point4Concept<Point4i>, "Point4i does not satisfy the Point4Concept");
-    static_assert(
-        Point4Concept<Point4f>, "Point4f does not satisfy the Point4Concept");
-    static_assert(
-        Point4Concept<Point4d>, "Point4d does not satisfy the Point4Concept");
-    static_assert(Serializable<Point4d>, "Point4d is not serializable");
-
-    static_assert(
-        Polygon2Concept<Polygon2f>,
-        "Polygon2f does not satisfy the Polygon2Concept");
-    static_assert(
-        Polygon2Concept<Polygon2d>,
-        "Polygon2d does not satisfy the Polygon2Concept");
-
-    static_assert(
-        Polygon3Concept<Polygon3f>,
-        "Polygon3f does not satisfy the Polygon3Concept");
-    static_assert(
-        Polygon3Concept<Polygon3d>,
-        "Polygon3d does not satisfy the Polygon3Concept");
-
-    // point iterators
-    static_assert(PointIteratorConcept<std::vector<Point2d>::iterator>, "");
-    static_assert(
-        PointIteratorConcept<std::vector<Point3d>::const_iterator>, "");
-
-    // sampler
-    static_assert(
-        SamplerConcept<MeshSampler<detail::TMPSimplePolyMesh>>,
-        "MeshSampler does not satisfy the SamplerConcept");
-
-    static_assert(
-        SamplerConcept<PointSampler<>>,
-        "PointSampler does not satisfy the SamplerConcept");
-
-    static_assert(
-        SamplerConcept<VertexSampler<detail::TMPSimplePolyMesh::Vertex>>,
-        "VertexSampler does not satisfy the SamplerConcept");
-    static_assert(
-        SamplerConcept<ConstVertexSampler<detail::TMPSimplePolyMesh::Vertex>>,
-        "ConstVertexSampler does not satisfy the SamplerConcept");
-    //     static_assert(
-    //        std::ranges::range<VertexSampler<detail::TMPSimplePolyMesh::Vertex>>,
-    //        "");
-
-    //    VertexSampler<detail::TMPSimplePolyMesh::Vertex> v;
-    //    auto it = std::ranges::begin(v);
-
-    // sphere
-    static_assert(
-        SphereConcept<Spheref>, "Spheref does not satisfy the SphereConcept");
-    static_assert(
-        SphereConcept<Sphered>, "Sphered does not satisfy the SphereConcept");
-
-    // texture
-    static_assert(
-        TextureConcept<Texture>, "Texture does not satisfy the TextureConcept");
-    static_assert(Serializable<Texture>, "Texture is not serializable");
-
-    // triangle
-    static_assert(
-        Triangle2Concept<Triangle2f>,
-        "Triangle2f does not satisfy the Triangle2Concept");
-    static_assert(
-        Triangle2Concept<Triangle2d>,
-        "Triangle2d does not satisfy the Triangle2Concept");
-    static_assert(
-        ConstTriangle2Concept<Triangle2f>,
-        "Triangle2f does not satisfy the ConstTriangle2Concept");
-    static_assert(
-        ConstTriangle2Concept<Triangle2d>,
-        "Triangle2d does not satisfy the ConstTriangle2Concept");
-
-    static_assert(
-        Triangle3Concept<Triangle3f>,
-        "Triangle3f does not satisfy the Triangle3Concept");
-    static_assert(
-        Triangle3Concept<Triangle3d>,
-        "Triangle3d does not satisfy the Triangle3Concept");
-    static_assert(
-        ConstTriangle3Concept<Triangle3f>,
-        "Triangle3f does not satisfy the ConstTriangle3Concept");
-    static_assert(
-        ConstTriangle3Concept<Triangle3d>,
-        "Triangle3d does not satisfy the ConstTriangle3Concept");
-
-    static_assert(
-        ConstTriangle2Concept<TriangleWrapper2f>,
-        "TriangleWrapper2f does not satisfy the ConstTriangle2Concept");
-    static_assert(
-        ConstTriangle2Concept<TriangleWrapper2d>,
-        "TriangleWrapper2d does not satisfy the ConstTriangle2Concept");
-
-    static_assert(
-        ConstTriangle3Concept<Triangle3f>,
-        "Triangle3f does not satisfy the ConstTriangle3Concept");
-    static_assert(
-        ConstTriangle3Concept<Triangle3d>,
-        "Triangle3d does not satisfy the ConstTriangle3Concept");
 }
 
 #endif // SPACE_H

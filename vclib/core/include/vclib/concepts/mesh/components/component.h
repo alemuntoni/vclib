@@ -44,9 +44,7 @@ namespace vcl::comp {
  */
 template<typename T>
 concept ComponentConcept = requires {
-    // clang-format off
     { T::COMPONENT_ID } -> std::same_as<const uint&>;
-    // clang-format on
 };
 
 /**
@@ -59,10 +57,8 @@ concept ComponentConcept = requires {
  */
 template<typename T>
 concept IsVerticalComponent = T::IS_VERTICAL == true && requires {
-    // clang-format off
     typename T::DataValueType;
     { T::IS_VERTICAL } -> std::same_as<const bool&>;
-    // clang-format on
 };
 
 /**
@@ -76,9 +72,7 @@ concept IsVerticalComponent = T::IS_VERTICAL == true && requires {
 template<typename T>
 concept IsOptionalComponent =
     IsVerticalComponent<T> && T::IS_OPTIONAL == true && requires {
-        // clang-format off
         { T::IS_OPTIONAL } -> std::same_as<const bool&>;
-        // clang-format on
     };
 
 /**
@@ -95,10 +89,8 @@ concept IsOptionalComponent =
  * @tparam T The type to be evaluated.
  */
 template<typename T>
-concept HasInitMemberFunction = requires (T o) {
-    // clang-format off
-    { o.init() } -> std::same_as<void>;
-    // clang-format on
+concept HasInitMemberFunction = requires (T obj) {
+    { obj.init() } -> std::same_as<void>;
 };
 
 /**
@@ -110,10 +102,8 @@ concept HasInitMemberFunction = requires (T o) {
  * @tparam T The type to be evaluated.
  */
 template<typename T>
-concept HasIsAvailableMemberFunction = requires (T o) {
-    // clang-format off
-    { o.isAvailable() } -> std::same_as<bool>;
-    // clang-format on
+concept HasIsAvailableMemberFunction = requires (T obj) {
+    { obj.isAvailable() } -> std::same_as<bool>;
 };
 
 /**
@@ -185,8 +175,8 @@ concept HasOptionalReferencesOfType =
  * @tparam R the type of the pointers.
  */
 template<typename T, typename R>
-concept HasPointersOfType =
-    HasReferencesOfType<T, R> && requires (T o) { o.template pointers<R>(); };
+concept HasPointersOfType = HasReferencesOfType<T, R> &&
+                            requires (T obj) { obj.template pointers<R>(); };
 
 /**
  * @private
@@ -199,7 +189,7 @@ concept HasPointersOfType =
 template<typename T, typename R>
 concept HasOptionalPointersOfType =
     HasOptionalReferencesOfType<T, R> &&
-    requires (T o) { o.template pointers<R>(); };
+    requires (T obj) { obj.template pointers<R>(); };
 
 /**
  * @private
@@ -213,8 +203,8 @@ concept HasOptionalPointersOfType =
  * @tparam R the type of the indices.
  */
 template<typename T, typename R>
-concept HasIndicesOfType =
-    HasReferencesOfType<T, R> && requires (T o) { o.template indices<R>(); };
+concept HasIndicesOfType = HasReferencesOfType<T, R> &&
+                           requires (T obj) { obj.template indices<R>(); };
 
 /**
  * @private
@@ -225,8 +215,9 @@ concept HasIndicesOfType =
  * @tparam R the type of the indices.
  */
 template<typename T, typename R>
-concept HasOptionalIndicesOfType = HasOptionalReferencesOfType<T, R> &&
-                                   requires (T o) { o.template indices<R>(); };
+concept HasOptionalIndicesOfType =
+    HasOptionalReferencesOfType<T, R> &&
+    requires (T obj) { obj.template indices<R>(); };
 
 // ======== Has Component Concepts ======== //
 // Concepts that needs to be called on a type T that has the "Components" type

@@ -55,8 +55,7 @@ OutMeshType perElementMeshFilter(
     }
 
     for (const auto& [birthV, filter] :
-         std::views::zip(m.template elements<ELEM_ID>(), elemFilterRng))
-    {
+         std::views::zip(m.template elements<ELEM_ID>(), elemFilterRng)) {
         if (filter) {
             uint v = res.template add<ELEM_ID>();
             // import all the components from the input mesh
@@ -120,8 +119,7 @@ OutMeshType perElementMeshFilterWithVRefs(
     std::vector<uint> vertexMapping(m.vertexContainerSize(), UINT_NULL);
 
     for (const auto& [birthF, filter] :
-         std::views::zip(m.template elements<ELEM_ID>(), elemFilterRng))
-    {
+         std::views::zip(m.template elements<ELEM_ID>(), elemFilterRng)) {
         if (filter) {
             std::vector<uint> verts(birthF.vertexNumber(), UINT_NULL);
             uint vi = 0; // incremented with vertices of the element
@@ -140,8 +138,7 @@ OutMeshType perElementMeshFilterWithVRefs(
                     // import all the components from the input mesh
                     res.vertex(ov).importFrom(*v, false);
                     if constexpr (vcl::HasPerVertexCustomComponents<
-                                      OutMeshType>)
-                    {
+                                      OutMeshType>) {
                         // set the birth vertex
                         if (saveBirthIndicesInCustomComponent) {
                             res.vertex(ov).template customComponent<uint>(
@@ -620,8 +617,7 @@ OutMeshType perFaceEdgeMeshFilter(
                         uint ov = res.addVertex();
                         res.vertex(ov).importFrom(*v, false);
                         if constexpr (vcl::HasPerVertexCustomComponents<
-                                          OutMeshType>)
-                        {
+                                          OutMeshType>) {
                             if (saveBirthIndicesInCustomComponent) {
                                 res.vertex(ov).template customComponent<uint>(
                                     "birthVertex") = m.index(v);

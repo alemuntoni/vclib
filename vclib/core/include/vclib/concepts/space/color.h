@@ -26,6 +26,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include <concepts>
 #include <cstdint>
+
+#include <vclib/concepts/const_correctness.h>
 #endif
 
 namespace vcl {
@@ -38,22 +40,24 @@ namespace vcl {
  * @ingroup space_concepts
  */
 template<typename T>
-concept ColorConcept = requires (T o, const T& co) {
-    // clang-format off
-    { o.red() } -> std::same_as<uint8_t&>;
-    { o.green() } -> std::same_as<uint8_t&>;
-    { o.blue() } -> std::same_as<uint8_t&>;
-    { o.alpha() } -> std::same_as<uint8_t&>;
-    { co.red() } -> std::same_as<uint8_t>;
-    { co.green() } -> std::same_as<uint8_t>;
-    { co.blue() } -> std::same_as<uint8_t>;
-    { co.alpha() } -> std::same_as<uint8_t>;
+concept ColorConcept = requires (T&& obj) {
+    { obj.red() } -> std::convertible_to<uint8_t>;
+    { obj.green() } -> std::convertible_to<uint8_t>;
+    { obj.blue() } -> std::convertible_to<uint8_t>;
+    { obj.alpha() } -> std::convertible_to<uint8_t>;
 
-    { o.redF() } -> std::same_as<float>;
-    { o.greenF() } -> std::same_as<float>;
-    { o.blueF() } -> std::same_as<float>;
-    { o.alphaF() } -> std::same_as<float>;
-    // clang-format on
+    { obj.redF() } -> std::same_as<float>;
+    { obj.greenF() } -> std::same_as<float>;
+    { obj.blueF() } -> std::same_as<float>;
+    { obj.alphaF() } -> std::same_as<float>;
+
+    // non const requirements
+    requires vcl::IsConst<T> || requires {
+        { obj.red() } -> std::same_as<uint8_t&>;
+        { obj.green() } -> std::same_as<uint8_t&>;
+        { obj.blue() } -> std::same_as<uint8_t&>;
+        { obj.alpha() } -> std::same_as<uint8_t&>;
+    };
 };
 
 } // namespace vcl

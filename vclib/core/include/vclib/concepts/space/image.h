@@ -34,27 +34,34 @@
 namespace vcl {
 
 template<typename T>
-concept ImageConcept = requires (T&& o) {
-    // clang-format off
-    { o.isNull() } -> std::same_as<bool>;
-    { o.height() } -> std::same_as<int>;
-    { o.width() } -> std::same_as<int>;
+concept ImageConcept = requires (T&& obj, const void* dataPtr, uint n) {
+    // constructors
+    RemoveRef<T>();
+    RemoveRef<T>(std::string());
+    RemoveRef<T>(dataPtr, n, n);
+    RemoveRef<T>(dataPtr, n, n, bool());
 
-    { o.sizeInBytes() } -> std::same_as<std::size_t>;
+    { obj.isNull() } -> std::same_as<bool>;
+    { obj.height() } -> std::same_as<int>;
+    { obj.width() } -> std::same_as<int>;
 
-    { o.pixel(uint(), uint()) }  -> ColorConcept;
+    { obj.sizeInBytes() } -> std::same_as<std::size_t>;
 
-    { o.data() } -> std::same_as<const unsigned char*>;
+    { obj.pixel(uint(), uint()) } -> ColorConcept;
 
-    { o.load(std::string()) } -> std::same_as<bool>;
-    { o.save(std::string()) } -> std::same_as<void>;
-    { o.save(std::string(), uint()) } -> std::same_as<void>;
+    { obj.data() } -> std::same_as<const unsigned char*>;
 
-    { o.mirror() } -> std::same_as<void>;
-    { o.mirror(bool()) } -> std::same_as<void>;
-    { o.mirror(bool(), bool()) } -> std::same_as<void>;
+    { obj.save(std::string()) } -> std::same_as<void>;
+    { obj.save(std::string(), uint()) } -> std::same_as<void>;
 
-    // clang-format on
+    // non const requirements
+    requires vcl::IsConst<T> || requires {
+        { obj.load(std::string()) } -> std::same_as<bool>;
+
+        { obj.mirror() } -> std::same_as<void>;
+        { obj.mirror(bool()) } -> std::same_as<void>;
+        { obj.mirror(bool(), bool()) } -> std::same_as<void>;
+    };
 };
 
 } // namespace vcl

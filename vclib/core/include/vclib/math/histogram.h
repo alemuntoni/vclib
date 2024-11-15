@@ -80,8 +80,8 @@ public:
         ScalarType maxRangeValue,
         uint       nBins,
         ScalarType gamma = 1.0) :
-            mMinRange(minRangeValue),
-            mMaxRange(maxRangeValue), mBinNumber(nBins)
+            mMinRange(minRangeValue), mMaxRange(maxRangeValue),
+            mBinNumber(nBins)
     {
         mHist.resize(nBins + 2, 0);
 

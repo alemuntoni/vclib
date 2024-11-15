@@ -60,9 +60,7 @@ public:
     RegularGrid(
         const Point<Scalar, N>& min,
         const Point<Scalar, N>& max,
-        const Point<uint, N>&   size) :
-            mBBox(min, max),
-            mSize(size)
+        const Point<uint, N>&   size) : mBBox(min, max), mSize(size)
     {
     }
 

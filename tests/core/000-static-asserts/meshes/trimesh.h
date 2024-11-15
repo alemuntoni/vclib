@@ -36,6 +36,10 @@ void trimeshStaticAsserts()
     static_assert(!HasQuads<TriMesh>, "");
     static_assert(!HasPolygons<TriMesh>, "");
 
+    static_assert(
+        HasTextureImages<TriMesh>, "The TriMesh has no texture images.");
+    static_assert(!HasTexturePaths<TriMesh>, "The TriMesh has texture paths.");
+
     static_assert(comp::IsTiedToVertexNumber<TriMesh::Face::AdjacentFaces>, "");
     static_assert(
         !comp::IsTiedToVertexNumber<TriMesh::Vertex::AdjacentFaces>, "");

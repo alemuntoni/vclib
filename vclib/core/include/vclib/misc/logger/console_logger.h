@@ -50,14 +50,14 @@ public:
         std::ostream& msgStream,
         std::ostream& progStream,
         std::ostream& debugStream) :
-            mErrStream(errStream),
-            mWarnStream(warnStream), mMsgStream(msgStream),
-            mProgStream(progStream), mDebugStream(debugStream)
+            mErrStream(errStream), mWarnStream(warnStream),
+            mMsgStream(msgStream), mProgStream(progStream),
+            mDebugStream(debugStream)
     {
     }
 
 protected:
-    std::ostream* levelStream(LogLevel lvl) override
+    std::ostream* levelStream(LogLevel lvl) const override
     {
         switch (lvl) {
         case ERROR_LOG: return &mErrStream;
@@ -69,13 +69,13 @@ protected:
         return nullptr;
     }
 
-    void alignLeft(std::ostream& o) override { o << std::left; }
+    void alignLeft(std::ostream& o) const override { o << std::left; }
 
-    void alignRight(std::ostream& o) override { o << std::right; }
+    void alignRight(std::ostream& o) const override { o << std::right; }
 
-    void setWidth(std::ostream& o, uint w) override { o << std::setw(w); }
+    void setWidth(std::ostream& o, uint w) const override { o << std::setw(w); }
 
-    void flush(std::ostream& o) override { o.flush(); }
+    void flush(std::ostream& o) const override { o.flush(); }
 };
 
 } // namespace vcl

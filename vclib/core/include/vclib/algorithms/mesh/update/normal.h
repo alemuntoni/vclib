@@ -388,7 +388,7 @@ void updatePerFaceNormals(
 {
     vcl::requirePerFaceNormal(mesh);
 
-    using FaceType   = std::remove_reference_t<decltype(mesh)>::FaceType;
+    using FaceType   = vcl::RemoveRef<decltype(mesh)>::FaceType;
     using ScalarType = FaceType::NormalType::ScalarType;
 
     log.log(0, "Updating per-Face normals...");
@@ -429,7 +429,7 @@ void updatePerVertexNormals(
     bool                  normalize = true,
     LogType&              log       = nullLogger)
 {
-    using VertexType = std::remove_reference_t<decltype(mesh)>::VertexType;
+    using VertexType = vcl::RemoveRef<decltype(mesh)>::VertexType;
     using NScalar    = VertexType::NormalType::ScalarType;
 
     log.log(0, "Updating per-Vertex normals...");
@@ -480,7 +480,7 @@ void updatePerVertexNormalsFromFaceNormals(
 {
     vcl::requirePerFaceNormal(mesh);
 
-    using VertexType = std::remove_reference_t<decltype(mesh)>::VertexType;
+    using VertexType = vcl::RemoveRef<decltype(mesh)>::VertexType;
     using ScalarType = VertexType::NormalType::ScalarType;
 
     log.log(0, "Updating per-Vertex normals...");
@@ -584,7 +584,7 @@ void updatePerVertexNormalsAngleWeighted(
     bool                  normalize = true,
     LogType&              log       = nullLogger)
 {
-    using VertexType  = std::remove_reference_t<decltype(mesh)>::VertexType;
+    using VertexType  = vcl::RemoveRef<decltype(mesh)>::VertexType;
     using NormalType  = VertexType::NormalType;
     using NScalarType = NormalType::ScalarType;
 
@@ -658,7 +658,7 @@ void updatePerVertexNormalsNelsonMaxWeighted(
     bool                  normalize = true,
     LogType&              log       = nullLogger)
 {
-    using VertexType  = std::remove_reference_t<decltype(mesh)>::VertexType;
+    using VertexType  = vcl::RemoveRef<decltype(mesh)>::VertexType;
     using NScalarType = VertexType::NormalType::ScalarType;
 
     log.log(0, "Updating per-Vertex normals...");

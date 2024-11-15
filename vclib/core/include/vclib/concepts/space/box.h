@@ -27,6 +27,8 @@
 #include <vclib/types.h>
 #endif
 
+#include "point.h"
+
 namespace vcl {
 
 /**
@@ -40,54 +42,59 @@ namespace vcl {
  * @tparam T: The type to be tested for conformity to the BoxConcept.
  */
 template<typename T>
-concept BoxConcept =
-    requires (T o, const T& co, const typename T::PointType& p) {
-        // clang-format off
-        typename T::PointType;
-        o.DIM;
+concept BoxConcept = requires (
+    T&&                                          obj,
+    typename RemoveRef<T>::PointType             p,
+    typename RemoveRef<T>::PointType&            pR,
+    typename RemoveRef<T>::PointType::ScalarType s) {
+    typename RemoveRef<T>::PointType;
+    obj.DIM;
 
-        // Accessors for the minimum and maximum corners of the box.
-        { co.min() } -> std::same_as<const typename T::PointType&>;
-        { o.min() } -> std::same_as<typename T::PointType&>;
-        { co.max() } -> std::same_as<const typename T::PointType&>;
-        { o.max() } -> std::same_as<typename T::PointType&>;
+    // Accessors for the minimum and maximum corners of the box.
+    { obj.min() } -> PointConcept;
+    { obj.max() } -> PointConcept;
 
-        // Boolean tests for the nullity and emptiness of the box.
-        { co.isNull() } -> std::same_as<bool>;
-        { co.isEmpty() } -> std::same_as<bool>;
+    // Boolean tests for the nullity and emptiness of the box.
+    { obj.isNull() } -> std::same_as<bool>;
+    { obj.isEmpty() } -> std::same_as<bool>;
 
-        // Boolean tests for whether a point lies inside or outside the box.
-        { co.isInside(p) }  -> std::same_as<bool>;
-        { co.isInsideOpenBox(p) }  -> std::same_as<bool>;
+    // Boolean tests for whether a point lies inside or outside the box.
+    { obj.isInside(p) } -> std::same_as<bool>;
+    { obj.isInsideOpenBox(p) } -> std::same_as<bool>;
 
-        // Boolean tests for whether two boxes overlap with each other.
-        { co.overlap(co) }  -> std::same_as<bool>;
-        { co.collide(co) }  -> std::same_as<bool>;
-        { co.intersects(co) }  -> std::same_as<bool>;
+    // Boolean tests for whether two boxes overlap with each other.
+    { obj.overlap(obj) } -> std::same_as<bool>;
+    { obj.collide(obj) } -> std::same_as<bool>;
+    { obj.intersects(obj) } -> std::same_as<bool>;
 
-        // Accessors for various properties of the box.
-        { co.diagonal() } -> std::same_as<typename T::PointType::ScalarType>;
-        { co.squaredDiagonal() } -> std::same_as<typename T::PointType::ScalarType>;
-        { co.center() } -> std::same_as<typename T::PointType>;
-        { co.size() } -> std::same_as<typename T::PointType>;
-        { co.volume() } -> std::same_as<typename T::PointType::ScalarType>;
-        { co.dim(uint()) } -> std::same_as<typename T::PointType::ScalarType>;
-        { co.minDim() } -> std::same_as<typename T::PointType::ScalarType>;
-        { co.maxDim() } -> std::same_as<typename T::PointType::ScalarType>;
-        { co.intersection(co) } -> std::same_as<T>;
+    // Accessors for various properties of the box.
+    { obj.diagonal() } -> std::same_as<decltype(s)>;
+    { obj.squaredDiagonal() } -> std::same_as<decltype(s)>;
+    { obj.center() } -> PointConcept;
+    { obj.size() } -> PointConcept;
+    { obj.volume() } -> std::convertible_to<decltype(s)>;
+    { obj.dim(uint()) } -> std::convertible_to<decltype(s)>;
+    { obj.minDim() } -> std::convertible_to<decltype(s)>;
+    { obj.maxDim() } -> std::convertible_to<decltype(s)>;
+    { obj.intersection(obj) } -> std::convertible_to<RemoveRef<T>>;
+
+    // Comparison operators.
+    { obj == obj } -> std::same_as<bool>;
+    { obj != obj } -> std::same_as<bool>;
+
+    // non const requirements
+    requires vcl::IsConst<T> || requires {
+        { obj.min() } -> std::same_as<decltype(pR)>;
+        { obj.max() } -> std::same_as<decltype(pR)>;
 
         // Mutators for modifying the state of the box.
-        { o.setNull() } -> std::same_as<void>;
-        { o.add(typename T::PointType()) } -> std::same_as<void>;
-        { o.add(typename T::PointType(), double()) } -> std::same_as<void>;
-        { o.add(co) } -> std::same_as<void>;
-        { o.translate(typename T::PointType()) } -> std::same_as<void>;
-
-        // Comparison operators.
-        { co == co } -> std::same_as<bool>;
-        { co != co } -> std::same_as<bool>;
-        // clang-format on
+        { obj.setNull() } -> std::same_as<void>;
+        { obj.add(p) } -> std::same_as<void>;
+        { obj.add(p, s) } -> std::same_as<void>;
+        { obj.add(obj) } -> std::same_as<void>;
+        { obj.translate(p) } -> std::same_as<void>;
     };
+};
 
 /**
  * @brief A concept that requires a type to satisfy the BoxConcept and have a
@@ -100,7 +107,7 @@ concept BoxConcept =
  * @tparam T: The type to be tested for conformity to the Box2Concept.
  */
 template<typename T>
-concept Box2Concept = BoxConcept<T> && T::DIM == 2;
+concept Box2Concept = BoxConcept<T> && RemoveRef<T>::DIM == 2;
 
 /**
  * @brief A concept that requires a type to satisfy the BoxConcept and have a
@@ -113,7 +120,7 @@ concept Box2Concept = BoxConcept<T> && T::DIM == 2;
  * @tparam T: The type to be tested for conformity to the Box2Concept.
  */
 template<typename T>
-concept Box3Concept = BoxConcept<T> && T::DIM == 3;
+concept Box3Concept = BoxConcept<T> && RemoveRef<T>::DIM == 3;
 
 } // namespace vcl
 

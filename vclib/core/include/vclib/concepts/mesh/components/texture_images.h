@@ -26,6 +26,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include <string>
 
+#include <vclib/concepts/ranges/range.h>
+
 #include "component.h"
 #endif
 
@@ -40,29 +42,27 @@ namespace vcl::comp {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasTextureImages = requires (T o, const T& co, std::string s) {
-    // clang-format off
+concept HasTextureImages = requires (T obj, const T& cObj, std::string str) {
     typename T::TextureType;
     typename T::TextureIterator;
     typename T::ConstTextureIterator;
 
-    { co.textureNumber() } -> std::same_as<uint>;
-    { co.texture(uint()) } -> std::same_as<const typename T::TextureType&>;
-    { o.texture(uint()) } -> std::same_as<typename T::TextureType&>;
-    { co.meshBasePath() } -> std::same_as<const std::string&>;
-    { o.meshBasePath() } -> std::same_as<std::string&>;
+    { cObj.textureNumber() } -> std::same_as<uint>;
+    { cObj.texture(uint()) } -> std::same_as<const typename T::TextureType&>;
+    { obj.texture(uint()) } -> std::same_as<typename T::TextureType&>;
+    { cObj.meshBasePath() } -> std::same_as<const std::string&>;
+    { obj.meshBasePath() } -> std::same_as<std::string&>;
 
-    { o.clearTextures() } -> std::same_as<void>;
-    { o.pushTexture(s) } -> std::same_as<void>;
-    { o.pushTexture(typename T::TextureType()) } -> std::same_as<void>;
+    { obj.clearTextures() } -> std::same_as<void>;
+    { obj.pushTexture(str) } -> std::same_as<void>;
+    { obj.pushTexture(typename T::TextureType()) } -> std::same_as<void>;
 
-    { o.textureBegin() } -> std::same_as<typename T::TextureIterator>;
-    { o.textureEnd() } -> std::same_as<typename T::TextureIterator>;
-    { co.textureBegin() } -> std::same_as<typename T::ConstTextureIterator>;
-    { co.textureEnd() } -> std::same_as<typename T::ConstTextureIterator>;
-    o.textures();
-    co.textures();
-    // clang-format on
+    { obj.textureBegin() } -> std::same_as<typename T::TextureIterator>;
+    { obj.textureEnd() } -> std::same_as<typename T::TextureIterator>;
+    { cObj.textureBegin() } -> std::same_as<typename T::ConstTextureIterator>;
+    { cObj.textureEnd() } -> std::same_as<typename T::ConstTextureIterator>;
+    { obj.textures() } -> vcl::RangeOf<typename T::TextureType>;
+    { cObj.textures() } -> vcl::RangeOf<typename T::TextureType>;
 };
 
 } // namespace vcl::comp

@@ -54,8 +54,7 @@ void glfwErrorCallback(int error, const char* description)
 EventManagerWindow::EventManagerWindow(
     const std::string& windowTitle,
     uint               width,
-    uint               height) :
-        mTitle(windowTitle)
+    uint               height) : mTitle(windowTitle)
 {
     glfwSetErrorCallback(detail::glfwErrorCallback);
     if (!glfwInit()) {
@@ -66,12 +65,16 @@ EventManagerWindow::EventManagerWindow(
 #if defined(VCLIB_RENDER_BACKEND_BGFX)
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+#if defined(__APPLE__)
+    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
+#endif
 #elif defined(VCLIB_RENDER_BACKEND_OPENGL2)
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 #endif
+
+    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
     mWindow =
         glfwCreateWindow(width, height, windowTitle.c_str(), nullptr, nullptr);
@@ -85,8 +88,10 @@ EventManagerWindow::EventManagerWindow(
     glfwMakeContextCurrent(mWindow);
 #endif
 
-    glfwSetWindowUserPointer(mWindow, this);
+    // get content scale (e.g. for macOS retina displays)
+    glfwGetWindowContentScale(mWindow, &mScaleX, &mScaleY);
 
+    glfwSetWindowUserPointer(mWindow, this);
     setCallbacks();
 }
 
@@ -113,6 +118,16 @@ uint EventManagerWindow::height() const
     int width, height;
     glfwGetWindowSize(mWindow, &width, &height);
     return height;
+}
+
+float EventManagerWindow::contentScaleX() const
+{
+    return mScaleX;
+}
+
+float EventManagerWindow::contentScaleY() const
+{
+    return mScaleY;
 }
 
 void* EventManagerWindow::winId()
@@ -147,7 +162,7 @@ void* EventManagerWindow::displayId()
     return ndt;
 }
 
-void EventManagerWindow::glfwWindowSizeCallback(
+void EventManagerWindow::glfwFramebufferSizeCallback(
     GLFWwindow*,
     int width,
     int height)
@@ -155,33 +170,66 @@ void EventManagerWindow::glfwWindowSizeCallback(
     onResize(width, height);
 }
 
+void EventManagerWindow::glfwContentScaleCallback(
+    GLFWwindow*,
+    float xscale,
+    float yscale)
+{
+    mScaleX = xscale;
+    mScaleY = yscale;
+
+    int width, height;
+    glfwGetFramebufferSize(mWindow, &width, &height);
+    onResize(width, height);
+}
+
+static int fixKeyboardMods(int key, int action, int mods)
+{
+    switch (key) {
+    case GLFW_KEY_LEFT_SHIFT:
+    case GLFW_KEY_RIGHT_SHIFT:
+        return (action == GLFW_PRESS) ? mods | GLFW_MOD_SHIFT :
+                                        mods & (~GLFW_MOD_SHIFT);
+    case GLFW_KEY_LEFT_CONTROL:
+    case GLFW_KEY_RIGHT_CONTROL:
+        return (action == GLFW_PRESS) ? mods | GLFW_MOD_CONTROL :
+                                        mods & (~GLFW_MOD_CONTROL);
+    case GLFW_KEY_LEFT_ALT:
+    case GLFW_KEY_RIGHT_ALT:
+        return (action == GLFW_PRESS) ? mods | GLFW_MOD_ALT :
+                                        mods & (~GLFW_MOD_ALT);
+    case GLFW_KEY_LEFT_SUPER:
+    case GLFW_KEY_RIGHT_SUPER:
+        return (action == GLFW_PRESS) ? mods | GLFW_MOD_SUPER :
+                                        mods & (~GLFW_MOD_SUPER);
+    default: break;
+    }
+
+    return mods;
+}
+
 void EventManagerWindow::glfwKeyCallback(
     GLFWwindow*,
     int key,
     int,
     int action,
-    int)
+    int mods)
 {
+#if defined GLFW_EXPOSE_NATIVE_X11
+    // Fix modifiers on X11
+    // maybe it will be fixed https://github.com/glfw/glfw/issues/1630
+    mods = fixKeyboardMods(key, action, mods);
+#endif
+
+    // GLFW modifiers are always set
+    setModifiers(glfw::fromGLFW((glfw::KeyboardModifiers) mods));
+
     vcl::Key::Enum k = glfw::fromGLFW((glfw::Key) key);
-    // GLFW modifier does not work as expected: modifiers are not updated
-    // when a key modifier is released. We have to handle this manually.
-    if (action == GLFW_PRESS) {
-        if (isModifierKey(k)) {
-            KeyModifiers mods                 = modifiers();
-            mods.at(KeyModifier::NO_MODIFIER) = false;
-            mods.at(keyToModifier(k))         = true;
-            setModifiers(mods);
-        }
+
+    if (action == GLFW_PRESS || action == GLFW_REPEAT) {
         onKeyPress(k);
     }
     else if (action == GLFW_RELEASE) {
-        if (isModifierKey(k)) {
-            KeyModifiers mods      = modifiers();
-            mods[keyToModifier(k)] = false;
-            if (mods.none())
-                mods[KeyModifier::NO_MODIFIER] = true;
-            setModifiers(mods);
-        }
         onKeyRelease(k);
     }
 }
@@ -190,9 +238,11 @@ void EventManagerWindow::glfwMouseButtonCallback(
     GLFWwindow*,
     int button,
     int action,
-    int)
+    int mods)
 {
     glfw::MouseButton btn = (glfw::MouseButton) button;
+
+    setModifiers(glfw::fromGLFW((glfw::KeyboardModifiers) mods));
 
     if (action == GLFW_PRESS) {
         onMousePress(glfw::fromGLFW(btn));
@@ -207,6 +257,11 @@ void EventManagerWindow::glfwCursorPosCallback(
     double xpos,
     double ypos)
 {
+#ifdef __APPLE__
+    // macOS retina display fix
+    xpos *= contentScaleX();
+    ypos *= contentScaleY();
+#endif
     onMouseMove(xpos, ypos);
 }
 
@@ -215,26 +270,30 @@ void EventManagerWindow::glfwScrollCallback(
     double xoffset,
     double yoffset)
 {
-    onMouseScroll(xoffset * 120, yoffset * 120);
+    // This is ok for macOS
+    // TODO check other platforms
+    // TODO check if content scale must be used
+    const double ToPixelFactor = 10;
+    onMouseScroll(xoffset * ToPixelFactor, yoffset * ToPixelFactor);
 }
 
 void EventManagerWindow::setCallbacks()
 {
-#if defined(VCLIB_RENDER_BACKEND_BGFX)
-    glfwSetWindowSizeCallback(
-        mWindow, [](GLFWwindow* window, int width, int height) {
-            auto* self = static_cast<EventManagerWindow*>(
-                glfwGetWindowUserPointer(window));
-            self->glfwWindowSizeCallback(window, width, height);
-        });
-#elif defined(VCLIB_RENDER_BACKEND_OPENGL2)
+    // framebuffer size callback
     glfwSetFramebufferSizeCallback(
         mWindow, [](GLFWwindow* window, int width, int height) {
             auto* self = static_cast<EventManagerWindow*>(
                 glfwGetWindowUserPointer(window));
-            self->glfwWindowSizeCallback(window, width, height);
+            self->glfwFramebufferSizeCallback(window, width, height);
         });
-#endif
+
+    // content scale callback
+    glfwSetWindowContentScaleCallback(
+        mWindow, [](GLFWwindow* window, float xscale, float yscale) {
+            auto* self = static_cast<EventManagerWindow*>(
+                glfwGetWindowUserPointer(window));
+            self->glfwContentScaleCallback(window, xscale, yscale);
+        });
 
     // key callback
     glfwSetKeyCallback(

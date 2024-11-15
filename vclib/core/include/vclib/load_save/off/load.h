@@ -343,8 +343,7 @@ void readOffVertices(
 
         if constexpr (vcl::HasPerVertexNormal<MeshType>) {
             if (vcl::isPerVertexNormalAvailable(mesh) &&
-                fileInfo.hasVertexNormals())
-            {
+                fileInfo.hasVertexNormals()) {
                 // Read 3 normal coordinates
                 for (unsigned int j = 0; j < 3; j++) {
                     v.normal()[j] = io::readDouble<double>(token);
@@ -364,8 +363,7 @@ void readOffVertices(
 
         if constexpr (vcl::HasPerVertexColor<MeshType>) {
             if (vcl::isPerVertexColorAvailable(mesh) &&
-                fileInfo.hasVertexColors())
-            {
+                fileInfo.hasVertexColors()) {
                 if (nColorComponents != 1 && nColorComponents != 3 &&
                     nColorComponents != 4)
                     throw MalformedFileException(
@@ -384,8 +382,7 @@ void readOffVertices(
 
         if constexpr (vcl::HasPerVertexTexCoord<MeshType>) {
             if (vcl::isPerVertexTexCoordAvailable(mesh) &&
-                fileInfo.hasVertexTexCoords())
-            {
+                fileInfo.hasVertexTexCoords()) {
                 // Read 2 tex coordinates
                 for (unsigned int j = 0; j < 2; j++) {
                     v.texCoord()[j] = io::readDouble<double>(token);
@@ -467,16 +464,14 @@ void readOffFaces(
                 if constexpr (HasPerFaceColor<MeshType>) {
                     if (isPerFaceColorAvailable(mesh) ||
                         (settings.enableOptionalComponents &&
-                         enableIfPerFaceColorOptional(mesh)))
-                    {
+                         enableIfPerFaceColorOptional(mesh))) {
                         loadedInfo.setFaceColors();
                         f.color() = readOffColor(
                             token, tokens.size() - (token - tokens.begin()));
                         // in case the loaded polygon has been triangulated in
                         // the last n triangles
                         for (uint ff = mesh.index(f); ff < mesh.faceNumber();
-                             ++ff)
-                        {
+                             ++ff) {
                             mesh.face(ff).color() = f.color();
                         }
                     }
@@ -536,7 +531,7 @@ void loadOff(
         enableOptionalComponentsFromInfo(loadedInfo, m);
 
     if (nVertices == 0) {
-        log.log(LogType::WARNING_LOG, "The file has no vertices");
+        log.log("The file has no vertices", LogType::WARNING_LOG);
         return;
     }
 

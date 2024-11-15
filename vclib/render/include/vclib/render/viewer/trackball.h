@@ -92,7 +92,7 @@ private:
 
     Quaternion<Scalar> mDirectionalLightTransform;
 
-    Point2<Scalar> mScreenSize = {1, 1};
+    Point2<Scalar> mScreenSize = {-1, -1};
 
     // trackball radius in camera space
     // this value affects the interaction and the visualization of the trackball
@@ -102,10 +102,12 @@ private:
     bool       mDragging       = false;
     MotionType mCurrDragMotion = MOTION_NUMBER;
 
-    Point3<Scalar>  mInitialPoint;     // initial arcaball hit point
-    Affine3<Scalar> mInitialTransform; // initial transformation
-    Quaternion<Scalar>
-        mInitialDirRotation; // initial directional light rotation
+    // initial arcball hit point
+    Point3<Scalar> mInitialPoint;
+    // initial transformation
+    Affine3<Scalar> mInitialTransform = Affine3<Scalar>::Identity();
+    // initial light rotation
+    Quaternion<Scalar> mInitialDirRotation = Quaternion<Scalar>::Identity();
 
     Point2<Scalar> mCurrMousePosition;
     Point2<Scalar> mPrevMousePosition;
@@ -115,9 +117,13 @@ public:
 
     void reset()
     {
-        auto tmp = mScreenSize;
-        *this    = TrackBall();
-        setScreenSize(tmp);
+        auto screenSize        = mScreenSize;
+        auto currMousePosition = mCurrMousePosition;
+        auto prevMousePosition = mPrevMousePosition;
+        *this                  = TrackBall();
+        setScreenSize(screenSize);
+        mCurrMousePosition = currMousePosition;
+        mPrevMousePosition = prevMousePosition;
     }
 
     /**
@@ -623,7 +629,7 @@ private:
 
     void rotate(const Quaternion<Scalar>& q) { mTransform.prerotate(q); }
 
-    void rotate(Point3<Scalar> axis, Scalar angleRad = M_PI / 6)
+    void rotate(Point3<Scalar> axis, Scalar angleRad)
     {
         mTransform.prerotate(Quaternion<Scalar>(angleRad, axis));
     }
@@ -658,8 +664,14 @@ private:
         const Scalar phi = (point - mInitialPoint).norm() / mRadius;
         ax.angle()       = phi;
 
-        mTransform = mInitialTransform;
-        mTransform.prerotate(ax);
+        // rotate from freezed transformation
+        // mTransform = mInitialTransform;
+        // mTransform.prerotate(ax);
+
+        // modify rotation only
+        mTransform.prerotate(
+            ax * mInitialTransform.rotation() *
+            mTransform.rotation().inverse());
     }
 
     /**-------------- Roll --------------**/
@@ -775,8 +787,7 @@ private:
         // perspective -> ortho
         if (mCamera.projectionMode() ==
                 Camera<Scalar>::ProjectionMode::PERSPECTIVE &&
-            fov == MIN_FOV_DEG)
-        {
+            fov == MIN_FOV_DEG) {
             mCamera.projectionMode() = Camera<Scalar>::ProjectionMode::ORTHO;
         }
 

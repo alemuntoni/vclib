@@ -97,7 +97,7 @@ public:
      *
      * @return The time passed, expressed in seconds.
      */
-    virtual double getTime() = 0;
+    virtual double time() const = 0;
 
     virtual void startNewTask(
         double             fromPerc,
@@ -116,16 +116,16 @@ public:
      *
      * @param[in] msg: The message to print.
      */
-    virtual void log(const std::string& msg) = 0;
+    virtual void log(const std::string& msg) const = 0;
 
     /**
      * @brief Prints a message to the logger, with the given level and without
      * modifying the current percentage.
      *
-     * @param[in] lvl: The level of the message.
      * @param[in] msg: The message to print.
+     * @param[in] lvl: The level of the message.
      */
-    virtual void log(LogLevel lvl, const std::string& msg) = 0;
+    virtual void log(const std::string& msg, LogLevel lvl) const = 0;
 
     /**
      * @brief Prints a message to the logger, with the level
@@ -141,10 +141,10 @@ public:
      * given percentage.
      *
      * @param[in] perc: The percentage of the progress.
-     * @param[in] lvl: The level of the message.
      * @param[in] msg: The message to print.
+     * @param[in] lvl: The level of the message.
      */
-    virtual void log(uint perc, LogLevel lvl, const std::string& msg) = 0;
+    virtual void log(uint perc, const std::string& msg, LogLevel lvl) = 0;
 
     /**
      * @brief Allows to easily manage progresses with the logger, along with the

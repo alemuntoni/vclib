@@ -1,5 +1,5 @@
 {
-    "name": "Develop VCLib-Core - GCC",
+    "name": "Develop VCLib-Core",
 
     "build": {
         "dockerfile": "Dockerfile"
@@ -11,9 +11,9 @@
     "workspaceMount": "source=${localWorkspaceFolder},target=/home/ubuntu/devel/vclib,type=bind",
 
     // personal mounts for build directory (can't set this in my personal settings...)
-    // "mounts": [
-    //    "source=${localEnv:HOME}${localEnv:USERPROFILE}/devel/builds/containers,target=/home/ubuntu/builds,type=bind"
-    // ],
+    "mounts": [
+       "source=${localEnv:HOME}${localEnv:USERPROFILE}/devel/builds/containers,target=/home/ubuntu/builds,type=bind"
+    ],
 
     // vscode extensions
     "customizations": {

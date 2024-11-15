@@ -26,6 +26,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vector>
 
+#include <vclib/concepts/const_correctness.h>
+
 #include <vclib/types.h>
 #endif
 
@@ -40,39 +42,49 @@ namespace vcl {
  * @tparam T: The type to be tested for conformity to the ArrayConcept.
  */
 template<typename T>
-concept ArrayConcept = requires (T o, const T& co) {
-    // clang-format off
-    typename T::ValueType;
-    typename T::Scalar;
-    typename T::ConstReference;
-    typename T::Reference;
-    typename T::ConstPointer;
-    typename T::Pointer;
-    typename T::ConstIterator;
-    typename T::Iterator;
+concept ArrayConcept = requires (
+    T&&                                                  obj,
+    typename RemoveRef<T>::ValueType                     v,
+    typename RemoveRef<T>::Pointer                       ptr,
+    typename RemoveRef<T>::ConstPointer                  cPtr,
+    std::vector<typename RemoveRef<T>::ValueType>        vecV,
+    const std::vector<typename RemoveRef<T>::ValueType>& cVecVR) {
+    // inner types
+    typename RemoveRef<T>::ValueType;
+    typename RemoveRef<T>::Scalar;
+    typename RemoveRef<T>::ConstReference;
+    typename RemoveRef<T>::Reference;
+    typename RemoveRef<T>::ConstPointer;
+    typename RemoveRef<T>::Pointer;
+    typename RemoveRef<T>::ConstIterator;
+    typename RemoveRef<T>::Iterator;
 
-    o.DIM;
+    obj.DIM;
 
-    { o.size(std::size_t()) } -> std::convertible_to<std::size_t>;
-    { o.empty() } -> std::convertible_to<bool>;
+    { obj.size(std::size_t()) } -> std::integral;
+    { obj.empty() } -> std::convertible_to<bool>;
 
-    { o.data() } -> std::same_as<typename T::Pointer>;
-    { co.data() } -> std::same_as<typename T::ConstPointer>;
+    { obj.data() } -> std::convertible_to<decltype(cPtr)>;
 
-    { o.stdVector() } -> std::same_as<std::vector<typename T::ValueType>>;
-    { co.stdVector() } ->
-        std::same_as<const std::vector<typename T::ValueType>&>;
+    { obj.stdVector() } -> std::convertible_to<decltype(cVecVR)>;
 
-    o.fill(typename T::ValueType());
-    o.clear();
+    obj.subArray(uint());
 
-    co.subArray(uint());
+    { obj.begin() } -> std::input_iterator;
+    { obj.end() } -> std::input_iterator;
 
-    { o.begin() } -> std::same_as<typename T::Iterator>;
-    { o.end() } -> std::same_as<typename T::Iterator>;
-    { co.begin() } -> std::same_as<typename T::ConstIterator>;
-    { co.end() } -> std::same_as<typename T::ConstIterator>;
-    // clang-format on
+    // non const requirements
+    requires vcl::IsConst<T> || requires {
+        { obj.data() } -> std::same_as<decltype(ptr)>;
+
+        { obj.stdVector() } -> std::same_as<decltype(vecV)>;
+
+        { obj.fill(v) } -> std::same_as<void>;
+        { obj.clear() } -> std::same_as<void>;
+
+        { obj.begin() } -> std::output_iterator<decltype(v)>;
+        { obj.end() } -> std::output_iterator<decltype(v)>;
+    };
 };
 
 /**
@@ -84,30 +96,37 @@ concept ArrayConcept = requires (T o, const T& co) {
  * @tparam T: The type to be tested for conformity to the Array2Concept.
  */
 template<typename T>
-concept Array2Concept = ArrayConcept<T> && requires (T o, const T& co) {
-    // clang-format off
-    requires T::DIM == 2;
+concept Array2Concept =
+    ArrayConcept<T> && requires (
+                           T&&                                   obj,
+                           std::size_t                           n,
+                           typename RemoveRef<T>::Reference      ref,
+                           typename RemoveRef<T>::ConstReference cRef,
+                           typename RemoveRef<T>::Pointer        ptr,
+                           typename RemoveRef<T>::ConstPointer   cPtr) {
+        requires RemoveRef<T>::DIM == 2;
 
-    T(std::size_t(), std::size_t());
+        RemoveRef<T>(n, n);
 
-    { co.rows() } -> std::convertible_to<std::size_t>;
-    { co.cols() } -> std::convertible_to<std::size_t>;
-    { co.sizeX() } -> std::convertible_to<std::size_t>;
-    { co.sizeY() } -> std::convertible_to<std::size_t>;
+        { obj.rows() } -> std::integral;
+        { obj.cols() } -> std::integral;
+        { obj.sizeX() } -> std::integral;
+        { obj.sizeY() } -> std::integral;
 
-    { o.operator()(std::size_t(), std::size_t()) } ->
-        std::same_as<typename T::Reference>;
-    { co.operator()(std::size_t(), std::size_t()) } ->
-        std::same_as<typename T::ConstReference>;
+        { obj.operator()(n, n) } -> std::convertible_to<decltype(cRef)>;
 
-    { o.data(std::size_t()) } -> std::same_as<typename T::Pointer>;
-    { co.data(std::size_t()) } -> std::same_as<typename T::ConstPointer>;
+        { obj.data(n) } -> std::convertible_to<decltype(cPtr)>;
 
-    { o.resize(std::size_t(), std::size_t()) } -> std::same_as<void>;
-    { o.conservativeResize(std::size_t(), std::size_t()) } ->
-        std::same_as<void>;
-    // clang-format on
-};
+        // non const requirements
+        requires vcl::IsConst<T> || requires {
+            { obj.operator()(n, n) } -> std::same_as<decltype(ref)>;
+
+            { obj.data(n) } -> std::same_as<decltype(ptr)>;
+
+            { obj.resize(n, n) } -> std::same_as<void>;
+            { obj.conservativeResize(n, n) } -> std::same_as<void>;
+        };
+    };
 
 /**
  * @brief A concept representing a 3-dimensional array.
@@ -118,34 +137,37 @@ concept Array2Concept = ArrayConcept<T> && requires (T o, const T& co) {
  * @tparam T: The type to be tested for conformity to the Array3Concept.
  */
 template<typename T>
-concept Array3Concept = ArrayConcept<T> && requires (T o, const T& co) {
-    // clang-format off
-    requires T::DIM == 3;
+concept Array3Concept =
+    ArrayConcept<T> && requires (
+                           T&&                                   obj,
+                           std::size_t                           n,
+                           typename RemoveRef<T>::Reference      ref,
+                           typename RemoveRef<T>::ConstReference cRef,
+                           typename RemoveRef<T>::Pointer        ptr,
+                           typename RemoveRef<T>::ConstPointer   cPtr) {
+        requires RemoveRef<T>::DIM == 3;
 
-    T(std::size_t(), std::size_t(), std::size_t());
+        RemoveRef<T>(n, n, n);
 
-    { co.sizeX() } -> std::convertible_to<std::size_t>;
-    { co.sizeY() } -> std::convertible_to<std::size_t>;
-    { co.sizeZ() } -> std::convertible_to<std::size_t>;
+        { obj.sizeX() } -> std::integral;
+        { obj.sizeY() } -> std::integral;
+        { obj.sizeZ() } -> std::integral;
 
-    { o.operator()(std::size_t(), std::size_t(), std::size_t()) } ->
-        std::same_as<typename T::Reference>;
-    { co.operator()(std::size_t(), std::size_t(), std::size_t()) } ->
-        std::same_as<typename T::ConstReference>;
+        { obj.operator()(n, n, n) } -> std::convertible_to<decltype(cRef)>;
 
-    { o.data(std::size_t()) } -> std::same_as<typename T::Pointer>;
-    { co.data(std::size_t()) } -> std::same_as<typename T::ConstPointer>;
-    { o.data(std::size_t(), std::size_t()) } ->
-        std::same_as<typename T::Pointer>;
-    { co.data(std::size_t(), std::size_t()) } ->
-        std::same_as<typename T::ConstPointer>;
+        { obj.data(n) } -> std::convertible_to<decltype(cPtr)>;
 
-    { o.resize(std::size_t(), std::size_t(), std::size_t()) } ->
-        std::same_as<void>;
-    { o.conservativeResize(std::size_t(), std::size_t(), std::size_t()) } ->
-        std::same_as<void>;
-    // clang-format on
-};
+        { obj.data(n, n) } -> std::convertible_to<decltype(cPtr)>;
+
+        // non const requirements
+        requires vcl::IsConst<T> || requires {
+            { obj.operator()(n, n, n) } -> std::same_as<decltype(ref)>;
+            { obj.data(n) } -> std::same_as<decltype(ptr)>;
+            { obj.data(n, n) } -> std::same_as<decltype(ptr)>;
+            { obj.resize(n, n, n) } -> std::same_as<void>;
+            { obj.conservativeResize(n, n, n) } -> std::same_as<void>;
+        };
+    };
 
 /**
  * @brief A concept representing a 4-dimensional array.
@@ -156,44 +178,41 @@ concept Array3Concept = ArrayConcept<T> && requires (T o, const T& co) {
  * @tparam T: The type to be tested for conformity to the Array4Concept.
  */
 template<typename T>
-concept Array4Concept = ArrayConcept<T> && requires (T o, const T& co) {
-    // clang-format off
-    requires T::DIM == 4;
+concept Array4Concept =
+    ArrayConcept<T> && requires (
+                           T&&                                   obj,
+                           std::size_t                           n,
+                           typename RemoveRef<T>::Reference      ref,
+                           typename RemoveRef<T>::ConstReference cRef,
+                           typename RemoveRef<T>::Pointer        ptr,
+                           typename RemoveRef<T>::ConstPointer   cPtr) {
+        requires RemoveRef<T>::DIM == 4;
 
-    T(std::size_t(), std::size_t(), std::size_t(), std::size_t());
+        RemoveRef<T>(n, n, n, n);
 
-    { co.sizeX() } -> std::convertible_to<std::size_t>;
-    { co.sizeY() } -> std::convertible_to<std::size_t>;
-    { co.sizeZ() } -> std::convertible_to<std::size_t>;
-    { co.sizeW() } -> std::convertible_to<std::size_t>;
+        { obj.sizeX() } -> std::integral;
+        { obj.sizeY() } -> std::integral;
+        { obj.sizeZ() } -> std::integral;
+        { obj.sizeW() } -> std::integral;
 
-    {
-        o.operator()(std::size_t(), std::size_t(), std::size_t(), std::size_t())
-    } -> std::same_as<typename T::Reference>;
-    {
-        co.operator()(
-            std::size_t(), std::size_t(), std::size_t(), std::size_t())
-    } -> std::same_as<typename T::ConstReference>;
+        { obj.operator()(n, n, n, n) } -> std::convertible_to<decltype(cRef)>;
 
-    { o.data(std::size_t()) } -> std::same_as<typename T::Pointer>;
-    { co.data(std::size_t()) } -> std::same_as<typename T::ConstPointer>;
-    { o.data(std::size_t(), std::size_t()) } ->
-        std::same_as<typename T::Pointer>;
-    { co.data(std::size_t(), std::size_t()) } ->
-        std::same_as<typename T::ConstPointer>;
-    { o.data(std::size_t(), std::size_t(), std::size_t()) } ->
-        std::same_as<typename T::Pointer>;
-    { co.data(std::size_t(), std::size_t(), std::size_t()) } ->
-        std::same_as<typename T::ConstPointer>;
+        { obj.data(n) } -> std::convertible_to<decltype(cPtr)>;
+        { obj.data(n, n) } -> std::convertible_to<decltype(cPtr)>;
+        { obj.data(n, n, n) } -> std::convertible_to<decltype(cPtr)>;
 
-    { o.resize(std::size_t(), std::size_t(), std::size_t(), std::size_t()) } ->
-        std::same_as<void>;
-    {
-        o.conservativeResize(
-            std::size_t(), std::size_t(), std::size_t(), std::size_t())
-    } -> std::same_as<void>;
-    // clang-format on
-};
+        // non const requirements
+        requires vcl::IsConst<T> || requires {
+            { obj.operator()(n, n, n, n) } -> std::same_as<decltype(ref)>;
+
+            { obj.data(n) } -> std::same_as<decltype(ptr)>;
+            { obj.data(n, n) } -> std::same_as<decltype(ptr)>;
+            { obj.data(n, n, n) } -> std::same_as<decltype(ptr)>;
+
+            { obj.resize(n, n, n, n) } -> std::same_as<void>;
+            { obj.conservativeResize(n, n, n, n) } -> std::same_as<void>;
+        };
+    };
 
 } // namespace vcl
 

@@ -134,8 +134,7 @@ void loadObjMaterials(
                     }
                     if (*token == "-blendu" || *token == "-blendv" ||
                         *token == "-cc" || *token == "-clamp" ||
-                        *token == "-texres")
-                    {
+                        *token == "-texres") {
                         // ignore the argument and the value
                         ++token;
                         ++token;
@@ -511,8 +510,8 @@ void loadObj(
                 }
                 catch (vcl::CannotOpenFileException) {
                     log.log(
-                        LogType::WARNING_LOG,
-                        "Cannot open material file " + mtlfile);
+                        "Cannot open material file " + mtlfile,
+                        LogType::WARNING_LOG);
                 }
             }
             // use a new material - change currentMaterial
@@ -524,8 +523,8 @@ void loadObj(
                 }
                 else { // material not found - warning
                     log.log(
-                        LogType::WARNING_LOG,
-                        "Material " + matname + " not found.");
+                        "Material " + matname + " not found.",
+                        LogType::WARNING_LOG);
                 }
             }
             // read vertex (and for some non-standard obj files, also vertex
@@ -546,8 +545,7 @@ void loadObj(
             // store them in the mesh later
             if constexpr (
                 HasPerVertexTexCoord<MeshType> ||
-                HasPerFaceWedgeTexCoords<MeshType>)
-            {
+                HasPerFaceWedgeTexCoords<MeshType>) {
                 if (header == "vt") {
                     // save the texcoord for later
                     TexCoordd tf;
@@ -618,8 +616,8 @@ void loadObj(
                     texture.image().load(m.meshBasePath() + texture.path());
                 if (!b) {
                     log.log(
-                        LogType::WARNING_LOG,
-                        "Cannot load texture " + texture.path());
+                        "Cannot load texture " + texture.path(),
+                        LogType::WARNING_LOG);
                 }
             }
         }

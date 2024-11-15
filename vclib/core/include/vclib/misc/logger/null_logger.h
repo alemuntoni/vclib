@@ -75,7 +75,7 @@ public:
 
     void stopTimer() override final {}
 
-    double getTime() override final { return 0; }
+    double time() const override final { return 0; }
 
     void startNewTask(double, double, const std::string&) override final {}
 
@@ -85,13 +85,13 @@ public:
 
     void setPercentage(uint) override final {}
 
-    void log(const std::string&) override final {}
+    void log(const std::string&) const override final {}
 
-    void log(LogLevel, const std::string&) override final {}
+    void log(const std::string&, LogLevel) const override final {}
 
     void log(uint, const std::string&) override final {}
 
-    void log(uint, LogLevel, const std::string&) override final {}
+    void log(uint, const std::string&, LogLevel) override final {}
 
     void startProgress(const std::string&, uint, uint = 0, uint = 0, uint = 0)
         override final

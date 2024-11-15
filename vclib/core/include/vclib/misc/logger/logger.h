@@ -124,7 +124,7 @@ public:
 
     void stopTimer() override final { mTimer.stop(); }
 
-    double getTime() override final { return mTimer.delay(); }
+    double time() const override final { return mTimer.delay(); }
 
     void startNewTask(double fromPerc, double toPerc, const std::string& action)
         override final
@@ -169,22 +169,22 @@ public:
         }
     }
 
-    void log(const std::string& msg) override final
+    void log(const std::string& msg) const override final
     {
-        log(101, PROGRESS_LOG, msg);
+        printLine(msg, PROGRESS_LOG);
     }
 
-    void log(LogLevel lvl, const std::string& msg) override final
+    void log(const std::string& msg, LogLevel lvl) const override final
     {
-        log(101, lvl, msg);
+        printLine(msg, lvl);
     }
 
     void log(uint perc, const std::string& msg) override final
     {
-        log(perc, PROGRESS_LOG, msg);
+        log(perc, msg, PROGRESS_LOG);
     }
 
-    void log(uint perc, LogLevel lvl, const std::string& msg) override final
+    void log(uint perc, const std::string& msg, LogLevel lvl) override final
     {
         if (perc >= 0 && perc <= 100)
             setPercentage(perc);
@@ -227,7 +227,7 @@ public:
         if (mLastProgress < progress) {
             mProgressPerc = progress * mProgressPercStep;
             if (mPrintMsgDuringProgress)
-                log(mProgressPerc, PROGRESS_LOG, mProgressMessage);
+                log(mProgressPerc, mProgressMessage, PROGRESS_LOG);
             else
                 setPercentage(mProgressPerc);
             mLastProgress = progress;
@@ -244,15 +244,15 @@ protected:
      * @param[in] lvl: the LogLevel for which the stream is requested.
      * @return the stream corresponding to the given LogLevel.
      */
-    virtual Stream* levelStream(LogLevel lvl) = 0;
+    virtual Stream* levelStream(LogLevel lvl) const = 0;
 
-    virtual void alignLeft(Stream& o) {}
+    virtual void alignLeft(Stream& o) const {}
 
-    virtual void alignRight(Stream& o) {}
+    virtual void alignRight(Stream& o) const {}
 
-    virtual void setWidth(Stream& o, uint w) {}
+    virtual void setWidth(Stream& o, uint w) const {}
 
-    virtual void flush(Stream& o) {}
+    virtual void flush(Stream& o) const {}
 
 private:
     void updateStep()
@@ -260,7 +260,7 @@ private:
         mStep = (mIntervals.top().second - mIntervals.top().first) / 100;
     }
 
-    void printLine(const std::string& msg, uint lvl)
+    void printLine(const std::string& msg, uint lvl) const
     {
         if (!mPrintPerc && msg.empty())
             return;
@@ -288,7 +288,7 @@ private:
         flush(*stream);
     }
 
-    uint printPercentage(Stream& o)
+    uint printPercentage(Stream& o) const
     {
         uint size = 3;
         if (mPercPrecision > 0)
@@ -301,7 +301,7 @@ private:
         return size + 3;
     }
 
-    uint printIndentation(Stream& o)
+    uint printIndentation(Stream& o) const
     {
         uint s = 0;
         if (mIndent) {
@@ -314,7 +314,7 @@ private:
         return s;
     }
 
-    void printMessage(Stream& o, const std::string& msg, uint lvl, uint n)
+    void printMessage(Stream& o, const std::string& msg, uint lvl, uint n) const
     {
         uint maxMsgSize = mLineWidth - n;
         if (mPrintTimer)
@@ -350,7 +350,7 @@ private:
         o << msg.c_str();
     }
 
-    void printElapsedTime(Stream& o)
+    void printElapsedTime(Stream& o) const
     {
         if (mPrintTimer) {
             o << "[";

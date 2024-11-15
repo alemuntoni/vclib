@@ -45,7 +45,7 @@ namespace vcl {
  *
  * @ingroup algorithms_core
  */
-template<ConstTriangle3Concept TriangleType, Point3Concept PointType>
+template<Triangle3Concept TriangleType, Point3Concept PointType>
 auto halfSpaceDeterminant(const TriangleType& triangle, const PointType& point)
 {
     return (triangle.point(1) - triangle.point(0))
@@ -140,7 +140,7 @@ bool arePointsCoplanar(
  *
  * @ingroup algorithms_core
  */
-template<ConstTriangle3Concept TriangleType, Point3Concept PointType>
+template<Triangle3Concept TriangleType, Point3Concept PointType>
 bool trianglePointVisibility(
     const TriangleType& triangle,
     const PointType&    point)

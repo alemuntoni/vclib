@@ -104,12 +104,10 @@ public:
 
         if constexpr (
             vcl::HasPerVertexQuality<MeshType> &&
-            vcl::edge::HasQuality<EdgeType>)
-        {
+            vcl::edge::HasQuality<EdgeType>) {
             if (copyQuality) {
                 if (vcl::isPerVertexQualityAvailable(mMesh) &&
-                    comp::isQualityAvailableOn(e))
-                {
+                    comp::isQualityAvailableOn(e)) {
                     mMesh.vertex(vi).quality() = e.quality();
                 }
             }
@@ -126,12 +124,10 @@ public:
 
         if constexpr (
             vcl::HasPerVertexQuality<MeshType> &&
-            vcl::edge::HasQuality<EdgeType>)
-        {
+            vcl::edge::HasQuality<EdgeType>) {
             if (copyQuality) {
                 if (vcl::isPerVertexQualityAvailable(mMesh) &&
-                    comp::isQualityAvailableOn(e))
-                {
+                    comp::isQualityAvailableOn(e)) {
                     mMesh.vertex(i).quality() = e.quality();
                 }
             }
@@ -264,12 +260,11 @@ private:
         bool            copyQuality)
     {
         if constexpr (
-            vcl::HasPerVertexNormal<MeshType> && vcl::face::HasNormal<FaceType>)
-        {
+            vcl::HasPerVertexNormal<MeshType> &&
+            vcl::face::HasNormal<FaceType>) {
             if (copyNormal) {
                 if (vcl::isPerVertexNormalAvailable(mMesh) &&
-                    comp::isNormalAvailableOn(f))
-                {
+                    comp::isNormalAvailableOn(f)) {
                     mMesh.vertex(vi).normal() = f.normal();
                 }
             }
@@ -277,12 +272,10 @@ private:
 
         if constexpr (
             vcl::HasPerVertexQuality<MeshType> &&
-            vcl::face::HasQuality<FaceType>)
-        {
+            vcl::face::HasQuality<FaceType>) {
             if (copyQuality) {
                 if (vcl::isPerVertexQualityAvailable(mMesh) &&
-                    comp::isQualityAvailableOn(f))
-                {
+                    comp::isQualityAvailableOn(f)) {
                     mMesh.vertex(vi).quality() = f.quality();
                 }
             }

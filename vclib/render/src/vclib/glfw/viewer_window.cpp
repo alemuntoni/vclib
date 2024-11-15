@@ -31,7 +31,12 @@ ViewerWindow::ViewerWindow(
     uint                                         height,
     void*) :
         EventManagerWindow(windowTitle, width, height),
-        ViewerCanvas(winId(), v, width, height, displayId())
+        ViewerCanvas(
+            winId(),
+            v,
+            width * contentScaleX(),
+            height * contentScaleY(),
+            displayId())
 {
 }
 
@@ -71,6 +76,12 @@ void ViewerWindow::draw()
 #ifdef VCLIB_RENDER_BACKEND_OPENGL2
     glfwSwapBuffers(mWindow);
 #endif
+}
+
+void ViewerWindow::onResize(unsigned int width, unsigned int height)
+{
+    ViewerCanvas::onResize(width, height);
+    frame();
 }
 
 } // namespace vcl::glfw

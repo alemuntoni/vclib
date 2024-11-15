@@ -25,6 +25,8 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include "array.h"
+
+#include <vclib/concepts/const_correctness.h>
 #endif
 
 namespace vcl {
@@ -39,43 +41,34 @@ namespace vcl {
  * - `T::rows()`
  * - `T::cols()`
  * - `T::operator()(std::size_t, std::size_t)`
+ *
+ * If the type `T` is non-const, it must also have the following members:
+ * - `T::resize(std::size_t, std::size_t)`
+ * - `T::conservativeResize(std::size_t, std::size_t)`
+ *
+ * @note The fact that an Eigen matrix has the two resize member functions does
+ * not mean that it can be resized. For example, a matrix with fixed size cannot
+ * be resized, but it has the two resize member functions, and calling them with
+ * the same sizes of the matrix does not cause any error.
  */
 template<typename T>
-concept EigenMatrixConcept = requires (T o, const T& co) {
-    // clang-format off
-    typename T::Scalar;
+concept EigenMatrixConcept = requires (T&& obj) {
+    typename RemoveRef<T>::Scalar;
 
-    co.RowsAtCompileTime;
-    co.ColsAtCompileTime;
+    obj.RowsAtCompileTime;
+    obj.ColsAtCompileTime;
 
-    co.rows();
-    co.cols();
+    obj.rows();
+    obj.cols();
 
-    o.operator()(std::size_t(), std::size_t());
-    co.operator()(std::size_t(), std::size_t());
-    // clang-format on
-};
+    obj.operator()(std::size_t(), std::size_t());
+    obj.operator()(std::size_t(), std::size_t());
 
-/**
- * @brief Concept for Eigen matrices that can be resized. It is satisfied when
- * `T` is an Eigen matrix.
- *
- * The concept just checks that `T` is an Eigen matrix and has the following
- * members:
- * - `T::resize()`
- * - `T::conservativeResize()`
- *
- * @note The fact that an Eigen matrix has the two methods above does not mean
- * that it can be resized. For example, a matrix with fixed size cannot be
- * resized, but it has the two methods above, and calling them with the same
- * sizes of the matrix does not cause any error.
- */
-template<typename T>
-concept ResizableEigenMatrixConceipt = EigenMatrixConcept<T> && requires (T o) {
-    // clang-format off
-    o.resize(std::size_t(), std::size_t());
-    o.conservativeResize(std::size_t(), std::size_t());
-    // clang-format on
+    // non const requirements
+    requires vcl::IsConst<T> || requires {
+        obj.resize(std::size_t(), std::size_t());
+        obj.conservativeResize(std::size_t(), std::size_t());
+    };
 };
 
 /**
@@ -86,7 +79,7 @@ concept ResizableEigenMatrixConceipt = EigenMatrixConcept<T> && requires (T o) {
  * trough their respective concepts.
  */
 template<typename T>
-concept MatrixConcept = ResizableEigenMatrixConceipt<T> || Array2Concept<T>;
+concept MatrixConcept = EigenMatrixConcept<T> || Array2Concept<T>;
 
 } // namespace vcl
 

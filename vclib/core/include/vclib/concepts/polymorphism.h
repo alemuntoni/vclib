@@ -50,10 +50,8 @@ namespace vcl {
  * @ingroup util_concepts
  */
 template<typename T>
-concept Cloneable = requires (const T& o) {
-    // clang-format off
-    { o.clone() } -> std::same_as<std::shared_ptr<T>>;
-    // clang-format on
+concept Cloneable = requires (const T& obj) {
+    { obj.clone() } -> std::same_as<std::shared_ptr<T>>;
 };
 
 } // namespace vcl

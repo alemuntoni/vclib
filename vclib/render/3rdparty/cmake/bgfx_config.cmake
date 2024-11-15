@@ -20,11 +20,11 @@
 #* (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
 #****************************************************************************/
 
-include(${VCLIB_BGFX_DIR}/cmake/bgfxToolUtils.cmake)
+include(${VCLIB_BGFX_CMAKE_DIR}/bgfxToolUtils.cmake)
 
 function(_set_bgfx_profiles)
     set(GLSL_PROFILE 140 PARENT_SCOPE)
-    set(GLSL_COMPUTE_PROFILE 300 PARENT_SCOPE)
+    set(GLSL_COMPUTE_PROFILE 400 PARENT_SCOPE)
     set(ESSL_PROFILE 320_es PARENT_SCOPE)
     set(SPIRV_PROFILE spirv PARENT_SCOPE)
     set(DX_PROFILE s_5_0 PARENT_SCOPE)
@@ -132,7 +132,7 @@ function(_bgfx_compile_shader_to_header)
 endfunction()
 
 # FILE: the absolute path of the shader file
-# DIR: the portion of path where the binary output shader will be placed
+# DIR: the portion of path where the binary output shader will be placed.
 #      the final output will be
 #      <BINARY_DIR>/shaders/<platform>/<DIR>/<FILE_NAME>.bin
 # TARGET: the target to add the shader to
@@ -141,6 +141,8 @@ endfunction()
 # <BINARY_DIR>/shaders/<platform>/<DIR>/<FILE_NAME>.bin
 function(_add_bgfx_shader FILE DIR TARGET)
     _set_bgfx_profiles()
+
+    get_property(BGFX_SHADER_INCLUDE_PATH TARGET vclib-3rd-bgfx PROPERTY BGFX_SHADER_INCLUDE_PATH)
 
     get_property(TARGET_BIN_DIR TARGET ${TARGET} PROPERTY BINARY_DIR)
     set(BGFX_SHADERS_OUTPUT_DIR "${TARGET_BIN_DIR}/shaders")
@@ -171,6 +173,7 @@ function(_add_bgfx_shader FILE DIR TARGET)
                     PROFILE ${DX_PROFILE}
                     O 3
                     OUTPUT ${DX11_OUTPUT}
+                    INCLUDES ${BGFX_SHADER_INCLUDE_PATH}
                 )
             else()
                 _bgfx_shaderc_parse(
@@ -178,6 +181,7 @@ function(_add_bgfx_shader FILE DIR TARGET)
                     PROFILE ${DX_PROFILE}
                     O 1
                     OUTPUT ${DX11_OUTPUT}
+                    INCLUDES ${BGFX_SHADER_INCLUDE_PATH}
                 )
             endif()
             list(APPEND OUTPUTS "DX11")
@@ -187,7 +191,11 @@ function(_add_bgfx_shader FILE DIR TARGET)
         if(APPLE)
             # metal
             set(METAL_OUTPUT ${BGFX_SHADERS_OUTPUT_DIR}/metal/${DIR}/${FILENAME}.bin)
-            _bgfx_shaderc_parse(METAL ${COMMON} OSX PROFILE ${METAL_PROFILE} OUTPUT ${METAL_OUTPUT})
+            _bgfx_shaderc_parse(
+                METAL ${COMMON} 
+                OSX PROFILE ${METAL_PROFILE} 
+                OUTPUT ${METAL_OUTPUT}
+                INCLUDES ${BGFX_SHADER_INCLUDE_PATH})
             list(APPEND OUTPUTS "METAL")
             set(OUTPUTS_PRETTY "${OUTPUTS_PRETTY}Metal, ")
         endif()
@@ -195,17 +203,30 @@ function(_add_bgfx_shader FILE DIR TARGET)
         # essl
         if(NOT "${TYPE}" STREQUAL "COMPUTE")
             set(ESSL_OUTPUT ${BGFX_SHADERS_OUTPUT_DIR}/essl/${DIR}/${FILENAME}.bin)
-            _bgfx_shaderc_parse(ESSL ${COMMON} ANDROID PROFILE ${ESSL_PROFILE} OUTPUT ${ESSL_OUTPUT})
+            _bgfx_shaderc_parse(
+                ESSL ${COMMON} 
+                ANDROID PROFILE ${ESSL_PROFILE} 
+                OUTPUT ${ESSL_OUTPUT}
+                INCLUDES ${BGFX_SHADER_INCLUDE_PATH})
             list(APPEND OUTPUTS "ESSL")
             set(OUTPUTS_PRETTY "${OUTPUTS_PRETTY}ESSL, ")
         endif()
 
         # glsl
         set(GLSL_OUTPUT ${BGFX_SHADERS_OUTPUT_DIR}/glsl/${DIR}/${FILENAME}.bin)
+        
         if(NOT "${TYPE}" STREQUAL "COMPUTE")
-            _bgfx_shaderc_parse(GLSL ${COMMON} LINUX PROFILE ${GLSL_PROFILE} OUTPUT ${GLSL_OUTPUT})
+            _bgfx_shaderc_parse(
+                GLSL ${COMMON} 
+                LINUX PROFILE ${GLSL_PROFILE} 
+                OUTPUT ${GLSL_OUTPUT}
+                INCLUDES ${BGFX_SHADER_INCLUDE_PATH})
         else()
-            _bgfx_shaderc_parse(GLSL ${COMMON} LINUX PROFILE ${GLSL_COMPUTE_PROFILE} OUTPUT ${GLSL_OUTPUT})
+            _bgfx_shaderc_parse(
+                GLSL ${COMMON} 
+                LINUX PROFILE ${GLSL_COMPUTE_PROFILE} 
+                OUTPUT ${GLSL_OUTPUT}
+                INCLUDES ${BGFX_SHADER_INCLUDE_PATH})
         endif()
         list(APPEND OUTPUTS "GLSL")
         set(OUTPUTS_PRETTY "${OUTPUTS_PRETTY}GLSL, ")
@@ -213,7 +234,11 @@ function(_add_bgfx_shader FILE DIR TARGET)
         # spirv
         if(NOT "${TYPE}" STREQUAL "COMPUTE")
             set(SPIRV_OUTPUT ${BGFX_SHADERS_OUTPUT_DIR}/spirv/${DIR}/${FILENAME}.bin)
-            _bgfx_shaderc_parse(SPIRV ${COMMON} LINUX PROFILE ${SPIRV_PROFILE} OUTPUT ${SPIRV_OUTPUT})
+            _bgfx_shaderc_parse(
+                SPIRV ${COMMON} LINUX PROFILE 
+                ${SPIRV_PROFILE} 
+                OUTPUT ${SPIRV_OUTPUT}
+                INCLUDES ${BGFX_SHADER_INCLUDE_PATH})
             list(APPEND OUTPUTS "SPIRV")
             set(OUTPUTS_PRETTY "${OUTPUTS_PRETTY}SPIRV")
             set(OUTPUT_FILES "")
@@ -277,6 +302,7 @@ function(build_bgfx_shaders_to_headers)
     get_property(TARGET_BIN_DIR TARGET vclib-render PROPERTY BINARY_DIR)
     get_property(VCLIB_RENDER_DIR TARGET vclib-render PROPERTY VCLIB_RENDER_INCLUDE_DIR)
     get_property(VCLIB_RENDER_SHADER_DIR TARGET vclib-render PROPERTY VCLIB_RENDER_SHADER_INCLUDE_DIR)
+    get_property(BGFX_SHADER_INCLUDE_PATH TARGET vclib-3rd-bgfx PROPERTY BGFX_SHADER_INCLUDE_PATH)
 
     set(BGFX_SHADERS_OUTPUT_DIR "${TARGET_BIN_DIR}/include/shaders")
 
