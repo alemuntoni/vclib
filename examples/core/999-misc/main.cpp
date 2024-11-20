@@ -61,8 +61,47 @@ struct Square : public Shape
     }
 };
 
+template<class A>
+struct P : public A
+{
+    using Base = A;
+};
+
+template<template <typename> class T>
+struct C
+{
+    using Comp = T<C>;
+};
+
+class M : public C<P>
+{
+
+};
+
+template<template <typename> typename ...Comps>
+class Vertex : public Comps<Vertex<Comps>>...
+{
+public:
+
+};
+
+template<typename ParentType>
+class Color {
+public:
+    using Parent = ParentType;
+
+    void color() {}
+};
+
+using MyVertex = Vertex<Color>;
+
 int main()
 {
+
+    MyVertex v;
+
+    v.color();
+
     static_assert(vcl::Cloneable<Shape>, "");
 
     vcl::PolymorphicObjectVector<Shape> vec;
