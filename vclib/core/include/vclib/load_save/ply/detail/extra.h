@@ -24,7 +24,7 @@
 #define VCL_LOAD_SAVE_PLY_DETAIL_EXTRA_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <fstream>
+#include "header.h"
 
 #include <vclib/exceptions/io.h>
 #include <vclib/io/read.h>
@@ -32,8 +32,6 @@
 #include <vclib/mesh/requirements.h>
 #include <vclib/misc/logger.h>
 #include <vclib/space/core/texture.h>
-
-#include "header.h"
 #endif
 
 namespace vcl::detail {

@@ -24,9 +24,9 @@
 #define VCL_CONCEPTS_MESH_COMPONENTS_BIT_FLAGS_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <concepts>
-
 #include <vclib/types/base.h>
+
+#include <concepts>
 #endif
 
 namespace vcl::comp {

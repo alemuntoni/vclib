@@ -11,7 +11,6 @@ from generators.el_range_concept import generate_elem_range_concept
 from generators.el_requirements import generate_elem_requirements
 from generators.el_view import generate_elem_view
 from generators.per_el_concepts import generate_per_elem_concepts
-from generators.update_cmake import update_cmake_file
 from generators.update_element_type_list import update_element_list
 from generators.el_module import generate_elem_module
 
@@ -61,8 +60,6 @@ def main():
 
     for f in update_function_list:
         f(element)
-
-    update_cmake_file(headers_list)
 
     print("Generated Headers:")
     for h in headers_list:

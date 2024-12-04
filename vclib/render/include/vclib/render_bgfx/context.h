@@ -23,14 +23,14 @@
 #ifndef VCL_BGFX_RENDER_CONTEXT_H
 #define VCL_BGFX_RENDER_CONTEXT_H
 
-#include <stack>
+#include "context/callback.h"
+#include "context/font_manager.h"
+#include "context/program_manager.h"
 
 #include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
 
-#include "context/callback.h"
-#include "context/font_manager.h"
-#include "context/program_manager.h"
+#include <stack>
 
 #define BGFX_INVALID_VIEW 65535
 
@@ -47,9 +47,16 @@ class Context
     FontManager*    mFontManager    = nullptr;
     ProgramManager* mProgramManager = nullptr;
 
-public:
-    inline static bgfx::RendererType::Enum renderType =
+    inline static bool                     sInitialized = false;
+    inline static bgfx::RendererType::Enum sRenderType =
         bgfx::RendererType::Count;
+
+public:
+    static void setRenderType(bgfx::RendererType::Enum renderType);
+
+    static bgfx::RendererType::Enum renderType();
+
+    static bgfx::Caps capabilites();
 
     static bgfx::ViewId requestViewId(
         void* windowHandle  = nullptr,

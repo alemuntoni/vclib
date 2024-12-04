@@ -24,12 +24,13 @@
 #define VCL_PROCESSING_ACTIONS_SAVE_MESH_OFF_SAVE_MESH_ACTION_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/load_save/off/capability.h>
-#include <vclib/load_save/off/save.h>
 #include <vclib/processing/action_interfaces/save_mesh_action.h>
 #include <vclib/processing/functions.h>
 #include <vclib/processing/meshes.h>
 #include <vclib/processing/parameters.h>
+
+#include <vclib/load_save/off/capability.h>
+#include <vclib/load_save/off/save.h>
 #endif
 
 namespace vcl::proc {

@@ -24,8 +24,6 @@
 #define VCL_ALGORITHMS_MESH_UPDATE_CURVATURE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <mutex>
-
 #include <vclib/algorithms/core/polygon.h>
 #include <vclib/algorithms/core/stat.h>
 #include <vclib/algorithms/mesh/intersection.h>
@@ -40,6 +38,8 @@
 #include <vclib/space/complex/mesh_pos.h>
 #include <vclib/space/core/principal_curvature.h>
 #include <vclib/views/pointers.h>
+
+#include <mutex>
 #endif
 
 namespace vcl {
@@ -336,7 +336,7 @@ void updatePrincipalCurvaturePCA(
             -(M_PI * 0.5 - angle));
 
         v.principalCurvature().maxDir() =
-            rot * v.principalCurvature().maxDir().transpose();
+            rot * v.principalCurvature().maxDir();
 
         angle = acos(v.principalCurvature().minDir().dot(v.normal()));
 
@@ -345,7 +345,7 @@ void updatePrincipalCurvaturePCA(
             -(M_PI * 0.5 - angle));
 
         v.principalCurvature().minDir() =
-            rot * v.principalCurvature().minDir().transpose();
+            rot * v.principalCurvature().minDir();
 
         // computes the curvature values
         const ScalarType r5 = std::pow(radius, 5);

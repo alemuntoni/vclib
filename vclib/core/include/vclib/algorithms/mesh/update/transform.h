@@ -24,10 +24,10 @@
 #define VCL_ALGORITHMS_MESH_UPDATE_TRANSFORM_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "normal.h"
+
 #include <vclib/math/transform.h>
 #include <vclib/mesh/requirements.h>
-
-#include "normal.h"
 #endif
 
 namespace vcl {
@@ -92,14 +92,14 @@ void rotate(
     bool                    updateNormals = true)
 {
     for (auto& v : mesh.vertices()) {
-        v.coord() *= m;
+        v.coord() = m * v.coord();
     }
 
     if (updateNormals) {
         if constexpr (HasPerVertexNormal<MeshType>) {
             if (isPerVertexNormalAvailable(mesh)) {
                 for (auto& v : mesh.vertices()) {
-                    v.normal() *= m;
+                    v.normal() = m * v.normal();
                 }
             }
         }
@@ -107,7 +107,7 @@ void rotate(
         if constexpr (HasPerFaceNormal<MeshType>) {
             if (isPerFaceNormalAvailable(mesh)) {
                 for (auto& f : mesh.faces()) {
-                    f.normal() *= m;
+                    f.normal() = m * f.normal();
                 }
             }
         }

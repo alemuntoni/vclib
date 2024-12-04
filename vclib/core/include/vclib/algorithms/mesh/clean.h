@@ -24,15 +24,14 @@
 #define VCL_ALGORITHMS_MESH_CLEAN_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <map>
-#include <set>
-#include <stack>
-#include <vector>
-
 #include <vclib/algorithms/core/polygon/ear_cut.h>
 #include <vclib/algorithms/mesh/sort.h>
 #include <vclib/mesh/requirements.h>
 #include <vclib/space/complex/mesh_pos.h>
+
+#include <set>
+#include <stack>
+#include <vector>
 #endif
 
 /**

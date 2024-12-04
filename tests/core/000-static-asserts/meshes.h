@@ -23,6 +23,8 @@
 #ifndef MESHES_H
 #define MESHES_H
 
+#include "meshes/components.h"
+
 #include "meshes/edgemesh.h"
 #include "meshes/pointcloud.h"
 #include "meshes/polymesh.h"
@@ -30,6 +32,10 @@
 
 void meshesStaticAsserts()
 {
+    // mesh
+    componentsStaticAsserts();
+
+    // meshes
     edgemeshStaticAsserts();
     pointcloudStaticAsserts();
     polymeshStaticAsserts();

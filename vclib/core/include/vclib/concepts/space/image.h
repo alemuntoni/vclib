@@ -24,11 +24,11 @@
 #define VCL_CONCEPTS_SPACE_IMAGE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <string>
+#include "color.h"
 
 #include <vclib/types.h>
 
-#include "color.h"
+#include <string>
 #endif
 
 namespace vcl {

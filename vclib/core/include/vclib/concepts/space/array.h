@@ -24,11 +24,11 @@
 #define VCL_CONCEPTS_SPACE_ARRAY_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vector>
-
 #include <vclib/concepts/const_correctness.h>
 
 #include <vclib/types.h>
+
+#include <vector>
 #endif
 
 namespace vcl {

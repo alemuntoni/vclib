@@ -24,11 +24,11 @@
 #define VCL_CONCEPTS_MESH_COMPONENTS_ADJACENT_VERTICES_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vector>
+#include "component.h"
 
 #include <vclib/concepts/ranges/range.h>
 
-#include "component.h"
+#include <vector>
 #endif
 
 namespace vcl::comp {

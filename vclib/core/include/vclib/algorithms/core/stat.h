@@ -24,10 +24,10 @@
 #define VCL_ALGORITHMS_CORE_STAT_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vector>
-
 #include <vclib/space/core/matrix.h>
 #include <vclib/space/core/polygon.h>
+
+#include <vector>
 #endif
 
 namespace vcl {

@@ -24,10 +24,10 @@
 #define VCL_MISC_TOKENIZER_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/types.h>
+
 #include <string>
 #include <vector>
-
-#include <vclib/types.h>
 #endif
 
 namespace vcl {

@@ -24,12 +24,12 @@
 #define VCL_CONCEPTS_MESH_CONTAINERS_VERTEX_CONTAINER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <ranges>
-#include <vector>
+#include "element_container.h"
 
 #include <vclib/concepts/ranges/range.h>
 
-#include "element_container.h"
+#include <ranges>
+#include <vector>
 #endif
 
 namespace vcl {

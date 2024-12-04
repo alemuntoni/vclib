@@ -24,18 +24,16 @@
 #define VCL_MISC_LOGGER_LOGGER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <cassert>
-#include <cmath>
-#include <mutex>
-#include <stack>
+#include "abstract_logger.h"
 
 #include <vclib/misc/timer.h>
 #include <vclib/types.h>
 
-#include "abstract_logger.h"
+#include <cassert>
+#include <cmath>
+#include <mutex>
+#include <stack>
 #endif
-
-
 
 namespace vcl {
 

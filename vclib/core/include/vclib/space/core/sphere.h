@@ -24,9 +24,9 @@
 #define VCL_SPACE_CORE_SPHERE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/space/sphere.h>
-
 #include "box.h"
+
+#include <vclib/concepts/space/sphere.h>
 #endif
 
 namespace vcl {

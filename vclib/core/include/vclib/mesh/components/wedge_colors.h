@@ -24,13 +24,13 @@
 #define VCL_MESH_COMPONENTS_WEDGE_COLORS_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "bases/container_component.h"
+
 #include <vclib/concepts/mesh/components/color.h>
 #include <vclib/concepts/mesh/components/wedge_colors.h>
 #include <vclib/space/core/color.h>
 #include <vclib/space/core/vector.h>
 #include <vclib/types/view.h>
-
-#include "bases/container_component.h"
 #endif
 
 namespace vcl::comp {

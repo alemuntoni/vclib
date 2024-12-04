@@ -24,11 +24,12 @@
 #define VCL_MESH_CONTAINERS_VERTEX_CONTAINER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <typeindex>
+#include "element_container.h"
+
 #include <vclib/mesh/elements/vertex.h>
 #include <vclib/mesh/elements/vertex_components.h>
 
-#include "element_container.h"
+#include <typeindex>
 #endif
 
 namespace vcl::mesh {

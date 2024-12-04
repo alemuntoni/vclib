@@ -24,13 +24,13 @@
 #define VCL_IO_FILE_INFO_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/exceptions/io.h>
+#include <vclib/types.h>
+
 #include <filesystem>
 #include <fstream>
 #include <string>
 #include <vector>
-
-#include <vclib/exceptions/io.h>
-#include <vclib/types.h>
 #endif
 
 namespace vcl {

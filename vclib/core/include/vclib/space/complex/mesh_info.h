@@ -24,14 +24,14 @@
 #define VCL_SPACE_COMPLEX_MESH_INFO_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/mesh/requirements.h>
+#include <vclib/types.h>
+
 #include <array>
 #include <bitset>
 #include <string>
 #include <typeindex>
 #include <vector>
-
-#include <vclib/mesh/requirements.h>
-#include <vclib/types.h>
 #endif
 
 namespace vcl {

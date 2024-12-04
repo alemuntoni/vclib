@@ -24,14 +24,14 @@
 #define VCL_SPACE_CORE_POLYGON_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <ranges>
-#include <vector>
+#include "triangle.h"
 
 #include <vclib/concepts/range.h>
 #include <vclib/concepts/space/polygon.h>
 #include <vclib/space/core/point.h>
 
-#include "triangle.h"
+#include <ranges>
+#include <vector>
 #endif
 
 namespace vcl {

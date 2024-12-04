@@ -24,7 +24,7 @@
 #define VCL_LOAD_SAVE_PLY_DETAIL_VERTEX_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <fstream>
+#include "header.h"
 
 #include <vclib/concepts/mesh/per_vertex.h>
 #include <vclib/exceptions/io.h>
@@ -32,8 +32,6 @@
 #include <vclib/io/write.h>
 #include <vclib/mesh/requirements.h>
 #include <vclib/misc/tokenizer.h>
-
-#include "header.h"
 #endif
 
 namespace vcl::detail {

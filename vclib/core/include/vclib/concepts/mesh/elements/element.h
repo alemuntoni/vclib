@@ -24,8 +24,6 @@
 #define VCL_CONCEPTS_MESH_ELEMENTS_ELEMENT_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <string>
-
 #include <vclib/types.h>
 #endif
 

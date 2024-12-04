@@ -24,9 +24,9 @@
 #define VCL_TYPES_MESH_ELEMENTS_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <string>
-
 #include "base.h"
+
+#include <string>
 #endif
 
 namespace vcl {

@@ -24,13 +24,13 @@
 #define VCL_SPACE_CORE_BIT_SET_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <stdexcept>
-#include <string>
+#include "bit_set/bit_proxy.h"
 
 #include <vclib/concepts/types.h>
 #include <vclib/io/serialization.h>
 
-#include "bit_set/bit_proxy.h"
+#include <stdexcept>
+#include <string>
 #endif
 
 namespace vcl {

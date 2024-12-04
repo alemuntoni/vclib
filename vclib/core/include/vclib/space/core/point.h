@@ -24,15 +24,14 @@
 #define VCL_SPACE_CORE_POINT_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <compare>
-
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-
 #include <vclib/concepts/space/point.h>
 #include <vclib/io/serialization.h>
 #include <vclib/math/base.h>
 #include <vclib/misc/hash.h>
+
+#include <compare>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 #endif
 
 namespace vcl {
@@ -47,9 +46,9 @@ namespace vcl {
  * accessing, manipulating, and comparing points, as well as arithmetic and
  * assignment operators for points.
  *
- * The Point class is implemented using an Eigen matrix of size 1xN to store the
- * point components. The class also defines a number of type aliases and static
- * constants for convenience.
+ * The Point class is implemented using an Eigen matrix of size Nx1 to store the
+ * point components. The class also defines a number of type aliases, static
+ * constants and member functions for convenience.
  *
  * @tparam Scalar: The scalar type of the point components.
  * @tparam N: The number of dimensions of the point.
@@ -57,10 +56,10 @@ namespace vcl {
  * @ingroup space_core
  */
 template<typename Scalar, uint N>
-class Point : public Eigen::Matrix<Scalar, 1, N>
+class Point : public Eigen::Matrix<Scalar, N, 1>
 {
 public:
-    using Base = Eigen::Matrix<Scalar, 1, N>;
+    using Base = Eigen::Matrix<Scalar, N, 1>;
 
     // inherit Base operators
     using Base::operator+;

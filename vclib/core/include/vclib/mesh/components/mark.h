@@ -24,10 +24,10 @@
 #define VCL_MESH_COMPONENTS_MARK_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "bases/component.h"
+
 #include <vclib/concepts/mesh/components/mark.h>
 #include <vclib/io/serialization.h>
-
-#include "bases/component.h"
 #endif
 
 namespace vcl::comp {

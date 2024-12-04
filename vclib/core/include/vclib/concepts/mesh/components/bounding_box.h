@@ -25,6 +25,8 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include "component.h"
+
+#include <vclib/concepts/space.h>
 #endif
 
 namespace vcl::comp {
@@ -38,10 +40,9 @@ namespace vcl::comp {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasBoundingBox = requires (T obj, const T& cObj) {
-    typename T::BoundingBoxType;
-    { obj.boundingBox() } -> std::same_as<typename T::BoundingBoxType&>;
-    { cObj.boundingBox() } -> std::same_as<const typename T::BoundingBoxType&>;
+concept HasBoundingBox = requires (T&& obj) {
+    typename RemoveRef<T>::BoundingBoxType;
+    { obj.boundingBox() } -> Box3Concept;
 };
 
 } // namespace vcl::comp

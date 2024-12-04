@@ -24,8 +24,6 @@
 #define VCL_MISC_PARALLEL_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <algorithm>
-
 #include <vclib/concepts/range.h>
 #include <vclib/types.h>
 
@@ -51,6 +49,8 @@
 #define emit // restore the macro definition of "emit", as it was
              // defined in gtmetamacros.h
 #endif       // VCLIB_EMIT_REDEFINED
+
+#include <algorithm>
 #endif       // VCLIB_WITH_MODULES
 
 namespace vcl {

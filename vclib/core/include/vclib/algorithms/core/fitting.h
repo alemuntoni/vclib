@@ -24,11 +24,12 @@
 #define VCL_ALGORITHMS_CORE_FITTING_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <Eigen/Eigenvalues>
+
+#include "stat.h"
 
 #include <vclib/space/core/plane.h>
 
-#include "stat.h"
+#include <Eigen/Eigenvalues>
 #endif
 
 namespace vcl {

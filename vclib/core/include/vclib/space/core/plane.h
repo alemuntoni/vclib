@@ -24,10 +24,10 @@
 #define VCL_SPACE_CORE_PLANE_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "point.h"
+
 #include <vclib/concepts/space/plane.h>
 #include <vclib/exceptions/misc.h>
-
-#include "point.h"
 #endif
 
 namespace vcl {

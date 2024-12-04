@@ -24,11 +24,11 @@
 #define VCL_PROCESSING_ACTION_MANAGER_IO_ACTION_MANAGER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <map>
-
 #include <vclib/io/file_format.h>
 #include <vclib/processing/action_interfaces/action.h>
 #include <vclib/space/core/vector/polymorphic_object_vector.h>
+
+#include <map>
 #endif
 
 namespace vcl::proc {

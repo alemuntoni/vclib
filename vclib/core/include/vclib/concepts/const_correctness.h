@@ -24,9 +24,9 @@
 #define VCL_CONCEPTS_CONST_CORRECTNESS_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <type_traits>
-
 #include <vclib/types.h>
+
+#include <type_traits>
 #endif
 
 namespace vcl {

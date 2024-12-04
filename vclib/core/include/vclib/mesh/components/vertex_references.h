@@ -24,10 +24,10 @@
 #define VCL_MESH_COMPONENTS_VERTEX_REFERENCES_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "bases/reference_container_component.h"
+
 #include <vclib/concepts/mesh/components/vertex_references.h>
 #include <vclib/types/view.h>
-
-#include "bases/reference_container_component.h"
 #endif
 
 namespace vcl::comp {

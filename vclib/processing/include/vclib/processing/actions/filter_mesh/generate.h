@@ -24,10 +24,10 @@
 #define VCL_PROCESSING_ACTIONS_FILTER_MESH_GENERATE_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "generate/convex_hull_filter.h"
+
 #include <memory>
 #include <vector>
-
-#include "generate/convex_hull_filter.h"
 #endif
 
 namespace vcl::proc {

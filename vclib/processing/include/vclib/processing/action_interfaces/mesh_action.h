@@ -24,10 +24,10 @@
 #define VCL_PROCESSING_ACTION_INTERFACES_MESH_ACTION_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "action.h"
+
 #include <vclib/processing/meshes.h>
 #include <vclib/processing/parameter_vector.h>
-
-#include "action.h"
 #endif
 
 namespace vcl::proc {

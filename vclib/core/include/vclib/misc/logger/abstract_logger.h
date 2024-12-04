@@ -24,9 +24,9 @@
 #define VCL_MISC_LOGGER_ABSTRACT_LOGGER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <string>
-
 #include <vclib/concepts/logger.h>
+
+#include <string>
 #endif
 
 namespace vcl {

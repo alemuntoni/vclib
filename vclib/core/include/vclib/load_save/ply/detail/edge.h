@@ -24,10 +24,10 @@
 #define VCL_LOAD_SAVE_PLY_DETAIL_EDGE_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "header.h"
+
 #include <vclib/io/write.h>
 #include <vclib/misc/tokenizer.h>
-
-#include "header.h"
 #endif
 
 namespace vcl::detail {

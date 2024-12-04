@@ -33,6 +33,7 @@ export module vclib.concepts:mesh;
 import vclib.types;
 
 import :core;
+import :space;
 
 export {
 // components

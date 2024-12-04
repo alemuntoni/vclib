@@ -34,13 +34,14 @@ import vclib.types;
 import :core;
 
 export {
+#include <vclib/concepts/space/point.h>
+
 #include <vclib/concepts/space/array.h>
 #include <vclib/concepts/space/box.h>
 #include <vclib/concepts/space/color.h>
 #include <vclib/concepts/space/image.h>
 #include <vclib/concepts/space/matrix.h>
 #include <vclib/concepts/space/plane.h>
-#include <vclib/concepts/space/point.h>
 #include <vclib/concepts/space/polygon.h>
 #include <vclib/concepts/space/sampler.h>
 #include <vclib/concepts/space/segment.h>

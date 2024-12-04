@@ -24,15 +24,15 @@
 #define VCL_MESH_CONTAINERS_CUSTOM_COMPONENTS_VECTOR_MAP_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/exceptions/mesh.h>
+#include <vclib/misc/compactness.h>
+#include <vclib/types.h>
+
 #include <any>
 #include <string>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
-
-#include <vclib/exceptions/mesh.h>
-#include <vclib/misc/compactness.h>
-#include <vclib/types.h>
 #endif
 
 namespace vcl::mesh {

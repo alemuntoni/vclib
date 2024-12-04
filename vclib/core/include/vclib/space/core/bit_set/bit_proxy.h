@@ -24,10 +24,10 @@
 #define VCL_SPACE_CORE_BIT_SET_BIT_PROXY_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/types.h>
+
 #include <concepts>
 #include <functional>
-
-#include <vclib/types.h>
 #endif
 
 namespace vcl {

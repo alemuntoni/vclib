@@ -24,14 +24,12 @@
 #define VCL_MISC_LOGGER_NULL_LOGGER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <string>
+#include "abstract_logger.h"
 
 #include <vclib/concepts/logger.h>
 
-#include "abstract_logger.h"
+#include <string>
 #endif
-
-
 
 namespace vcl {
 

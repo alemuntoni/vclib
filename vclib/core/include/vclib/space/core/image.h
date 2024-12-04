@@ -24,12 +24,12 @@
 #define VCL_SPACE_CORE_IMAGE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <string>
-
 #include <vclib/io/image.h>
 #include <vclib/io/serialization.h>
 #include <vclib/space/core/array.h>
 #include <vclib/space/core/color.h>
+
+#include <string>
 #endif
 
 namespace vcl {

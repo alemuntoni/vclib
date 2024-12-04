@@ -25,6 +25,8 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include "component.h"
+
+#include <vclib/concepts/space.h>
 #endif
 
 namespace vcl::comp {
@@ -44,10 +46,9 @@ namespace vcl::comp {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasColor = requires (T obj, const T& cObj) {
-    typename T::ColorType;
-    { obj.color() } -> std::same_as<typename T::ColorType&>;
-    { cObj.color() } -> std::same_as<const typename T::ColorType&>;
+concept HasColor = requires (T&& obj) {
+    typename RemoveRef<T>::ColorType;
+    { obj.color() } -> ColorConcept;
 };
 
 /**
@@ -59,7 +60,7 @@ concept HasColor = requires (T obj, const T& cObj) {
  */
 template<typename T>
 concept HasOptionalColor =
-    HasColor<T> && IsOptionalComponent<typename T::Color>;
+    HasColor<T> && IsOptionalComponent<typename RemoveRef<T>::Color>;
 
 } // namespace vcl::comp
 

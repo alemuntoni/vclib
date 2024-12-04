@@ -24,8 +24,6 @@
 #define VCL_PROCESSING_MESHES_MESH_I_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <memory>
-
 #include <vclib/concepts/mesh/mesh_concept.h>
 #endif
 

@@ -24,13 +24,13 @@
 #define VCL_LOAD_SAVE_CAPABILITY_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/exceptions/io.h>
-#include <vclib/misc/string.h>
-
 #include "obj/capability.h"
 #include "off/capability.h"
 #include "ply/capability.h"
 #include "stl/capability.h"
+
+#include <vclib/exceptions/io.h>
+#include <vclib/misc/string.h>
 #endif
 
 namespace vcl {

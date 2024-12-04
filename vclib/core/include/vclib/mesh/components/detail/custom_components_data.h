@@ -24,13 +24,13 @@
 #define VCL_MESH_COMPONENTS_DETAIL_CUSTOM_COMPONENTS_DATA_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/types.h>
+
 #include <any>
 #include <string>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
-
-#include <vclib/types.h>
 #endif
 
 namespace vcl::comp::detail {

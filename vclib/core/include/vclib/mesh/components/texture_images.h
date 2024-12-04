@@ -24,15 +24,15 @@
 #define VCL_MESH_COMPONENTS_TEXTURE_IMAGES_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <string>
-#include <vector>
+#include "bases/component.h"
 
 #include <vclib/concepts/mesh/components/texture_images.h>
 #include <vclib/concepts/mesh/components/texture_paths.h>
 #include <vclib/space/core/texture.h>
 #include <vclib/types/view.h>
 
-#include "bases/component.h"
+#include <string>
+#include <vector>
 #endif
 
 namespace vcl::comp {

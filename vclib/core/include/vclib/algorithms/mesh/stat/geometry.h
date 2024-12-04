@@ -24,11 +24,11 @@
 #define VCL_ALGORITHMS_MESH_STAT_GEOMETRY_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "barycenter.h"
+
 #include <vclib/algorithms/mesh/face_topology.h>
 #include <vclib/space/complex/mesh_inertia.h>
 #include <vclib/space/core/matrix.h>
-
-#include "barycenter.h"
 #endif
 
 namespace vcl {

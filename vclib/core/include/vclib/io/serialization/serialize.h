@@ -24,15 +24,15 @@
 #define VCL_IO_SERIALIZATION_SERIALIZE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <array>
-#include <bit>
-#include <ostream>
-#include <vector>
+#include "endian.h"
 
 #include <vclib/concepts/serialization.h>
 #include <vclib/concepts/types.h>
 
-#include "endian.h"
+#include <array>
+#include <bit>
+#include <ostream>
+#include <vector>
 #endif
 
 namespace vcl {

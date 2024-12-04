@@ -24,12 +24,12 @@
 #define VCL_PROCESSING_ACTION_INTERFACES_SAVE_IMAGE_ACTION_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vector>
-
 #include "action.h"
 
 #include <vclib/io/file_format.h>
 #include <vclib/space/core/image.h>
+
+#include <vector>
 #endif
 
 namespace vcl::proc {

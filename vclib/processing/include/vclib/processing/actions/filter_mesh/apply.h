@@ -24,10 +24,10 @@
 #define VCL_PROCESSING_ACTIONS_FILTER_MESH_APPLY_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "apply/laplacian_smoothing_filter.h"
+
 #include <memory>
 #include <vector>
-
-#include "apply/laplacian_smoothing_filter.h"
 #endif
 
 namespace vcl::proc {

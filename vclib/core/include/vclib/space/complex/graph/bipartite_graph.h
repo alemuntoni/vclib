@@ -24,17 +24,17 @@
 #define VCL_SPACE_COMPLEX_GRAPH_BIPARTITE_GRAPH_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <cassert>
-#include <map>
-#include <set>
-#include <vector>
-
-#include <vclib/types.h>
-
 #include "bipartite_iterators/adjacent_left_node_iterator.h"
 #include "bipartite_iterators/adjacent_right_node_iterator.h"
 #include "bipartite_iterators/node_iterator.h"
 #include "nodes/undirected_node.h"
+
+#include <vclib/types.h>
+
+#include <cassert>
+#include <map>
+#include <set>
+#include <vector>
 #endif
 
 namespace vcl {

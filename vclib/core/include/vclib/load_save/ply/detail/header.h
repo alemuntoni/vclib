@@ -24,10 +24,7 @@
 #define VCL_LOAD_SAVE_PLY_DETAIL_HEADER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <clocale>
-#include <fstream>
-#include <string>
-#include <vector>
+#include "ply.h"
 
 #include <vclib/io/file_info.h>
 #include <vclib/io/read.h>
@@ -35,7 +32,9 @@
 #include <vclib/misc/tokenizer.h>
 #include <vclib/space/complex/mesh_info.h>
 
-#include "ply.h"
+#include <clocale>
+#include <string>
+#include <vector>
 #endif
 
 namespace vcl::detail {

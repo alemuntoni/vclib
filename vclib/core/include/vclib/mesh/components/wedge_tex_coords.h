@@ -24,13 +24,13 @@
 #define VCL_MESH_COMPONENTS_WEDGE_TEX_COORDS_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "bases/container_component.h"
+
 #include <vclib/concepts/mesh/components/tex_coord.h>
 #include <vclib/concepts/mesh/components/wedge_tex_coords.h>
 #include <vclib/space/core/tex_coord.h>
 #include <vclib/space/core/vector.h>
 #include <vclib/types/view.h>
-
-#include "bases/container_component.h"
 #endif
 
 namespace vcl::comp {

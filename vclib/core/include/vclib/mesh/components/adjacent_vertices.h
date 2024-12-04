@@ -24,10 +24,10 @@
 #define VCL_MESH_COMPONENTS_ADJACENT_VERTICES_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "bases/reference_container_component.h"
+
 #include <vclib/concepts/mesh/components/adjacent_vertices.h>
 #include <vclib/types/view.h>
-
-#include "bases/reference_container_component.h"
 #endif
 
 namespace vcl::comp {

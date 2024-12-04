@@ -24,10 +24,10 @@
 #define VCL_CONCEPTS_SPACE_COLOR_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/concepts/const_correctness.h>
+
 #include <concepts>
 #include <cstdint>
-
-#include <vclib/concepts/const_correctness.h>
 #endif
 
 namespace vcl {

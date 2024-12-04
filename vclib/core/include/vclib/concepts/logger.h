@@ -24,10 +24,10 @@
 #define VCL_CONCEPTS_LOGGER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <string>
-
 #include <vclib/concepts/const_correctness.h>
 #include <vclib/types.h>
+
+#include <string>
 #endif
 
 namespace vcl {
@@ -46,11 +46,10 @@ namespace vcl {
  */
 template<typename T>
 concept LoggerConcept = requires (
-    T&&                  obj,
-    std::string          str,
-    uint                 n,
+    T&&                             obj,
+    std::string                     str,
+    uint                            n,
     typename RemoveRef<T>::LogLevel lvl) {
-
     // inner types
     typename RemoveRef<T>::LogLevel;
 

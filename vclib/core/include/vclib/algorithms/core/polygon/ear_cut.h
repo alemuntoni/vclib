@@ -24,7 +24,11 @@
 #define VCL_ALGORITHMS_CORE_POLYGON_EAR_CUT_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <set>
+#include "projection.h"
+
+#include <vclib/concepts/mesh.h>
+#include <vclib/space/core/polygon.h>
+#include <vclib/views/mesh.h>
 
 #if __has_include(<mapbox/earcut.hpp>)
 #include <mapbox/earcut.hpp>
@@ -33,13 +37,7 @@
 // header only
 #include "../../../../../external/earcut.hpp-2.2.3/include/mapbox/earcut.hpp"
 #endif
-
-#include <vclib/concepts/mesh.h>
-#include <vclib/space/core/polygon.h>
-#include <vclib/views/mesh.h>
 #endif
-
-#include "projection.h"
 
 /* Structs to make working the mapbox earcut algorithm on vcl::Point2 */
 

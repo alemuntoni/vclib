@@ -24,11 +24,11 @@
 #define VCL_MATH_DISTRIBUTION_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/types.h>
+
 #include <cmath>
 #include <limits>
 #include <set>
-
-#include <vclib/types.h>
 #endif
 
 namespace vcl {

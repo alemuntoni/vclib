@@ -24,12 +24,12 @@
 #define VCL_PROCESSING_ACTION_INTERFACES_FILTER_MESH_ACTION_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "mesh_action.h"
+
 #include <vclib/algorithms/mesh/update.h>
 #include <vclib/processing/mesh_vector.h>
 #include <vclib/processing/parameters/mesh_parameter.h>
 #include <vclib/space/core/bit_set.h>
-
-#include "mesh_action.h"
 #endif
 
 namespace vcl::proc {

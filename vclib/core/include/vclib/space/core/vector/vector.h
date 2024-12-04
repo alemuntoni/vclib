@@ -24,17 +24,17 @@
 #define VCL_SPACE_CORE_VECTOR_VECTOR_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/concepts/ranges/range.h>
+#include <vclib/exceptions.h>
+#include <vclib/io/serialization.h>
+#include <vclib/types.h>
+
 #include <algorithm>
 #include <array>
 #include <cassert>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <vclib/concepts/ranges/range.h>
-#include <vclib/exceptions.h>
-#include <vclib/io/serialization.h>
-#include <vclib/types.h>
 #endif
 
 namespace vcl {

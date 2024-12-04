@@ -24,9 +24,9 @@
 #define VCL_CONCEPTS_MESH_COMPONENTS_VERTEX_REFERENCES_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vector>
-
 #include <vclib/concepts/ranges/range.h>
+
+#include <vector>
 #endif
 
 namespace vcl::comp {

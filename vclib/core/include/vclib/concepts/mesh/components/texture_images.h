@@ -24,11 +24,11 @@
 #define VCL_CONCEPTS_MESH_COMPONENTS_TEXTURE_IMAGES_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <string>
+#include "component.h"
 
 #include <vclib/concepts/ranges/range.h>
 
-#include "component.h"
+#include <string>
 #endif
 
 namespace vcl::comp {

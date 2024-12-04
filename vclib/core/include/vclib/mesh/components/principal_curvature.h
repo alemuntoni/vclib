@@ -24,10 +24,10 @@
 #define VCL_MESH_COMPONENTS_PRINCIPAL_CURVATURE_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "bases/component.h"
+
 #include <vclib/concepts/mesh/components/principal_curvature.h>
 #include <vclib/space/core/principal_curvature.h>
-
-#include "bases/component.h"
 #endif
 
 namespace vcl::comp {

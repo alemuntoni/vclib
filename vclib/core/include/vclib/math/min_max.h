@@ -24,9 +24,9 @@
 #define VCL_MATH_MIN_MAX_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <algorithm>
-
 #include <vclib/concepts/space/point.h>
+
+#include <algorithm>
 #endif
 
 namespace vcl {

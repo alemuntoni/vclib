@@ -24,10 +24,10 @@
 #define VCL_PROCESSING_ACTIONS_FILTER_MESH_APPLY_LAPLACIAN_SMOOTHING_FILTER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/algorithms/mesh/smooth.h>
-
 #include <vclib/processing/action_interfaces/filter_mesh_action.h>
 #include <vclib/processing/parameters.h>
+
+#include <vclib/algorithms/mesh/smooth.h>
 #endif
 
 namespace vcl::proc {

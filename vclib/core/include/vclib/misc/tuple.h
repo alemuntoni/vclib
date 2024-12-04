@@ -24,9 +24,9 @@
 #define VCL_MISC_TUPLE_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <tuple>
-
 #include <vclib/types.h>
+
+#include <tuple>
 #endif
 
 namespace vcl {

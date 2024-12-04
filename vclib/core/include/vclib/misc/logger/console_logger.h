@@ -24,11 +24,11 @@
 #define VCL_MISC_LOGGER_CONSOLE_LOGGER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <iomanip>
+#include "logger.h"
 
 #include <vclib/concepts/logger.h>
 
-#include "logger.h"
+#include <iomanip>
 #endif
 
 namespace vcl {

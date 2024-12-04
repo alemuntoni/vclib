@@ -24,13 +24,13 @@
 #define VCL_SPACE_COMPLEX_GRID_ABSTRACT_GRID_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <set>
-
 #include <vclib/algorithms/core/bounding_box.h>
 #include <vclib/algorithms/core/distance/functions.h>
 #include <vclib/concepts/range.h>
 #include <vclib/misc/comparators.h>
 #include <vclib/space/core/sphere.h>
+
+#include <set>
 #endif
 
 namespace vcl {

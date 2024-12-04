@@ -24,9 +24,9 @@
 #define VCL_CONCEPTS_MESH_ELEMENTS_VERTEX_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/mesh/components.h>
-
 #include "element.h"
+
+#include <vclib/concepts/mesh/components.h>
 #endif
 
 /**
