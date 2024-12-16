@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 3.28)
 
-set(EXAMPLE_NAME 998-modules)
+set(EXAMPLE_NAME 997-modules)
 project(vclib-example-${EXAMPLE_NAME})
 
 set(SOURCES
