@@ -77,7 +77,7 @@ void load(
     const LoadSettings& settings = LoadSettings())
 {
     std::string ext = FileInfo::extension(filename);
-    ext             = vcl::toLower(ext);
+    ext             = toLower(ext);
 
     loadedInfo.clear();
 
@@ -94,7 +94,7 @@ void load(
         loadStl(m, filename, loadedInfo, log, settings);
     }
     else {
-        throw vcl::UnknownFileFormatException(ext);
+        throw UnknownFileFormatException(ext);
     }
 }
 

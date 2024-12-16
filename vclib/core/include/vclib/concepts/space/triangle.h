@@ -39,13 +39,15 @@ namespace vcl {
 template<typename T>
 concept TriangleConcept = requires (
     T&&                               obj,
-    typename RemoveRef<T>::PointType& pR,
+    typename RemoveRef<T>::PointType  p,
     typename RemoveRef<T>::ScalarType s) {
     typename RemoveRef<T>::ScalarType;
     typename RemoveRef<T>::PointType;
 
     obj.DIM;
     obj.size() == 3;
+
+    RemoveRef<T>(p, p, p);
 
     { obj.point(uint()) } -> PointConcept;
     { obj.sideLength(uint()) } -> std::same_as<decltype(s)>;

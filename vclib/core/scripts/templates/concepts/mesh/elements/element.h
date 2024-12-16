@@ -4,9 +4,9 @@
 #define VCL_CONCEPTS_MESH_ELEMENTS_%EL_U%_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/mesh/components.h>
-
 #include "element.h"
+
+#include <vclib/concepts/mesh/components.h>
 #endif
 
 /**
@@ -45,7 +45,7 @@ namespace %EL_NS% {
  */
 template<typename T>
 concept %EL_UC%Concept =
-    ElementConcept<T> && T::ELEMENT_TYPE == ElemId::%EL_U% &&
+    ElementConcept<T> && RemoveRef<T>::ELEMENT_TYPE == ElemId::%EL_U% &&
     %EL_NS%::HasBitFlags<T>;
 
 } // namespace vcl

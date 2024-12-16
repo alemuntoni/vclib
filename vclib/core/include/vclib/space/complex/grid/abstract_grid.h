@@ -203,7 +203,7 @@ public:
             }
             else { // else, call the boundingBox function
                 // bounding box of value
-                typename GridType::BBoxType bb = vcl::boundingBox(*vv);
+                typename GridType::BBoxType bb = boundingBox(*vv);
 
                 bmin = GridType::cell(bb.min()); // first cell where insert
                 bmax = GridType::cell(bb.max()); // last cell where insert
@@ -256,7 +256,7 @@ public:
      * @param r: a range that satisfies the concept std::ranges::range
      * @return The number of inserted elements.
      */
-    template<vcl::Range Rng>
+    template<Range Rng>
     uint insert(Rng&& r)
     {
         return insert(std::ranges::begin(r), std::ranges::end(r));
@@ -279,7 +279,7 @@ public:
                 bmin = bmax = GridType::cell(p);
             }
             else {
-                typename GridType::BBoxType bb = vcl::boundingBox(*vv);
+                typename GridType::BBoxType bb = boundingBox(*vv);
 
                 bmin = GridType::cell(bb.min);
                 bmax = GridType::cell(bb.max);
@@ -396,7 +396,7 @@ public:
             const ScalarType cellDiag = GridType::cellDiagonal();
 
             ScalarType centerDist = cellDiag;
-            PointType  center     = vcl::boundingBox(*qvv).center();
+            PointType  center     = boundingBox(*qvv).center();
 
             // we first look just on the cells where the query value lies
             // here, we will store also the looking interval where we need to
@@ -404,7 +404,7 @@ public:
             Boxui currentIntervalBox;
 
             // bbox of query value
-            typename GridType::BBoxType bb = vcl::boundingBox(*qvv);
+            typename GridType::BBoxType bb = boundingBox(*qvv);
             // first cell where look for closest
             currentIntervalBox.add(GridType::cell(bb.min()));
             // last cell where look for closest
@@ -534,7 +534,7 @@ public:
             const QVT* qvv = addressOfObj(qv);
 
             // bbox of query value
-            typename GridType::BBoxType bb = vcl::boundingBox(*qvv);
+            typename GridType::BBoxType bb = boundingBox(*qvv);
             // we need to be sure that there are no values that are closest
             // w.r.t. the n-th that we have already found by looking in the cell
             // neighborhood we extend the bb with the distance of the n-th
@@ -719,7 +719,7 @@ protected:
      * inserted value intersects (lies in) a cell. If nullptr, the default
      * intersects function will be used.
      */
-    template<vcl::Range Rng>
+    template<Range Rng>
     AbstractGrid(Rng&& r, IntersectsCellFunction intersects = nullptr) :
             AbstractGrid(std::ranges::begin(r), std::ranges::end(r), intersects)
     {
@@ -732,7 +732,7 @@ private:
        ValueType without pointers or references: */
     using VT = RemoveCVRefAndPointer<ValueType>;
 
-    using Boxui = vcl::Box<Point<uint, GridType::DIM>>;
+    using Boxui = Box<Point<uint, GridType::DIM>>;
 
     template<typename Iter>
     struct IterComparator
@@ -778,7 +778,7 @@ private:
             test = vv && s.isInside(p);
         }
         else { // check if the bbox of the value intersects the sphere
-            test = vv && s.intersects(vcl::boundingBox(*vv));
+            test = vv && s.intersects(boundingBox(*vv));
         }
         return test;
     }
@@ -842,7 +842,7 @@ private:
         if (qvv) {
             Boxui currentIntervalBox;
             // bbox of query value
-            typename GridType::BBoxType bb = vcl::boundingBox(*qvv);
+            typename GridType::BBoxType bb = boundingBox(*qvv);
             // first cell where look for closest
             currentIntervalBox.add(GridType::cell(bb.min()));
             // last cell where look for closest

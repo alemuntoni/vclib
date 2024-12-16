@@ -37,6 +37,7 @@ export {
 #include <vclib/concepts/space/point.h>
 
 #include <vclib/concepts/space/array.h>
+#include <vclib/concepts/space/bit_set.h>
 #include <vclib/concepts/space/box.h>
 #include <vclib/concepts/space/color.h>
 #include <vclib/concepts/space/image.h>
@@ -46,6 +47,7 @@ export {
 #include <vclib/concepts/space/sampler.h>
 #include <vclib/concepts/space/segment.h>
 #include <vclib/concepts/space/sphere.h>
+#include <vclib/concepts/space/tex_coord.h>
 #include <vclib/concepts/space/texture.h>
 #include <vclib/concepts/space/triangle.h>
 }

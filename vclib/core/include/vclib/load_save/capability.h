@@ -37,7 +37,7 @@ namespace vcl {
 
 inline MeshInfo formatCapability(const std::string& format)
 {
-    std::string ext = vcl::toLower(format);
+    std::string ext = toLower(format);
     if (ext == "obj") {
         return objFormatCapability();
     }
@@ -51,7 +51,7 @@ inline MeshInfo formatCapability(const std::string& format)
         return stlFormatCapability();
     }
     else {
-        throw vcl::UnknownFileFormatException(ext);
+        throw UnknownFileFormatException(ext);
     }
 }
 

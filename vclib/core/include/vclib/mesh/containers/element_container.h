@@ -50,7 +50,7 @@ class ElementContainer : public ElementContainerTriggerer
     using ElementContainerType = ElementContainer<T>;
 
     // filter components of elements, taking only vertical ones
-    using vComps = vcl::FilterTypesByCondition<
+    using vComps = FilterTypesByCondition<
         comp::IsVerticalComponentPred,
         typename T::Components>::type;
 
@@ -465,7 +465,7 @@ protected:
             ++i;
         };
 
-        vcl::ForEachType<vComps>::apply(forEachVertComp);
+        ForEachType<vComps>::apply(forEachVertComp);
 
         vcl::serialize(out, elementContainerSize());
         vcl::serialize(out, enabledComps);
@@ -516,7 +516,7 @@ protected:
             ++i;
         };
 
-        vcl::ForEachType<vComps>::apply(forEachVertComp);
+        ForEachType<vComps>::apply(forEachVertComp);
     }
 
     /**
@@ -628,7 +628,7 @@ protected:
      */
     View<ElementIterator> elements(bool jumpDeleted = true)
     {
-        return vcl::View(
+        return View(
             elementBegin(jumpDeleted && mElemVec.size() != mElemNumber),
             elementEnd());
     }
@@ -657,7 +657,7 @@ protected:
      */
     View<ConstElementIterator> elements(bool jumpDeleted = true) const
     {
-        return vcl::View(
+        return View(
             elementBegin(jumpDeleted && mElemVec.size() != mElemNumber),
             elementEnd());
     }

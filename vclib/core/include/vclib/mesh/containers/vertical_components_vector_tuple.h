@@ -52,7 +52,7 @@ class VerticalComponentsVectorTuple
 public:
     VerticalComponentsVectorTuple()
     {
-        (setComponentEnabled<Comp, !vcl::comp::IsOptionalComponent<Comp>>(),
+        (setComponentEnabled<Comp, !comp::IsOptionalComponent<Comp>>(),
          ...);
     }
 
@@ -170,7 +170,7 @@ private:
     template<typename C>
     static constexpr uint indexOfType()
     {
-        return vcl::IndexInTypes<C, Comp...>::value;
+        return IndexInTypes<C, Comp...>::value;
     }
 
     template<std::size_t N>
@@ -197,7 +197,7 @@ private:
     void vectorCompact(const std::vector<uint>& newIndices)
     {
         if (mVecEnabled[N]) {
-            vcl::compactVector(std::get<N>(mVecTuple), newIndices);
+            compactVector(std::get<N>(mVecTuple), newIndices);
         }
         if constexpr (N != 0)
             vectorCompact<N - 1>(newIndices);
@@ -217,7 +217,7 @@ private:
     template<typename C, bool E>
     void setComponentEnabledIfOptional()
     {
-        if constexpr (vcl::comp::IsOptionalComponent<C>) {
+        if constexpr (comp::IsOptionalComponent<C>) {
             setComponentEnabled<C, E>();
         }
     }

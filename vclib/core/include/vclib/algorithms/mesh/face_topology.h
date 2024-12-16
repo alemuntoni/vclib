@@ -59,7 +59,7 @@ bool isFaceManifoldOnEdge(const FaceType& f, uint edge)
 {
     // Check if the AdjacentFaces component is available for the given face.
     if (!comp::isAdjacentFacesAvailableOn(f)) {
-        throw vcl::MissingComponentException(
+        throw MissingComponentException(
             "Face has no Adjacent Faces component.");
     }
 
@@ -93,7 +93,7 @@ bool isFaceEdgeOnBorder(const FaceType& f, uint edge)
     requires comp::HasAdjacentFaces<FaceType>
 {
     if (!comp::isAdjacentFacesAvailableOn(f)) {
-        throw vcl::MissingComponentException(
+        throw MissingComponentException(
             "Face has no Adjacent Faces component.");
     }
 
@@ -139,7 +139,7 @@ bool checkFlipEdge(const FaceType& f, uint edge)
     requires comp::HasAdjacentFaces<FaceType>
 {
     if (!comp::isAdjacentFacesAvailableOn(f)) {
-        throw vcl::MissingComponentException(
+        throw MissingComponentException(
             "Face has no Adjacent Faces component.");
     }
 
@@ -148,7 +148,7 @@ bool checkFlipEdge(const FaceType& f, uint edge)
     if (f.vertexNumber() > 3)
         return false;
 
-    if (vcl::isFaceEdgeOnBorder(f, edge))
+    if (isFaceEdgeOnBorder(f, edge))
         return false;
 
     const VertexType* v0 = f.vertex(edge);
@@ -205,7 +205,7 @@ uint edgeAdjacentFacesNumber(const FaceType& f, uint edge)
     requires comp::HasAdjacentFaces<FaceType>
 {
     if (!comp::isAdjacentFacesAvailableOn(f)) {
-        throw vcl::MissingComponentException(
+        throw MissingComponentException(
             "Face has no Adjacent Faces component.");
     }
 
@@ -238,7 +238,7 @@ uint faceEdgesOnBorderNumber(const FaceType& f)
     requires comp::HasAdjacentFaces<FaceType>
 {
     if (!comp::isAdjacentFacesAvailableOn(f)) {
-        throw vcl::MissingComponentException(
+        throw MissingComponentException(
             "Face has no Adjacent Faces component.");
     }
 
@@ -274,7 +274,7 @@ auto faceDihedralAngleOnEdge(const FaceType& f, uint e)
     requires comp::HasAdjacentFaces<FaceType>
 {
     if (!comp::isAdjacentFacesAvailableOn(f)) {
-        throw vcl::MissingComponentException(
+        throw MissingComponentException(
             "Face has no Adjacent Faces component.");
     }
 
@@ -343,7 +343,7 @@ void detachAdjacentFacesOnEdge(FaceType& f, uint edge)
     requires comp::HasAdjacentFaces<FaceType>
 {
     if (!comp::isAdjacentFacesAvailableOn(f)) {
-        throw vcl::MissingComponentException(
+        throw MissingComponentException(
             "Face has no Adjacent Faces component.");
     }
 
@@ -399,7 +399,7 @@ template<FaceConcept FaceType>
 void detachFace(FaceType& f) requires comp::HasAdjacentFaces<FaceType>
 {
     if (!comp::isAdjacentFacesAvailableOn(f)) {
-        throw vcl::MissingComponentException(
+        throw MissingComponentException(
             "Face has no Adjacent Faces component.");
     }
 
@@ -442,7 +442,7 @@ std::set<const FaceType*> floodFacePatch(
     auto&&          faceSelector)
 {
     if (!comp::isAdjacentFacesAvailableOn(seed)) {
-        throw vcl::MissingComponentException(
+        throw MissingComponentException(
             "Face has no Adjacent Faces component.");
     }
 

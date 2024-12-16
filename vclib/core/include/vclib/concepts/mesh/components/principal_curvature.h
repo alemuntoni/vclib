@@ -27,6 +27,8 @@
 #include "component.h"
 #endif
 
+#include <vclib/concepts/space/principal_curvature.h>
+
 namespace vcl::comp {
 
 /**
@@ -45,14 +47,9 @@ namespace vcl::comp {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasPrincipalCurvature = requires (
-    T                                         obj,
-    const T&                                  cObj,
-    typename T::PrincipalCurvatureType&       pC,
-    const typename T::PrincipalCurvatureType& cPC) {
-    typename T::PrincipalCurvatureType;
-    { obj.principalCurvature() } -> std::same_as<decltype(pC)>;
-    { cObj.principalCurvature() } -> std::same_as<decltype(cPC)>;
+concept HasPrincipalCurvature = requires (T&& obj) {
+    typename RemoveRef<T>::PrincipalCurvatureType;
+    { obj.principalCurvature() } -> PrincipalCurvatureConcept;
 };
 
 /**
@@ -65,7 +62,7 @@ concept HasPrincipalCurvature = requires (
 template<typename T>
 concept HasOptionalPrincipalCurvature =
     HasPrincipalCurvature<T> &&
-    IsOptionalComponent<typename T::PrincipalCurvature>;
+    IsOptionalComponent<typename RemoveRef<T>::PrincipalCurvature>;
 
 } // namespace vcl::comp
 

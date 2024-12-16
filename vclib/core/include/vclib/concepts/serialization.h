@@ -24,6 +24,8 @@
 #define VCL_CONCEPTS_SERIALIZATION_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "const_correctness.h"
+
 #include <istream>
 #include <ostream>
 #endif
@@ -39,7 +41,7 @@ namespace vcl {
  * @ingroup util_concepts
  */
 template<typename T>
-concept OutputStreamable = requires (std::ostream& os, T value) {
+concept OutputStreamable = requires (std::ostream& os, T&& value) {
     { os << value } -> std::convertible_to<std::ostream&>;
 };
 
@@ -52,7 +54,7 @@ concept OutputStreamable = requires (std::ostream& os, T value) {
  * @ingroup util_concepts
  */
 template<typename T>
-concept InputStreamable = requires (std::istream& is, T& value) {
+concept InputStreamable = requires (std::istream& is, T&& value) {
     { is >> value } -> std::convertible_to<std::istream&>;
 };
 
@@ -65,11 +67,12 @@ concept InputStreamable = requires (std::istream& is, T& value) {
  * @ingroup util_concepts
  */
 template<typename T>
-concept Serializable =
-    requires (T& obj, const T& cObj, std::ostream& os, std::istream& is) {
-        { cObj.serialize(os) } -> std::same_as<void>;
+concept Serializable = requires (T&& obj, std::ostream& os, std::istream& is) {
+    { obj.serialize(os) } -> std::same_as<void>;
+    requires IsConst<T> || requires {
         { obj.deserialize(is) } -> std::same_as<void>;
     };
+};
 
 } // namespace vcl
 

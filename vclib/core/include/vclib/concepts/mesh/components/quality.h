@@ -25,6 +25,8 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include "component.h"
+
+#include <vclib/concepts/const_correctness.h>
 #endif
 
 namespace vcl::comp {
@@ -44,10 +46,17 @@ namespace vcl::comp {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasQuality = requires (T obj, const T& cObj) {
-    typename T::QualityType;
-    { obj.quality() } -> std::same_as<typename T::QualityType&>;
-    { cObj.quality() } -> std::same_as<const typename T::QualityType&>;
+concept HasQuality = requires (
+    T&&                                 obj,
+    typename RemoveRef<T>::QualityType  q,
+    typename RemoveRef<T>::QualityType& qR) {
+    typename RemoveRef<T>::QualityType;
+    { obj.quality() } -> std::convertible_to<decltype(q)>;
+
+    // non const requirements
+    requires IsConst<T> || requires {
+        { obj.quality() } -> std::same_as<decltype(qR)>;
+    };
 };
 
 /**
@@ -59,7 +68,7 @@ concept HasQuality = requires (T obj, const T& cObj) {
  */
 template<typename T>
 concept HasOptionalQuality =
-    HasQuality<T> && IsOptionalComponent<typename T::Quality>;
+    HasQuality<T> && IsOptionalComponent<typename RemoveRef<T>::Quality>;
 
 } // namespace vcl::comp
 

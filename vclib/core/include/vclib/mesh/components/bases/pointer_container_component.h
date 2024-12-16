@@ -119,7 +119,7 @@ public:
     template<typename T>
     auto pointers() const requires std::is_same_v<T, Elem>
     {
-        return vcl::View(
+        return View(
             ConstIterator(Base::container().begin()),
             ConstIterator(Base::container().end()));
     }

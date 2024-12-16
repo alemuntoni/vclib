@@ -51,6 +51,23 @@ ViewerCanvas::ViewerCanvas(
 
 void ViewerCanvas::draw()
 {
+    drawContent();
+
+    if (mAxis.isVisible()) {
+        mAxis.draw(viewId());
+    }
+
+    if (mDirectionalLight.isVisible()) {
+        mDirectionalLight.draw(viewId());
+    }
+
+    if (mDrawTrackBall.isVisible()) {
+        mDrawTrackBall.draw(viewId());
+    }
+}
+
+void ViewerCanvas::drawContent()
+{
     setDirectionalLightVisibility(
         currentMotion() == DTB::TrackBallType::DIR_LIGHT_ARC);
     updateDirectionalLight();
@@ -66,18 +83,6 @@ void ViewerCanvas::draw()
 
     for (auto obj : drawableObjectVector())
         obj->draw(viewId());
-
-    if (mAxis.isVisible()) {
-        mAxis.draw(viewId());
-    }
-
-    if (mDirectionalLight.isVisible()) {
-        mDirectionalLight.draw(viewId());
-    }
-
-    if (mDrawTrackBall.isVisible()) {
-        mDrawTrackBall.draw(viewId());
-    }
 }
 
 void ViewerCanvas::onResize(unsigned int width, unsigned int height)
@@ -122,6 +127,53 @@ void ViewerCanvas::onMouseScroll(double dx, double dy)
 {
     ViewerI::onMouseScroll(dx, dy);
     update();
+}
+
+void ViewerCanvas::onMouseDoubleClick(
+    MouseButton::Enum button,
+    double            x,
+    double            y)
+{
+    // FIXME: code duplication for both OpenGL2 and BGFX
+    if (mReadRequested)
+        return;
+
+    // get point
+    const Point2d p(x, y);
+
+    // get the homogeneous NDC flag
+    const bool homogeneousNDC =
+        Context::instance().capabilites().homogeneousDepth;
+
+    // matrices
+    const auto proj = projectionMatrix();
+    const auto view = viewMatrix();
+    // viewport
+    const Point4f vp = {.0f, .0f, float(size().x()), float(size().y())};
+    // create the callback
+    auto callback = [=, this](const ReadData& data) {
+        assert(std::holds_alternative<std::vector<float>>(data));
+        const auto& d  = std::get<std::vector<float>>(data);
+        mReadRequested = false;
+
+        // if the depth is 1.0, the point is not in the scene
+        const float depth = d[0];
+        if (depth == 1.0f) {
+            return;
+        }
+
+        // unproject the point
+        const Point3f p2d(p.x(), vp[3] - p.y(), depth);
+        const auto    unproj = unproject(
+            p2d, Matrix44<ScalarType>(proj * view), vp, homogeneousNDC);
+
+        this->focus(unproj);
+        this->update();
+    };
+
+    mReadRequested = this->readDepth(Point2i(p.x(), p.y()), callback);
+    if (mReadRequested)
+        update();
 }
 
 } // namespace vcl

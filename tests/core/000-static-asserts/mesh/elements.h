@@ -20,18 +20,21 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef COMPONENTS_H
-#define COMPONENTS_H
+#ifndef ELEMENTS_H
+#define ELEMENTS_H
 
-#include "components/bounding_box.h"
-#include "components/color.h"
-#include "components/coordinate.h"
+#include "elements/edge.h"
+#include "elements/element.h"
+#include "elements/face.h"
+#include "elements/vertex.h"
 
-void componentsStaticAsserts()
+void elementsStaticAsserts()
 {
-    boundingBoxComponentStaticAsserts();
-    colorComponentStaticAsserts();
-    coordinateComponentStaticAsserts();
+    elementStaticAsserts();
+
+    edgeStaticAsserts();
+    faceStaticAsserts();
+    vertexStaticAsserts();
 }
 
-#endif // COMPONENTS_H
+#endif // ELEMENTS_H

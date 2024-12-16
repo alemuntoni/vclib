@@ -75,7 +75,7 @@ namespace detail {
 
 namespace cts { // Cube to Sphere
 
-const vcl::Point3d origins[6] = {
+const Point3d origins[6] = {
     Point3d(-1.0, -1.0, -1.0),
     Point3d(1.0, -1.0, -1.0),
     Point3d(1.0, -1.0, 1.0),
@@ -179,8 +179,8 @@ MeshType createSphereUV(
         mesh.addFace(v, a, b);
     }
 
-    vcl::scale(mesh, sp.radius());
-    vcl::translate(mesh, sp.center());
+    scale(mesh, sp.radius());
+    translate(mesh, sp.center());
 
     return mesh;
 }
@@ -240,7 +240,7 @@ MeshType createSphereNormalizedCube(
                 VertexType* c    = &mesh.vertex((face * k + j + 1) * k + i);
                 VertexType* d    = &mesh.vertex((face * k + j + 1) * k + i + 1);
 
-                if constexpr (vcl::HasTriangles<MeshType>) {
+                if constexpr (HasTriangles<MeshType>) {
                     if (bottom ^ left) {
                         mesh.addFace(a, c, b);
                         mesh.addFace(c, d, b);
@@ -257,8 +257,8 @@ MeshType createSphereNormalizedCube(
         }
     }
 
-    vcl::scale(mesh, sp.radius());
-    vcl::translate(mesh, sp.center());
+    scale(mesh, sp.radius());
+    translate(mesh, sp.center());
 
     return mesh;
 }
@@ -327,7 +327,7 @@ MeshType createSphereSpherifiedCube(
                 VertexType* b    = &mesh.vertex((face * k + j) * k + i + 1);
                 VertexType* c    = &mesh.vertex((face * k + j + 1) * k + i);
                 VertexType* d    = &mesh.vertex((face * k + j + 1) * k + i + 1);
-                if constexpr (vcl::HasTriangles<MeshType>) {
+                if constexpr (HasTriangles<MeshType>) {
                     if (bottom ^ left) {
                         mesh.addFace(a, c, b);
                         mesh.addFace(c, d, b);
@@ -344,8 +344,8 @@ MeshType createSphereSpherifiedCube(
         }
     }
 
-    vcl::scale(mesh, sp.radius());
-    vcl::translate(mesh, sp.center());
+    scale(mesh, sp.radius());
+    translate(mesh, sp.center());
 
     return mesh;
 }
@@ -370,7 +370,7 @@ MeshType createSphereIcosahedron(const SphereConcept auto& sp, uint divisions)
     using CoordType  = VertexType::CoordType;
     using FaceType   = MeshType::FaceType;
 
-    MeshType mesh = vcl::createIcosahedron<MeshType>(true);
+    MeshType mesh = createIcosahedron<MeshType>(true);
 
     for (uint d = 0; d < divisions; d++) {
         uint nf = mesh.faceNumber();
@@ -400,10 +400,10 @@ MeshType createSphereIcosahedron(const SphereConcept auto& sp, uint divisions)
         }
     }
 
-    vcl::removeDuplicatedVertices(mesh);
+    removeDuplicatedVertices(mesh);
 
-    vcl::scale(mesh, sp.radius());
-    vcl::translate(mesh, sp.center());
+    scale(mesh, sp.radius());
+    translate(mesh, sp.center());
 
     return mesh;
 }
@@ -462,7 +462,7 @@ MeshType createSphere(
 template<FaceMeshConcept MeshType>
 MeshType createSphere()
 {
-    return createSphere<MeshType, double>({vcl::Point3d(), 1});
+    return createSphere<MeshType, double>({Point3d(), 1});
 }
 
 } // namespace vcl

@@ -24,8 +24,6 @@
 #define VCL_CONCEPTS_MESH_COMPONENTS_BOUNDING_BOX_H
 
 #ifndef VCLIB_WITH_MODULES
-#include "component.h"
-
 #include <vclib/concepts/space.h>
 #endif
 

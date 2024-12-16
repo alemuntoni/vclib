@@ -20,70 +20,71 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef COMP_COLOR_H
-#define COMP_COLOR_H
+#ifndef COMP_TEX_COORD_H
+#define COMP_TEX_COORD_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes.h>
 #else
-#include <Eigen/Core>
 import vclib.core;
 #endif
 
-void colorComponentStaticAsserts()
+void texCoordComponentStaticAsserts()
 {
     using namespace vcl;
 
     using TriMeshVertex = trimesh::Vertex<float, true>;
 
-    // test only the color component
+    // test only the texcoord component
     static_assert(
-        comp::HasColor<vert::Color>,
-        "vert::Color does not satisfy the HasColor concept");
+        comp::HasTexCoord<vert::TexCoordf>,
+        "vert::TexCoordf does not satisfy the HasTexCoord concept");
     static_assert(
-        comp::HasColor<const vert::Color>,
-        "const vert::Color does not satisfy the HasColor concept");
+        comp::HasTexCoord<const vert::TexCoordf>,
+        "const vert::TexCoordf does not satisfy the HasTexCoord concept");
     static_assert(
-        comp::HasColor<vert::Color&>,
-        "vert::Color& does not satisfy the HasColor concept");
+        comp::HasTexCoord<vert::TexCoordf&>,
+        "vert::TexCoordf& does not satisfy the HasTexCoord concept");
     static_assert(
-        comp::HasColor<const vert::Color&>,
-        "const vert::Color& does not satisfy the HasColor concept");
+        comp::HasTexCoord<const vert::TexCoordf&>,
+        "const vert::TexCoordf& does not satisfy the HasTexCoord concept");
     static_assert(
-        comp::HasColor<vert::Color&&>,
-        "vert::Color&& does not satisfy the HasColor concept");
+        comp::HasTexCoord<vert::TexCoordf&&>,
+        "vert::TexCoordf&& does not satisfy the HasTexCoord concept");
 
     static_assert(
-        comp::HasColor<TriMeshVertex>,
-        "TriMesh Vertex does not satisfy the HasColor concept");
+        comp::HasTexCoord<TriMeshVertex>,
+        "TriMesh Vertex does not satisfy the HasTexCoord concept");
     static_assert(
-        comp::HasColor<const TriMeshVertex>,
-        "const TriMesh Vertex does not satisfy the HasColor concept");
+        comp::HasTexCoord<const TriMeshVertex>,
+        "const TriMesh Vertex does not satisfy the HasTexCoord concept");
     static_assert(
-        comp::HasColor<TriMeshVertex&>,
-        "TriMesh Vertex& does not satisfy the HasColor concept");
+        comp::HasTexCoord<TriMeshVertex&>,
+        "TriMesh Vertex& does not satisfy the HasTexCoord concept");
     static_assert(
-        comp::HasColor<const TriMeshVertex&>,
-        "const TriMesh Vertex& does not satisfy the HasColor concept");
+        comp::HasTexCoord<const TriMeshVertex&>,
+        "const TriMesh Vertex& does not satisfy the HasTexCoord concept");
     static_assert(
-        comp::HasColor<TriMeshVertex&&>,
-        "TriMesh Vertex&& does not satisfy the HasColor concept");
+        comp::HasTexCoord<TriMeshVertex&&>,
+        "TriMesh Vertex&& does not satisfy the HasTexCoord concept");
 
     static_assert(
-        comp::HasOptionalColor<TriMeshVertex>,
-        "TriMesh Vertex does not satisfy the HasOptionalColor concept");
+        comp::HasOptionalTexCoord<TriMeshVertex>,
+        "TriMesh Vertex does not satisfy the HasOptionalTexCoord concept");
     static_assert(
-        comp::HasOptionalColor<const TriMeshVertex>,
-        "const TriMesh Vertex does not satisfy the HasOptionalColor concept");
+        comp::HasOptionalTexCoord<const TriMeshVertex>,
+        "const TriMesh Vertex does not satisfy the HasOptionalTexCoord "
+        "concept");
     static_assert(
-        comp::HasOptionalColor<TriMeshVertex&>,
-        "TriMesh Vertex& does not satisfy the HasOptionalColor concept");
+        comp::HasOptionalTexCoord<TriMeshVertex&>,
+        "TriMesh Vertex& does not satisfy the HasOptionalTexCoord concept");
     static_assert(
-        comp::HasOptionalColor<const TriMeshVertex&>,
-        "const TriMesh Vertex& does not satisfy the HasOptionalColor concept");
+        comp::HasOptionalTexCoord<const TriMeshVertex&>,
+        "const TriMesh Vertex& does not satisfy the HasOptionalTexCoord "
+        "concept");
     static_assert(
-        comp::HasOptionalColor<TriMeshVertex&&>,
-        "TriMesh Vertex&& does not satisfy the HasOptionalColor concept");
+        comp::HasOptionalTexCoord<TriMeshVertex&&>,
+        "TriMesh Vertex&& does not satisfy the HasOptionalTexCoord concept");
 }
 
-#endif // COMP_COLOR_H
+#endif // COMP_TEX_COORD_H

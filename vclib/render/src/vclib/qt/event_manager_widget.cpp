@@ -45,7 +45,7 @@ EventManagerWidget::EventManagerWidget(
     setAttribute(Qt::WA_PaintOnScreen); // do not remove - needed on macos and x
     // PaintOnScreen is bugged - prints unuseful warning messages
     // we will hide it:
-    // vcl::qt::MessageHider::activate(); // TODO check again
+    // vcl::qt::MessageHider::activate(); // TODO: check again if this is needed
     setAttribute(Qt::WA_DontCreateNativeAncestors);
     setAttribute(Qt::WA_NativeWindow);
 #endif
@@ -117,9 +117,23 @@ void EventManagerWidget::mouseReleaseEvent(QMouseEvent* event)
     Base::mouseReleaseEvent(event);
 }
 
+void EventManagerWidget::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    onMouseDoubleClick(
+        vcl::qt::fromQt(event->button()),
+        event->pos().x() * pixelRatio(),
+        event->pos().y() * pixelRatio());
+    Base::mouseDoubleClickEvent(event);
+}
+
 void EventManagerWidget::wheelEvent(QWheelEvent* event)
 {
-    onMouseScroll(event->pixelDelta().x(), event->pixelDelta().y());
+    // FIXME: this is not correct, define a proper equivalence
+    if (!event->pixelDelta().isNull())
+        onMouseScroll(event->pixelDelta().x(), event->pixelDelta().y());
+    else
+        onMouseScroll(event->angleDelta().x(), event->angleDelta().y());
+
     Base::wheelEvent(event);
 }
 

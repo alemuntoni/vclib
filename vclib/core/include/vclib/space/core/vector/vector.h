@@ -170,7 +170,7 @@ public:
     template<typename ItType>
     Vector(ItType first, ItType last)
     {
-        set(vcl::View(first, last));
+        set(View(first, last));
     }
 
     /**
@@ -209,7 +209,7 @@ public:
      */
     explicit Vector(std::initializer_list<T> list)
     {
-        set(vcl::View(std::begin(list), std::end(list)));
+        set(View(std::begin(list), std::end(list)));
     }
 
     /**
@@ -403,7 +403,7 @@ public:
      * @param[in] r: The range of values to set the elements of the Vector to.
      */
     template<Range Rng>
-    void set(Rng&& r) requires RangeOfConvertibleTo<Rng, T>
+    void set(Rng&& r) requires InputRange<Rng, T>
     {
         if constexpr (N >= 0) {
             uint n = std::min(

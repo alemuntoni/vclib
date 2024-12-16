@@ -46,7 +46,7 @@ namespace vcl {
 template<MeshConcept MeshType>
 void clearPerVertexAdjacentFaces(MeshType& m)
 {
-    vcl::requirePerVertexAdjacentFaces(m);
+    requirePerVertexAdjacentFaces(m);
 
     using VertexType = MeshType::VertexType;
 
@@ -101,7 +101,7 @@ void updatePerVertexAdjacentFaces(MeshType& m)
 template<MeshConcept MeshType>
 void clearPerVertexAdjacentVertices(MeshType& m)
 {
-    vcl::requirePerVertexAdjacentVertices(m);
+    requirePerVertexAdjacentVertices(m);
 
     using VertexType = MeshType::VertexType;
 
@@ -166,7 +166,7 @@ void updatePerVertexAdjacentVertices(MeshType& m)
 template<FaceMeshConcept MeshType>
 void clearPerFaceAdjacentFaces(MeshType& m)
 {
-    vcl::requirePerFaceAdjacentFaces(m);
+    requirePerFaceAdjacentFaces(m);
 
     using FaceType = MeshType::FaceType;
 
@@ -224,7 +224,7 @@ void clearPerFaceAdjacentFaces(MeshType& m)
 template<FaceMeshConcept MeshType>
 void updatePerFaceAdjacentFaces(MeshType& m)
 {
-    vcl::requirePerFaceAdjacentFaces(m);
+    requirePerFaceAdjacentFaces(m);
 
     // vector that contains edges sorted trough unordered vertex pointers
     // it contains clusters of "same" edges, but each one of them has its face

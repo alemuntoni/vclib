@@ -26,20 +26,55 @@ set(TEST_NAME 000-static-asserts)
 project(vclib-test-${TEST_NAME})
 
 set(HEADERS
-    meshes.h
+    const_correctness.h
     loggers.h
+    iterators.h
+    mesh.h
+    meshes.h
     ranges.h
     space.h
-    meshes/components/bounding_box.h
-    meshes/components/color.h
-    meshes/components/coordinate.h
-    meshes/components.h
+    mesh/components.h
+    mesh/containers.h
+    mesh/elements.h
+    mesh/mesh_concept.h
+    mesh/per_edge.h
+    mesh/per_face.h
+    mesh/per_mesh.h
+    mesh/per_vertex.h
+    mesh/components/adjacent_edges.h
+    mesh/components/adjacent_faces.h
+    mesh/components/adjacent_vertices.h
+    mesh/components/bounding_box.h
+    mesh/components/bit_flags.h
+    mesh/components/color.h
+    mesh/components/component.h
+    mesh/components/coordinate.h
+    mesh/components/custom_components.h
+    mesh/components/mark.h
+    mesh/components/name.h
+    mesh/components/normal.h
+    mesh/components/quality.h
+    mesh/components/tex_coord.h
+    mesh/components/textures.h
+    mesh/components/transform_matrix.h
+    mesh/components/vertex_references.h
+    mesh/components/wedge_colors.h
+    mesh/components/wedge_tex_coords.h
+    mesh/containers/edge_container.h
+    mesh/containers/element_container.h
+    mesh/containers/face_container.h
+    mesh/containers/vertex_container.h
+    mesh/elements/edge.h
+    mesh/elements/element.h
+    mesh/elements/face.h
+    mesh/elements/vertex.h
     meshes/edgemesh.h
     meshes/mesh_views.h
     meshes/pointcloud.h
     meshes/polymesh.h
     meshes/trimesh.h
     space/array.h
+    space/bit_set.h
     space/box.h
     space/color.h
     space/image.h
@@ -47,9 +82,11 @@ set(HEADERS
     space/plane.h
     space/point.h
     space/polygon.h
+    space/principal_curvature.h
     space/sampler.h
     space/segment.h
     space/sphere.h
+    space/tex_coord.h
     space/texture.h
     space/triangle.h
 )

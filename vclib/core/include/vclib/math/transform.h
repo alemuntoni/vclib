@@ -89,7 +89,7 @@ void setTransformMatrixRotationDeg(
     PointType         axis,
     const ScalarType& angleDeg)
 {
-    setTransformMatrixRotation(matrix, axis, vcl::toRad(angleDeg));
+    setTransformMatrixRotation(matrix, axis, toRad(angleDeg));
 }
 
 /**
@@ -194,7 +194,7 @@ MatrixType rotationMatrix(const PointType& axis, const ScalarType& angleRad)
 template<MatrixConcept MatrixType, Point3Concept PointType, typename ScalarType>
 MatrixType rotationMatrixDeg(const PointType& axis, const ScalarType& angleDeg)
 {
-    return rotationMatrix<MatrixType>(axis, vcl::toRad(angleDeg));
+    return rotationMatrix<MatrixType>(axis, toRad(angleDeg));
 }
 
 /**

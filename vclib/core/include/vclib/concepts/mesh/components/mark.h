@@ -25,6 +25,8 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include "component.h"
+
+#include <vclib/concepts/const_correctness.h>
 #endif
 
 namespace vcl::comp {
@@ -44,11 +46,15 @@ namespace vcl::comp {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasMark = requires (T obj, const T& cObj) {
-    { cObj.mark() } -> std::same_as<int>;
-    { obj.resetMark() } -> std::same_as<void>;
-    { obj.incrementMark() } -> std::same_as<void>;
-    { obj.decrementMark() } -> std::same_as<void>;
+concept HasMark = requires (T&& obj) {
+    { obj.mark() } -> std::same_as<int>;
+
+    // non const requirements
+    requires IsConst<T> || requires {
+        { obj.resetMark() } -> std::same_as<void>;
+        { obj.incrementMark() } -> std::same_as<void>;
+        { obj.decrementMark() } -> std::same_as<void>;
+    };
 };
 
 /**
@@ -59,7 +65,8 @@ concept HasMark = requires (T obj, const T& cObj) {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasOptionalMark = HasMark<T> && IsOptionalComponent<typename T::Mark>;
+concept HasOptionalMark =
+    HasMark<T> && IsOptionalComponent<typename RemoveRef<T>::Mark>;
 
 } // namespace vcl::comp
 

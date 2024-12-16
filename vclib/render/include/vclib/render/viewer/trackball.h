@@ -81,6 +81,8 @@ private:
 
     static constexpr Scalar FOCUS_SCALE_FACTOR = 1.15;
 
+    static constexpr Scalar DEFAULT_FOV_DEG = 54.0;
+
     Camera<Scalar> mCamera;
 
     // Similarity holding the manipulator transformation.
@@ -113,7 +115,7 @@ private:
     Point2<Scalar> mPrevMousePosition;
 
 public:
-    TrackBall() { mCamera.setFieldOfViewAdaptingEyeDistance(60.0); }
+    TrackBall() { mCamera.setFieldOfViewAdaptingEyeDistance(DEFAULT_FOV_DEG); }
 
     void reset()
     {
@@ -167,7 +169,7 @@ public:
         // scale the linear part of the transformation
         // so the manipulator will be scaled around the origin
         mTransform.prescale(scale);
-        // TODO scale also near/far?
+        // TODO: scale also near/far?
     }
 
     void changeScale(Scalar factor) { mTransform.prescale(factor); }
@@ -388,7 +390,7 @@ public:
      * @note: this member function must be called only when a drag motion
      * is in progress (e.g., when the mouse is dragging);
      */
-    void update()
+    void update() // TODO: rename this function (it just updates the motion)
     {
         assert(
             mDragging != (mCurrDragMotion == MOTION_NUMBER) &&
@@ -396,16 +398,6 @@ public:
         if (mDragging && mCurrMousePosition != mPrevMousePosition)
             drag(mCurrDragMotion);
     }
-
-    //     const Camera<Scalar>& camera() const { return mCamera; }
-
-    //     Matrix44<Scalar> viewMatrix() const { return mCamera.viewMatrix(); }
-
-    //     const Point3<Scalar>& center() const { return mCamera.center(); }
-
-    //     const Scalar radius() const { return mEyeCenterDist / RADIUS_RATIO; }
-
-    //     void resetDirectionalLight() { mDirLight.reset(); }
 
 private:
     /**-------------- Generic Functions  --------------**/
@@ -616,7 +608,7 @@ private:
 
         // convert hit point to 3D
         // rescale in trackball space
-        // TODO Avoid cancellation issue with different solution
+        // FIXME: Avoid cancellation issue with different solution
         assert(hitPoint.x() == hitPoint.x());
         double factor =
             (h > 0.0 && hitPoint.y() > 0.0) ? hitPoint.y() / h : 0.0;

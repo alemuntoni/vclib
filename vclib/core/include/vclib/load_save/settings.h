@@ -97,7 +97,7 @@ struct SaveSettings
      * If the info is uninitialized, all the components that can be saved will
      * be saved.
      */
-    vcl::MeshInfo info;
+    MeshInfo info;
 };
 
 } // namespace vcl

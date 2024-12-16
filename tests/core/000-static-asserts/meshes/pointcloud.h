@@ -6,7 +6,6 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes/point_cloud.h>
 #else
-#include <Eigen/Core>
 import vclib.core;
 #endif
 

@@ -59,13 +59,7 @@ ViewerWidget::ViewerWidget(QWidget* parent) :
 {
 }
 
-#if defined(VCLIB_RENDER_BACKEND_BGFX)
-void ViewerWidget::update()
-{
-    // frame();
-    EventManagerWidget::update();
-}
-#elif defined(VCLIB_RENDER_BACKEND_OPENGL2)
+#if defined(VCLIB_RENDER_BACKEND_OPENGL2)
 void ViewerWidget::initializeGL()
 {
     ViewerCanvas::init(width(), height());
@@ -84,13 +78,6 @@ void ViewerWidget::onKeyPress(Key::Enum key)
     default: ViewerCanvas::onKeyPress(key); break;
     }
 }
-
-#if defined(VCLIB_RENDER_BACKEND_BGFX)
-bool ViewerWidget::event(QEvent* event)
-{
-    return EventManagerWidget::event(event);
-}
-#endif
 
 #if defined(VCLIB_RENDER_BACKEND_BGFX)
 void ViewerWidget::paintEvent(QPaintEvent* event)
@@ -113,11 +100,15 @@ void ViewerWidget::showScreenShotDialog()
     qt::ScreenShotDialog* dialog = new qt::ScreenShotDialog(this);
     if (dialog->exec() == QDialog::Accepted) {
         auto fs = dialog->selectedFiles();
-        ViewerCanvas::screenShot(fs.first().toStdString());
+        if (!ViewerCanvas::screenshot(fs.first().toStdString()))
+            std::cerr << "Failed to save screenshot" << std::endl;
     }
     // the dialog stealed the focus, so we need to release the modifiers
     ViewerCanvas::setKeyModifiers({KeyModifier::NO_MODIFIER});
     setModifiers({KeyModifier::NO_MODIFIER});
+    // release the mouse button
+    // TODO: we should stop every drag motion
+    ViewerCanvas::releaseMouse(MouseButton::LEFT);
 }
 
 } // namespace vcl::qt

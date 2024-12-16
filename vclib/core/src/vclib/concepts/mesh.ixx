@@ -26,6 +26,7 @@ module;
 #include <ranges>
 #include <string>
 #include <type_traits>
+#include <typeindex>
 #include <vector>
 
 export module vclib.concepts:mesh;
@@ -38,6 +39,7 @@ import :space;
 export {
 // components
 #include <vclib/concepts/mesh/components/component.h>
+#include <vclib/concepts/mesh/components/texture_paths.h>
 
 #include <vclib/concepts/mesh/components/adjacent_edges.h>
 #include <vclib/concepts/mesh/components/adjacent_faces.h>
@@ -54,7 +56,6 @@ export {
 #include <vclib/concepts/mesh/components/quality.h>
 #include <vclib/concepts/mesh/components/tex_coord.h>
 #include <vclib/concepts/mesh/components/texture_images.h>
-#include <vclib/concepts/mesh/components/texture_paths.h>
 #include <vclib/concepts/mesh/components/transform_matrix.h>
 #include <vclib/concepts/mesh/components/vertex_references.h>
 #include <vclib/concepts/mesh/components/wedge_colors.h>
@@ -74,17 +75,13 @@ export {
 #include <vclib/concepts/mesh/containers/face_container.h>
 #include <vclib/concepts/mesh/containers/vertex_container.h>
 
-// mesh_concept
-#include <vclib/concepts/mesh/mesh_concept.h>
-
 // per_element
 #include <vclib/concepts/mesh/per_edge.h>
 #include <vclib/concepts/mesh/per_face.h>
 #include <vclib/concepts/mesh/per_vertex.h>
 
-// element_mesh_concept
-#include <vclib/concepts/mesh/edge_mesh_concept.h>
-#include <vclib/concepts/mesh/face_mesh_concept.h>
+// mesh_concept
+#include <vclib/concepts/mesh/mesh_concept.h>
 
 // per_mesh
 #include <vclib/concepts/mesh/per_mesh.h>

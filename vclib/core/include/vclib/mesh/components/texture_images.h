@@ -41,8 +41,32 @@ namespace detail {
 
 struct TData
 {
-    std::vector<vcl::Texture> textures;
-    std::string               meshPath;
+    std::vector<Texture> textures;
+    std::string          meshPath;
+
+    auto paths()
+    {
+        return textures |
+               std::views::transform([](Texture& t) -> std::string& {
+                   return t.path();
+               });
+    }
+
+    auto paths() const
+    {
+        return textures | std::views::transform(
+                              [](const Texture& t) -> const std::string& {
+                                  return t.path();
+                              });
+    }
+
+    auto pathBegin() { return std::begin(paths()); }
+
+    auto pathBegin() const { return std::begin(paths()); }
+
+    auto pathEnd() { return std::end(paths()); }
+
+    auto pathEnd() const { return std::end(paths()); }
 };
 
 } // namespace detail
@@ -92,11 +116,16 @@ public:
     /**
      * @brief Expose the type of the Texture.
      */
-    using TextureType = vcl::Texture;
+    using TextureType = Texture;
 
     // iterators
-    using TextureIterator      = std::vector<vcl::Texture>::iterator;
-    using ConstTextureIterator = std::vector<vcl::Texture>::const_iterator;
+    using TextureIterator      = std::vector<Texture>::iterator;
+    using ConstTextureIterator = std::vector<Texture>::const_iterator;
+
+    using TexFileNamesIterator =
+        decltype(std::declval<detail::TData>().pathBegin());
+    using ConstTexFileNamesIterator =
+        decltype(std::declval<const detail::TData>().pathBegin());
 
     /* Constructors */
 
@@ -114,18 +143,42 @@ public:
     uint textureNumber() const { return texs().size(); }
 
     /**
-     * @brief Returns the path of the i-th texture of the mesh. The path of the
-     * texture is relative to the mesh base path.
+     * @brief Returns the i-th texture of the mesh. The path of the texture is
+     * relative to the mesh base path.
      * @param[in] i: The index of the texture.
      */
-    const vcl::Texture& texture(uint i) const { return texs()[i]; }
+    const Texture& texture(uint i) const { return texs()[i]; }
 
     /**
      * @brief Returns a reference to the i-th texture of the mesh.
      * The path of the texture is relative to the mesh base path.
      * @param[in] i: The index of the texture.
      */
-    vcl::Texture& texture(uint i) { return texs()[i]; }
+    Texture& texture(uint i) { return texs()[i]; }
+
+    /**
+     * @brief Returns the path of the i-th texture of the mesh. The path is
+     * relative to the mesh base path.
+     *
+     * @note This member function is provided for compatibility with the
+     * TexturePaths component. It is recommended to use the
+     * `texture(uint).path()` member function instead.
+     *
+     * @param[in] i: The index of the texture.
+     */
+    const std::string& texturePath(uint i) const { return texs()[i].path(); }
+
+    /**
+     * @brief Returns a reference to the path of the i-th texture of the mesh.
+     * The path is relative to the mesh base path.
+     *
+     * @note This member function is provided for compatibility with the
+     * TexturePaths component. It is recommended to use the
+     * `texture(uint).path()` member function instead.
+     *
+     * @param[in] i: The index of the texture.
+     */
+    std::string& texturePath(uint i) { return texs()[i].path(); }
 
     /**
      * @brief Returns the mesh base path.
@@ -143,21 +196,35 @@ public:
     void clearTextures() { texs().clear(); }
 
     /**
-     * @brief Adds a texture path to the vector of textures. The image of the
-     * texture is left empty.
-     * @param[in] textPath: The texture path to add.
+     * @brief Clears the vector of textures.
+     *
+     * @note This member function is provided for compatibility with the
+     * TexturePaths component. It is recommended to use the
+     * `clearTextures()` member function instead.
      */
-    void pushTexture(const std::string& textPath)
-    {
-        texs().push_back(vcl::Texture());
-        texs().back().path() = textPath;
-    }
+    void clearTexturePaths() { clearTextures(); }
 
     /**
      * @brief Adds a texture to the vector of textures.
      * @param[in] texture: The texture to add.
      */
-    void pushTexture(const vcl::Texture& texture) { texs().push_back(texture); }
+    void pushTexture(const Texture& texture) { texs().push_back(texture); }
+
+    /**
+     * @brief Adds a texture to the vector of textures. The image of the
+     * texture is left empty.
+     *
+     * @note This member function is provided for compatibility with the
+     * TexturePaths component. It is recommended to use the
+     * `pushTexture()` member function instead.
+     *
+     * @param[in] textPath: The texture path to add.
+     */
+    void pushTexturePath(const std::string& textPath)
+    {
+        texs().push_back(Texture());
+        texs().back().path() = textPath;
+    }
 
     /**
      * @brief Returns an iterator to the beginning of the vector of textures.
@@ -183,6 +250,59 @@ public:
      * @return a const iterator to the end of the vector of textures.
      */
     ConstTextureIterator textureEnd() const { return texs().end(); }
+
+    /**
+     * @brief Returns an iterator to the beginning of the vector of texture
+     * paths.
+     *
+     * @note This member function is provided for compatibility with the
+     * TexturePaths component. It is recommended to use the
+     * `textureBegin()` member function instead.
+     *
+     * @return an iterator to the beginning of the vector of texture paths.
+     */
+    TexFileNamesIterator texturePathBegin() { return Base::data().pathBegin(); }
+
+    /**
+     * @brief Returns an iterator to the end of the vector of texture paths.
+     *
+     * @note This member function is provided for compatibility with the
+     * TexturePaths component. It is recommended to use the
+     * `texturePathEnd()` member function instead.
+     *
+     * @return an iterator to the end of the vector of texture paths.
+     */
+    TexFileNamesIterator texturePathEnd() { return Base::data().pathEnd(); }
+
+    /**
+     * @brief Returns a const iterator to the beginning of the vector of texture
+     * paths.
+     *
+     * @note This member function is provided for compatibility with the
+     * TexturePaths component. It is recommended to use the
+     * `textureBegin()` member function instead.
+     *
+     * @return a const iterator to the beginning of the vector of texture paths.
+     */
+    ConstTexFileNamesIterator texturePathBegin() const
+    {
+        return Base::data().pathBegin();
+    }
+
+    /**
+     * @brief Returns a const iterator to the end of the vector of texture
+     * paths.
+     *
+     * @note This member function is provided for compatibility with the
+     * TexturePaths component. It is recommended to use the
+     * `texturePathEnd()` member function instead.
+     *
+     * @return a const iterator to the end of the vector of texture paths.
+     */
+    ConstTexFileNamesIterator texturePathEnd() const
+    {
+        return Base::data().pathEnd();
+    }
 
     /**
      * @brief Returns a lightweigth view object that stores the begin and end
@@ -224,6 +344,49 @@ public:
         return View(textureBegin(), textureEnd());
     }
 
+    /**
+     * @brief Returns a lightweigth view object that stores the begin and end
+     * iterators of the vector of texture paths. The view
+     * object exposes the iterators trough the `begin()` and `end()` member
+     * functions, and therefore the returned object can be used in range-based
+     * for loops:
+     *
+     * @code{.cpp}
+     * for (auto& tpath : m.texturePaths()) {
+     *     // Do something with tpath
+     * }
+     * @endcode
+     *
+     * @note This member function is provided for compatibility with the
+     * TexturePaths component. It is recommended to use the
+     * `textures()` member function instead.
+     *
+     * @return a lightweight view object that can be used in range-based for
+     * loops to iterate over the vector of texture paths.
+     */
+    auto texturePaths() { return Base::data().paths(); }
+
+    /**
+     * @brief Returns a lightweigth const view object that stores the begin and
+     * end iterators of the vector of texture paths. The view object exposes the
+     * iterators trough the `begin()` and `end()` member functions, and
+     * therefore the returned object can be used in range-based for loops:
+     *
+     * @code{.cpp}
+     * for (const auto& tpath : m.texturePaths()) {
+     *     // Do something with tpath
+     * }
+     * @endcode
+     *
+     * @note This member function is provided for compatibility with the
+     * TexturePaths component. It is recommended to use the
+     * `textures()` member function instead.
+     *
+     * @return a lightweight view object that can be used in range-based for
+     * loops to iterate over the vector of texture paths.
+     */
+    auto texturePaths() const { return Base::data().paths(); }
+
 protected:
     // Component interface functions
     template<typename Element>
@@ -233,7 +396,7 @@ protected:
             texs()         = e.texs();
             meshBasePath() = e.meshBasePath();
         }
-        if constexpr (HasTexturePaths<Element>) {
+        else if constexpr (HasTexturePaths<Element>) {
             texs().clear();
             for (const auto& tpath : e.texturePaths()) {
                 pushTexture(tpath);
@@ -256,9 +419,9 @@ protected:
 
 private:
     // members that allow to access the data
-    std::vector<vcl::Texture>& texs() { return Base::data().textures; }
+    std::vector<Texture>& texs() { return Base::data().textures; }
 
-    const std::vector<vcl::Texture>& texs() const
+    const std::vector<Texture>& texs() const
     {
         return Base::data().textures;
     }

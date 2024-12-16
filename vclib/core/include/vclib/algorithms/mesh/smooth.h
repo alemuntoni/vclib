@@ -130,7 +130,7 @@ void laplacianSmoothing(
     MeshType& m,
     uint      step,
     bool      smoothSelected  = false,
-    bool      cotangentWeight = false /*, vcl::CallBackPos *cb*/)
+    bool      cotangentWeight = false /*, CallBackPos *cb*/)
 {
     using VertexType = MeshType::VertexType;
     using CoordType  = VertexType::CoordType;
@@ -158,7 +158,7 @@ void taubinSmoothing(
     uint      step,
     float     lambda,
     float     mu,
-    bool      smoothSelected = false /*, vcl::CallBackPos *cb*/)
+    bool      smoothSelected = false /*, CallBackPos *cb*/)
 {
     using VertexType = MeshType::VertexType;
     using CoordType  = VertexType::CoordType;
@@ -214,7 +214,7 @@ void smoothPerVertexNormalsPointCloud(
     uint                     neighborNum,
     uint                     iterNum)
 {
-    vcl::requirePerVertexNormal(m);
+    requirePerVertexNormal(m);
 
     using Scalar     = PointType::ScalarType;
     using VertexType = MeshType::VertexType;

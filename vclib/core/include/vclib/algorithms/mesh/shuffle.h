@@ -48,7 +48,7 @@ std::vector<V*> genericFASVPV(M m, bool deterministic)
         vec.push_back(&v);
     }
 
-    vcl::shuffle(vec, deterministic);
+    shuffle(vec, deterministic);
 
     return vec;
 }
@@ -69,7 +69,7 @@ std::vector<F*> genericFASFPV(M m, bool deterministic)
         vec.push_back(&f);
     }
 
-    vcl::shuffle(vec, deterministic);
+    shuffle(vec, deterministic);
 
     return vec;
 }
@@ -109,7 +109,7 @@ std::vector<uint> fillAndShuffleVertexIndexVector(
         vec.push_back(m.index(v));
     }
 
-    vcl::shuffle(vec, deterministic);
+    shuffle(vec, deterministic);
 
     return vec;
 }
@@ -149,7 +149,7 @@ std::vector<uint> fillAndShuffleFaceIndexVector(
         vec.push_back(m.index(f));
     }
 
-    vcl::shuffle(vec, deterministic);
+    shuffle(vec, deterministic);
 
     return vec;
 }

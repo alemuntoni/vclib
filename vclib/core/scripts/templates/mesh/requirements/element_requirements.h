@@ -4,11 +4,11 @@
 #define VCL_MESH_REQUIREMENTS_%EL_U%_REQUIREMENTS_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/mesh.h>
-#include <vclib/exceptions/mesh.h>
-
 #include "element_requirements.h"
 #include "../containers/%EL%_container.h"
+
+#include <vclib/concepts/mesh.h>
+#include <vclib/exceptions/mesh.h>
 #endif
 
 /**

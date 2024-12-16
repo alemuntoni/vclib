@@ -328,7 +328,7 @@ public:
      * @param[in] r: range of vertex pointers to set.
      */
     template<Range Rng>
-    void setVertices(Rng&& r) requires RangeOfConvertibleTo<Rng, Vertex*>
+    void setVertices(Rng&& r) requires InputRange<Rng, Vertex*>
     {
         Base::setElements(r);
     }
@@ -345,7 +345,7 @@ public:
      * @param[in] r: range of vertex indices to set.
      */
     template<Range Rng>
-    void setVertices(Rng&& r) requires RangeOfConvertibleTo<Rng, uint>
+    void setVertices(Rng&& r) requires InputRange<Rng, uint>
     {
         Base::setElements(r);
     }

@@ -24,11 +24,10 @@
 #define VCL_CONCEPTS_MESH_CONTAINERS_FACE_CONTAINER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include "element_container.h"
-
+#include <vclib/concepts/const_correctness.h>
+#include <vclib/concepts/iterators.h>
 #include <vclib/concepts/ranges/range.h>
 
-#include <ranges>
 #include <vector>
 #endif
 
@@ -44,36 +43,58 @@ namespace mesh {
  * @ingroup containers_concepts
  */
 template<typename T>
-concept HasFaceContainer =
-    requires (T obj, const T& cObj, typename T::FaceType* fP) {
-        typename T::FaceType;
-        typename T::FaceIterator;
-        typename T::ConstFaceIterator;
+concept HasFaceContainer = requires (
+    T&&                                                       obj,
+    typename RemoveRef<T>::FaceType                           f,
+    typename RemoveRef<T>::FaceType*                          fP,
+    typename RemoveRef<T>::FaceType&                          fR,
+    typename RemoveRef<T>::FaceType::VertexType*              vP,
+    std::vector<uint>                                         vecU,
+    std::vector<typename RemoveRef<T>::FaceType::VertexType*> vecV) {
+    typename RemoveRef<T>::FaceType;
+    typename RemoveRef<T>::FaceIterator;
+    typename RemoveRef<T>::ConstFaceIterator;
 
-        { obj.face(uint()) } -> std::same_as<typename T::FaceType&>;
-        { cObj.face(uint()) } -> std::same_as<const typename T::FaceType&>;
+    { obj.face(uint()) } -> std::convertible_to<decltype(f)>;
+    { obj.faceNumber() } -> std::same_as<uint>;
+    { obj.faceContainerSize() } -> std::same_as<uint>;
+    { obj.deletedFaceNumber() } -> std::same_as<uint>;
 
-        { cObj.faceNumber() } -> std::same_as<uint>;
-        { cObj.faceContainerSize() } -> std::same_as<uint>;
-        { cObj.deletedFaceNumber() } -> std::same_as<uint>;
-        { obj.deleteFace(uint()) } -> std::same_as<void>;
-        { obj.deleteFace(fP) } -> std::same_as<void>;
-        { obj.faceIndexIfCompact(uint()) } -> std::same_as<uint>;
-        { obj.faceCompactIndices() } -> std::same_as<std::vector<uint>>;
+    { obj.faceIndexIfCompact(uint()) } -> std::same_as<uint>;
+    { obj.faceCompactIndices() } -> std::same_as<decltype(vecU)>;
+
+    { obj.faceBegin() } -> InputIterator<decltype(f)>;
+    { obj.faceEnd() } -> InputIterator<decltype(f)>;
+    { obj.faces() } -> InputRange<decltype(f)>;
+    { obj.faces(bool()) } -> InputRange<decltype(f)>;
+
+    // non const requirements
+    requires IsConst<T> || requires {
+        { obj.face(uint()) } -> std::same_as<decltype(fR)>;
 
         { obj.addFace() } -> std::same_as<uint>;
+        { obj.addFace(uint(), uint(), uint()) } -> std::same_as<uint>;
+        { obj.addFace(vP, vP, vP) } -> std::same_as<uint>;
+        { obj.addFace(vecU) } -> std::same_as<uint>;
+        { obj.addFace(vecV) } -> std::same_as<uint>;
         { obj.addFaces(uint()) } -> std::same_as<uint>;
+        { obj.clearFaces() } -> std::same_as<void>;
+        { obj.resizeFaces(uint()) } -> std::same_as<void>;
         { obj.reserveFaces(uint()) } -> std::same_as<void>;
         { obj.compactFaces() } -> std::same_as<void>;
+        { obj.deleteFace(uint()) } -> std::same_as<void>;
+        { obj.deleteFace(fP) } -> std::same_as<void>;
+        { obj.updateFaceIndices(vecU) } -> std::same_as<void>;
 
-        { obj.faceBegin() } -> std::same_as<typename T::FaceIterator>;
-        { cObj.faceBegin() } -> std::same_as<typename T::ConstFaceIterator>;
-        { obj.faceEnd() } -> std::same_as<typename T::FaceIterator>;
-        { cObj.faceEnd() } -> std::same_as<typename T::ConstFaceIterator>;
+        { obj.faceBegin() } -> OutputIterator<decltype(f)>;
+        { obj.faceEnd() } -> OutputIterator<decltype(f)>;
+        { obj.faces() } -> OutputRange<decltype(f)>;
+        { obj.faces(bool()) } -> OutputRange<decltype(f)>;
 
-        { obj.faces() } -> vcl::RangeOf<typename T::FaceType>;
-        { cObj.faces() } -> vcl::RangeOf<typename T::FaceType>;
+        { obj.enableAllPerFaceOptionalComponents() } -> std::same_as<void>;
+        { obj.disableAllPerFaceOptionalComponents() } -> std::same_as<void>;
     };
+};
 
 } // namespace mesh
 
@@ -111,7 +132,7 @@ concept HasFaceContainer =
  * @ingroup containers_concepts
  */
 template<typename... Args>
-concept HasFaces = (vcl::mesh::HasFaceContainer<Args> || ...);
+concept HasFaces = (mesh::HasFaceContainer<Args> || ...);
 
 } // namespace vcl
 

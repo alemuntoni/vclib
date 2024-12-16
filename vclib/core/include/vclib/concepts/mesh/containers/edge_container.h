@@ -24,11 +24,10 @@
 #define VCL_CONCEPTS_MESH_CONTAINERS_EDGE_CONTAINER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include "element_container.h"
-
+#include <vclib/concepts/const_correctness.h>
+#include <vclib/concepts/iterators.h>
 #include <vclib/concepts/ranges/range.h>
 
-#include <ranges>
 #include <vector>
 #endif
 
@@ -44,36 +43,56 @@ namespace mesh {
  * @ingroup containers_concepts
  */
 template<typename T>
-concept HasEdgeContainer =
-    requires (T obj, const T& cObj, typename T::EdgeType* eP) {
-        typename T::EdgeType;
-        typename T::EdgeIterator;
-        typename T::ConstEdgeIterator;
+concept HasEdgeContainer = requires (
+    T&&                                          obj,
+    typename RemoveRef<T>::EdgeType              e,
+    typename RemoveRef<T>::EdgeType*             eP,
+    typename RemoveRef<T>::EdgeType&             eR,
+    typename RemoveRef<T>::EdgeType::VertexType* vP,
+    std::vector<uint>                            vec) {
+    typename RemoveRef<T>::EdgeType;
+    typename RemoveRef<T>::EdgeIterator;
+    typename RemoveRef<T>::ConstEdgeIterator;
 
-        { obj.edge(uint()) } -> std::same_as<typename T::EdgeType&>;
-        { cObj.edge(uint()) } -> std::same_as<const typename T::EdgeType&>;
+    { obj.edge(uint()) } -> std::convertible_to<decltype(e)>;
+    { obj.edgeNumber() } -> std::same_as<uint>;
+    { obj.edgeContainerSize() } -> std::same_as<uint>;
+    { obj.deletedEdgeNumber() } -> std::same_as<uint>;
 
-        { cObj.edgeNumber() } -> std::same_as<uint>;
-        { cObj.edgeContainerSize() } -> std::same_as<uint>;
-        { cObj.deletedEdgeNumber() } -> std::same_as<uint>;
-        { obj.deleteEdge(uint()) } -> std::same_as<void>;
-        { obj.deleteEdge(eP) } -> std::same_as<void>;
-        { obj.edgeIndexIfCompact(uint()) } -> std::same_as<uint>;
-        { obj.edgeCompactIndices() } -> std::same_as<std::vector<uint>>;
+    { obj.edgeIndexIfCompact(uint()) } -> std::same_as<uint>;
+    { obj.edgeCompactIndices() } -> std::same_as<decltype(vec)>;
+
+    { obj.edgeBegin() } -> InputIterator<decltype(e)>;
+    { obj.edgeEnd() } -> InputIterator<decltype(e)>;
+    { obj.edges() } -> InputRange<decltype(e)>;
+    { obj.edges(bool()) } -> InputRange<decltype(e)>;
+
+    // non const requirements
+    requires IsConst<T> || requires {
+        { obj.edge(uint()) } -> std::same_as<decltype(eR)>;
 
         { obj.addEdge() } -> std::same_as<uint>;
+        { obj.addEdge(uint(), uint()) } -> std::same_as<uint>;
+        { obj.addEdge(vP, vP) } -> std::same_as<uint>;
         { obj.addEdges(uint()) } -> std::same_as<uint>;
+        { obj.clearEdges() } -> std::same_as<void>;
+        { obj.resizeEdges(uint()) } -> std::same_as<void>;
         { obj.reserveEdges(uint()) } -> std::same_as<void>;
         { obj.compactEdges() } -> std::same_as<void>;
+        { obj.deleteEdge(uint()) } -> std::same_as<void>;
+        { obj.deleteEdge(eP) } -> std::same_as<void>;
+        { obj.updateEdgeIndices(vec) } -> std::same_as<void>;
 
-        { obj.edgeBegin() } -> std::same_as<typename T::EdgeIterator>;
-        { cObj.edgeBegin() } -> std::same_as<typename T::ConstEdgeIterator>;
-        { obj.edgeEnd() } -> std::same_as<typename T::EdgeIterator>;
-        { cObj.edgeEnd() } -> std::same_as<typename T::ConstEdgeIterator>;
+        { obj.edgeBegin() } -> OutputIterator<decltype(e)>;
+        { obj.edgeEnd() } -> OutputIterator<decltype(e)>;
 
-        { obj.edges() } -> vcl::RangeOf<typename T::EdgeType>;
-        { cObj.edges() } -> vcl::RangeOf<typename T::EdgeType>;
+        { obj.edges() } -> OutputRange<decltype(e)>;
+        { obj.edges(bool()) } -> OutputRange<decltype(e)>;
+
+        { obj.enableAllPerEdgeOptionalComponents() } -> std::same_as<void>;
+        { obj.disableAllPerEdgeOptionalComponents() } -> std::same_as<void>;
     };
+};
 
 } // namespace mesh
 
@@ -111,7 +130,7 @@ concept HasEdgeContainer =
  * @ingroup containers_concepts
  */
 template<typename... Args>
-concept HasEdges = (vcl::mesh::HasEdgeContainer<Args> || ...);
+concept HasEdges = (mesh::HasEdgeContainer<Args> || ...);
 
 } // namespace vcl
 

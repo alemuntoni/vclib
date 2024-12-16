@@ -26,7 +26,6 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/space.h>
 #else
-#include <Eigen/Core>
 import vclib.core;
 #endif
 

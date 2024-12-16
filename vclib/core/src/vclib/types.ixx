@@ -40,12 +40,13 @@ export module vclib.types;
 
 export {
 #include <vclib/types/base.h>
+#include <vclib/types/pointers.h>
 #include <vclib/types/variadic_templates.h>
 
 #include <vclib/types/const_correctness.h>
 #include <vclib/types/inheritance.h>
 #include <vclib/types/mesh_components.h>
+#include <vclib/types/mesh_containers.h>
 #include <vclib/types/mesh_elements.h>
-#include <vclib/types/pointers.h>
 #include <vclib/types/view.h>
 }

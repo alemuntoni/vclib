@@ -33,7 +33,7 @@
 
 namespace vcl {
 
-template<PointConcept PointT = vcl::Point3d>
+template<PointConcept PointT = Point3d>
 class PointSampler
 {
     std::vector<PointT> mSamples;
@@ -90,13 +90,13 @@ public:
     template<FaceConcept FaceType>
     void add(const FaceType& f)
     {
-        mSamples.push_back(vcl::faceBarycenter(f));
+        mSamples.push_back(faceBarycenter(f));
     }
 
     template<FaceConcept FaceType>
     void set(uint i, const FaceType& f)
     {
-        mSamples[i] = vcl::faceBarycenter(f);
+        mSamples[i] = faceBarycenter(f);
     }
 
     template<FaceConcept FaceType>

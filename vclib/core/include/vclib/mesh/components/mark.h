@@ -121,7 +121,7 @@ public:
      *
      * This member function is hidden by the element that inherits this class.
      */
-    void init() { mark() = 0; }
+    void init() { markRef() = 0; }
 
     /* Member functions */
 
@@ -134,7 +134,7 @@ public:
     /**
      * @brief Resets the mark to 0.
      */
-    void resetMark() { mark() = 0; }
+    void resetMark() { markRef() = 0; }
 
     /**
      * @brief Checks if the current element/mesh has the same mark of the given
@@ -157,12 +157,12 @@ public:
     /**
      * @brief Increments the mark of the current element/mesh by 1.
      */
-    void incrementMark() { mark()++; }
+    void incrementMark() { markRef()++; }
 
     /**
      * @brief Decrements the mark of the current element/mesh by 1.
      */
-    void decrementMark() { mark()--; }
+    void decrementMark() { markRef()--; }
 
 protected:
     // Component interface function
@@ -171,17 +171,17 @@ protected:
     {
         if constexpr (HasMark<Element>) {
             if (isMarkAvailableOn(e)) {
-                mark() = e.mark();
+                markRef() = e.mark();
             }
         }
     }
 
     void serialize(std::ostream& os) const { vcl::serialize(os, mark()); }
 
-    void deserialize(std::istream& is) { vcl::deserialize(is, mark()); }
+    void deserialize(std::istream& is) { vcl::deserialize(is, markRef()); }
 
 private:
-    int& mark() { return Base::data(); }
+    int& markRef() { return Base::data(); }
 };
 
 /* Detector function to check if a class has Mark available */

@@ -20,54 +20,53 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef COMP_COORDINATE_H
-#define COMP_COORDINATE_H
+#ifndef ELEM_ELEMENT_H
+#define ELEM_ELEMENT_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes.h>
 #else
-#include <Eigen/Core>
 import vclib.core;
 #endif
 
-void coordinateComponentStaticAsserts()
+void elementStaticAsserts()
 {
     using namespace vcl;
 
-    using TriMeshVertex = trimesh::Vertex<float, true>;
-
-    // test only the coordinate component
-    static_assert(
-        comp::HasCoordinate<vert::Coordinate3f>,
-        "vert::Coordinate3f does not satisfy the HasCoordinate concept");
-    static_assert(
-        comp::HasCoordinate<const vert::Coordinate3f>,
-        "const vert::Coordinate3f does not satisfy the HasCoordinate concept");
-    static_assert(
-        comp::HasCoordinate<vert::Coordinate3f&>,
-        "vert::Coordinate3f& does not satisfy the HasCoordinate concept");
-    static_assert(
-        comp::HasCoordinate<const vert::Coordinate3f&>,
-        "const vert::Coordinate3f& does not satisfy the HasCoordinate concept");
-    static_assert(
-        comp::HasCoordinate<vert::Coordinate3f&&>,
-        "vert::Coordinate3f&& does not satisfy the HasCoordinate concept");
+    using TMVertex  = trimesh::Vertex<float, false>;
+    using TMVertexI = trimesh::Vertex<float, true>;
 
     static_assert(
-        comp::HasCoordinate<TriMeshVertex>,
-        "TriMesh Vertex does not satisfy the HasCoordinate concept");
+        ElementConcept<TMVertex>,
+        "TMVertex does not satisfy the ElementConcept");
     static_assert(
-        comp::HasCoordinate<const TriMeshVertex>,
-        "const TriMesh Vertex does not satisfy the HasCoordinate concept");
+        ElementConcept<const TMVertex>,
+        "const TMVertex does not satisfy the ElementConcept");
     static_assert(
-        comp::HasCoordinate<TriMeshVertex&>,
-        "TriMesh Vertex& does not satisfy the HasCoordinate concept");
+        ElementConcept<TMVertex&>,
+        "TMVertex& does not satisfy the ElementConcept");
     static_assert(
-        comp::HasCoordinate<const TriMeshVertex&>,
-        "const TriMesh Vertex& does not satisfy the HasCoordinate concept");
+        ElementConcept<const TMVertex&>,
+        "const TMVertex& does not satisfy the ElementConcept");
     static_assert(
-        comp::HasCoordinate<TriMeshVertex&&>,
-        "TriMesh Vertex&& does not satisfy the HasCoordinate concept");
+        ElementConcept<TMVertex&&>,
+        "TMVertex&& does not satisfy the ElementConcept");
+
+    static_assert(
+        ElementConcept<TMVertexI>,
+        "TMVertexI does not satisfy the ElementConcept");
+    static_assert(
+        ElementConcept<const TMVertexI>,
+        "const TMVertexI does not satisfy the ElementConcept");
+    static_assert(
+        ElementConcept<TMVertexI&>,
+        "TMVertexI& does not satisfy the ElementConcept");
+    static_assert(
+        ElementConcept<const TMVertexI&>,
+        "const TMVertexI& does not satisfy the ElementConcept");
+    static_assert(
+        ElementConcept<TMVertexI&&>,
+        "TMVertexI&& does not satisfy the ElementConcept");
 }
 
-#endif // COMP_COORDINATE_H
+#endif // ELEM_ELEMENT_H

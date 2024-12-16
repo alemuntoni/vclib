@@ -26,7 +26,9 @@
 #ifndef VCLIB_WITH_MODULES
 #include "component.h"
 
+#include <vclib/concepts/iterators.h>
 #include <vclib/concepts/ranges/range.h>
+#include <vclib/concepts/space/color.h>
 
 #include <vector>
 #endif
@@ -49,32 +51,32 @@ namespace vcl::comp {
  */
 template<typename T>
 concept HasWedgeColors = requires (
-    T                                       obj,
-    const T&                                cObj,
-    typename T::WedgeColorType              c,
-    typename T::WedgeColorType&             cR,
-    const typename T::WedgeColorType&       cCR,
-    typename T::WedgeColorsIterator         it,
-    typename T::ConstWedgeColorsIterator    cIt,
-    std::vector<typename T::WedgeColorType> vec) {
-    T::WEDGE_COLOR_NUMBER;
-    typename T::WedgeColorType;
-    typename T::WedgeColorsIterator;
-    typename T::ConstWedgeColorsIterator;
+    T&&                                                obj,
+    typename RemoveRef<T>::WedgeColorType              c,
+    std::vector<typename RemoveRef<T>::WedgeColorType> vec) {
+    RemoveRef<T>::WEDGE_COLOR_NUMBER;
+    typename RemoveRef<T>::WedgeColorType;
+    typename RemoveRef<T>::WedgeColorsIterator;
+    typename RemoveRef<T>::ConstWedgeColorsIterator;
 
-    { obj.wedgeColor(uint()) } -> std::same_as<decltype(cR)>;
-    { cObj.wedgeColor(uint()) } -> std::same_as<decltype(cCR)>;
-    { obj.wedgeColorMod(int()) } -> std::same_as<decltype(cR)>;
-    { cObj.wedgeColorMod(int()) } -> std::same_as<decltype(cCR)>;
-    { obj.setWedgeColor(uint(), cCR) } -> std::same_as<void>;
-    { obj.setWedgeColors(vec) } -> std::same_as<void>;
+    { obj.wedgeColor(uint()) } -> ColorConcept;
+    { obj.wedgeColorMod(int()) } -> ColorConcept;
 
-    { obj.wedgeColorBegin() } -> std::same_as<decltype(it)>;
-    { obj.wedgeColorEnd() } -> std::same_as<decltype(it)>;
-    { cObj.wedgeColorBegin() } -> std::same_as<decltype(cIt)>;
-    { cObj.wedgeColorEnd() } -> std::same_as<decltype(cIt)>;
-    { obj.wedgeColors() } -> vcl::RangeOf<decltype(c)>;
-    { cObj.wedgeColors() } -> vcl::RangeOf<decltype(c)>;
+    { obj.wedgeColorBegin() } -> InputIterator<decltype(c)>;
+    { obj.wedgeColorEnd() } -> InputIterator<decltype(c)>;
+
+    { obj.wedgeColors() } -> InputRange<decltype(c)>;
+
+    // non const requirements
+    requires IsConst<T> || requires {
+        { obj.setWedgeColor(uint(), c) } -> std::same_as<void>;
+        { obj.setWedgeColors(vec) } -> std::same_as<void>;
+
+        { obj.wedgeColorBegin() } -> OutputIterator<decltype(c)>;
+        { obj.wedgeColorEnd() } -> OutputIterator<decltype(c)>;
+
+        { obj.wedgeColors() } -> OutputRange<decltype(c)>;
+    };
 };
 
 /**
@@ -86,7 +88,8 @@ concept HasWedgeColors = requires (
  */
 template<typename T>
 concept HasOptionalWedgeColors =
-    HasWedgeColors<T> && IsOptionalComponent<typename T::WedgeColors>;
+    HasWedgeColors<T> &&
+    IsOptionalComponent<typename RemoveRef<T>::WedgeColors>;
 
 /**
  * @private

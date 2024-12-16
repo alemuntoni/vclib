@@ -26,7 +26,10 @@
 #include <vclib/types.h>
 
 #include <vclib/render/interfaces/event_manager_i.h>
+#include <vclib/render_bgfx/read_framebuffer_request.h>
 #include <vclib/render_bgfx/text/text_view.h>
+
+#include <optional>
 
 namespace vcl {
 
@@ -57,14 +60,34 @@ namespace vcl {
  * The class provides two important member functions:
  * - frame(): this function must be called by the derived classes at the end of
  * each frame, after all the bgfx rendering commands have been issued;
- * - resize(width, height): this function must be called by the derived classes
- * whenever the window is resized.
+ * - onResize(width, height): this function must be called by the derived
+ * classes whenever the window is resized.
  */
 class Canvas : public virtual vcl::EventManagerI
 {
-    void*                   mWinId  = nullptr;
+public:
+    using ReadFramebufferRequest = detail::ReadFramebufferRequest;
+    using CallbackReadBuffer     = ReadFramebufferRequest::CallbackReadBuffer;
+    using ReadData               = ReadFramebufferRequest::ReadData;
+
+private:
+    void* mWinId = nullptr;
+
+    // frame buffer for drawing the canvas
+    // BGFX_INVALID_HANDLE represents the default frame buffer of the window
+    bgfx::ViewId            mViewId = BGFX_INVALID_VIEW;
     bgfx::FrameBufferHandle mFbh    = BGFX_INVALID_HANDLE;
-    bgfx::ViewId            mViewId = 0;
+
+    // size of the canvas
+    Point2<uint> mSize = {0, 0};
+
+    // TODO background color
+
+    // current frame
+    uint32_t mCurrFrame = 0;
+
+    // offscreen readback request
+    std::optional<ReadFramebufferRequest> mReadRequest = std::nullopt;
 
     TextView mTextView;
 
@@ -76,12 +99,9 @@ public:
 
     ~Canvas();
 
-    bgfx::ViewId viewId() const { return mViewId; }
+    Point2<uint> size() const { return mSize; }
 
-    void screenShot(
-        const std::string& filename,
-        uint               width  = 0,
-        uint               height = 0);
+    bgfx::ViewId viewId() const { return mViewId; }
 
     // text
     void enableText(bool b = true);
@@ -104,21 +124,29 @@ public:
 
     void onKeyPress(Key::Enum key) override;
 
+    bool supportsReadback() const;
+
+    [[nodiscard]] bool readDepth(
+        const Point2i&     point,
+        CallbackReadBuffer callback = nullptr);
+
+    bool screenshot(
+        const std::string& filename,
+        uint               width  = 0,
+        uint               height = 0);
+
 protected:
-    virtual void draw() = 0;
+    virtual void draw() { drawContent(); };
+
+    virtual void drawContent() = 0;
 
     void onResize(uint width, uint height) override;
 
     void frame();
 
 private:
-    static bgfx::FrameBufferHandle createFrameBufferAndInitView(
-        void*        winId,
-        bgfx::ViewId view,
-        uint         width,
-        uint         height,
-        bool         clear      = false,
-        bool         depth32bit = false);
+    // draw offscreen frame
+    void offscreenFrame();
 };
 
 } // namespace vcl

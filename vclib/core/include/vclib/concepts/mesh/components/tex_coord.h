@@ -25,6 +25,8 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include "component.h"
+
+#include <vclib/concepts/space/tex_coord.h>
 #endif
 
 namespace vcl::comp {
@@ -44,10 +46,9 @@ namespace vcl::comp {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasTexCoord = requires (T obj, const T& cObj) {
-    typename T::TexCoordType;
-    { obj.texCoord() } -> std::same_as<typename T::TexCoordType&>;
-    { cObj.texCoord() } -> std::same_as<const typename T::TexCoordType&>;
+concept HasTexCoord = requires (T&& obj) {
+    typename RemoveRef<T>::TexCoordType;
+    { obj.texCoord() } -> TexCoordConcept;
 };
 
 /**
@@ -59,7 +60,7 @@ concept HasTexCoord = requires (T obj, const T& cObj) {
  */
 template<typename T>
 concept HasOptionalTexCoord =
-    HasTexCoord<T> && IsOptionalComponent<typename T::TexCoord>;
+    HasTexCoord<T> && IsOptionalComponent<typename RemoveRef<T>::TexCoord>;
 
 } // namespace vcl::comp
 

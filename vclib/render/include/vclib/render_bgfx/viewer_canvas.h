@@ -72,6 +72,8 @@ public:
 protected:
     void draw() override;
 
+    void drawContent() override;
+
     // events
     void onResize(unsigned int width, unsigned int height) override;
 
@@ -87,7 +89,12 @@ protected:
 
     void onMouseScroll(double dx, double dy) override;
 
+    void onMouseDoubleClick(MouseButton::Enum button, double x, double y)
+        override;
+
 private:
+    bool mReadRequested = false;
+
     bool isDirectionalLightVisible() const
     {
         return mDirectionalLight.isVisible();

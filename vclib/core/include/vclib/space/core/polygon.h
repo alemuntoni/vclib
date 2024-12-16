@@ -104,8 +104,8 @@ public:
      * @tparam R: a range of points that satisfy the PointConcept.
      * @param[in] range: the range of points that define the polygon.
      */
-    template<vcl::Range R>
-    Polygon(R&& range) requires (vcl::RangeOf<R, PointT>)
+    template<Range R>
+    Polygon(R&& range) requires (InputRange<R, PointT>)
             : mPoints(std::ranges::begin(range), std::ranges::end(range))
     {
     }
@@ -315,7 +315,7 @@ public:
      * @param[in] range: the range of points that define the polygon.
      * @return The normal of the polygon.
      */
-    template<vcl::Range R>
+    template<Range R>
     static PointT normal(R&& range)
     {
         return normal(std::ranges::begin(range), std::ranges::end(range));
@@ -358,7 +358,7 @@ public:
      * @param[in] range: the range of points that define the polygon.
      * @return The barycenter of the polygon.
      */
-    template<vcl::Range R>
+    template<Range R>
     static PointT barycenter(R&& range)
     {
         return barycenter(std::ranges::begin(range), std::ranges::end(range));
@@ -411,7 +411,7 @@ public:
      * @param[in] rWeights: the range of weights associated to the points.
      * @return The weighted barycenter of the polygon.
      */
-    template<vcl::Range Rp, vcl::Range Rw>
+    template<Range Rp, Range Rw>
     static PointT weightedBarycenter(Rp&& rPolygon, Rw&& rWeights)
     {
         return weightedBarycenter(
@@ -465,7 +465,7 @@ public:
      * @param[in] range: the range of points that define the polygon.
      * @return The perimeter of the polygon.
      */
-    template<vcl::Range R>
+    template<Range R>
     static ScalarType perimeter(R&& range)
     {
         return perimeter(std::ranges::begin(range), std::ranges::end(range));
@@ -515,7 +515,7 @@ public:
      * @param[in] range: the range of points that define the polygon.
      * @return The area of the polygon.
      */
-    template<vcl::Range R>
+    template<Range R>
     static ScalarType area(R&& range)
     {
         return area(std::ranges::begin(range), std::ranges::end(range));

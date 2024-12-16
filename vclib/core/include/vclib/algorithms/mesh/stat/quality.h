@@ -48,7 +48,7 @@ namespace vcl {
 template<MeshConcept MeshType>
 auto vertexQualityMinMax(const MeshType& m)
 {
-    vcl::requirePerVertexQuality(m);
+    requirePerVertexQuality(m);
 
     auto [min, max] = std::ranges::minmax(m.vertices() | views::quality);
     return std::make_pair(min, max);
@@ -70,7 +70,7 @@ auto vertexQualityMinMax(const MeshType& m)
 template<FaceMeshConcept MeshType>
 auto faceQualityMinMax(const MeshType& m)
 {
-    vcl::requirePerFaceQuality(m);
+    requirePerFaceQuality(m);
 
     auto [min, max] = std::ranges::minmax(m.faces() | views::quality);
 
@@ -91,7 +91,7 @@ auto faceQualityMinMax(const MeshType& m)
 template<MeshConcept MeshType>
 auto vertexQualityAverage(const MeshType& m)
 {
-    vcl::requirePerVertexQuality(m);
+    requirePerVertexQuality(m);
 
     using VertexType  = MeshType::VertexType;
     using QualityType = VertexType::QualityType;
@@ -118,7 +118,7 @@ auto vertexQualityAverage(const MeshType& m)
 template<FaceMeshConcept MeshType>
 auto faceQualityAverage(const MeshType& m)
 {
-    vcl::requirePerFaceQuality(m);
+    requirePerFaceQuality(m);
 
     using FaceType    = MeshType::FaceType;
     using QualityType = FaceType::QualityType;
@@ -151,7 +151,7 @@ std::vector<typename MeshType::VertexType::QualityType> vertexRadiusFromQuality(
     double          radiusVariance,
     bool            invert = false)
 {
-    vcl::requirePerVertexQuality(m);
+    requirePerVertexQuality(m);
 
     using VertexType  = MeshType::VertexType;
     using QualityType = VertexType::QualityType;
@@ -179,13 +179,13 @@ Histogram<HScalar> vertexQualityHistogram(
     bool            selectionOnly = false,
     uint            histSize      = 10000)
 {
-    vcl::requirePerVertexQuality(m);
+    requirePerVertexQuality(m);
 
     using VertexType = MeshType::VertexType;
 
     auto minmax = vertexQualityMinMax(m);
 
-    vcl::Histogram<HScalar> h(minmax.first, minmax.second, histSize);
+    Histogram<HScalar> h(minmax.first, minmax.second, histSize);
     for (const VertexType& v : m.vertices()) {
         if (!selectionOnly || v.selected()) {
             assert(!isDegenerate(v.quality()));
@@ -201,13 +201,13 @@ Histogram<HScalar> faceQualityHistogram(
     bool            selectionOnly = false,
     uint            histSize      = 10000)
 {
-    vcl::requirePerFaceQuality(m);
+    requirePerFaceQuality(m);
 
     using FaceType = MeshType::FaceType;
 
     auto minmax = vertexQualityMinMax(m);
 
-    vcl::Histogram<HScalar> h(minmax.first, minmax.second, histSize);
+    Histogram<HScalar> h(minmax.first, minmax.second, histSize);
     for (const FaceType& f : m.faces()) {
         if (!selectionOnly || f.selected()) {
             assert(!isDegenerate(f.quality()));

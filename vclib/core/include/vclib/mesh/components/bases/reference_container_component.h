@@ -224,7 +224,7 @@ protected:
     }
 
     template<Range Rng>
-    void setElements(Rng&& r) requires RangeOfConvertibleTo<Rng, Elem*>
+    void setElements(Rng&& r) requires InputRange<Rng, Elem*>
     {
         if constexpr (STORE_INDICES) {
             auto conv = [&](auto v) {
@@ -239,7 +239,7 @@ protected:
     }
 
     template<Range Rng>
-    void setElements(Rng&& r) requires RangeOfConvertibleTo<Rng, uint>
+    void setElements(Rng&& r) requires InputRange<Rng, uint>
     {
         if constexpr (STORE_INDICES) {
             Base::container().set(r);

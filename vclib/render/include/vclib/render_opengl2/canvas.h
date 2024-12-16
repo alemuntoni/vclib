@@ -27,6 +27,8 @@
 
 #include <vclib/render/interfaces/event_manager_i.h>
 
+#include <vclib/space/core/point.h>
+
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #else
@@ -68,7 +70,14 @@ namespace vcl {
  */
 class Canvas : public virtual vcl::EventManagerI
 {
+    using CallbackReadBuffer = std::function<void(std::vector<float>)>;
+
     void* mWinId = nullptr;
+
+    Point2<uint> mSize = {0, 0};
+
+    CallbackReadBuffer mReadBufferCallback = nullptr;
+    Point2i            mReadDepthPoint     = Point2i(-1, -1);
 
 public:
     Canvas(void* winId, uint width, uint height, void* displayId = nullptr);
@@ -77,17 +86,26 @@ public:
 
     void init(uint width, uint height);
 
-    void screenShot(
+    Point2<uint> size() const { return mSize; }
+
+    bool screenshot(
         const std::string& filename,
         uint               width  = 0,
         uint               height = 0);
 
+    bool readDepth(const Point2i& point, CallbackReadBuffer callback = nullptr);
+
 protected:
-    virtual void draw() = 0;
+    virtual void draw() { drawContent(); };
+
+    virtual void drawContent() = 0;
 
     void onResize(uint width, uint height) override;
 
     void frame();
+
+private:
+    void readDepthData();
 };
 
 } // namespace vcl

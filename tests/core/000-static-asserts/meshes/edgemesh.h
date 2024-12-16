@@ -1,14 +1,13 @@
 #ifndef EDGEMESH_H
 #define EDGEMESH_H
 
+#include "mesh_views.h"
+
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes/edge_mesh.h>
 #else
-#include <Eigen/Core>
 import vclib.core;
 #endif
-
-#include "mesh_views.h"
 
 void edgemeshStaticAsserts()
 {

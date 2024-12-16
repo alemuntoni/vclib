@@ -79,7 +79,7 @@ HausdorffDistResult hausdorffDist(
 
     uint ns = 0;
     uint i  = 0;
-    vcl::parallelFor(s, [&](const PointSampleType& sample) {
+    parallelFor(s, [&](const PointSampleType& sample) {
         //    for (const PointSampleType& sample : s) {
         ScalarType dist = std::numeric_limits<ScalarType>::max();
         const auto iter = g.closestValue(sample, dist);
@@ -136,7 +136,7 @@ HausdorffDistResult samplerMeshHausdorff(
 
     log.log(0, "Building Grid on " + meshName + " vertices...");
 
-    vcl::StaticGrid3<const VertexType*> grid(m.vertices() | views::addrOf);
+    StaticGrid3<const VertexType*> grid(m.vertices() | views::addrOf);
     grid.build();
 
     log.log(5, "Grid built.");
@@ -164,7 +164,7 @@ HausdorffDistResult samplerMeshHausdorff(
     if (m.faceNumber() == 0) {
         log.log(0, "Building Grid on " + meshName + " vertices...");
 
-        vcl::StaticGrid3<const VertexType*, ScalarType> grid(
+        StaticGrid3<const VertexType*, ScalarType> grid(
             m.vertices() | views::addrOf);
         grid.build();
 
@@ -175,7 +175,7 @@ HausdorffDistResult samplerMeshHausdorff(
     else {
         log.log(0, "Building Grid on " + meshName + " faces...");
 
-        vcl::StaticGrid3<const FaceType*, ScalarType> grid(
+        StaticGrid3<const FaceType*, ScalarType> grid(
             m.faces() | views::addrOf);
         grid.build();
 
@@ -215,14 +215,14 @@ HausdorffDistResult hausdorffDistance(
             " samples...");
 
     if constexpr (METHOD == HAUSDORFF_VERTEX_UNIFORM) {
-        sampler = vcl::vertexUniformPointSampling<SamplerType>(
+        sampler = vertexUniformPointSampling<SamplerType>(
             m2, nSamples, birth, false, deterministic);
     }
     else if constexpr (METHOD == HAUSDORFF_EDGE_UNIFORM) {
         // todo
     }
     else {
-        sampler = vcl::montecarloPointSampling<SamplerType>(
+        sampler = montecarloPointSampling<SamplerType>(
             m2, nSamples, birth, deterministic);
     }
 

@@ -235,17 +235,39 @@ void EventManagerWindow::glfwKeyCallback(
 }
 
 void EventManagerWindow::glfwMouseButtonCallback(
-    GLFWwindow*,
-    int button,
-    int action,
-    int mods)
+    GLFWwindow* win,
+    int         button,
+    int         action,
+    int         mods)
 {
     glfw::MouseButton btn = (glfw::MouseButton) button;
 
     setModifiers(glfw::fromGLFW((glfw::KeyboardModifiers) mods));
 
     if (action == GLFW_PRESS) {
-        onMousePress(glfw::fromGLFW(btn));
+        // handle double click
+        const double timeSeconds = glfwGetTime();
+        Point2d      pos;
+        Point2f      scale;
+        glfwGetCursorPos(win, &pos.x(), &pos.y());
+#ifdef __APPLE__
+        // only macOS has coherent coordinates with content scale
+        pos.x() *= contentScaleX();
+        pos.y() *= contentScaleY();
+#endif
+        if (timeSeconds - mLastPressedTime < DOUBLE_CLICK_TIME_SECS &&
+            button == mLastPressedButton &&
+            (mLastPressedPos - pos).norm() < DOUBLE_CLICK_DIST_PIXELS) {
+            mLastPressedTime   = 0.0;
+            mLastPressedButton = NO_BUTTON;
+            onMouseDoubleClick(glfw::fromGLFW(btn), pos.x(), pos.y());
+        }
+        else {
+            mLastPressedTime   = timeSeconds;
+            mLastPressedButton = button;
+            mLastPressedPos    = pos;
+            onMousePress(glfw::fromGLFW(btn));
+        }
     }
     else if (action == GLFW_RELEASE) {
         onMouseRelease(glfw::fromGLFW(btn));
@@ -258,7 +280,7 @@ void EventManagerWindow::glfwCursorPosCallback(
     double ypos)
 {
 #ifdef __APPLE__
-    // macOS retina display fix
+    // only macOS has coherent coordinates with content scale
     xpos *= contentScaleX();
     ypos *= contentScaleY();
 #endif
@@ -271,8 +293,8 @@ void EventManagerWindow::glfwScrollCallback(
     double yoffset)
 {
     // This is ok for macOS
-    // TODO check other platforms
-    // TODO check if content scale must be used
+    // TODO: check other platforms
+    // TODO: check if content scale must be used
     const double ToPixelFactor = 10;
     onMouseScroll(xoffset * ToPixelFactor, yoffset * ToPixelFactor);
 }

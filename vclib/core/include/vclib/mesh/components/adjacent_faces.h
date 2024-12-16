@@ -348,7 +348,7 @@ public:
      * @param[in] r: range of face pointers to set.
      */
     template<Range Rng>
-    void setAdjFaces(Rng&& r) requires RangeOfConvertibleTo<Rng, Face*>
+    void setAdjFaces(Rng&& r) requires InputRange<Rng, Face*>
     {
         Base::setElements(r);
     }
@@ -365,7 +365,7 @@ public:
      * @param[in] r: range of face indices to set.
      */
     template<Range Rng>
-    void setAdjFaces(Rng&& r) requires RangeOfConvertibleTo<Rng, uint>
+    void setAdjFaces(Rng&& r) requires InputRange<Rng, uint>
     {
         Base::setElements(r);
     }

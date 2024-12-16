@@ -123,8 +123,8 @@ void rotate(
 {
     using ScalarType = MeshType::VertexType::CoordType::ScalarType;
 
-    vcl::Matrix33<ScalarType> m;
-    vcl::setTransformMatrixRotation(m, axis, angleRad);
+    Matrix33<ScalarType> m;
+    setTransformMatrixRotation(m, axis, angleRad);
 
     rotate(mesh, m, updateNormals);
 }
@@ -136,7 +136,7 @@ void rotateDeg(
     const Scalar&    angleDeg,
     bool             updateNormals = true)
 {
-    rotate(mesh, axis, vcl::toRad(angleDeg), updateNormals);
+    rotate(mesh, axis, toRad(angleDeg), updateNormals);
 }
 
 } // namespace vcl

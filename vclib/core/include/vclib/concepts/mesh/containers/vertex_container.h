@@ -24,11 +24,10 @@
 #define VCL_CONCEPTS_MESH_CONTAINERS_VERTEX_CONTAINER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include "element_container.h"
-
+#include <vclib/concepts/const_correctness.h>
+#include <vclib/concepts/iterators.h>
 #include <vclib/concepts/ranges/range.h>
 
-#include <ranges>
 #include <vector>
 #endif
 
@@ -45,39 +44,53 @@ namespace mesh {
  */
 template<typename T>
 concept HasVertexContainer = requires (
-    T                                 obj,
-    const T&                          cObj,
-    typename T::VertexType*           vP,
-    typename T::VertexType::CoordType c) {
-    typename T::VertexType;
-    typename T::VertexIterator;
-    typename T::ConstVertexIterator;
+    T&&                                          obj,
+    typename RemoveRef<T>::VertexType            v,
+    typename RemoveRef<T>::VertexType*           vP,
+    typename RemoveRef<T>::VertexType&           vR,
+    typename RemoveRef<T>::VertexType::CoordType c,
+    std::vector<uint>                            vec) {
+    typename RemoveRef<T>::VertexType;
+    typename RemoveRef<T>::VertexIterator;
+    typename RemoveRef<T>::ConstVertexIterator;
 
-    { obj.vertex(uint()) } -> std::same_as<typename T::VertexType&>;
-    { cObj.vertex(uint()) } -> std::same_as<const typename T::VertexType&>;
+    { obj.vertex(uint()) } -> std::convertible_to<decltype(v)>;
+    { obj.vertexNumber() } -> std::same_as<uint>;
+    { obj.vertexContainerSize() } -> std::same_as<uint>;
+    { obj.deletedVertexNumber() } -> std::same_as<uint>;
 
-    { cObj.vertexNumber() } -> std::same_as<uint>;
-    { cObj.vertexContainerSize() } -> std::same_as<uint>;
-    { cObj.deletedVertexNumber() } -> std::same_as<uint>;
-    { obj.deleteVertex(uint()) } -> std::same_as<void>;
-    { obj.deleteVertex(vP) } -> std::same_as<void>;
     { obj.vertexIndexIfCompact(uint()) } -> std::same_as<uint>;
-    { obj.vertexCompactIndices() } -> std::same_as<std::vector<uint>>;
+    { obj.vertexCompactIndices() } -> std::same_as<decltype(vec)>;
 
-    { obj.addVertex() } -> std::same_as<uint>;
-    { obj.addVertex(c) } -> std::same_as<uint>;
-    { obj.addVertices(uint()) } -> std::same_as<uint>;
-    { obj.addVertices(c, c, c, c) } -> std::same_as<uint>;
-    { obj.reserveVertices(uint()) } -> std::same_as<void>;
-    { obj.compactVertices() } -> std::same_as<void>;
+    { obj.vertexBegin() } -> InputIterator<decltype(v)>;
+    { obj.vertexEnd() } -> InputIterator<decltype(v)>;
+    { obj.vertices() } -> InputRange<decltype(v)>;
+    { obj.vertices(bool()) } -> InputRange<decltype(v)>;
 
-    { obj.vertexBegin() } -> std::same_as<typename T::VertexIterator>;
-    { cObj.vertexBegin() } -> std::same_as<typename T::ConstVertexIterator>;
-    { obj.vertexEnd() } -> std::same_as<typename T::VertexIterator>;
-    { cObj.vertexEnd() } -> std::same_as<typename T::ConstVertexIterator>;
+    // non const requirements
+    requires IsConst<T> || requires {
+        { obj.vertex(uint()) } -> std::same_as<decltype(vR)>;
 
-    { obj.vertices() } -> vcl::RangeOf<typename T::VertexType>;
-    { cObj.vertices() } -> vcl::RangeOf<typename T::VertexType>;
+        { obj.addVertex() } -> std::same_as<uint>;
+        { obj.addVertex(c) } -> std::same_as<uint>;
+        { obj.addVertices(uint()) } -> std::same_as<uint>;
+        { obj.addVertices(c, c, c, c) } -> std::same_as<uint>;
+        { obj.clearVertices() } -> std::same_as<void>;
+        { obj.resizeVertices(uint()) } -> std::same_as<void>;
+        { obj.reserveVertices(uint()) } -> std::same_as<void>;
+        { obj.compactVertices() } -> std::same_as<void>;
+        { obj.deleteVertex(uint()) } -> std::same_as<void>;
+        { obj.deleteVertex(vP) } -> std::same_as<void>;
+        { obj.updateVertexIndices(vec) } -> std::same_as<void>;
+
+        { obj.vertexBegin() } -> OutputIterator<decltype(v)>;
+        { obj.vertexEnd() } -> OutputIterator<decltype(v)>;
+        { obj.vertices() } -> OutputRange<decltype(v)>;
+        { obj.vertices(bool()) } -> OutputRange<decltype(v)>;
+
+        { obj.enableAllPerVertexOptionalComponents() } -> std::same_as<void>;
+        { obj.disableAllPerVertexOptionalComponents() } -> std::same_as<void>;
+    };
 };
 
 } // namespace mesh
@@ -116,7 +129,7 @@ concept HasVertexContainer = requires (
  * @ingroup containers_concepts
  */
 template<typename... Args>
-concept HasVertices = (vcl::mesh::HasVertexContainer<Args> || ...);
+concept HasVertices = (mesh::HasVertexContainer<Args> || ...);
 
 } // namespace vcl
 

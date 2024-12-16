@@ -24,58 +24,34 @@
 
 #include <vclib/render_bgfx/system/native_window_handle.h>
 
+#include <vclib/io/image.h>
+
 namespace vcl {
 
 Canvas::Canvas(void* winId, uint width, uint height, void* displayId)
 {
+    // save window id
     mWinId = winId;
 
-    mViewId = Context::requestViewId(mWinId, displayId);
-
-    mFbh = createFrameBufferAndInitView(
-        winId, mViewId, width, height, true, false);
+    // on screen framebuffer
+    mViewId = Context::instance(mWinId, displayId).requestViewId();
 
     mTextView.init(width, height);
+
+    // (re)create the framebuffers
+    Canvas::onResize(width, height);
 }
 
 Canvas::~Canvas()
 {
+    // deallocate the framebuffers
     if (bgfx::isValid(mFbh))
         bgfx::destroy(mFbh);
 
-    Context::releaseViewId(mViewId);
-}
-
-void Canvas::screenShot(const std::string& filename, uint width, uint height)
-{
-    if (width == 0 || height == 0) {
-        draw();
-        bgfx::requestScreenShot(mFbh, filename.c_str());
-        bgfx::frame();
-    }
-    else {
-        void* d;
-        void* w = vcl::createWindow("", width, height, d, true);
-
-        // setup view and frame buffer
-        bgfx::ViewId            v = Context::requestViewId();
-        bgfx::FrameBufferHandle fbh =
-            createFrameBufferAndInitView(w, v, width, height, true);
-
-        // replace the current view with the new one
-        bgfx::ViewId tmpView = mViewId;
-        mViewId              = v;
-        draw();
-        mTextView.frame(fbh);
-        bgfx::requestScreenShot(fbh, filename.c_str());
-        bgfx::frame();
-
-        // restore the previous view and release the resources
-        mViewId = tmpView;
-        bgfx::destroy(fbh);
-        Context::releaseViewId(v);
-        vcl::closeWindow(w, d);
-    }
+    // release the view id
+    auto& ctx = Context::instance();
+    if (ctx.isValidViewId(mViewId))
+        ctx.releaseViewId(mViewId);
 }
 
 void Canvas::enableText(bool b)
@@ -135,12 +111,19 @@ void Canvas::onKeyPress(Key::Enum key)
 
 void Canvas::onResize(uint width, uint height)
 {
+    mSize = {width, height};
+
+    // create window backbuffer
     if (bgfx::isValid(mFbh))
         bgfx::destroy(mFbh);
 
-    mFbh = createFrameBufferAndInitView(
-        mWinId, mViewId, width, height, true, false);
+    auto& ctx = Context::instance();
+    mFbh =
+        ctx.createFramebufferAndInitView(mWinId, mViewId, width, height, true);
+    // the canvas framebuffer is non valid for the default window
+    assert(ctx.isDefaultWindow(mWinId) == !bgfx::isValid(mFbh));
 
+    // resize the text view
     mTextView.resize(width, height);
 }
 
@@ -151,40 +134,90 @@ void Canvas::frame()
     draw();
     mTextView.frame(mFbh);
 
-    bgfx::frame();
+    const bool newReadRequested =
+        (mReadRequest != std::nullopt && !mReadRequest->isSubmitted());
+
+    if (newReadRequested) {
+        // draw offscreen frame
+        offscreenFrame();
+        mCurrFrame = bgfx::frame();
+        // submit the calls for blitting the offscreen depth buffer
+        if (mReadRequest->submit()) {
+            // solicit new frame
+            this->update();
+        }
+    }
+    else {
+        mCurrFrame = bgfx::frame();
+    }
+
+    if (mReadRequest != std::nullopt) {
+        // read depth data if available
+        const bool done = mReadRequest->performRead(mCurrFrame);
+        if (done)
+            mReadRequest = std::nullopt;
+        // solicit new frame
+        this->update();
+    }
 }
 
-bgfx::FrameBufferHandle Canvas::createFrameBufferAndInitView(
-    void*        winId,
-    bgfx::ViewId view,
-    uint         width,
-    uint         height,
-    bool         clear,
-    bool         depth32bit)
+bool Canvas::readDepth(const Point2i& point, CallbackReadBuffer callback)
 {
-    bgfx::TextureFormat::Enum colorFormat = bgfx::TextureFormat::RGBA8;
-    bgfx::TextureFormat::Enum depthFormat = bgfx::TextureFormat::D24;
-
-    if (depth32bit) {
-        depthFormat = bgfx::TextureFormat::D32;
+    if (!Context::instance().supportsReadback() // feature unsupported
+        || mReadRequest != std::nullopt         // read already requested
+        || point.x() < 0 || point.y() < 0       // point out of bounds
+        || point.x() >= mSize.x() || point.y() >= mSize.y()) {
+        return false;
     }
 
-    bgfx::FrameBufferHandle fbh = BGFX_INVALID_HANDLE;
+    mReadRequest.emplace(point, mSize, callback);
+    return true;
+}
 
-    if (view != 0) {
-        fbh = bgfx::createFrameBuffer(
-            winId, width, height, colorFormat, depthFormat);
-        bgfx::setViewFrameBuffer(view, fbh);
+bool Canvas::screenshot(const std::string& filename, uint width, uint height)
+{
+    if (!Context::instance().supportsReadback() // feature unsupported
+        || mReadRequest != std::nullopt) {      // read already requested
+        return false;
     }
 
-    if (clear) {
-        bgfx::setViewClear(
-            view, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xffffffff, 1.0f, 0);
-    }
-    bgfx::setViewRect(view, 0, 0, width, height);
-    bgfx::reset(width, height, BGFX_RESET_VSYNC);
-    bgfx::touch(view);
-    return fbh;
+    // get size
+    auto size = mSize;
+    if (width != 0 && height != 0)
+        size = {width, height};
+
+    // color data callback
+    CallbackReadBuffer callback = [=](const ReadData& data) {
+        assert(std::holds_alternative<ReadFramebufferRequest::ByteData>(data));
+        const auto& d = std::get<ReadFramebufferRequest::ByteData>(data);
+
+        // save rgb image data into file using stb depending on file
+        try {
+            vcl::saveImageData(filename, size.x(), size.y(), d.data());
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Error saving image: " << e.what() << std::endl;
+        }
+    };
+
+    mReadRequest.emplace(size, callback);
+    return true;
+}
+
+void Canvas::offscreenFrame()
+{
+    assert(mReadRequest != std::nullopt && !mReadRequest->isSubmitted());
+
+    // render offscren
+    bgfx::setViewFrameBuffer(
+        mReadRequest->viewId(), mReadRequest->frameBuffer());
+    bgfx::touch(mReadRequest->viewId());
+
+    // render changing the view
+    auto tmpId = mViewId;
+    mViewId    = mReadRequest->viewId();
+    drawContent();
+    mViewId = tmpId;
 }
 
 } // namespace vcl

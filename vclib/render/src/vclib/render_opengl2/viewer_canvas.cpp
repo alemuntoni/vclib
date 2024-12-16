@@ -70,7 +70,7 @@ void ViewerCanvas::init(uint width, uint height)
     }
 }
 
-void ViewerCanvas::draw()
+void ViewerCanvas::drawContent()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -94,6 +94,49 @@ void ViewerCanvas::onResize(unsigned int width, unsigned int height)
     Canvas::onResize(width, height);
     DTB::resizeViewer(width, height);
     update();
+}
+
+void ViewerCanvas::onMouseDoubleClick(
+    MouseButton::Enum button,
+    double            x,
+    double            y)
+{
+    // FIXME: code duplication for both OpenGL2 and BGFX
+    if (mReadRequested)
+        return;
+
+    // get point
+    const Point2d p(x, y);
+
+    // get the homogeneous NDC flag
+    const bool homogeneousNDC = true;
+
+    // create the callback
+    const auto    proj     = projectionMatrix();
+    const auto    view     = viewMatrix();
+    const Point4f vp       = {.0f, .0f, float(size().x()), float(size().y())};
+    auto          callback = [=, this](std::vector<float> data) {
+        mReadRequested = false;
+
+        assert(data.size() == 1);
+        const float depth = data[0];
+        // if the depth is 1.0, the point is not in the scene
+        if (depth == 1.0f) {
+            return;
+        }
+
+        // unproject the point
+        const Point3f p2d(p.x(), vp[3] - p.y(), depth);
+        auto          unproj = unproject(
+            p2d, Matrix44<ScalarType>(proj * view), vp, homogeneousNDC);
+
+        this->focus(unproj);
+        this->update();
+    };
+
+    mReadRequested = this->readDepth(Point2i(p.x(), p.y()), callback);
+    if (mReadRequested)
+        update();
 }
 
 } // namespace vcl

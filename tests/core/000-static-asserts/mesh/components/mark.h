@@ -20,52 +20,69 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef COMP_BOUNDING_BOX_H
-#define COMP_BOUNDING_BOX_H
+#ifndef COMP_MARK_H
+#define COMP_MARK_H
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes.h>
 #else
-#include <Eigen/Core>
 import vclib.core;
 #endif
 
-void boundingBoxComponentStaticAsserts()
+void markComponentStaticAsserts()
 {
     using namespace vcl;
 
-    // test only the bounding box component
+    using TriMeshVertex = trimesh::Vertex<float, true>;
+
+    // test only the mark component
     static_assert(
-        comp::HasBoundingBox<mesh::BoundingBox3d>,
-        "mesh::BoundingBox3d does not satisfy the HasBoundingBox concept");
+        comp::HasMark<vert::Mark>,
+        "vert::Mark does not satisfy the HasMark concept");
     static_assert(
-        comp::HasBoundingBox<const mesh::BoundingBox3d>,
-        "const mesh::BoundingBox3d does not satisfy the HasBoundingBox concept");
+        comp::HasMark<const vert::Mark>,
+        "const vert::Mark does not satisfy the HasMark concept");
     static_assert(
-        comp::HasBoundingBox<mesh::BoundingBox3d&>,
-        "mesh::BoundingBox3d& does not satisfy the HasBoundingBox concept");
+        comp::HasMark<vert::Mark&>,
+        "vert::Mark& does not satisfy the HasMark concept");
     static_assert(
-        comp::HasBoundingBox<const mesh::BoundingBox3d&>,
-        "const mesh::BoundingBox3d& does not satisfy the HasBoundingBox concept");
+        comp::HasMark<const vert::Mark&>,
+        "const vert::Mark& does not satisfy the HasMark concept");
     static_assert(
-        comp::HasBoundingBox<mesh::BoundingBox3d&&>,
-        "mesh::BoundingBox3d&& does not satisfy the HasBoundingBox concept");
+        comp::HasMark<vert::Mark&&>,
+        "vert::Mark&& does not satisfy the HasMark concept");
 
     static_assert(
-        comp::HasBoundingBox<TriMesh>,
-        "TriMesh does not satisfy the HasBoundingBox concept");
+        comp::HasMark<TriMeshVertex>,
+        "TriMesh Vertex does not satisfy the HasMark concept");
     static_assert(
-        comp::HasBoundingBox<const TriMesh>,
-        "const TriMesh does not satisfy the HasBoundingBox concept");
+        comp::HasMark<const TriMeshVertex>,
+        "const TriMesh Vertex does not satisfy the HasMark concept");
     static_assert(
-        comp::HasBoundingBox<TriMesh&>,
-        "TriMesh& does not satisfy the HasBoundingBox concept");
+        comp::HasMark<TriMeshVertex&>,
+        "TriMesh Vertex& does not satisfy the HasMark concept");
     static_assert(
-        comp::HasBoundingBox<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasBoundingBox concept");
+        comp::HasMark<const TriMeshVertex&>,
+        "const TriMesh Vertex& does not satisfy the HasMark concept");
     static_assert(
-        comp::HasBoundingBox<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasBoundingBox concept");
+        comp::HasMark<TriMeshVertex&&>,
+        "TriMesh Vertex&& does not satisfy the HasMark concept");
+
+    static_assert(
+        comp::HasOptionalMark<TriMeshVertex>,
+        "TriMesh Vertex does not satisfy the HasOptionalMark concept");
+    static_assert(
+        comp::HasOptionalMark<const TriMeshVertex>,
+        "const TriMesh Vertex does not satisfy the HasOptionalMark concept");
+    static_assert(
+        comp::HasOptionalMark<TriMeshVertex&>,
+        "TriMesh Vertex& does not satisfy the HasOptionalMark concept");
+    static_assert(
+        comp::HasOptionalMark<const TriMeshVertex&>,
+        "const TriMesh Vertex& does not satisfy the HasOptionalMark concept");
+    static_assert(
+        comp::HasOptionalMark<TriMeshVertex&&>,
+        "TriMesh Vertex&& does not satisfy the HasOptionalMark concept");
 }
 
-#endif // COMP_BOUNDING_BOX_H
+#endif // COMP_MARK_H

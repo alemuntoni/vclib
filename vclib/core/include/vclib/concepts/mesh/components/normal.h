@@ -25,6 +25,8 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include "component.h"
+
+#include <vclib/concepts/space.h>
 #endif
 
 namespace vcl::comp {
@@ -44,10 +46,9 @@ namespace vcl::comp {
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasNormal = requires (T obj, const T& cObj) {
-    typename T::NormalType;
-    { obj.normal() } -> std::same_as<typename T::NormalType&>;
-    { cObj.normal() } -> std::same_as<const typename T::NormalType&>;
+concept HasNormal = requires (T&& obj) {
+    typename RemoveRef<T>::NormalType;
+    { obj.normal() } -> PointConcept;
 };
 
 /**
@@ -59,7 +60,7 @@ concept HasNormal = requires (T obj, const T& cObj) {
  */
 template<typename T>
 concept HasOptionalNormal =
-    HasNormal<T> && IsOptionalComponent<typename T::Normal>;
+    HasNormal<T> && IsOptionalComponent<typename RemoveRef<T>::Normal>;
 
 } // namespace vcl::comp
 

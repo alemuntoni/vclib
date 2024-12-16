@@ -125,7 +125,7 @@ auto boundedDistance(
     else {
         ScalarType minDist = maxDist;
 
-        std::vector<uint> tris = vcl::earCut(f);
+        std::vector<uint> tris = earCut(f);
         for (uint i = 0; i < tris.size(); i += 3) {
             PointType  w;
             ScalarType d = boundedDistance(

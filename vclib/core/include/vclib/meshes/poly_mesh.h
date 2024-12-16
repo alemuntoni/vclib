@@ -92,7 +92,7 @@ namespace vcl {
  */
 template<typename Scalar, bool INDEXED>
 class PolyMeshT :
-        public vcl::Mesh<
+        public Mesh<
             mesh::VertexContainer<polymesh::Vertex<Scalar, INDEXED>>,
             mesh::FaceContainer<polymesh::Face<Scalar, INDEXED>>,
             mesh::BoundingBox3<Scalar>,

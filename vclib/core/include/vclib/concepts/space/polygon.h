@@ -26,6 +26,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include "point.h"
 
+#include <vclib/concepts/iterators.h>
+#include <vclib/concepts/ranges/range.h>
 #include <vclib/types.h>
 #endif
 
@@ -59,18 +61,22 @@ concept PolygonConcept = requires (
     { obj.weightedBarycenter(vecS) } -> PointConcept;
     { obj.perimeter() } -> std::same_as<decltype(s)>;
     { obj.area() } -> std::same_as<decltype(s)>;
-    { obj.begin() } -> std::input_iterator;
-    { obj.end() } -> std::input_iterator;
+    { obj.begin() } -> InputIterator<decltype(p)>;
+    { obj.end() } -> InputIterator<decltype(p)>;
+
+    requires InputRange<T, decltype(p)>;
 
     // non const requirements
-    requires vcl::IsConst<T> || requires {
+    requires IsConst<T> || requires {
         { obj.resize(uint()) } -> std::same_as<void>;
         { obj.reserve(uint()) } -> std::same_as<void>;
         { obj.clear() } -> std::same_as<void>;
         { obj.pushBack(p) } -> std::same_as<void>;
         { obj.point(uint()) } -> std::same_as<decltype(pR)>;
-        { obj.begin() } -> std::output_iterator<decltype(p)>;
-        { obj.end() } -> std::output_iterator<decltype(p)>;
+        { obj.begin() } -> OutputIterator<decltype(p)>;
+        { obj.end() } -> OutputIterator<decltype(p)>;
+
+        requires OutputRange<T, decltype(p)>;
     };
 };
 

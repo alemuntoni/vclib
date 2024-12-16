@@ -84,7 +84,7 @@ public:
         build();
     }
 
-    template<vcl::Range Rng>
+    template<Range Rng>
     StaticGrid(Rng&& r, const IntersectsCellFunction& intersects = nullptr) :
             StaticGrid(std::ranges::begin(r), std::ranges::end(r), intersects)
     {

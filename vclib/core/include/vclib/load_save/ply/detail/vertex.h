@@ -52,8 +52,8 @@ void readPlyVertexProperty(
         hasBeenRead  = true;
     }
     if (p.name >= ply::nx && p.name <= ply::nz) {
-        if constexpr (vcl::HasPerVertexNormal<MeshType>) {
-            if (vcl::isPerVertexNormalAvailable(mesh)) {
+        if constexpr (HasPerVertexNormal<MeshType>) {
+            if (isPerVertexNormalAvailable(mesh)) {
                 using Scalar = VertexType::NormalType::ScalarType;
                 int a        = p.name - ply::nx;
                 v.normal()[a] =
@@ -63,8 +63,8 @@ void readPlyVertexProperty(
         }
     }
     if (p.name >= ply::red && p.name <= ply::alpha) {
-        if constexpr (vcl::HasPerVertexColor<MeshType>) {
-            if (vcl::isPerVertexColorAvailable(mesh)) {
+        if constexpr (HasPerVertexColor<MeshType>) {
+            if (isPerVertexColorAvailable(mesh)) {
                 int a = p.name - ply::red;
                 v.color()[a] =
                     io::readPrimitiveType<unsigned char>(file, p.type, end);
@@ -73,9 +73,9 @@ void readPlyVertexProperty(
         }
     }
     if (p.name == ply::quality) {
-        if constexpr (vcl::HasPerVertexQuality<MeshType>) {
+        if constexpr (HasPerVertexQuality<MeshType>) {
             using QualityType = VertexType::QualityType;
-            if (vcl::isPerVertexQualityAvailable(mesh)) {
+            if (isPerVertexQualityAvailable(mesh)) {
                 v.quality() =
                     io::readPrimitiveType<QualityType>(file, p.type, end);
                 hasBeenRead = true;
@@ -83,9 +83,9 @@ void readPlyVertexProperty(
         }
     }
     if (p.name >= ply::texture_u && p.name <= ply::texture_v) {
-        if constexpr (vcl::HasPerVertexTexCoord<MeshType>) {
+        if constexpr (HasPerVertexTexCoord<MeshType>) {
             using Scalar = VertexType::TexCoordType::ScalarType;
-            if (vcl::isPerVertexTexCoordAvailable(mesh)) {
+            if (isPerVertexTexCoordAvailable(mesh)) {
                 int a = p.name - ply::texture_u;
                 v.texCoord()[a] =
                     io::readPrimitiveType<Scalar>(file, p.type, end);
@@ -94,7 +94,7 @@ void readPlyVertexProperty(
         }
     }
     if (p.name == ply::unknown) {
-        if constexpr (vcl::HasPerVertexCustomComponents<MeshType>) {
+        if constexpr (HasPerVertexCustomComponents<MeshType>) {
             if (mesh.hasPerVertexCustomComponent(p.unknownPropertyName)) {
                 io::readCustomComponent(
                     file, v, p.unknownPropertyName, p.type, end);
@@ -121,11 +121,11 @@ void readPlyVertexTxt(
     MeshType&                     mesh,
     const std::list<PlyProperty>& vertexProperties)
 {
-    vcl::Tokenizer spaceTokenizer  = readAndTokenizeNextNonEmptyLine(file);
-    vcl::Tokenizer::iterator token = spaceTokenizer.begin();
+    Tokenizer spaceTokenizer  = readAndTokenizeNextNonEmptyLine(file);
+    Tokenizer::iterator token = spaceTokenizer.begin();
     for (const PlyProperty& p : vertexProperties) {
         if (token == spaceTokenizer.end()) {
-            throw vcl::MalformedFileException("Unexpected end of line.");
+            throw MalformedFileException("Unexpected end of line.");
         }
         readPlyVertexProperty(token, mesh, v, p);
     }
@@ -169,34 +169,34 @@ void writePlyVertices(
                 hasBeenWritten = true;
             }
             if (p.name >= ply::nx && p.name <= ply::nz) {
-                if constexpr (vcl::HasPerVertexNormal<MeshType>) {
+                if constexpr (HasPerVertexNormal<MeshType>) {
                     io::writeProperty(
                         file, v.normal()[p.name - ply::nx], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             if (p.name >= ply::red && p.name <= ply::alpha) {
-                if constexpr (vcl::HasPerVertexColor<MeshType>) {
+                if constexpr (HasPerVertexColor<MeshType>) {
                     io::writeProperty(
                         file, v.color()[p.name - ply::red], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             if (p.name == ply::quality) {
-                if constexpr (vcl::HasPerVertexQuality<MeshType>) {
+                if constexpr (HasPerVertexQuality<MeshType>) {
                     io::writeProperty(file, v.quality(), p.type, format);
                     hasBeenWritten = true;
                 }
             }
             if (p.name >= ply::texture_u && p.name <= ply::texture_v) {
-                if constexpr (vcl::HasPerVertexTexCoord<MeshType>) {
+                if constexpr (HasPerVertexTexCoord<MeshType>) {
                     const uint a = p.name - ply::texture_u;
                     io::writeProperty(file, v.texCoord()[a], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             if (p.name == ply::unknown) {
-                if constexpr (vcl::HasPerVertexCustomComponents<MeshType>) {
+                if constexpr (HasPerVertexCustomComponents<MeshType>) {
                     if (mesh.hasPerVertexCustomComponent(
                             p.unknownPropertyName)) {
                         io::writeCustomComponent(

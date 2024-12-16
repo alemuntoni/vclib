@@ -48,7 +48,7 @@ namespace vcl::mesh {
  *
  * @ingroup containers
  */
-template<vcl::VertexConcept T>
+template<VertexConcept T>
 class VertexContainer : public ElementContainer<T>
 {
     template<VertexConcept U>

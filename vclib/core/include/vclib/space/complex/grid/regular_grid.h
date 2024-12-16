@@ -53,7 +53,7 @@ public:
     using CellCoord      = Point<uint, N>;
 
     using CellIterator = vcl::CellIterator<N>;
-    using CellView     = vcl::View<CellIterator>;
+    using CellView     = View<CellIterator>;
 
     RegularGrid() = default;
 

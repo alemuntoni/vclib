@@ -28,6 +28,7 @@ module;
 #include <optional>
 #include <ranges>
 #include <set>
+#include <stdexcept>
 #include <vector>
 
 #include <Eigen/Eigenvalues>
@@ -48,6 +49,7 @@ export {
 #include <vclib/algorithms/core/polygon/core2.h>
 #include <vclib/algorithms/core/polygon/projection.h>
 
+#include <vclib/algorithms/core/box/box3.h>
 #include <vclib/algorithms/core/bounding_box.h>
 #include <vclib/algorithms/core/polygon/convex_hull.h>
 #include <vclib/algorithms/core/polygon/create.h>

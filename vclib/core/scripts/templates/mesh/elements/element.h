@@ -4,9 +4,9 @@
 #define VCL_MESH_ELEMENTS_%EL_U%_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/concepts/mesh/elements/%EL%.h>
-
 #include "element.h"
+
+#include <vclib/concepts/mesh/elements/%EL%.h>
 #endif
 
 namespace vcl {

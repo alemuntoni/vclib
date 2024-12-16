@@ -20,19 +20,23 @@
  * for more details.                                                         *
  ****************************************************************************/
 
-#ifdef VCLIB_WITH_MODULES
-#include <ranges>
+#include <Eigen/Core>
 #include <vector>
-#endif
 
+#include "const_correctness.h"
 #include "loggers.h"
+#include "iterators.h"
+#include "mesh.h"
 #include "meshes.h"
 #include "ranges.h"
 #include "space.h"
 
 int main()
 {
+    constCorrectnessStaticAsserts();
     loggersStaticAsserts();
+    iteratorsStaticAsserts();
+    meshStaticAsserts();
     meshesStaticAsserts();
     rangesStaticAsserts();
     spaceStaticAsserts();

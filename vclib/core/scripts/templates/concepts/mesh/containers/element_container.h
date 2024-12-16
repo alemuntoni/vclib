@@ -4,12 +4,11 @@
 #define VCL_CONCEPTS_MESH_CONTAINERS_%EL_U%_CONTAINER_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <ranges>
-#include <vector>
-
+#include <vclib/concepts/const_correctness.h>
+#include <vclib/concepts/iterators.h>
 #include <vclib/concepts/ranges/range.h>
 
-#include "element_container.h"
+#include <vector>
 #endif
 
 namespace vcl {
@@ -25,37 +24,51 @@ namespace mesh {
  */
 template <typename T>
 concept Has%EL_UC%Container = requires(
-    T obj,
-    const T& cObj,
-    typename T::%EL_UC%Type* eP)
+    T&&                                          obj,
+    typename RemoveRef<T>::%EL_UC%Type           e,
+    typename RemoveRef<T>::%EL_UC%Type*          eP,
+    typename RemoveRef<T>::%EL_UC%Type&          eR,
+    std::vector<uint>                            vec)
 {
-    typename T::%EL_UC%Type;
-    typename T::%EL_UC%Iterator;
-    typename T::Const%EL_UC%Iterator;
+    typename RemoveRef<T>::%EL_UC%Type;
+    typename RemoveRef<T>::%EL_UC%Iterator;
+    typename RemoveRef<T>::Const%EL_UC%Iterator;
 
-    { obj.%EL_C%(uint()) } -> std::same_as<typename T::%EL_UC%Type&>;
-    { cObj.%EL_C%(uint()) } -> std::same_as<const typename T::%EL_UC%Type&>;
+    { obj.%EL_C%(uint()) } -> std::convertible_to<decltype(e)>;
+    { obj.%EL_C%Number() } -> std::same_as<uint>;
+    { obj.%EL_C%ContainerSize() } -> std::same_as<uint>;
+    { obj.deleted%EL_UC%Number() } -> std::same_as<uint>;
 
-    { cObj.%EL_C%Number() } -> std::same_as<uint>;
-    { cObj.%EL_C%ContainerSize() } -> std::same_as<uint>;
-    { cObj.deleted%EL_UC%Number() } -> std::same_as<uint>;
-    { obj.delete%EL_UC%(uint()) } -> std::same_as<void>;
-    { obj.delete%EL_UC%(eP) } -> std::same_as<void>;
     { obj.%EL_C%IndexIfCompact(uint()) } -> std::same_as<uint>;
-    { obj.%EL_C%CompactIndices() } -> std::same_as<std::vector<uint>>;
+    { obj.%EL_C%CompactIndices() } -> std::same_as<decltype(vec)>;
 
-    { obj.add%EL_UC%() } -> std::same_as<uint>;
-    { obj.add%EL_UC%s(uint()) } -> std::same_as<uint>;
-    { obj.reserve%EL_UC%s(uint()) } -> std::same_as<void>;
-    { obj.compact%EL_UC%s() } -> std::same_as<void>;
+    { obj.%EL_C%Begin() } -> InputIterator<decltype(e)>;
+    { obj.%EL_C%End() } -> InputIterator<decltype(e)>;
+    { obj.%EL_C%s() } -> InputRange<decltype(e)>;
+    { obj.%EL_C%s(bool()) } -> InputRange<decltype(e)>;
 
-    { obj.%EL_C%Begin() } -> std::same_as<typename T::%EL_UC%Iterator>;
-    { cObj.%EL_C%Begin() } -> std::same_as<typename T::Const%EL_UC%Iterator>;
-    { obj.%EL_C%End() } -> std::same_as<typename T::%EL_UC%Iterator>;
-    { cObj.%EL_C%End() } -> std::same_as<typename T::Const%EL_UC%Iterator>;
+    // non const requirements
+    requires IsConst<T> || requires {
+        { obj.%EL_C%(uint()) } -> std::same_as<decltype(eR)>;
 
-    { obj.%EL_C%s() } -> vcl::RangeOf<typename T::%EL_UC%Type>;
-    { cObj.%EL_C%s() } -> vcl::RangeOf<typename T::%EL_UC%Type>;
+        { obj.add%EL_UC%() } -> std::same_as<uint>;
+        { obj.add%EL_UC%s(uint()) } -> std::same_as<uint>;
+        { obj.clear%EL_UC%() } -> std::same_as<void>;
+        { obj.resize%EL_UC%(uint()) } -> std::same_as<void>;
+        { obj.reserve%EL_UC%(uint()) } -> std::same_as<void>;
+        { obj.compact%EL_UC%() } -> std::same_as<void>;
+        { obj.delete%EL_UC%(uint()) } -> std::same_as<void>;
+        { obj.delete%EL_UC%(eP) } -> std::same_as<void>;
+        { obj.update%EL_UC%Indices(vec) } -> std::same_as<void>;
+
+        { obj.%EL_C%Begin() } -> OutputIterator<decltype(e)>;
+        { obj.%EL_C%End() } -> OutputIterator<decltype(e)>;
+        { obj.%EL_C%s() } -> OutputRange<decltype(e)>;
+        { obj.%EL_C%s(bool()) } -> OutputRange<decltype(e)>;
+
+        { obj.enableAllPer%EL_UC%OptionalComponents() } -> std::same_as<void>;
+        { obj.disableAllPer%EL_UC%OptionalComponents() } -> std::same_as<void>;
+    };
 };
 
 } // namespace vcl::mesh
@@ -96,7 +109,7 @@ concept Has%EL_UC%Container = requires(
  * @ingroup containers_concepts
  */
 template<typename... Args>
-concept Has%EL_UC%s = (vcl::mesh::Has%EL_UC%Container<Args> || ...);
+concept Has%EL_UC%s = (mesh::Has%EL_UC%Container<Args> || ...);
 
 } // namespace vcl
 

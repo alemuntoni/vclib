@@ -111,18 +111,18 @@ public:
      * which the Mesh inherits (Args) that are ElementContainers (they satisfy
      * the ElementContainerConcept).
      */
-    using Containers = vcl::FilterTypesByCondition<
+    using Containers = FilterTypesByCondition<
         mesh::IsElementContainerPred,
-        vcl::TypeWrapper<Args...>>::type;
+        TypeWrapper<Args...>>::type;
 
     /**
      * @brief Components is an alias to a vcl::TypeWrapper that wraps all the
      * types from which the Mesh inherits (Args) that are Components (they
      * satisfy the ComponentConcept).
      */
-    using Components = vcl::FilterTypesByCondition<
+    using Components = FilterTypesByCondition<
         comp::IsComponentPred,
-        vcl::TypeWrapper<Args...>>::type;
+        TypeWrapper<Args...>>::type;
 
     /**
      * @brief ElementType is an alias that exposes the type of the Element
@@ -890,7 +890,7 @@ public:
      * container would be compacted.
      */
     template<uint ELEM_ID>
-    std::vector<uint> conpactIndices() const
+    std::vector<uint> compactIndices() const
         requires (hasContainerOf<ELEM_ID>())
     {
         using Cont = ContainerOfElement<ELEM_ID>::type;
@@ -1181,7 +1181,7 @@ public:
     {
         using Cont = ContainerOfElement<ELEM_ID>::type;
 
-        return Cont::template hasElemCustomComponent(name);
+        return Cont::hasElemCustomComponent(name);
     }
 
     /**
@@ -1202,7 +1202,7 @@ public:
     {
         using Cont = ContainerOfElement<ELEM_ID>::type;
 
-        return Cont::template elemCustomComponentNames();
+        return Cont::elemCustomComponentNames();
     }
 
     /**
@@ -1247,7 +1247,7 @@ public:
     {
         using Cont = ContainerOfElement<ELEM_ID>::type;
 
-        return Cont::template elemCustomComponentType(name);
+        return Cont::elemCustomComponentType(name);
     }
 
     /**
@@ -1310,7 +1310,7 @@ public:
     {
         using Cont = ContainerOfElement<ELEM_ID>::type;
 
-        Cont::template deleteElemCustomComponent(name);
+        Cont::deleteElemCustomComponent(name);
     }
 
     /**

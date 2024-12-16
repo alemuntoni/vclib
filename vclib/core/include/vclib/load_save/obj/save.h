@@ -76,9 +76,6 @@ ObjMaterial objMaterialFromFace(
             if constexpr (HasTexturePaths<MeshType>) {
                 mat.map_Kd = m.texturePath(f.textureIndex());
             }
-            if constexpr (HasTextureImages<MeshType>) {
-                mat.map_Kd = m.texture(f.textureIndex()).path();
-            }
         }
     }
     return mat;
@@ -244,7 +241,7 @@ void saveObj(
     }
 
     // faces
-    if constexpr (vcl::HasFaces<MeshType>) {
+    if constexpr (HasFaces<MeshType>) {
         using VertexType = MeshType::VertexType;
         using FaceType   = MeshType::FaceType;
 

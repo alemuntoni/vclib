@@ -24,6 +24,7 @@
 #define SPACE_H
 
 #include "space/array.h"
+#include "space/bit_set.h"
 #include "space/box.h"
 #include "space/color.h"
 #include "space/image.h"
@@ -31,14 +32,17 @@
 #include "space/plane.h"
 #include "space/point.h"
 #include "space/polygon.h"
+#include "space/principal_curvature.h"
 #include "space/sampler.h"
 #include "space/segment.h"
 #include "space/sphere.h"
+#include "space/tex_coord.h"
 #include "space/texture.h"
 
 void spaceStaticAsserts()
 {
     arrayStaticAsserts();
+    bitSetStaticAsserts();
     boxStaticAsserts();
     colorStaticAsserts();
     imageStaticAsserts();
@@ -46,9 +50,11 @@ void spaceStaticAsserts()
     planeStaticAsserts();
     pointStaticAsserts();
     polygonStaticAsserts();
+    principalCurvatureStaticAsserts();
     samplerStaticAsserts();
     segmentStaticAsserts();
     sphereStaticAsserts();
+    texCoordStaticAsserts();
     textureStaticAsserts();
 
     using namespace vcl;

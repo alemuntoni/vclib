@@ -4,11 +4,11 @@
 #define VCL_MESH_CONTAINER_%EL_U%_CONTAINER_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "element_container.h"
+
 #include <vclib/mesh/containers/custom_component_vector_handle.h>
 #include <vclib/mesh/elements/%EL%.h>
 #include <vclib/mesh/elements/%EL%_components.h>
-
-#include "element_container.h"
 #endif
 
 namespace vcl::mesh {

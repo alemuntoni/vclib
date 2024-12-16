@@ -26,6 +26,8 @@
 #ifndef VCLIB_WITH_MODULES
 #include "component.h"
 
+#include <vclib/concepts/const_correctness.h>
+#include <vclib/concepts/iterators.h>
 #include <vclib/concepts/ranges/range.h>
 
 #include <vector>
@@ -50,57 +52,68 @@ namespace vcl::comp {
  */
 template<typename T>
 concept HasAdjacentVertices = requires (
-    T                                            obj,
-    const T&                                     cObj,
-    typename T::AdjacentVertexType               v,
-    typename T::AdjacentVertexIterator           it,
-    typename T::ConstAdjacentVertexIterator      cIt,
-    typename T::ConstAdjacentVertexIndexIterator cIIt,
-    typename T::AdjacentVertexType*              vP,
-    const typename T::AdjacentVertexType*        cVP,
-    std::vector<typename T::AdjacentVertexType*> vec) {
-    typename T::AdjacentVertexType;
-    typename T::AdjacentVertexIterator;
-    typename T::ConstAdjacentVertexIterator;
-    typename T::ConstAdjacentVertexIndexIterator;
+    T&&                                                     obj,
+    typename RemoveRef<T>::AdjacentVertexType               v,
+    typename RemoveRef<T>::AdjacentVertexIterator           it,
+    typename RemoveRef<T>::ConstAdjacentVertexIterator      cIt,
+    typename RemoveRef<T>::ConstAdjacentVertexIndexIterator cIIt,
+    typename RemoveRef<T>::AdjacentVertexType*              vP,
+    const typename RemoveRef<T>::AdjacentVertexType*        cVP,
+    std::vector<typename RemoveRef<T>::AdjacentVertexType*> vec) {
+    typename RemoveRef<T>::AdjacentVertexType;
+    typename RemoveRef<T>::AdjacentVertexIterator;
+    typename RemoveRef<T>::ConstAdjacentVertexIterator;
+    typename RemoveRef<T>::ConstAdjacentVertexIndexIterator;
 
     { obj.adjVerticesNumber() } -> std::same_as<uint>;
-    { obj.adjVertex(uint()) } -> std::same_as<decltype(vP)>;
-    { cObj.adjVertex(uint()) } -> std::same_as<decltype(cVP)>;
-    { cObj.adjVertexIndex(uint()) } -> std::same_as<uint>;
-    { obj.adjVertexMod(int()) } -> std::same_as<decltype(vP)>;
-    { cObj.adjVertexMod(int()) } -> std::same_as<decltype(cVP)>;
-    { cObj.adjVertexIndexMod(uint()) } -> std::same_as<uint>;
 
-    { obj.setAdjVertex(uint(), &v) } -> std::same_as<void>;
-    { obj.setAdjVertex(uint(), uint()) } -> std::same_as<void>;
-    { obj.setAdjVertex(it, &v) } -> std::same_as<void>;
-    { obj.setAdjVertex(it, uint()) } -> std::same_as<void>;
-    { obj.setAdjVertex(cIt, &v) } -> std::same_as<void>;
-    { obj.setAdjVertex(cIt, uint()) } -> std::same_as<void>;
-    { obj.setAdjVertex(cIIt, &v) } -> std::same_as<void>;
-    { obj.setAdjVertex(cIIt, uint()) } -> std::same_as<void>;
-    { obj.setAdjVertexMod(int(), &v) } -> std::same_as<void>;
-    { obj.setAdjVertexMod(int(), uint()) } -> std::same_as<void>;
-    { obj.setAdjVertices(vec) } -> std::same_as<void>;
+    { obj.adjVertex(uint()) } -> std::convertible_to<decltype(cVP)>;
+    { obj.adjVertexIndex(uint()) } -> std::same_as<uint>;
+    { obj.adjVertexMod(int()) } -> std::convertible_to<decltype(cVP)>;
+    { obj.adjVertexIndexMod(uint()) } -> std::same_as<uint>;
 
-    { cObj.containsAdjVertex(&v) } -> std::same_as<bool>;
-    { cObj.containsAdjVertex(uint()) } -> std::same_as<bool>;
-    { cObj.indexOfAdjVertex(&v) } -> std::same_as<uint>;
-    { cObj.indexOfAdjVertex(uint()) } -> std::same_as<uint>;
+    { obj.containsAdjVertex(&v) } -> std::same_as<bool>;
+    { obj.containsAdjVertex(uint()) } -> std::same_as<bool>;
+    { obj.indexOfAdjVertex(&v) } -> std::same_as<uint>;
+    { obj.indexOfAdjVertex(uint()) } -> std::same_as<uint>;
 
-    { obj.adjVertexBegin() } -> std::same_as<decltype(it)>;
-    { obj.adjVertexEnd() } -> std::same_as<decltype(it)>;
+    { obj.adjVertexBegin() } -> InputIterator<decltype(cVP)>;
+    { obj.adjVertexEnd() } -> InputIterator<decltype(cVP)>;
 
-    { cObj.adjVertexBegin() } -> std::same_as<decltype(cIt)>;
-    { cObj.adjVertexEnd() } -> std::same_as<decltype(cIt)>;
+    { obj.adjVertexIndexBegin() } -> InputIterator<uint>;
+    { obj.adjVertexIndexEnd() } -> InputIterator<uint>;
 
-    { cObj.adjVertexIndexBegin() } -> std::same_as<decltype(cIIt)>;
-    { cObj.adjVertexIndexEnd() } -> std::same_as<decltype(cIIt)>;
+    { obj.adjVertices() } -> InputRange<decltype(cVP)>;
+    { obj.adjVertexIndices() } -> InputRange<uint>;
 
-    { obj.adjVertices() } -> vcl::RangeOf<decltype(vP)>;
-    { cObj.adjVertices() } -> vcl::RangeOf<decltype(cVP)>;
-    { cObj.adjVertexIndices() } -> vcl::RangeOf<uint>;
+    // non const requirements
+    requires IsConst<T> || requires {
+        { obj.adjVertex(uint()) } -> std::same_as<decltype(vP)>;
+        { obj.adjVertexMod(int()) } -> std::same_as<decltype(vP)>;
+
+        { obj.setAdjVertex(uint(), &v) } -> std::same_as<void>;
+        { obj.setAdjVertex(uint(), uint()) } -> std::same_as<void>;
+        { obj.setAdjVertex(it, &v) } -> std::same_as<void>;
+        { obj.setAdjVertex(it, uint()) } -> std::same_as<void>;
+        { obj.setAdjVertex(cIt, &v) } -> std::same_as<void>;
+        { obj.setAdjVertex(cIt, uint()) } -> std::same_as<void>;
+        { obj.setAdjVertex(cIIt, &v) } -> std::same_as<void>;
+        { obj.setAdjVertex(cIIt, uint()) } -> std::same_as<void>;
+        { obj.setAdjVertexMod(int(), &v) } -> std::same_as<void>;
+        { obj.setAdjVertexMod(int(), uint()) } -> std::same_as<void>;
+        { obj.setAdjVertices(vec) } -> std::same_as<void>;
+
+        // for references components, the iterators returned by begin() and
+        // end() are input iterators because they do not allow to modify the
+        // content of the container (the only way to do that is by using the set
+        // member functions). However, they allow to modify the elements
+        // pointed by the iterators (const references components allow to
+        // iterate only trough const pointers instead).
+        { obj.adjVertexBegin() } -> InputIterator<decltype(vP)>;
+        { obj.adjVertexEnd() } -> InputIterator<decltype(vP)>;
+
+        { obj.adjVertices() } -> InputRange<decltype(vP)>;
+    };
 };
 
 /**
@@ -112,7 +125,8 @@ concept HasAdjacentVertices = requires (
  */
 template<typename T>
 concept HasOptionalAdjacentVertices =
-    HasAdjacentVertices<T> && IsOptionalComponent<typename T::AdjacentVertices>;
+    HasAdjacentVertices<T> &&
+    IsOptionalComponent<typename RemoveRef<T>::AdjacentVertices>;
 
 } // namespace vcl::comp
 

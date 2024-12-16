@@ -23,12 +23,14 @@
 #ifndef VCL_ALGORITHMS_CORE_BOX_BOX3_H
 #define VCL_ALGORITHMS_CORE_BOX_BOX3_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/space/box.h>
 #include <vclib/space/core/box.h>
 #include <vclib/space/core/polygon.h>
 #include <vclib/space/core/segment.h>
 
 #include <stdexcept>
+#endif
 
 /**
  * @defgroup core_box3 Core Box3 Algorithms
