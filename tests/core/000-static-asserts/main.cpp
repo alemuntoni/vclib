@@ -21,6 +21,7 @@
  ****************************************************************************/
 
 #include <Eigen/Core>
+#include <ranges>
 #include <vector>
 
 #include "const_correctness.h"
