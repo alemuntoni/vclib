@@ -49,5 +49,6 @@ export {
 #include <vclib/algorithms/mesh/stat/geometry.h>
 #include <vclib/algorithms/mesh/stat/quality.h>
 #include <vclib/algorithms/mesh/stat/selection.h>
+#include <vclib/algorithms/mesh/stat/topology.h>
 }
 

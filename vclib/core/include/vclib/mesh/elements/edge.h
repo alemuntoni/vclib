@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -72,8 +72,8 @@ public:
      */
     void setVertices(VertexType* v0, VertexType* v1)
     {
-        VRefs::setVertex(0, v0);
-        VRefs::setVertex(1, v1);
+        VRefs::setVertex(0u, v0);
+        VRefs::setVertex(1u, v1);
     }
 
     /**
@@ -84,8 +84,8 @@ public:
      */
     void setVertices(uint vi0, uint vi1)
     {
-        VRefs::setVertex(0, vi0);
-        VRefs::setVertex(1, vi1);
+        VRefs::setVertex(0u, vi0);
+        VRefs::setVertex(1u, vi1);
     }
 };
 

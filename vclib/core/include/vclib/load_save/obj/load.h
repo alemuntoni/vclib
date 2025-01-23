@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -26,7 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include "material.h"
 
-#include <vclib/algorithms/mesh/polygon.h>
+#include <vclib/algorithms/mesh/face_topology.h>
 #include <vclib/io/file_info.h>
 #include <vclib/io/read.h>
 #include <vclib/load_save/settings.h>
@@ -425,6 +425,53 @@ void readObjFace(
     }
 }
 
+template<EdgeMeshConcept MeshType>
+void readObjEdge(
+    MeshType&           m,
+    MeshInfo&           loadedInfo,
+    const Tokenizer&    tokens,
+    const ObjMaterial&  currentMaterial,
+    const LoadSettings& settings)
+{
+    using EdgeType = MeshType::EdgeType;
+
+    // add the edge
+    uint      eid = m.addEdge();
+    EdgeType& e   = m.edge(eid);
+
+    // actual read - load vertex indices
+    Tokenizer::iterator token = tokens.begin();
+    ++token;
+    uint vid1 = io::readUInt<uint>(token) - 1;
+    uint vid2 = io::readUInt<uint>(token) - 1;
+    e.setVertices(vid1, vid2);
+
+    // color
+    if (HasPerEdgeColor<MeshType>) {
+        // if the first edge, we need to check if I can store colors
+        if (eid == 0) {
+            // if the current material has no color, we assume that the file has
+            // no edge color
+            if (currentMaterial.hasColor) {
+                if (settings.enableOptionalComponents) {
+                    enableIfPerEdgeColorOptional(m);
+                    loadedInfo.setEdgeColors();
+                }
+                else {
+                    if (isPerEdgeColorAvailable(m))
+                        loadedInfo.setEdgeColors();
+                }
+            }
+        }
+        if (loadedInfo.hasEdgeColors()) {
+            if (currentMaterial.hasColor) {
+                // set the current color to the edge
+                m.edge(eid).color() = currentMaterial.color();
+            }
+        }
+    }
+}
+
 /**
  * @brief Actual implementation of loading an obj from a stream or a file.
  *
@@ -494,7 +541,7 @@ void loadObj(
             readAndTokenizeNextNonEmptyLineNoThrow(inputObjStream);
         if (inputObjStream) {
             Tokenizer::iterator token  = tokens.begin();
-            std::string              header = *token++;
+            std::string         header = *token++;
             if (header == "mtllib" && !ignoreMtlLib) { // material file
                 // we load the material file if they are not ignored
                 std::string mtlfile =
@@ -563,6 +610,13 @@ void loadObj(
                         texCoords,
                         currentMaterial,
                         settings);
+                }
+            }
+            // read edges and manage their color
+            if constexpr (HasEdges<MeshType>) {
+                if (header == "l") {
+                    detail::readObjEdge(
+                        m, loadedInfo, tokens, currentMaterial, settings);
                 }
             }
             log.progress(inputObjStream.tellg());

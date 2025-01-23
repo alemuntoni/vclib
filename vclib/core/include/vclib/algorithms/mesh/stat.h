@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -28,6 +28,7 @@
 #include "stat/geometry.h"
 #include "stat/quality.h"
 #include "stat/selection.h"
+#include "stat/topology.h"
 
 /**
  * @defgroup mesh_stat Mesh Statistic Algorithms

@@ -2,7 +2,7 @@
 #* VCLib                                                                     *
 #* Visual Computing Library                                                  *
 #*                                                                           *
-#* Copyright(C) 2021-2024                                                    *
+#* Copyright(C) 2021-2025                                                    *
 #* Visual Computing Lab                                                      *
 #* ISTI - Italian National Research Council                                  *
 #*                                                                           *
@@ -30,11 +30,10 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(HEADERS
     ../common.h
-    hello_triangle_qt.h)
+    ../hello_triangle_drawer.h)
 
 set(SOURCES
-    main.cpp
-    hello_triangle_qt.cpp)
+    main.cpp)
 
 vclib_add_example(${EXAMPLE_NAME}
     VCLIB_MODULE render

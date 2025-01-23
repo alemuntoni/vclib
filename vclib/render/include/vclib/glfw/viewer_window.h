@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -20,47 +20,19 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_EXT_GLFW_VIEWER_WINDOW_H
-#define VCL_EXT_GLFW_VIEWER_WINDOW_H
+#ifndef VCL_GLFW_VIEWER_WINDOW_H
+#define VCL_GLFW_VIEWER_WINDOW_H
 
-#include "event_manager_window.h"
-
-#include <vclib/render/viewer_canvas.h>
+#include <vclib/glfw/window_manager.h>
+#include <vclib/render/canvas.h>
+#include <vclib/render/drawers/viewer_drawer.h>
+#include <vclib/render/render_app.h>
 
 namespace vcl::glfw {
 
-class ViewerWindow : public EventManagerWindow, public vcl::ViewerCanvas
-{
-public:
-    ViewerWindow(
-        const std::shared_ptr<DrawableObjectVector>& v,
-        const std::string& windowTitle = "Minimal Viewer",
-        uint               width       = 1024,
-        uint               height      = 768,
-        void*              parent      = nullptr);
-
-    ViewerWindow(
-        const std::string& windowTitle = "Minimal Viewer",
-        uint               width       = 1024,
-        uint               height      = 768,
-        void*              parent      = nullptr);
-
-    ViewerWindow(void* parent);
-
-    ~ViewerWindow() override = default;
-
-    void show();
-
-protected:
-#ifdef VCLIB_RENDER_BACKEND_OPENGL2
-    void draw() override;
-#endif
-
-    void onKeyPress(Key::Enum key) override;
-
-    void onResize(uint width, uint height) override;
-};
+using ViewerWindow =
+    vcl::RenderApp<vcl::glfw::WindowManager, vcl::Canvas, vcl::ViewerDrawer>;
 
 } // namespace vcl::glfw
 
-#endif // VCL_EXT_GLFW_VIEWER_WINDOW_H
+#endif // VCL_GLFW_VIEWER_WINDOW_H

@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -100,7 +100,7 @@ protected:
         const
     {
         auto supportedMeshTypes = supportedInputMeshType();
-        if (!supportedMeshTypes[mesh.type()]) {
+        if (!supportedMeshTypes[toUnderlying(mesh.type())]) {
             throw std::runtime_error(
                 "The action " + name() + " does not support the " +
                 mesh.typeName() + " type.");

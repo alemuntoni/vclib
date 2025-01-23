@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -39,16 +39,16 @@
 namespace vcl {
 
 template<typename MeshType>
-concept HasTriangles = HasFaces<MeshType> &&
-                       RemoveRef<MeshType>::FaceType::VERTEX_NUMBER == 3;
+concept HasTriangles =
+    HasFaces<MeshType> && RemoveRef<MeshType>::FaceType::VERTEX_NUMBER == 3;
 
 template<typename MeshType>
-concept HasQuads = HasFaces<MeshType> &&
-                   RemoveRef<MeshType>::FaceType::VERTEX_NUMBER == 4;
+concept HasQuads =
+    HasFaces<MeshType> && RemoveRef<MeshType>::FaceType::VERTEX_NUMBER == 4;
 
 template<typename MeshType>
-concept HasPolygons = HasFaces<MeshType> &&
-                      RemoveRef<MeshType>::FaceType::VERTEX_NUMBER == -1;
+concept HasPolygons =
+    HasFaces<MeshType> && RemoveRef<MeshType>::FaceType::VERTEX_NUMBER == -1;
 
 /**
  * @brief Concept that checks if a Mesh has the per Face AdjacentEdges
@@ -143,8 +143,7 @@ concept HasPerFaceCustomComponents =
  */
 template<typename MeshType>
 concept HasPerFaceMark =
-    HasFaces<MeshType> &&
-    face::HasMark<typename RemoveRef<MeshType>::FaceType>;
+    HasFaces<MeshType> && face::HasMark<typename RemoveRef<MeshType>::FaceType>;
 
 /**
  * @brief Concept that checks if a Mesh has the per Face Normal

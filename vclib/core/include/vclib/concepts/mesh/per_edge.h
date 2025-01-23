@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -128,8 +128,7 @@ concept HasPerEdgeCustomComponents =
  */
 template<typename MeshType>
 concept HasPerEdgeMark =
-    HasEdges<MeshType> &&
-    edge::HasMark<typename RemoveRef<MeshType>::EdgeType>;
+    HasEdges<MeshType> && edge::HasMark<typename RemoveRef<MeshType>::EdgeType>;
 
 /**
  * @brief Concept that checks if a Mesh has the per Edge Normal component.

@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -23,6 +23,7 @@
 #ifndef VCL_ALGORITHMS_MESH_IMPORT_EXPORT_H
 #define VCL_ALGORITHMS_MESH_IMPORT_EXPORT_H
 
+#include "import_export/export_buffer.h"
 #include "import_export/export_matrix.h"
 #include "import_export/import_matrix.h"
 

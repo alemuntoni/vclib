@@ -2,7 +2,7 @@
 #* VCLib                                                                     *
 #* Visual Computing Library                                                  *
 #*                                                                           *
-#* Copyright(C) 2021-2024                                                    *
+#* Copyright(C) 2021-2025                                                    *
 #* Visual Computing Lab                                                      *
 #* ISTI - Italian National Research Council                                  *
 #*                                                                           *
@@ -52,6 +52,8 @@ if (VCLIB_USES_VCG)
         vclib-3rd-vcg
         PROPERTIES
         VCG_INCLUDE_DIRS ${VCG_INCLUDE_DIRS})
+    target_compile_definitions(vclib-3rd-vcg INTERFACE
+        VCLIB_WITH_VCG)
 
     list(APPEND VCLIB_EXTERNAL_3RDPARTY_LIBRARIES vclib-3rd-vcg)
 endif()

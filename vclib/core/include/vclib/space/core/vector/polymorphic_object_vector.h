@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -412,11 +412,25 @@ public:
     }
 
     /**
-     * @brief Exchanges the contents of the container with those of other.
+     * @brief Swaps the contents of the container with those of other.
      * @param[in] other: Another PolymorphicObjectVector container of the same
      * type.
      */
     void swap(PolymorphicObjectVector& other) { Base::swap(other); }
+
+    /**
+     * Specializes the swap function to allow the swapping of two
+     * PolymorphicObjectVector objects.
+     *
+     * Swaps the content of the two PolymorphicObjectVector objects. Calls
+     * `a.swap(b)`.
+     * @param[in] a: The first PolymorphicObjectVector object.
+     * @param[in] b: The second PolymorphicObjectVector object.
+     */
+    friend void swap(PolymorphicObjectVector& a, PolymorphicObjectVector& b)
+    {
+        a.swap(b);
+    }
 
     /* Operators */
 

@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -32,6 +32,7 @@
 #include <vclib/load_save/settings.h>
 #include <vclib/misc/logger.h>
 #include <vclib/space/complex/mesh_info.h>
+#include <vclib/space/core/texture.h>
 
 #include <map>
 #endif
@@ -81,6 +82,21 @@ ObjMaterial objMaterialFromFace(
     return mat;
 }
 
+template<EdgeConcept EdgeType, MeshConcept MeshType>
+ObjMaterial objMaterialFromEdge(const EdgeType& e, const MeshInfo& fi)
+{
+    ObjMaterial mat;
+    if constexpr (HasPerEdgeColor<MeshType>) {
+        if (fi.hasEdgeColors()) {
+            mat.hasColor = true;
+            mat.Kd.x()   = e.color().redF();
+            mat.Kd.y()   = e.color().greenF();
+            mat.Kd.z()   = e.color().blueF();
+        }
+    }
+    return mat;
+}
+
 template<
     ElementConcept ElementType,
     MeshConcept    MeshType,
@@ -99,6 +115,7 @@ void writeElementObjMaterial(
     ObjMaterial    mat;
     constexpr bool EL_IS_VERTEX = ElementType::ELEMENT_ID == ElemId::VERTEX;
     constexpr bool EL_IS_FACE   = ElementType::ELEMENT_ID == ElemId::FACE;
+    constexpr bool EL_IS_EDGE   = ElementType::ELEMENT_ID == ElemId::EDGE;
 
     if constexpr (EL_IS_VERTEX) {
         mat = objMaterialFromVertex<typename MeshType::VertexType, MeshType>(
@@ -106,6 +123,9 @@ void writeElementObjMaterial(
     }
     if constexpr (EL_IS_FACE) {
         mat = objMaterialFromFace(e, m, fi);
+    }
+    if constexpr (EL_IS_EDGE) {
+        mat = objMaterialFromEdge<typename MeshType::EdgeType, MeshType>(e, fi);
     }
     if (!mat.isEmpty()) {
         static const std::string MATERIAL_PREFIX = "MATERIAL_";
@@ -202,6 +222,9 @@ void saveObj(
 
     // vertices
     using VertexType = MeshType::VertexType;
+
+    fp << std::endl << "# Vertices" << std::endl;
+
     for (const VertexType& v : m.vertices()) {
         if (useMtl) { // mtl management
             detail::writeElementObjMaterial<VertexType, MeshType>(
@@ -244,6 +267,8 @@ void saveObj(
     if constexpr (HasFaces<MeshType>) {
         using VertexType = MeshType::VertexType;
         using FaceType   = MeshType::FaceType;
+
+        fp << std::endl << "# Faces" << std::endl;
 
         // indices of vertices that do not consider deleted vertices
         std::vector<uint> vIndices = m.vertexCompactIndices();
@@ -295,6 +320,34 @@ void saveObj(
                 fp << " ";
             }
             fp << std::endl;
+        }
+    }
+
+    if constexpr (HasEdges<MeshType>) {
+        using VertexType = MeshType::VertexType;
+        using EdgeType   = MeshType::EdgeType;
+
+        fp << std::endl << "# Edges" << std::endl;
+
+        // indices of vertices that do not consider deleted vertices
+        std::vector<uint> vIndices = m.vertexCompactIndices();
+
+        for (const EdgeType& e : m.edges()) {
+            if (useMtl) { // mtl management
+                detail::writeElementObjMaterial(
+                    e,
+                    m,
+                    meshInfo,
+                    lastMaterial,
+                    materialMap,
+                    fp,
+                    *mtlfp,
+                    settings,
+                    log);
+            }
+            fp << "l ";
+            fp << vIndices[m.index(e.vertex(0))] + 1 << " ";
+            fp << vIndices[m.index(e.vertex(1))] + 1 << std::endl;
         }
     }
 }

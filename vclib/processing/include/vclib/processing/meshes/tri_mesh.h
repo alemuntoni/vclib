@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -37,7 +37,7 @@ class TriMesh : public MeshI, public TriMeshT<ProcScalarType, INDEXED_MESHES>
 public:
     TriMesh() = default;
 
-    MeshIType::Enum type() const override { return MeshIType::TRI_MESH; }
+    MeshIType type() const override { return MeshIType::TRI_MESH; }
 
     std::string typeName() const override { return "TriMesh"; }
 };

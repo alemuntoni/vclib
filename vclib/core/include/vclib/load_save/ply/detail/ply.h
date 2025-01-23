@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -69,11 +69,11 @@ using PropertyType = PrimitiveType;
 
 struct PlyProperty
 {
-    ply::PropertyName       name;
-    ply::PropertyType::Enum type;
-    bool                    list = false;
-    ply::PropertyType::Enum listSizeType;
-    std::string unknownPropertyName; // when a property is not recognized
+    ply::PropertyName name;
+    ply::PropertyType type;
+    bool              list = false;
+    ply::PropertyType listSizeType;
+    std::string       unknownPropertyName; // when a property is not recognized
 };
 
 struct PlyElement

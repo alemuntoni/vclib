@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -290,8 +290,8 @@ void setPerEdgeColorFromVertexColor(MeshType& m)
  */
 template<MeshConcept MeshType>
 void setPerVertexColorFromQuality(
-    MeshType&                                  m,
-    Color::ColorMap                            colorMap   = Color::RedBlue,
+    MeshType&       m,
+    Color::ColorMap colorMap = Color::ColorMap::RedBlue,
     typename MeshType::VertexType::QualityType minQuality = 0,
     typename MeshType::VertexType::QualityType maxQuality = 0)
 {
@@ -338,8 +338,8 @@ void setPerVertexColorFromQuality(
  */
 template<FaceMeshConcept MeshType>
 void setPerFaceColorFromQuality(
-    MeshType&                                m,
-    Color::ColorMap                          colorMap   = Color::RedBlue,
+    MeshType&       m,
+    Color::ColorMap colorMap = Color::ColorMap::RedBlue,
     typename MeshType::FaceType::QualityType minQuality = 0,
     typename MeshType::FaceType::QualityType maxQuality = 0)
 {

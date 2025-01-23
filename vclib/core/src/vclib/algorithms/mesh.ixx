@@ -30,6 +30,7 @@ export import :convex_hull;
 export import :create;
 export import :distance;
 export import :filter;
+export import :import_export;
 export import :intersection;
 export import :point_sampling;
 export import :smooth;

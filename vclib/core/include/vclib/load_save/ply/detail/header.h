@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -90,7 +90,7 @@ public:
                     readAndTokenizeNextNonEmptyLine(file);
                 if (!error) {
                     Tokenizer::iterator token = spaceTokenizer.begin();
-                    headerLine                     = *token;
+                    headerLine                = *token;
                     if (headerLine == "format") {
                         token++;
                         if (*token == "ascii")
@@ -106,17 +106,17 @@ public:
                     else if (headerLine == "comment") {
                         token++;
                         if (token != spaceTokenizer.end()) {
-                            if (containsCaseInsensitive(
-                                    *token, "texture")) {
+                            if (containsCaseInsensitive(*token, "texture")) {
                                 ++token;
                                 if (token != spaceTokenizer.end()) {
                                     std::string textName = *token;
-                                    auto        it = findCaseInsensitive(
-                                        textName, "<this>");
+                                    auto        it =
+                                        findCaseInsensitive(textName, "<this>");
                                     if (it != textName.end()) {
                                         uint        pos = it - textName.begin();
-                                        std::string fn  = FileInfo::
-                                            fileNameWithoutExtension(filename);
+                                        std::string fn =
+                                            FileInfo::fileNameWithoutExtension(
+                                                filename);
                                         textName =
                                             textName.substr(0, pos) + fn +
                                             textName.substr(
@@ -479,7 +479,7 @@ public:
             if (info.hasFaceQuality()) {
                 PlyProperty fs;
                 fs.name = ply::quality;
-                fs.type = (ply::PropertyType::Enum) info.faceQualityType();
+                fs.type = (ply::PropertyType) info.faceQualityType();
                 fElem.properties.push_back(fs);
             }
             if (info.hasFaceWedgeTexCoords()) {
@@ -487,8 +487,7 @@ public:
                 tc.list         = true;
                 tc.listSizeType = PrimitiveType::UCHAR;
                 tc.name         = ply::texcoord;
-                tc.type =
-                    (ply::PropertyType::Enum) info.faceWedgeTexCoordsType();
+                tc.type = (ply::PropertyType) info.faceWedgeTexCoordsType();
                 tn.name = ply::texnumber;
                 tn.type = PrimitiveType::USHORT;
                 fElem.properties.push_back(tc);
@@ -500,7 +499,7 @@ public:
                         PlyProperty pp;
                         pp.name                = ply::unknown;
                         pp.unknownPropertyName = cc.name;
-                        pp.type = (ply::PropertyType::Enum) cc.type;
+                        pp.type                = (ply::PropertyType) cc.type;
                         fElem.properties.push_back(pp);
                     }
                 }
@@ -591,9 +590,9 @@ public:
 private:
     PlyElement readElement(const Tokenizer& lineTokenizer) const
     {
-        PlyElement               e;
+        PlyElement          e;
         Tokenizer::iterator token = lineTokenizer.begin();
-        std::string              s     = *(++token);
+        std::string         s     = *(++token);
         if (s == "vertex") {
             e.type           = ply::VERTEX;
             e.numberElements = std::stoi(*(++token));
@@ -620,9 +619,9 @@ private:
 
     PlyProperty readProperty(const Tokenizer& lineTokenizer) const
     {
-        PlyProperty              p;
+        PlyProperty         p;
         Tokenizer::iterator token = lineTokenizer.begin();
-        std::string              type  = *(++token);
+        std::string         type  = *(++token);
         if (type == "list") {
             p.list               = true;
             std::string typeSize = *(++token);
@@ -689,9 +688,9 @@ private:
         return pn;
     }
 
-    ply::PropertyType::Enum stringToType(const std::string& type) const
+    ply::PropertyType stringToType(const std::string& type) const
     {
-        ply::PropertyType::Enum pt = ply::PropertyType::UCHAR;
+        ply::PropertyType pt = ply::PropertyType::UCHAR;
         if (type == "char")
             pt = ply::PropertyType::CHAR;
         if (type == "uchar")
@@ -736,7 +735,7 @@ private:
         }
     }
 
-    std::string typeToString(ply::PropertyType::Enum t) const
+    std::string typeToString(ply::PropertyType t) const
     {
         switch (t) {
         case ply::PropertyType::CHAR: return "char";

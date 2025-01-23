@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -202,11 +202,11 @@ void writeDouble(
 // TODO - rename to writePrimitiveType
 template<typename T>
 void writeProperty(
-    std::ostream&       file,
-    const T&            p,
-    PrimitiveType::Enum type,
-    FileType            format  = FileType(),
-    bool                isColor = false)
+    std::ostream& file,
+    const T&      p,
+    PrimitiveType type,
+    FileType      format  = FileType(),
+    bool          isColor = false)
 {
     switch (type) {
     case PrimitiveType::CHAR: writeChar(file, p, format, isColor); break;
@@ -224,11 +224,11 @@ void writeProperty(
 // TODO - move this to some specific mesh file
 template<ElementConcept El>
 void writeCustomComponent(
-    std::ostream&       file,
-    const El&           elem,
-    const std::string&  cName,
-    PrimitiveType::Enum type,
-    FileType            format = FileType())
+    std::ostream&      file,
+    const El&          elem,
+    const std::string& cName,
+    PrimitiveType      type,
+    FileType           format = FileType())
 {
     std::type_index ti = elem.customComponentType(cName);
     if (ti == typeid(char))

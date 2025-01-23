@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -52,8 +52,7 @@ class VerticalComponentsVectorTuple
 public:
     VerticalComponentsVectorTuple()
     {
-        (setComponentEnabled<Comp, !comp::IsOptionalComponent<Comp>>(),
-         ...);
+        (setComponentEnabled<Comp, !comp::IsOptionalComponent<Comp>>(), ...);
     }
 
     static constexpr uint componentsNumber() { return COMP_NUMBER; }

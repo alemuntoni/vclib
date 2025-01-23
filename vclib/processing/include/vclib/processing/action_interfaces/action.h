@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -50,7 +50,7 @@ struct ActionType
 
 class Action
 {
-    friend class ActionManager;
+    friend ActionManager;
 
     /**
      * @brief A pointer to the manager that contains the action.

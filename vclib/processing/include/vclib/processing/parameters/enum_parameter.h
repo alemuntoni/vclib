@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -50,7 +50,7 @@ public:
         setUintValue(value);
     }
 
-    ParameterType::Enum type() const override { return ParameterType::ENUM; }
+    ParameterType type() const override { return ParameterType::ENUM; }
 
     std::shared_ptr<Parameter> clone() const override
     {

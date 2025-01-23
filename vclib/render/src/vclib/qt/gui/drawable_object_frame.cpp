@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -24,13 +24,11 @@
 
 #include "ui_drawable_object_frame.h"
 
-#include <vclib/render/interfaces/drawable_mesh_i.h>
-
 namespace vcl::qt {
 
 DrawableObjectFrame::DrawableObjectFrame(
-    const std::shared_ptr<DrawableObjectI>& obj,
-    QWidget*                                parent) :
+    const std::shared_ptr<DrawableObject>& obj,
+    QWidget*                               parent) :
         QFrame(parent), mUI(new Ui::DrawableObjectFrame), mObj(obj)
 {
     mUI->setupUi(this);

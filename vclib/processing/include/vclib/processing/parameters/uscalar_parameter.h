@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -43,7 +43,7 @@ public:
         setScalarValue(value);
     }
 
-    ParameterType::Enum type() const override { return ParameterType::USCALAR; }
+    ParameterType type() const override { return ParameterType::USCALAR; }
 
     std::shared_ptr<Parameter> clone() const override
     {

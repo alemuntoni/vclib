@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -20,10 +20,10 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_EXT_QT_GUI_DRAWABLE_OBJECT_FRAME_H
-#define VCL_EXT_QT_GUI_DRAWABLE_OBJECT_FRAME_H
+#ifndef VCL_QT_GUI_DRAWABLE_OBJECT_FRAME_H
+#define VCL_QT_GUI_DRAWABLE_OBJECT_FRAME_H
 
-#include <vclib/render/interfaces/drawable_object_i.h>
+#include <vclib/render/drawable/drawable_object.h>
 
 #include <QFrame>
 
@@ -37,13 +37,13 @@ class DrawableObjectFrame : public QFrame
 {
     Q_OBJECT
 
-    Ui::DrawableObjectFrame*         mUI;
-    std::shared_ptr<DrawableObjectI> mObj;
+    Ui::DrawableObjectFrame*        mUI;
+    std::shared_ptr<DrawableObject> mObj;
 
 public:
     explicit DrawableObjectFrame(
-        const std::shared_ptr<DrawableObjectI>& obj,
-        QWidget*                                parent = nullptr);
+        const std::shared_ptr<DrawableObject>& obj,
+        QWidget*                               parent = nullptr);
     ~DrawableObjectFrame();
 
 signals:
@@ -59,4 +59,4 @@ private slots:
 
 } // namespace vcl::qt
 
-#endif // VCL_EXT_QT_GUI_DRAWABLE_OBJECT_FRAME_H
+#endif // VCL_QT_GUI_DRAWABLE_OBJECT_FRAME_H

@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -30,7 +30,6 @@
 #include "mesh/filter.h"
 #include "mesh/import_export.h"
 #include "mesh/point_sampling.h"
-#include "mesh/polygon.h"
 #include "mesh/shuffle.h"
 #include "mesh/smooth.h"
 #include "mesh/sort.h"

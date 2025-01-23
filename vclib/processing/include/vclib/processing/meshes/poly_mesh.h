@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -37,7 +37,7 @@ class PolyMesh : public MeshI, public PolyMeshT<ProcScalarType, INDEXED_MESHES>
 public:
     PolyMesh() = default;
 
-    MeshIType::Enum type() const override { return MeshIType::POLY_MESH; }
+    MeshIType type() const override { return MeshIType::POLY_MESH; }
 
     std::string typeName() const override { return "PolyMesh"; }
 };

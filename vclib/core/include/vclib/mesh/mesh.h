@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -120,9 +120,23 @@ public:
      * types from which the Mesh inherits (Args) that are Components (they
      * satisfy the ComponentConcept).
      */
-    using Components = FilterTypesByCondition<
-        comp::IsComponentPred,
-        TypeWrapper<Args...>>::type;
+    using Components =
+        FilterTypesByCondition<comp::IsComponentPred, TypeWrapper<Args...>>::
+            type;
+
+    /**
+     * @brief ContainerType is an alias that exposes the type of the Container
+     * that stores the Element identified by the template parameter ELEM_ID.
+     *
+     * To be used, the Mesh must have an ElementContainer having ID ELEM_ID.
+     *
+     * Usage:
+     * ```cpp
+     * using VertexContainer = MeshType::template ContainerType<ElemId::VERTEX>;
+     * ```
+     */
+    template<uint ELEM_ID>
+    using ContainerType = ContainerOfElement<ELEM_ID>::type;
 
     /**
      * @brief ElementType is an alias that exposes the type of the Element
@@ -136,7 +150,7 @@ public:
      * ```
      */
     template<uint ELEM_ID>
-    using ElementType = ContainerOfElement<ELEM_ID>::type::ElementType;
+    using ElementType = ContainerType<ELEM_ID>::ElementType;
 
     /* Constexpr static member functions */
 
@@ -473,7 +487,7 @@ public:
 
     /**
      * @brief Swaps this mesh with the other input Mesh m2.
-     * @param m2: the Mesh to swap with this Mesh.
+     * @param[in] m2: the Mesh to swap with this Mesh.
      */
     void swap(Mesh& m2)
     {
@@ -505,6 +519,16 @@ public:
         (updateReferencesOfContainerType<Args>(m1, m2Bases), ...);
         (updateReferencesOfContainerType<Args>(m2, m1Bases), ...);
     }
+
+    /**
+     * @brief Specializes the swap function to allow the swapping of two Mesh
+     * objects.
+     *
+     * Swaps the content of the two Mesh objects. Calls `a.swap(b)`.
+     * @param[in] a: The first Mesh object.
+     * @param[in] b: The second Mesh object.
+     */
+    friend void swap(Mesh& a, Mesh& b) { a.swap(b); }
 
     /**
      * @brief Assignment operator of the Mesh.

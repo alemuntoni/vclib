@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -35,18 +35,12 @@ class TMPSimplePolyMesh;
 namespace tmpMesh {
 
 class TriVertex :
-        public Vertex<
-            TMPSimpleTriMesh,
-            vert::BitFlags,
-            vert::Coordinate3d>
+        public Vertex<TMPSimpleTriMesh, vert::BitFlags, vert::Coordinate3d>
 {
 };
 
 class PolyVertex :
-        public Vertex<
-            TMPSimplePolyMesh,
-            vert::BitFlags,
-            vert::Coordinate3d>
+        public Vertex<TMPSimplePolyMesh, vert::BitFlags, vert::Coordinate3d>
 {
 };
 

@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -89,14 +89,13 @@ bool checkElementPointersInElementContainerOnComponent(
                     if (ptr != nullptr) {
                         if (ptr < first || ptr >= last) {
                             throw InconsistentMeshException(
-                                "The " + elementEnumString<ELEM_ID>() +
-                                " n. " + toString(el.index()) +
+                                "The " + elementEnumString<ELEM_ID>() + " n. " +
+                                toString(el.index()) +
                                 " has a wrong pointer in " +
                                 componentEnumString<Comp::COMPONENT_ID>() +
                                 " component.\n" + "The pointer " +
                                 toString(ptr) + " is out of range [" +
-                                toString(first) + ", " +
-                                toString(last) + ")");
+                                toString(first) + ", " + toString(last) + ")");
                             return false;
                         }
                     }
@@ -136,12 +135,12 @@ bool checkElementPointersInElementContainerOnComponent(
                     if (i != UINT_NULL) {
                         if (i >= last - first) {
                             throw InconsistentMeshException(
-                                "The " + elementEnumString<ELEM_ID>() +
-                                " n. " + toString(el.index()) +
+                                "The " + elementEnumString<ELEM_ID>() + " n. " +
+                                toString(el.index()) +
                                 " has a wrong index in " +
                                 componentEnumString<Comp::COMPONENT_ID>() +
-                                " component.\n" + "The index " +
-                                toString(i) + " is out of range [ 0, " +
+                                " component.\n" + "The index " + toString(i) +
+                                " is out of range [ 0, " +
                                 toString(last - first) + ")");
                             return false;
                         }

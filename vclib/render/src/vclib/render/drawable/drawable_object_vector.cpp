@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -48,7 +48,7 @@ Box3d DrawableObjectVector::boundingBox() const
     return bb;
 }
 
-std::shared_ptr<DrawableObjectI> DrawableObjectVector::clone() const
+std::shared_ptr<DrawableObject> DrawableObjectVector::clone() const
 {
     return std::make_shared<DrawableObjectVector>(*this);
 }

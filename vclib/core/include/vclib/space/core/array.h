@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -65,7 +65,7 @@ template<class T, uint N>
 class Array
 {
     static_assert(N > 0, "Array dimension must be > 0.");
-    friend class Array<T, N + 1>;
+    friend Array<T, N + 1>;
 
     std::array<std::size_t, N> mSizes;
     std::vector<T>             mVec;

@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -1140,8 +1140,7 @@ protected:
                 !(FaceType::VERTEX_NUMBER != 3 && FaceType::VERTEX_NUMBER > 0 &&
                   FaceType::VERTEX_NUMBER != MFaceType::VERTEX_NUMBER),
                 "Cannot import from that type of Mesh. Don't know how to "
-                "convert "
-                "faces.");
+                "convert faces.");
 
             // we need to manage conversion from poly or faces with cardinality
             // > 3 (e.g. quads) to triangle meshes. In this case, we triangulate

@@ -2,22 +2,22 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
  * All rights reserved.                                                      *
  *                                                                           *
  * This program is free software; you can redistribute it and/or modify      *
- * it under the terms of the GNU General Public License as published by      *
- * the Free Software Foundation; either version 3 of the License, or         *
+ * it under the terms of the Mozilla Public License Version 2.0 as published *
+ * by the Mozilla Foundation; either version 2 of the License, or            *
  * (at your option) any later version.                                       *
  *                                                                           *
  * This program is distributed in the hope that it will be useful,           *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of            *
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              *
- * GNU General Public License (http://www.gnu.org/licenses/gpl.txt)          *
- * for more details.                                                         *
+ * Mozilla Public License Version 2.0                                        *
+ * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
 #ifndef FOO_COMPONENT_H
@@ -27,6 +27,8 @@
 #include <string>
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/concepts/const_correctness.h>
+#include <vclib/concepts/mesh/components/component.h>
 #include <vclib/types.h>
 #else
 #include <Eigen/Core>
@@ -44,12 +46,15 @@ import vclib.core;
 // the concept should just check if the element/mesh has the member functions
 // that are part of the component class.
 template<typename T>
-concept HasFooComponent = requires (T t, const T& ct) {
-    // accessor to the foo component, returns int&
-    { t.foo() } -> std::same_as<int&>;
+concept HasFooComponent = requires (T&& obj) {
+    // accessor to the foo component, for const and non-const objects
+    { obj.foo() } -> std::convertible_to<int>;
 
-    // const accessor to the foo component
-    { ct.foo() } -> std::same_as<int>;
+    // non const requirements
+    requires vcl::IsConst<T> || requires {
+        // non-const accessor, returns int&
+        { obj.foo() } -> std::same_as<int&>;
+    };
 };
 
 // class of the Foo component
@@ -85,6 +90,21 @@ private:
     // the data that you want to store in a component
     int data;
 };
+
+namespace vcl {
+
+// specialize the ComponentString for the FooComponent
+template<>
+struct ComponentString<FooComponent::COMPONENT_ID>
+{
+    const char* str = "FooComponent";
+};
+
+} // namespace vcl
+
+static_assert(
+    vcl::comp::ComponentConcept<FooComponent>,
+    "Make sure that the FooComponent satisfies the ComponentConcept.");
 
 static_assert(
     HasFooComponent<FooComponent>,

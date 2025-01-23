@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -68,11 +68,11 @@ public:
      * (4 bytes) is stored.
      */
     Image(
-        const void*         data,
-        uint                w,
-        uint                h,
-        bool                yFlip  = false,
-        Color::Format::Enum format = Color::Format::ABGR)
+        const void*   data,
+        uint          w,
+        uint          h,
+        bool          yFlip  = false,
+        Color::Format format = Color::Format::ABGR)
     {
         if (data) {
             mImg.resize(h, w);

@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -45,7 +45,7 @@ public:
     {
     }
 
-    ParameterType::Enum type() const override { return ParameterType::MESH; }
+    ParameterType type() const override { return ParameterType::MESH; }
 
     std::shared_ptr<Parameter> clone() const override
     {

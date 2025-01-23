@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -103,8 +103,7 @@ public:
             (e.vertex(0).coord() * (1 - u)) + (e.vertex(1).coord() * u));
 
         if constexpr (
-            HasPerVertexQuality<MeshType> &&
-            edge::HasQuality<EdgeType>) {
+            HasPerVertexQuality<MeshType> && edge::HasQuality<EdgeType>) {
             if (copyQuality) {
                 if (isPerVertexQualityAvailable(mMesh) &&
                     comp::isQualityAvailableOn(e)) {
@@ -123,8 +122,7 @@ public:
             (e.vertex(0).coord() * (1 - u)) + (e.vertex(1).coord() * u);
 
         if constexpr (
-            HasPerVertexQuality<MeshType> &&
-            edge::HasQuality<EdgeType>) {
+            HasPerVertexQuality<MeshType> && edge::HasQuality<EdgeType>) {
             if (copyQuality) {
                 if (isPerVertexQualityAvailable(mMesh) &&
                     comp::isQualityAvailableOn(e)) {
@@ -260,8 +258,7 @@ private:
         bool            copyQuality)
     {
         if constexpr (
-            HasPerVertexNormal<MeshType> &&
-            face::HasNormal<FaceType>) {
+            HasPerVertexNormal<MeshType> && face::HasNormal<FaceType>) {
             if (copyNormal) {
                 if (isPerVertexNormalAvailable(mMesh) &&
                     comp::isNormalAvailableOn(f)) {
@@ -271,8 +268,7 @@ private:
         }
 
         if constexpr (
-            HasPerVertexQuality<MeshType> &&
-            face::HasQuality<FaceType>) {
+            HasPerVertexQuality<MeshType> && face::HasQuality<FaceType>) {
             if (copyQuality) {
                 if (isPerVertexQualityAvailable(mMesh) &&
                     comp::isQualityAvailableOn(f)) {

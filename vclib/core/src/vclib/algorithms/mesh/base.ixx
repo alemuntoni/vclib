@@ -56,12 +56,7 @@ import vclib.types;
 export {
 #include <vclib/algorithms/mesh/check_pointers.h>
 #include <vclib/algorithms/mesh/face_topology.h>
-#include <vclib/algorithms/mesh/import_export/export_matrix.h>
-#include <vclib/algorithms/mesh/import_export/import_matrix.h>
 #include <vclib/algorithms/mesh/sort.h>
 #include <vclib/algorithms/mesh/shuffle.h>
-
-// depends on face_topology
-#include <vclib/algorithms/mesh/polygon.h>
 }
 

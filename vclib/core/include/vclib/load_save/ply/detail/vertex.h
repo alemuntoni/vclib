@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -121,8 +121,8 @@ void readPlyVertexTxt(
     MeshType&                     mesh,
     const std::list<PlyProperty>& vertexProperties)
 {
-    Tokenizer spaceTokenizer  = readAndTokenizeNextNonEmptyLine(file);
-    Tokenizer::iterator token = spaceTokenizer.begin();
+    Tokenizer           spaceTokenizer = readAndTokenizeNextNonEmptyLine(file);
+    Tokenizer::iterator token          = spaceTokenizer.begin();
     for (const PlyProperty& p : vertexProperties) {
         if (token == spaceTokenizer.end()) {
             throw MalformedFileException("Unexpected end of line.");

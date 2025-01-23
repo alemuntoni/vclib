@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -48,9 +48,8 @@ public:
         mFirst = mEnd = mIt;
     }
 
-    CellIterator(
-        const Point<uint, N>& first,
-        const Point<uint, N>& end) : mIt(first), mFirst(first), mEnd(end)
+    CellIterator(const Point<uint, N>& first, const Point<uint, N>& end) :
+            mIt(first), mFirst(first), mEnd(end)
     {
     }
 

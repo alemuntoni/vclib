@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -88,14 +88,29 @@ void loadPly(
                 break;
             case ply::FACE:
                 log.startNewTask(beginPerc, endPerc, "Reading faces");
-                readPlyFaces(file, header, m, loadedInfo, log);
+                if constexpr (HasFaces<MeshType>)
+                    readPlyFaces(file, header, m, loadedInfo, log);
+                else
+                    readPlyUnknownElement(file, header, el, log);
                 log.endTask("Reading faces");
                 break;
             case ply::TRISTRIP:
                 log.startNewTask(beginPerc, endPerc, "Reading tristrips");
-                loadedInfo.setTriangleMesh();
-                readPlyTriStrips(file, header, m, log);
+                if constexpr (HasFaces<MeshType>) {
+                    loadedInfo.setTriangleMesh();
+                    readPlyTriStrips(file, header, m, log);
+                }
+                else
+                    readPlyUnknownElement(file, header, el, log);
                 log.endTask("Reading tristrips");
+                break;
+            case ply::EDGE:
+                log.startNewTask(beginPerc, endPerc, "Reading edges");
+                if constexpr (HasEdges<MeshType>)
+                    readPlyEdges(file, header, m, log);
+                else
+                    readPlyUnknownElement(file, header, el, log);
+                log.endTask("Reading edges");
                 break;
             default:
                 log.startNewTask(

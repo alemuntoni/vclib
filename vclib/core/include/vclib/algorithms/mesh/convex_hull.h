@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -24,8 +24,8 @@
 #define VCL_ALGORITHMS_MESH_CONVEX_HULL_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/algorithms/core/box/box3.h>
 #include <vclib/algorithms/core/bounding_box.h>
+#include <vclib/algorithms/core/box/box3.h>
 #include <vclib/algorithms/core/visibility.h>
 #include <vclib/algorithms/mesh/create/tetrahedron.h>
 #include <vclib/algorithms/mesh/update/topology.h>

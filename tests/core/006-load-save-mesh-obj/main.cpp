@@ -2,22 +2,22 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
  * All rights reserved.                                                      *
  *                                                                           *
  * This program is free software; you can redistribute it and/or modify      *
- * it under the terms of the GNU General Public License as published by      *
- * the Free Software Foundation; either version 3 of the License, or         *
+ * it under the terms of the Mozilla Public License Version 2.0 as published *
+ * by the Mozilla Foundation; either version 2 of the License, or            *
  * (at your option) any later version.                                       *
  *                                                                           *
  * This program is distributed in the hope that it will be useful,           *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of            *
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              *
- * GNU General Public License (http://www.gnu.org/licenses/gpl.txt)          *
- * for more details.                                                         *
+ * Mozilla Public License Version 2.0                                        *
+ * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
 #include <catch2/catch_template_test_macros.hpp>
@@ -51,7 +51,11 @@ std::istringstream objPolyCube()
         "f 5 6 8 7\n"
         "f 7 8 2 1\n"
         "f 2 8 6 4\n"
-        "f 7 1 3 5\n";
+        "f 7 1 3 5\n"
+        "l 1 5\n"
+        "l 2 6\n"
+        "l 3 7\n"
+        "l 4 8\n";
 
     std::istringstream ss(s);
     return ss;
@@ -81,16 +85,22 @@ std::istringstream objTriCube()
         "f 2 8 6\n"
         "f 2 6 4\n"
         "f 7 1 3\n"
-        "f 7 3 5\n";
+        "f 7 3 5\n"
+        "l 1 5\n"
+        "l 2 6\n"
+        "l 3 7\n"
+        "l 4 8\n";
 
     std::istringstream ss(s);
     return ss;
 }
 
-using Meshes         = std::pair<vcl::TriMesh, vcl::PolyMesh>;
-using Meshesf        = std::pair<vcl::TriMeshf, vcl::PolyMeshf>;
-using MeshesIndexed  = std::pair<vcl::TriMeshIndexed, vcl::PolyMeshIndexed>;
-using MeshesIndexedf = std::pair<vcl::TriMeshIndexedf, vcl::PolyMeshIndexedf>;
+using Meshes  = std::tuple<vcl::TriMesh, vcl::PolyMesh, vcl::EdgeMesh>;
+using Meshesf = std::tuple<vcl::TriMeshf, vcl::PolyMeshf, vcl::EdgeMeshf>;
+using MeshesIndexed =
+    std::tuple<vcl::TriMeshIndexed, vcl::PolyMeshIndexed, vcl::EdgeMeshIndexed>;
+using MeshesIndexedf = std::
+    tuple<vcl::TriMeshIndexedf, vcl::PolyMeshIndexedf, vcl::EdgeMeshIndexedf>;
 
 // Test to load obj from a istringstream
 TEMPLATE_TEST_CASE(
@@ -101,8 +111,9 @@ TEMPLATE_TEST_CASE(
     MeshesIndexed,
     MeshesIndexedf)
 {
-    using TriMesh  = typename TestType::first_type;
-    using PolyMesh = typename TestType::second_type;
+    using TriMesh  = std::tuple_element_t<0, TestType>;
+    using PolyMesh = std::tuple_element_t<1, TestType>;
+    using EdgeMesh = std::tuple_element_t<2, TestType>;
 
     SECTION("TriMesh - PolyCube")
     {
@@ -138,5 +149,41 @@ TEMPLATE_TEST_CASE(
         vcl::loadObj(pm, ss, {});
         REQUIRE(pm.vertexNumber() == 8);
         REQUIRE(pm.faceNumber() == 12);
+    }
+
+    SECTION("TriMesh - Rhombicosidodecahedron")
+    {
+        TriMesh pm;
+        vcl::loadObj(
+            pm, VCLIB_EXAMPLE_MESHES_PATH "/rhombicosidodecahedron.obj");
+        REQUIRE(pm.vertexNumber() == 60);
+        REQUIRE(pm.faceNumber() == 116);
+    }
+
+    SECTION("PolyMesh - Rhombicosidodecahedron")
+    {
+        PolyMesh pm;
+        vcl::loadObj(
+            pm, VCLIB_EXAMPLE_MESHES_PATH "/rhombicosidodecahedron.obj");
+        REQUIRE(pm.vertexNumber() == 60);
+        REQUIRE(pm.faceNumber() == 62);
+    }
+
+    SECTION("EdgeMesh - PolyCube")
+    {
+        EdgeMesh em;
+        auto     ss = objPolyCube();
+        vcl::loadObj(em, ss, {});
+        REQUIRE(em.vertexNumber() == 8);
+        REQUIRE(em.edgeNumber() == 4);
+    }
+
+    SECTION("EdgeMesh - TriCube")
+    {
+        EdgeMesh pm;
+        auto     ss = objTriCube();
+        vcl::loadObj(pm, ss, {});
+        REQUIRE(pm.vertexNumber() == 8);
+        REQUIRE(pm.edgeNumber() == 4);
     }
 }

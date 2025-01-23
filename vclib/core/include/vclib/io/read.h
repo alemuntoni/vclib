@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -141,8 +141,8 @@ inline Tokenizer readAndTokenizeNextNonEmptyLine(
     std::istream&     file,
     std::vector<char> separators = {' ', '\t'})
 {
-    std::string    line;
-    Tokenizer tokenizer;
+    std::string line;
+    Tokenizer   tokenizer;
 
     do {
         line      = readNextNonEmptyLine(file);
@@ -166,8 +166,8 @@ inline Tokenizer readAndTokenizeNextNonEmptyLineNoThrow(
     std::istream&     file,
     std::vector<char> separators = {' ', '\t'})
 {
-    std::string    line;
-    Tokenizer tokenizer;
+    std::string line;
+    Tokenizer   tokenizer;
 
     do {
         line      = readNextNonEmptyLineNoThrow(file);
@@ -368,10 +368,10 @@ T readDouble(
  */
 template<typename T>
 T readPrimitiveType(
-    std::istream&       file,
-    PrimitiveType::Enum type,
-    std::endian         end     = std::endian::native,
-    bool                isColor = false)
+    std::istream& file,
+    PrimitiveType type,
+    std::endian   end     = std::endian::native,
+    bool          isColor = false)
 {
     T p;
     switch (type) {
@@ -393,11 +393,11 @@ T readPrimitiveType(
 
 template<ElementConcept El>
 void readCustomComponent(
-    std::istream&       file,
-    El&                 elem,
-    const std::string&  cName,
-    PrimitiveType::Enum type,
-    std::endian         end = std::endian::native)
+    std::istream&      file,
+    El&                elem,
+    const std::string& cName,
+    PrimitiveType      type,
+    std::endian        end = std::endian::native)
 {
     std::type_index ti = elem.customComponentType(cName);
     if (ti == typeid(char))
@@ -497,7 +497,7 @@ T readDouble(
 template<typename T>
 T readPrimitiveType(
     Tokenizer::iterator& token,
-    PrimitiveType::Enum       type,
+    PrimitiveType        type,
     std::endian  = std::endian::native,
     bool isColor = false)
 {
@@ -529,9 +529,9 @@ T readPrimitiveType(
 template<ElementConcept El>
 void readCustomComponent(
     Tokenizer::iterator& token,
-    El&                       elem,
-    const std::string&        cName,
-    PrimitiveType::Enum       type,
+    El&                  elem,
+    const std::string&   cName,
+    PrimitiveType        type,
     std::endian = std::endian::native)
 {
     std::type_index ti = elem.customComponentType(cName);

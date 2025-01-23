@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -20,15 +20,15 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_EXT_QT_MESH_PROCESSING_MAIN_WINDOW_H
-#define VCL_EXT_QT_MESH_PROCESSING_MAIN_WINDOW_H
+#ifndef VCL_QT_MESH_PROCESSING_MAIN_WINDOW_H
+#define VCL_QT_MESH_PROCESSING_MAIN_WINDOW_H
 
 #include <QMainWindow>
 
 #include <vclib/processing/action_manager.h>
 #include <vclib/qt/gui/text_edit_logger.h>
+#include <vclib/render/drawable/abstract_drawable_mesh.h>
 #include <vclib/render/drawable/drawable_object_vector.h>
-#include <vclib/render/interfaces/drawable_mesh_i.h>
 
 namespace vcl::qt {
 
@@ -70,13 +70,13 @@ private:
     void openFilterDialog(
         const std::shared_ptr<proc::FilterMeshAction>& action);
 
-    static std::shared_ptr<vcl::DrawableObjectI> makeMeshDrawable(
+    static std::shared_ptr<vcl::DrawableObject> makeMeshDrawable(
         const std::shared_ptr<proc::MeshI>& mesh);
 
     static std::shared_ptr<vcl::proc::MeshI> toMesh(
-        const std::shared_ptr<vcl::DrawableObjectI>& drawable);
+        const std::shared_ptr<vcl::DrawableObject>& drawable);
 
-    static std::shared_ptr<vcl::DrawableMeshI> toDrawableMeshI(
+    static std::shared_ptr<vcl::AbstractDrawableMesh> toAbstractDrawableMesh(
         const std::shared_ptr<vcl::proc::MeshI>& mesh);
 
     template<MeshConcept MeshType>
@@ -100,4 +100,4 @@ private:
 
 } // namespace vcl::qt
 
-#endif // VCL_EXT_QT_MESH_PROCESSING_MAIN_WINDOW_H
+#endif // VCL_QT_MESH_PROCESSING_MAIN_WINDOW_H

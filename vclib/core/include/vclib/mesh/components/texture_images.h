@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -46,8 +46,7 @@ struct TData
 
     auto paths()
     {
-        return textures |
-               std::views::transform([](Texture& t) -> std::string& {
+        return textures | std::views::transform([](Texture& t) -> std::string& {
                    return t.path();
                });
     }
@@ -421,10 +420,7 @@ private:
     // members that allow to access the data
     std::vector<Texture>& texs() { return Base::data().textures; }
 
-    const std::vector<Texture>& texs() const
-    {
-        return Base::data().textures;
-    }
+    const std::vector<Texture>& texs() const { return Base::data().textures; }
 };
 
 } // namespace vcl::comp

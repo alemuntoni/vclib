@@ -8,7 +8,12 @@
   - [ ] Add the possibility to check if BGFX is available in the system
     - [ ] Devcontainers should have BGFX installed
   - [ ] Move BGFX from submodule to a CMake dependency
+  - [ ] The DesktopTrackball should inherit from the Trackball
+  - [ ] The AbstractViewer should not inherit from DesktopTrackball, but it should own it as a member.
 - BGFX
+  - [ ] Fix FIXME #1 on example-01-viewer-qt
+  - [ ] Fix FIXME #2 on example-04-hello-triangle-imgui-qt
+  - [ ] Fix 2 Qt windows with BGFX canvas.
   - [X] Library shaders should be built as headers
   - [ ] Check why OpenGL backend does not work when using BGFX (probably the cause is BGFX itself)
   - [ ] assets and shaders should be compiled in headers that are in paths like
@@ -19,8 +24,8 @@
   - [ ] Mesh info rendered as text with bgfx
   - [ ] Draw cross in DrawableTrackball
   - [ ] Manage wireframe and points depth in shaders
-  - [ ] Better management of canvas and viewer classes - qt and glfw share a lot of code
-  - [ ] Implement picking (raytracing to get the triangle clicked by the mouse?)
+  - [X] Better management of canvas and viewer classes - qt and glfw share a lot of code (REFACTORING IN PROGRESS)
+  - [X] Implement picking (raytracing to get the triangle clicked by the mouse?) Already implemented using depth reading
   - [ ] Customizable background for canvas
   - [ ] check crash example 9015 mesh io stl (crashes if the bimba model (m1) is rendered)
   - [ ] Draw lines trough shader - Work in progress (BSc thesis)
@@ -28,8 +33,12 @@
   - [X] fix trackball initial scale using GLFW
   - [X] fix event handling for the trackball using GLFW (metrics)
   - [X] streamline trackball rendering (avoid error-prone explicit updates)
-  - [ ] implement BGFX ImGui backend
-  - [ ] start integration of ImGUI along GLFW
+  - [X] implement BGFX ImGui Rendering backend
+  - [X] fix BGFX ImGui backend scaling issues with GLFW (macOS + ???)
+  - [X] start integration of ImGUI along GLFW
+  - [X] fix input handling for ImGui on GLFW
+  - [X] add imgui opengl2 implementation
+  - [X] eradicate fonts from bgfx imgui backend
   - [X] fix trackball bug on Qt implementation (pan after wheel zoom)
   - [X] fix event mapping for GLFW (it should be slightly different from Qt)
   - [X] solve trackball inconsistencies between motion and atomic operations
@@ -41,7 +50,9 @@
   - [X] make a uniform offscreen read buffer request for depth and color
   - [X] implement offscreen color rendering for the snapshot function
   - [X] implement 'offscreen' rendering on legacy OpenGL
-  - [ ] fix BGFX LEAK: IndexBufferHandle 1 (max: 4096) on shutdown
-  - [ ] change DesktopTrackball & ViewerI API to enable direct access to the Trackball functionalities + possible major class restructuring
+  - [X] implement imgui platform backend for Qt
+  - [ ] solve key modifiers inconsistency when using imgui and glfw
+  - [X] fix BGFX LEAK: IndexBufferHandle 1 (max: 4096) on shutdown (SOLVED MISTERIOUSLY)
+  - [X] change DesktopTrackball & ViewerI API to enable direct access to the Trackball functionalities + possible major class restructuring (REFACTORING IN PROGRESS)
   - [ ] update documentation of Canvas & co.
   - [ ] implement screenshot custom size (split rendering into multiple tiles)

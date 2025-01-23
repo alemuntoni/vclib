@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -53,8 +53,7 @@ public:
      * @param[in] img: the image.
      * @param[in] path: the path of the texture file.
      */
-    Texture(const Image& img, const std::string& path) :
-            mImg(img), mPath(path)
+    Texture(const Image& img, const std::string& path) : mImg(img), mPath(path)
     {
     }
 

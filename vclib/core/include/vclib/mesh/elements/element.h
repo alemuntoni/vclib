@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2024                                                    *
+ * Copyright(C) 2021-2025                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -68,9 +68,9 @@ public:
      * types from which the Element inherits (Comps) that are Components (they
      * satisfy the ComponentConcept).
      */
-    using Components = FilterTypesByCondition<
-        comp::IsComponentPred,
-        TypeWrapper<Comps...>>::type;
+    using Components =
+        FilterTypesByCondition<comp::IsComponentPred, TypeWrapper<Comps...>>::
+            type;
 
     static const uint ELEMENT_ID = ELEM_ID;
 
