@@ -20,13 +20,11 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <iostream>
+#include "montecarlo_sampling.h"
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/load_save.h>
 #endif
-
-#include "montecarlo_sampling.h"
 
 int main(int argc, char** argv)
 {

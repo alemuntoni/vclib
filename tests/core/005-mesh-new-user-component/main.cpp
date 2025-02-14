@@ -20,14 +20,14 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <catch2/catch_template_test_macros.hpp>
-#include <catch2/catch_test_macros.hpp>
-
 #include "foo_mesh.h"
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/meshes/tri_mesh.h>
 #endif
+
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 TEMPLATE_TEST_CASE(
     "Simple User Component",

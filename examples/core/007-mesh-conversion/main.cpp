@@ -20,9 +20,6 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <cassert>
-#include <iostream>
-
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>

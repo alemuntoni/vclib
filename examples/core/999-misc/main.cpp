@@ -20,10 +20,6 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <iostream>
-#include <memory>
-#include <vector>
-
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts.h>
 #include <vclib/space.h>
@@ -31,6 +27,10 @@
 #include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
+
+#include <iostream>
+#include <memory>
+#include <vector>
 
 struct Shape
 {

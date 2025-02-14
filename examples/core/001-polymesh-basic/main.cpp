@@ -20,9 +20,6 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <cassert>
-#include <iostream>
-
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/smooth.h>
 #include <vclib/algorithms/mesh/update/flag.h>
@@ -32,6 +29,9 @@
 #include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
+
+#include <cassert>
+#include <iostream>
 
 int main()
 {

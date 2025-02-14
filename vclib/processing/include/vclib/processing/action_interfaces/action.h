@@ -59,7 +59,7 @@ class Action
      */
     ActionManager* mManage = nullptr;
 
-    static inline ConsoleLogger log;
+    inline static ConsoleLogger log;
 
 public:
     Action()          = default;

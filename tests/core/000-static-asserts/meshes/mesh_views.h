@@ -2,13 +2,13 @@
 #define MESH_VIEWS_H
 
 #ifndef VCLIB_WITH_MODULES
-#include <ranges>
-
 #include <vclib/views/mesh.h>
 #include <vclib/views/pointers.h>
 #else
 import vclib.core;
 #endif
+
+#include <ranges>
 
 template<typename MeshType>
 void meshViewsStaticAsserts()

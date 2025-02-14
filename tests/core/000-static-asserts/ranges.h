@@ -23,13 +23,13 @@
 #ifndef RANGES_H
 #define RANGES_H
 
-#include <vector>
-
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/concepts/ranges/range.h>
 #else
 import vclib.core;
 #endif
+
+#include <vector>
 
 void rangesStaticAsserts()
 {

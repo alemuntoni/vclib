@@ -20,10 +20,6 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <iostream>
-
-#include <Eigen/Core>
-
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
 #include <vclib/load_save.h>
@@ -33,6 +29,9 @@
 #include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
+
+#include <Eigen/Core>
+#include <iostream>
 
 int main()
 {

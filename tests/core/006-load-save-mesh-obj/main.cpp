@@ -20,9 +20,6 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <catch2/catch_template_test_macros.hpp>
-#include <catch2/catch_test_macros.hpp>
-
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
@@ -30,6 +27,9 @@
 #include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
+
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 std::istringstream objPolyCube()
 {

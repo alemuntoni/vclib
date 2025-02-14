@@ -20,9 +20,6 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <catch2/catch_template_test_macros.hpp>
-#include <catch2/catch_test_macros.hpp>
-
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh.h>
 #include <vclib/load_save.h>
@@ -34,6 +31,9 @@ import vclib.core;
 #endif
 
 #include <Eigen/Core>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
+
 #include <random>
 
 template<typename ScalarType>
