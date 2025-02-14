@@ -57,8 +57,7 @@ export {
 #include <vclib/space/core/array.h>
 #include <vclib/space/core/bit_set/bit_proxy.h>
 #include <vclib/space/core/bit_set.h>
-#include <vclib/space/core/matrix/affine.h>
-#include <vclib/space/core/matrix/matrix.h>
+#include <vclib/space/core/matrix.h>
 #include <vclib/space/core/point.h>
 #include <vclib/space/core/vector/vector.h>
 
@@ -70,6 +69,7 @@ export {
 #include <vclib/space/core/quaternion.h>
 #include <vclib/space/core/segment.h>
 #include <vclib/space/core/tex_coord.h>
+#include <vclib/space/core/tex_coord_indexed.h>
 #include <vclib/space/core/triangle.h>
 
 // depends on array, color

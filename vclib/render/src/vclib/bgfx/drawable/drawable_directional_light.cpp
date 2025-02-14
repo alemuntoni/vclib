@@ -76,9 +76,6 @@ DrawableDirectionalLight::DrawableDirectionalLight(
 
 DrawableDirectionalLight::~DrawableDirectionalLight()
 {
-    if (bgfx::isValid(mVertexCoordBH)) {
-        bgfx::destroy(mVertexCoordBH);
-    }
 }
 
 DrawableDirectionalLight& DrawableDirectionalLight::operator=(
@@ -97,7 +94,7 @@ void DrawableDirectionalLight::swap(DrawableDirectionalLight& other)
     swap(mUniform, other.mUniform);
     swap(mProgram, other.mProgram);
     swap(mTransform, other.mTransform);
-    swap(mVertexCoordBH, other.mVertexCoordBH);
+    swap(mVertexCoordBuffer, other.mVertexCoordBuffer);
 }
 
 void DrawableDirectionalLight::updateRotation(const Matrix44f& rot)
@@ -124,7 +121,7 @@ void DrawableDirectionalLight::draw(uint viewId) const
 
             mUniform.bind();
 
-            bgfx::setVertexBuffer(0, mVertexCoordBH);
+            mVertexCoordBuffer.bind(0);
 
             bgfx::submit(viewId, mProgram);
         }
@@ -136,22 +133,24 @@ Box3d DrawableDirectionalLight::boundingBox() const
     return Box3d();
 }
 
-std::shared_ptr<DrawableObject> DrawableDirectionalLight::clone() const
+std::shared_ptr<DrawableObject> DrawableDirectionalLight::clone() const&
 {
     return std::make_shared<DrawableDirectionalLight>(*this);
 }
 
+std::shared_ptr<DrawableObject> DrawableDirectionalLight::clone() &&
+{
+    return std::make_shared<DrawableDirectionalLight>(std::move(*this));
+}
+
 void DrawableDirectionalLight::createVertexBuffer()
 {
-    // vertex buffer (positions)
-    bgfx::VertexLayout layout;
-    layout.begin()
-        .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-        .end();
-
-    mVertexCoordBH = bgfx::createVertexBuffer(
-        bgfx::makeRef(mVertices.data(), mVertices.size() * sizeof(float)),
-        layout);
+    mVertexCoordBuffer.create(
+        mVertices.data(),
+        mVertices.size() / 3,
+        bgfx::Attrib::Position,
+        3,
+        PrimitiveType::FLOAT);
 }
 
 } // namespace vcl

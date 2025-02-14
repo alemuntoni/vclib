@@ -40,9 +40,8 @@ class ViewerDrawerBGFX : public AbstractViewerDrawer<DerivedRenderApp>
     using ParentViewer = AbstractViewerDrawer<DerivedRenderApp>;
     using DTB          = ParentViewer::DTB;
 
-    CameraUniforms             mCameraUniforms;
-    DirectionalLightUniforms   mDirectionalLightUniforms;
-    MeshRenderSettingsUniforms mMeshRenderSettingsUniforms;
+    CameraUniforms           mCameraUniforms;
+    DirectionalLightUniforms mDirectionalLightUniforms;
 
     DrawableAxis             mAxis;
     DrawableDirectionalLight mDirectionalLight;
@@ -107,8 +106,7 @@ public:
 
         mDirectionalLightUniforms.bind();
 
-        for (auto obj : ParentViewer::drawableObjectVector())
-            obj->draw(viewId);
+        ParentViewer::drawableObjectVector().draw(viewId);
     }
 
     void onKeyPress(Key::Enum key, const KeyModifiers& modifiers) override

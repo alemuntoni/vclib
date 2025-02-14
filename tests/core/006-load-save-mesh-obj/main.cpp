@@ -27,9 +27,7 @@
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #else
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <fstream>
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 
@@ -131,6 +129,20 @@ TEMPLATE_TEST_CASE(
         vcl::loadObj(tm, ss, {});
         REQUIRE(tm.vertexNumber() == 8);
         REQUIRE(tm.faceNumber() == 12);
+    }
+
+    SECTION("TriMesh - Wedge TextureDouble")
+    {
+        TriMesh tm;
+        vcl::loadObj(tm, VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.obj");
+        REQUIRE(tm.vertexNumber() == 8);
+        REQUIRE(tm.faceNumber() == 4);
+        REQUIRE(tm.textureNumber() == 2);
+        REQUIRE(tm.isPerFaceWedgeTexCoordsEnabled());
+        for (const auto& f : tm.faces()) {
+            // first two faces have texture index 0, the other two have index 1
+            REQUIRE(f.textureIndex() == f.index() / 2);
+        }
     }
 
     SECTION("PolyMesh - PolyCube")

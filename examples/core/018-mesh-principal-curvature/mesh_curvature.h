@@ -31,12 +31,7 @@
 #include <vclib/meshes.h>
 #include <vclib/misc/timer.h>
 #else
-#include <Eigen/Core>        // needed by msvc...
-#include <Eigen/Eigenvalues> // needed by clang...
-#include <Eigen/Geometry>    // needed by msvc...
-#include <filesystem>
-#include <fstream>
-#include <ranges>            // needed by msvc...
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 

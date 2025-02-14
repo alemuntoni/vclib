@@ -24,11 +24,19 @@
 
 namespace vcl {
 
+void DrawableObjectVector::init()
+{
+    for (auto& p : *this) {
+        p->init();
+    }
+}
+
 void DrawableObjectVector::draw(uint viewId) const
 {
     if (isVisible()) {
         for (const auto& p : *this) {
-            p->draw(viewId);
+            if (p->isVisible())
+                p->draw(viewId);
         }
     }
 }
@@ -48,9 +56,14 @@ Box3d DrawableObjectVector::boundingBox() const
     return bb;
 }
 
-std::shared_ptr<DrawableObject> DrawableObjectVector::clone() const
+std::shared_ptr<DrawableObject> DrawableObjectVector::clone() const&
 {
     return std::make_shared<DrawableObjectVector>(*this);
+}
+
+std::shared_ptr<DrawableObject> DrawableObjectVector::clone() &&
+{
+    return std::make_shared<DrawableObjectVector>(std::move(*this));
 }
 
 bool DrawableObjectVector::isVisible() const

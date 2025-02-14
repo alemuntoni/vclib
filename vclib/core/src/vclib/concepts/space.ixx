@@ -48,6 +48,7 @@ export {
 #include <vclib/concepts/space/segment.h>
 #include <vclib/concepts/space/sphere.h>
 #include <vclib/concepts/space/tex_coord.h>
+#include <vclib/concepts/space/tex_coord_indexed.h>
 #include <vclib/concepts/space/texture.h>
 #include <vclib/concepts/space/triangle.h>
 }

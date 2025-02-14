@@ -95,6 +95,21 @@ void Context::setRenderType(bgfx::RendererType::Enum renderType)
     sRenderType = renderType;
 }
 
+/**
+ * @brief Set the reset flags used by the default frame buffer.
+ *
+ * If this function is not called before the context is initialized, the reset
+ * flags are set by default to `BGFX_RESET_VSYNC`.
+ *
+ * @see https://bkaradzic.github.io/bgfx/bgfx.html#_CPPv4N4bgfx10ResolutionE
+ *
+ * @param[in] flags : the reset flags.
+ */
+void Context::setResetFlags(uint flags)
+{
+    sResetFlags = flags;
+}
+
 void Context::setDebugVerbosity(bool verbose)
 {
     instance().mCallBack.setDebugVerbosity(verbose);
@@ -144,11 +159,11 @@ bool Context::isValidViewId(bgfx::ViewId viewId) const
     return viewId <= capabilites().limits.maxViews;
 }
 
-static const uint64_t kRenderBufferflags =
+static const uint64_t kMRTRenderBufferflags =
     0 | BGFX_TEXTURE_RT | BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT |
     BGFX_SAMPLER_MIP_POINT | BGFX_SAMPLER_U_CLAMP | BGFX_SAMPLER_V_CLAMP;
 
-bgfx::FrameBufferHandle Context::createFramebuffer(
+bgfx::FrameBufferHandle Context::createOffscreenFramebuffer(
     uint16_t                  width,
     uint16_t                  height,
     bgfx::TextureFormat::Enum colorFormat,
@@ -164,7 +179,7 @@ bgfx::FrameBufferHandle Context::createFramebuffer(
         false,
         1,
         colorFormat,
-        kRenderBufferflags);
+        kMRTRenderBufferflags);
 
     fbtextures[1] = bgfx::createTexture2D(
         uint16_t(width),
@@ -172,7 +187,7 @@ bgfx::FrameBufferHandle Context::createFramebuffer(
         false,
         1,
         depthFormat,
-        kRenderBufferflags);
+        kMRTRenderBufferflags);
 
     assert(bgfx::isValid(fbtextures[0]));
     assert(bgfx::isValid(fbtextures[1]));
@@ -188,8 +203,7 @@ void Context::resetDefaultFramebuffer(
     uint16_t                  height,
     bgfx::TextureFormat::Enum colorFormat)
 {
-    // TODO: manage the reset flags elsewhere
-    bgfx::reset(width, height, BGFX_RESET_VSYNC, colorFormat);
+    bgfx::reset(width, height, sResetFlags, colorFormat);
 }
 
 bgfx::FrameBufferHandle Context::createFramebufferAndInitView(
@@ -220,14 +234,16 @@ bgfx::FrameBufferHandle Context::createFramebufferAndInitView(
         resetDefaultFramebuffer(width, height, colorFormat);
     }
     else {
-        // create framebuffer
-        if (offscreen) {
-            fbh = createFramebuffer(width, height, colorFormat, depthFormat);
-        }
-        else { // TODO: why it does not accepts attachments when onscreen?
+        if (offscreen)
+            // create offscreen framebuffer
+            fbh = createOffscreenFramebuffer(
+                width, height, colorFormat, depthFormat);
+        else
+            // create framebuffer for the given window
             fbh = bgfx::createFrameBuffer(
                 winId, width, height, colorFormat, depthFormat);
-        }
+
+        assert(bgfx::isValid(fbh));
     }
     // set view on framebuffer even if it must be done every frame
     bgfx::setViewFrameBuffer(view, fbh);
@@ -317,7 +333,7 @@ Context::Context(void* windowHandle, void* displayHandle)
     init.platformData.ndt  = mDisplayHandle;
     init.resolution.width  = 1;
     init.resolution.height = 1;
-    init.resolution.reset  = BGFX_RESET_VSYNC;
+    init.resolution.reset  = sResetFlags;
     init.callback          = &mCallBack;
     bgfx::init(init);
 

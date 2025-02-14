@@ -32,9 +32,9 @@ namespace vcl {
 
 class MeshRenderSettingsUniforms
 {
-    // mDrawPack[0] -> primitive used
-    // mDrawPack[1] -> draw mode0
-    // mDrawPack[2] -> draw mode1
+    // mDrawPack[0] -> draw mode0
+    // mDrawPack[1] -> draw mode1
+    // mDrawPack[2] -> unused
     // mDrawPack[3] -> unused
     float mDrawPack[4] = {0.0, 0.0, 0.0, 0.0};
 
@@ -60,22 +60,17 @@ class MeshRenderSettingsUniforms
 public:
     MeshRenderSettingsUniforms() {}
 
-    void updatePrimitive(uint primitive)
-    {
-        mDrawPack[0] = Uniform::uintBitsToFloat(primitive);
-    }
-
     void updateSettings(const vcl::MeshRenderSettings& settings)
     {
-        mDrawPack[1] = Uniform::uintBitsToFloat(settings.drawMode0());
-        mDrawPack[2] = Uniform::uintBitsToFloat(settings.drawMode1());
+        mDrawPack[0] = Uniform::uintBitsToFloat(settings.drawMode0());
+        mDrawPack[1] = Uniform::uintBitsToFloat(settings.drawMode1());
 
         mWidthPack[0] = settings.pointWidth();
         mWidthPack[1] = settings.wireframeWidth();
         mWidthPack[2] = settings.edgesWidth();
 
         mColorPack[0] =
-            Uniform::uintBitsToFloat(settings.pointCloudUserColor().abgr());
+            Uniform::uintBitsToFloat(settings.pointUserColor().abgr());
         mColorPack[1] =
             Uniform::uintBitsToFloat(settings.surfaceUserColor().abgr());
         mColorPack[2] =

@@ -29,6 +29,7 @@
 #include <vclib/render/viewer/lights/directional_light.h>
 #include <vclib/space/core/matrix.h>
 
+#include <vclib/bgfx/buffers/vertex_buffer.h>
 #include <vclib/bgfx/context.h>
 
 #include <bgfx/bgfx.h>
@@ -44,15 +45,16 @@ class DrawableDirectionalLight : public DrawableObject
     std::vector<float> mVertices; // vertices of the drawn lines
     vcl::Color         mColor = vcl::Color::Yellow; // color of the lines
 
-    bgfx::VertexBufferHandle mVertexCoordBH = BGFX_INVALID_HANDLE;
+    VertexBuffer mVertexCoordBuffer;
 
     DrawableDirectionalLightUniforms mUniform;
 
     // TODO: can we be sure that this is called after the context initialization
     // triggered by a window?
     bgfx::ProgramHandle mProgram =
-        Context::instance().programManager().getProgram(
-            VclProgram::DRAWABLE_DIRECTIONAL_LIGHT);
+        Context::instance()
+            .programManager()
+            .getProgram<VertFragProgram::DRAWABLE_DIRECTIONAL_LIGHT>();
 
 public:
     DrawableDirectionalLight();
@@ -78,13 +80,15 @@ public:
 
     void setLinesColor(const vcl::Color& c);
 
-    // DrawableObjectI interface
+    // DrawableObject interface
 
     void draw(uint viewId) const override;
 
     Box3d boundingBox() const override;
 
-    std::shared_ptr<DrawableObject> clone() const override;
+    std::shared_ptr<DrawableObject> clone() const& override;
+
+    std::shared_ptr<DrawableObject> clone() && override;
 
     bool isVisible() const override { return mVisible; }
 

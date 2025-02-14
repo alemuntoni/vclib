@@ -51,6 +51,7 @@ endfunction()
 #     OUTPUT_DIR directory
 #     OUT_FILES_VAR variable name
 #     INCLUDE_DIRS directories
+#     DEPENDS files
 # )
 #
 function(_bgfx_compile_shader_to_header)
@@ -58,7 +59,7 @@ function(_bgfx_compile_shader_to_header)
 
     set(options "")
     set(oneValueArgs TYPE VARYING_DEF OUTPUT_DIR OUT_FILES_VAR)
-    set(multiValueArgs SHADERS INCLUDE_DIRS)
+    set(multiValueArgs SHADERS INCLUDE_DIRS DEPENDS)
     cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
 
     set(PROFILES ${ESSL_PROFILE} ${SPIRV_PROFILE}) # pssl
@@ -122,7 +123,7 @@ function(_bgfx_compile_shader_to_header)
             OUTPUT ${OUTPUTS}
             COMMAND ${CMAKE_COMMAND} -E make_directory ${ARGS_OUTPUT_DIR} ${COMMANDS}
             MAIN_DEPENDENCY ${SHADER_FILE_ABSOLUTE}
-            DEPENDS ${ARGS_VARYING_DEF}
+            DEPENDS ${ARGS_VARYING_DEF} ${ARGS_DEPENDS}
         )
     endforeach()
 
@@ -201,16 +202,15 @@ function(_add_bgfx_shader FILE DIR TARGET)
         endif()
 
         # essl
-        if(NOT "${TYPE}" STREQUAL "COMPUTE")
-            set(ESSL_OUTPUT ${BGFX_SHADERS_OUTPUT_DIR}/essl/${DIR}/${FILENAME}.bin)
-            _bgfx_shaderc_parse(
-                ESSL ${COMMON} 
-                ANDROID PROFILE ${ESSL_PROFILE} 
-                OUTPUT ${ESSL_OUTPUT}
-                INCLUDES ${BGFX_SHADER_INCLUDE_PATH})
-            list(APPEND OUTPUTS "ESSL")
-            set(OUTPUTS_PRETTY "${OUTPUTS_PRETTY}ESSL, ")
-        endif()
+        set(ESSL_OUTPUT ${BGFX_SHADERS_OUTPUT_DIR}/essl/${DIR}/${FILENAME}.bin)
+        _bgfx_shaderc_parse(
+            ESSL ${COMMON}
+            ANDROID PROFILE ${ESSL_PROFILE}
+            OUTPUT ${ESSL_OUTPUT}
+            INCLUDES ${BGFX_SHADER_INCLUDE_PATH})
+        list(APPEND OUTPUTS "ESSL")
+        set(OUTPUTS_PRETTY "${OUTPUTS_PRETTY}ESSL, ")
+
 
         # glsl
         set(GLSL_OUTPUT ${BGFX_SHADERS_OUTPUT_DIR}/glsl/${DIR}/${FILENAME}.bin)
@@ -232,18 +232,16 @@ function(_add_bgfx_shader FILE DIR TARGET)
         set(OUTPUTS_PRETTY "${OUTPUTS_PRETTY}GLSL, ")
 
         # spirv
-        if(NOT "${TYPE}" STREQUAL "COMPUTE")
-            set(SPIRV_OUTPUT ${BGFX_SHADERS_OUTPUT_DIR}/spirv/${DIR}/${FILENAME}.bin)
-            _bgfx_shaderc_parse(
-                SPIRV ${COMMON} LINUX PROFILE 
-                ${SPIRV_PROFILE} 
-                OUTPUT ${SPIRV_OUTPUT}
-                INCLUDES ${BGFX_SHADER_INCLUDE_PATH})
-            list(APPEND OUTPUTS "SPIRV")
-            set(OUTPUTS_PRETTY "${OUTPUTS_PRETTY}SPIRV")
-            set(OUTPUT_FILES "")
-            set(COMMANDS "")
-        endif()
+        set(SPIRV_OUTPUT ${BGFX_SHADERS_OUTPUT_DIR}/spirv/${DIR}/${FILENAME}.bin)
+        _bgfx_shaderc_parse(
+            SPIRV ${COMMON} LINUX PROFILE
+            ${SPIRV_PROFILE}
+            OUTPUT ${SPIRV_OUTPUT}
+            INCLUDES ${BGFX_SHADER_INCLUDE_PATH})
+        list(APPEND OUTPUTS "SPIRV")
+        set(OUTPUTS_PRETTY "${OUTPUTS_PRETTY}SPIRV")
+        set(OUTPUT_FILES "")
+        set(COMMANDS "")
 
         foreach(OUT ${OUTPUTS})
             list(APPEND OUTPUT_FILES ${${OUT}_OUTPUT})
@@ -331,6 +329,7 @@ function(build_bgfx_shaders_to_headers)
                 VARYING_DEF "${ABSOLUTE_DIR_PATH}/varying.def.sc"
                 OUTPUT_DIR ${BGFX_SHADERS_OUTPUT_DIR}/${DIR_PATH}
                 INCLUDE_DIRS "${BGFX_DIR}/src;${VCLIB_RENDER_DIR};${VCLIB_RENDER_SHADER_DIR}"
+                DEPENDS ${ARGV}
             )
         endif()
     endforeach()

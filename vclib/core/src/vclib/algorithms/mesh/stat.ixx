@@ -24,6 +24,8 @@ module;
 
 #include <algorithm>
 #include <cassert>
+#include <list>
+#include <map>
 #include <ranges>
 #include <utility>
 #include <vector>

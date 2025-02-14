@@ -20,9 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <Eigen/Core>
-#include <ranges>
-#include <vector>
+#include <vclib/modules_required_headers.h>
 
 #include "const_correctness.h"
 #include "iterators.h"

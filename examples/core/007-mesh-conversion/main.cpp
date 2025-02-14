@@ -28,12 +28,7 @@
 #include <vclib/meshes.h>
 #include <vclib/misc/timer.h>
 #else
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <filesystem>
-#include <fstream>
-#include <map>    // needed by clang...
-#include <ranges> // needed by msvc...
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 
@@ -68,7 +63,7 @@ int main()
     vcl::save(m, VCLIB_RESULTS_PATH "/cube_from_poly.ply", s);
 
     pm = vcl::loadObj<vcl::PolyMesh>(VCLIB_EXAMPLE_MESHES_PATH
-                                         "/rhombicosidodecahedron.obj");
+                                     "/rhombicosidodecahedron.obj");
 
     m.importFrom(pm);
 

@@ -28,6 +28,7 @@
 #include <vclib/mesh/requirements.h>
 #endif
 
+#include "bar_component.h"
 #include "foo_component.h"
 
 /*

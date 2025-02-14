@@ -29,7 +29,7 @@
 #include <vclib/meshes.h>
 #include <vclib/views.h>
 #else
-#include <set>
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 
@@ -201,8 +201,8 @@ void testTriangulatedFaceMatrix(const auto& pm)
 
     for (vcl::uint i = 0; i < 3; ++i) {
         // polygon associated to ith triangle
-        vcl::uint fIdx = indexMap.polygon(i);
-        const auto& f   = pm.face(fIdx);
+        vcl::uint   fIdx = indexMap.polygon(i);
+        const auto& f    = pm.face(fIdx);
 
         for (vcl::uint j = 0; j < 3; ++j) {
             REQUIRE(f.containsVertex(tris(i, j)));

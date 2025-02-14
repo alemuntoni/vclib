@@ -30,9 +30,7 @@
 #include <vclib/meshes.h>
 #include <vclib/miscellaneous.h>
 #else
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <fstream>
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 

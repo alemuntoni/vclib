@@ -29,10 +29,7 @@
 #include <vclib/algorithms/mesh/update.h>
 #include <vclib/views/mesh.h>
 #else
-#include <Eigen/Core> // needed by msvc...
-#include <Eigen/Geometry>
-#include <fstream>
-#include <ranges>     // needed by msvc...
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 

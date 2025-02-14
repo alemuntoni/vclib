@@ -25,10 +25,14 @@ module;
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <list>
 #include <random>
+#include <ranges>
 #include <set>
 #include <string>
 #include <vector>
+#define ZIP_VIEW_INJECT_STD_VIEWS_NAMESPACE
+#include <zip_view.hpp>
 
 #include <Eigen/Core>
 
@@ -56,6 +60,7 @@ import vclib.views;
 import :stat;
 
 export {
+#include <vclib/algorithms/mesh/import_export/append_replace_to_buffer.h>
 #include <vclib/algorithms/mesh/import_export/export_buffer.h>
 #include <vclib/algorithms/mesh/import_export/export_matrix.h>
 #include <vclib/algorithms/mesh/import_export/import_matrix.h>

@@ -5,17 +5,17 @@
     and should be included only if vclib-processing target is available
   - [X] Manage polygonal meshes by DrawableMesh
   - [X] Fix build failure when the build directory is in the same directory as the source
-  - [ ] Add the possibility to check if BGFX is available in the system
-    - [ ] Devcontainers should have BGFX installed
+  - [X] Add the possibility to check if BGFX is available in the system
+    - [X] Devcontainers should have BGFX installed
   - [ ] Move BGFX from submodule to a CMake dependency
   - [ ] The DesktopTrackball should inherit from the Trackball
   - [ ] The AbstractViewer should not inherit from DesktopTrackball, but it should own it as a member.
 - BGFX
-  - [ ] Fix FIXME #1 on example-01-viewer-qt
+  - [X] Fix FIXME #1 on example-01-viewer-qt
   - [ ] Fix FIXME #2 on example-04-hello-triangle-imgui-qt
-  - [ ] Fix 2 Qt windows with BGFX canvas.
+  - [X] Fix 2 Qt windows with BGFX canvas.
+  - [ ] Add possibility to update a subset of buffers for DrawableMesh
   - [X] Library shaders should be built as headers
-  - [ ] Check why OpenGL backend does not work when using BGFX (probably the cause is BGFX itself)
   - [ ] assets and shaders should be compiled in headers that are in paths like
     'vclib/assets/' and 'vclib/shaders/' (right now they are in 'assets/' and 'shaders/')
   - [X] the first window used by the context to create the bgfx backend context should be
@@ -27,7 +27,7 @@
   - [X] Better management of canvas and viewer classes - qt and glfw share a lot of code (REFACTORING IN PROGRESS)
   - [X] Implement picking (raytracing to get the triangle clicked by the mouse?) Already implemented using depth reading
   - [ ] Customizable background for canvas
-  - [ ] check crash example 9015 mesh io stl (crashes if the bimba model (m1) is rendered)
+  - [X] check crash example 9015 mesh io stl (crashes if the bimba model (m1) is rendered)
   - [ ] Draw lines trough shader - Work in progress (BSc thesis)
   - [X] check retina resolution on macOS + GLFW
   - [X] fix trackball initial scale using GLFW
@@ -51,8 +51,13 @@
   - [X] implement offscreen color rendering for the snapshot function
   - [X] implement 'offscreen' rendering on legacy OpenGL
   - [X] implement imgui platform backend for Qt
+  - [X] check BGFX framebuffer creation for multiple windows and offscreen rendering
+  - [ ] fix timings in imgui qt platform backend
   - [ ] solve key modifiers inconsistency when using imgui and glfw
+  - [ ] fix imgui qt double click
   - [X] fix BGFX LEAK: IndexBufferHandle 1 (max: 4096) on shutdown (SOLVED MISTERIOUSLY)
   - [X] change DesktopTrackball & ViewerI API to enable direct access to the Trackball functionalities + possible major class restructuring (REFACTORING IN PROGRESS)
   - [ ] update documentation of Canvas & co.
   - [ ] implement screenshot custom size (split rendering into multiple tiles)
+  - [ ] move MeshViewerImguiDrawer into library
+  - [ ] move example 07 mesh-viewer-imgui in example 02

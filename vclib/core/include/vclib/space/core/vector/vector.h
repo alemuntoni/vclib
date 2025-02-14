@@ -374,6 +374,21 @@ public:
     /**
      * @brief Set the value of the element at the specified position.
      *
+     * Sets the value of the element at position `i` in the Vector by moving the
+     * specified value `e`.
+     *
+     * @param[in] i: The position of the element.
+     * @param[in] e: The new value of the element.
+     */
+    void set(uint i, T&& e)
+    {
+        assert(i < size());
+        mContainer[i] = std::move(e);
+    }
+
+    /**
+     * @brief Set the value of the element at the specified position.
+     *
      * Sets the value of the element at position `it` in the Vector to the
      * specified value `e`.
      *
@@ -384,6 +399,21 @@ public:
     {
         assert(it < end());
         mContainer[it - begin()] = e;
+    }
+
+    /**
+     * @brief Set the value of the element at the specified position.
+     *
+     * Sets the value of the element at position `it` in the Vector by moving
+     * the specified value `e`.
+     *
+     * @param[in] it: The iterator pointing to the position of the element.
+     * @param[in] e: The new value of the element.
+     */
+    void set(ConstIterator it, T&& e)
+    {
+        assert(it < end());
+        mContainer[it - begin()] = std::move(e);
     }
 
     /**
@@ -545,6 +575,22 @@ public:
     void pushBack(const T& v) requires (N < 0) { mContainer.push_back(v); }
 
     /**
+     * @brief Add an element to the end of the Vector.
+     *
+     * Moves the element `v` to the end of the Vector by calling the
+     * `push_back()` member function of the underlying `std::vector`. This
+     * member function is only available if the size of the Vector is not known
+     * at compile-time, as specified by the concept requirement `requires (N <
+     * 0)`.
+     *
+     * @param[in] v: The value to add to the end of the Vector.
+     */
+    void pushBack(T&& v) requires (N < 0)
+    {
+        mContainer.push_back(std::move(v));
+    }
+
+    /**
      * @brief Insert an element at the specified position in the Vector.
      *
      * Inserts the element `v` at the position specified by `i` in the Vector by
@@ -565,6 +611,24 @@ public:
     /**
      * @brief Insert an element at the specified position in the Vector.
      *
+     * Inserts the element `v` at the position specified by `i` in the Vector by
+     * calling the `insert()` member function of the underlying `std::vector`.
+     * This member function is only available if the size of the Vector is not
+     * known at compile-time, as specified by the concept requirement `requires
+     * (N < 0)`.
+     *
+     * @param[in] i: The index at which to insert the element.
+     * @param[in] v: The value to insert into the Vector.
+     */
+    void insert(uint i, T&& v) requires (N < 0)
+    {
+        assert(i < size() + 1);
+        mContainer.insert(mContainer.begin() + i, std::move(v));
+    }
+
+    /**
+     * @brief Insert an element at the specified position in the Vector.
+     *
      * Inserts the newly constructed element with the args at the position
      * specified by `i` in the Vector by calling the `emplace()` member function
      * of the underlying `std::vector`. This member function is only available
@@ -580,6 +644,13 @@ public:
         assert(i < size() + 1);
         mContainer.emplace(mContainer.begin() + i, std::forward<Args>(args)...);
     }
+
+    /**
+     * @brief Returns whether the vector is empty (i.e. whether its size is 0).
+     *
+     * @return `true` if the container size is 0, `false` otherwise.
+     */
+    bool empty() const noexcept { return mContainer.empty(); }
 
     /**
      * @brief Remove the element at the specified index from the Vector.

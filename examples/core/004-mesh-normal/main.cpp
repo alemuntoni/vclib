@@ -27,11 +27,7 @@
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #else
-#include <Eigen/Core> // needed by msvc...
-#include <Eigen/Geometry>
-#include <fstream>
-#include <ranges>     // needed by msvc...
-#include <set>
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 

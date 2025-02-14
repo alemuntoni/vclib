@@ -27,10 +27,7 @@
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #else
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <list>
-#include <set>
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 
@@ -158,6 +155,34 @@ TEMPLATE_TEST_CASE(
         vcl::loadPly(tm, ss);
         REQUIRE(tm.vertexNumber() == 8);
         REQUIRE(tm.faceNumber() == 12);
+    }
+
+    SECTION("TriMesh - VertTextureDouble")
+    {
+        TriMesh tm;
+        vcl::loadPly(tm, VCLIB_EXAMPLE_MESHES_PATH "/VertTextureDouble.ply");
+        REQUIRE(tm.vertexNumber() == 8);
+        REQUIRE(tm.faceNumber() == 4);
+        REQUIRE(tm.textureNumber() == 2);
+        REQUIRE(tm.isPerVertexTexCoordEnabled());
+        for (const auto& v : tm.vertices()) {
+            // first four vertices have index 0, the other four have index 1
+            REQUIRE(v.texCoord().index() == v.index() / 4);
+        }
+    }
+
+    SECTION("TriMesh - Wedge TextureDouble")
+    {
+        TriMesh tm;
+        vcl::loadPly(tm, VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.ply");
+        REQUIRE(tm.vertexNumber() == 8);
+        REQUIRE(tm.faceNumber() == 4);
+        REQUIRE(tm.textureNumber() == 2);
+        REQUIRE(tm.isPerFaceWedgeTexCoordsEnabled());
+        for (const auto& f : tm.faces()) {
+            // first two faces have texture index 0, the other two have index 1
+            REQUIRE(f.textureIndex() == f.index() / 2);
+        }
     }
 
     SECTION("PolyMesh - PolyCube")

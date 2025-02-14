@@ -28,7 +28,7 @@
 #include <vclib/concepts.h>
 #include <vclib/space.h>
 #else
-#include <ranges>
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 
@@ -41,7 +41,9 @@ struct Shape
 
     virtual void printScale() const { std::cout << "Scale: " << s << '\n'; }
 
-    virtual std::shared_ptr<Shape> clone() const = 0;
+    virtual std::shared_ptr<Shape> clone() const& = 0;
+
+    virtual std::shared_ptr<Shape> clone() && = 0;
 
 private:
     float s = 1.0f;
@@ -51,9 +53,16 @@ struct Circle : public Shape
 {
     void draw() const override { std::cout << "Drawing a circle\n"; }
 
-    std::shared_ptr<Shape> clone() const override
+    std::shared_ptr<Shape> clone() const& override
     {
+        std::cerr << "Circle copy\n";
         return std::make_shared<Circle>(*this);
+    }
+
+    std::shared_ptr<Shape> clone() && override
+    {
+        std::cerr << "Circle move\n";
+        return std::make_shared<Circle>(std::move(*this));
     }
 };
 
@@ -61,9 +70,16 @@ struct Square : public Shape
 {
     void draw() const override { std::cout << "Drawing a square\n"; }
 
-    std::shared_ptr<Shape> clone() const override
+    std::shared_ptr<Shape> clone() const& override
     {
+        std::cerr << "Square copy\n";
         return std::make_shared<Square>(*this);
+    }
+
+    std::shared_ptr<Shape> clone() && override
+    {
+        std::cerr << "Square move\n";
+        return std::make_shared<Square>(std::move(*this));
     }
 };
 

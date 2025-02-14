@@ -29,9 +29,7 @@
 #include <vclib/algorithms/mesh/update/normal.h>
 #include <vclib/meshes.h>
 #else
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <ranges>
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 

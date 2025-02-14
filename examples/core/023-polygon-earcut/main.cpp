@@ -26,6 +26,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
 #else
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 

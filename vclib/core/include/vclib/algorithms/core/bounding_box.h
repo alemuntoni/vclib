@@ -45,7 +45,7 @@
  * `#include <vclib/algorithms/core/bounding_box.h>`
  *
  * @note To compute the bounding box of a Mesh, use the `vcl::boundingBox`
- * function defined in `vclib/algorithms/mesh/bounding_box.h`.
+ * function defined in `vclib/algorithms/mesh/stat/bounding_box.h`.
  */
 
 namespace vcl {

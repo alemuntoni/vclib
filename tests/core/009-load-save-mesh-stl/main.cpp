@@ -28,9 +28,7 @@
 #include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #else
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <ranges>
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 

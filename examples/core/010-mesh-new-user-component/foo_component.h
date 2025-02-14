@@ -31,7 +31,7 @@
 #include <vclib/concepts/mesh/components/component.h>
 #include <vclib/types.h>
 #else
-#include <Eigen/Core>
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 #endif
 

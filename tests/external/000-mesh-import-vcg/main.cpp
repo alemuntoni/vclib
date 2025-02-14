@@ -34,6 +34,7 @@
 #include <vclib/vcg/export.h>
 #include <vclib/vcg/import.h>
 #else
+#include <vclib/modules_required_headers.h>
 import vclib.core;
 import vclib.external;
 #endif
