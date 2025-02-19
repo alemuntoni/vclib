@@ -242,6 +242,8 @@ protected:
 
     virtual void createWedgeTextureIndicesBuffer(const MeshType&) {}
 
+    void createEdgeIndicesBuffer(const EdgeMeshConcept auto&) {};
+
     virtual void createEdgeNormalsBuffer(const MeshType&) {}
 
     virtual void createEdgeColorsBuffer(const MeshType&) {}
