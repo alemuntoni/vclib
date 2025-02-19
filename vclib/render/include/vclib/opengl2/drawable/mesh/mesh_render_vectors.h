@@ -37,10 +37,13 @@
 namespace vcl {
 
 template<MeshConcept MeshType>
-class MeshRenderVectors : public MeshRenderData<MeshType>
+class MeshRenderVectors :
+        public MeshRenderData<MeshType, MeshRenderVectors<MeshType>>
 {
-    using Base = MeshRenderData<MeshType>;
-    using MRI = MeshRenderInfo;
+    using Base = MeshRenderData<MeshType, MeshRenderVectors<MeshType>>;
+    using MRI  = MeshRenderInfo;
+
+    friend Base;
 
     std::vector<float>    mVerts;
     std::vector<float>    mVNormals;
@@ -226,7 +229,7 @@ public:
     }
 
 private:
-    void createVertexCoordsBuffer(const MeshType& mesh) override final
+    void createVertexCoordsBuffer(const MeshType& mesh)
     {
         uint nv = Base::numVerts();
 
@@ -235,17 +238,13 @@ private:
         Base::fillVertexCoords(mesh, mVerts.data());
     }
 
-    void createVertexNormalsBuffer(const MeshType& mesh) override final
+    void createVertexNormalsBuffer(const MeshType& mesh)
     {
-        if constexpr (vcl::HasPerVertexNormal<MeshType>) {
-            if (vcl::isPerVertexNormalAvailable(mesh)) {
-                uint nv = Base::numVerts();
+        uint nv = Base::numVerts();
 
-                mVNormals.resize(nv * 3);
+        mVNormals.resize(nv * 3);
 
-                Base::fillVertexNormals(mesh, mVNormals.data());
-            }
-        }
+        Base::fillVertexNormals(mesh, mVNormals.data());
     }
 
     void createVertexColorsBuffer(const MeshType& mesh) override final
@@ -353,15 +352,13 @@ private:
         }
     }
 
-    void createEdgeIndicesBuffer(const MeshType& mesh) override final
+    void createEdgeIndicesBuffer(const MeshType& mesh)
     {
-        if constexpr (vcl::HasEdges<MeshType>) {
-            uint ne = Base::numEdges();
+        uint ne = Base::numEdges();
 
-            mEdges.resize(ne * 2);
+        mEdges.resize(ne * 2);
 
-            Base::fillEdgeIndices(mesh, mEdges.data());
-        }
+        Base::fillEdgeIndices(mesh, mEdges.data());
     }
 
     void createEdgeNormalsBuffer(const MeshType& mesh) override final

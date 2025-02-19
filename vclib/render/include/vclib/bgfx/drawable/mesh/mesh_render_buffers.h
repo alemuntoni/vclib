@@ -37,10 +37,13 @@
 namespace vcl {
 
 template<MeshConcept MeshType>
-class MeshRenderBuffers : public MeshRenderData<MeshType>
+class MeshRenderBuffers :
+        public MeshRenderData<MeshType, MeshRenderBuffers<MeshType>>
 {
-    using Base = MeshRenderData<MeshType>;
+    using Base = MeshRenderData<MeshType, MeshRenderBuffers<MeshType>>;
     using MRI = MeshRenderInfo;
+
+    friend Base;
 
     VertexBuffer mVertexCoordsBuffer;
     VertexBuffer mVertexNormalsBuffer;
@@ -167,7 +170,7 @@ public:
     void bindUniforms() const { mMeshUniforms.bind(); }
 
 private:
-    void createVertexCoordsBuffer(const MeshType& mesh) override final
+    void createVertexCoordsBuffer(const MeshType& mesh)
     {
         uint nv = Base::numVerts();
 
@@ -186,35 +189,27 @@ private:
             releaseFn);
     }
 
-    void createVertexNormalsBuffer(const MeshType& mesh) override final
+    void createVertexNormalsBuffer(const MeshType& mesh)
     {
-        using enum MRI::Buffers;
+        uint nv = Base::numVerts();
 
-        if constexpr (vcl::HasPerVertexNormal<MeshType>) {
-            if (vcl::isPerVertexNormalAvailable(mesh)) {
-                uint nv = Base::numVerts();
+        auto [buffer, releaseFn] =
+            getAllocatedBufferAndReleaseFn<float>(nv * 3);
 
-                auto [buffer, releaseFn] =
-                    getAllocatedBufferAndReleaseFn<float>(nv * 3);
+        Base::fillVertexNormals(mesh, buffer);
 
-                Base::fillVertexNormals(mesh, buffer);
-
-                mVertexNormalsBuffer.create(
-                    buffer,
-                    nv,
-                    bgfx::Attrib::Normal,
-                    3,
-                    PrimitiveType::FLOAT,
-                    false,
-                    releaseFn);
-            }
-        }
+        mVertexNormalsBuffer.create(
+            buffer,
+            nv,
+            bgfx::Attrib::Normal,
+            3,
+            PrimitiveType::FLOAT,
+            false,
+            releaseFn);
     }
 
     void createVertexColorsBuffer(const MeshType& mesh) override final
     {
-        using enum MRI::Buffers;
-
         if constexpr (vcl::HasPerVertexColor<MeshType>) {
             if (vcl::isPerVertexColorAvailable(mesh)) {
                 uint nv = Base::numVerts();
@@ -238,8 +233,6 @@ private:
 
     void createVertexTexCoordsBuffer(const MeshType& mesh) override final
     {
-        using enum MRI::Buffers;
-
         if constexpr (vcl::HasPerVertexTexCoord<MeshType>) {
             if (vcl::isPerVertexTexCoordAvailable(mesh)) {
                 uint nv = Base::numVerts();
@@ -263,8 +256,6 @@ private:
 
     void createWedgeTexCoordsBuffer(const MeshType& mesh) override final
     {
-        using enum MRI::Buffers;
-
         if constexpr (vcl::HasPerFaceWedgeTexCoords<MeshType>) {
             if (isPerFaceWedgeTexCoordsAvailable(mesh)) {
                 uint nv = Base::numVerts();
@@ -288,8 +279,6 @@ private:
 
     void createTriangleIndicesBuffer(const MeshType& mesh) override final
     {
-        using enum MRI::Buffers;
-
         if constexpr (vcl::HasFaces<MeshType>) {
             uint nt = Base::numTris();
 
@@ -304,8 +293,6 @@ private:
 
     void createTriangleNormalsBuffer(const MeshType& mesh) override final
     {
-        using enum MRI::Buffers;
-
         if constexpr (vcl::HasPerFaceNormal<MeshType>) {
             if (vcl::isPerFaceNormalAvailable(mesh)) {
                 uint nt = Base::numTris();
@@ -327,8 +314,6 @@ private:
 
     void createTriangleColorsBuffer(const MeshType& mesh) override final
     {
-        using enum MRI::Buffers;
-
         if constexpr (vcl::HasPerFaceColor<MeshType>) {
             if (vcl::isPerFaceColorAvailable(mesh)) {
                 uint nt = Base::numTris();
@@ -350,8 +335,6 @@ private:
 
     void createWedgeTextureIndicesBuffer(const MeshType& mesh) override final
     {
-        using enum MRI::Buffers;
-
         if constexpr (vcl::HasPerFaceWedgeTexCoords<MeshType>) {
             if (isPerFaceWedgeTexCoordsAvailable(mesh)) {
                 uint nt = Base::numTris();
@@ -371,24 +354,20 @@ private:
         }
     }
 
-    void createEdgeIndicesBuffer(const MeshType& mesh) override final
+    void createEdgeIndicesBuffer(const MeshType& mesh)
     {
-        if constexpr (vcl::HasEdges<MeshType>) {
-            uint ne = Base::numEdges();
+        uint ne = Base::numEdges();
 
-            auto [buffer, releaseFn] =
-                getAllocatedBufferAndReleaseFn<uint>(ne * 2);
+        auto [buffer, releaseFn] =
+            getAllocatedBufferAndReleaseFn<uint>(ne * 2);
 
-            Base::fillEdgeIndices(mesh, buffer);
+        Base::fillEdgeIndices(mesh, buffer);
 
-            mEdgeIndexBuffer.create(buffer, ne * 2);
-        }
+        mEdgeIndexBuffer.create(buffer, ne * 2);
     }
 
     void createEdgeNormalsBuffer(const MeshType& mesh) override final
     {
-        using enum MRI::Buffers;
-
         if constexpr (vcl::HasPerEdgeNormal<MeshType>) {
             if (vcl::isPerEdgeNormalAvailable(mesh)) {
                 uint ne = Base::numEdges();
@@ -411,8 +390,6 @@ private:
 
     void createEdgeColorsBuffer(const MeshType& mesh) override final
     {
-        using enum MRI::Buffers;
-
         if constexpr (vcl::HasPerEdgeColor<MeshType>) {
             if (vcl::isPerEdgeColorAvailable(mesh)) {
                 uint ne = Base::numEdges();
@@ -434,8 +411,6 @@ private:
 
     void createWireframeIndicesBuffer(const MeshType& mesh) override final
     {
-        using enum MRI::Buffers;
-
         if constexpr (vcl::HasFaces<MeshType>) {
             const uint nw = Base::numWireframeLines();
 
