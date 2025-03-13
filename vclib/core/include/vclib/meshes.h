@@ -36,6 +36,7 @@
  * @brief List of predefined Mesh data structures that are available in VCLib.
  *
  * All the Mesh data structure have three configurations available:
+ * 
  * - `MeshTypeNameT`: a Templated Mesh data structure that allows to select the
  * scalar data type  and whether the mesh uses pointers or indices to store
  * references, with templates (e.g. `MeshTypeNameT<long double, true>`);

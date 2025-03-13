@@ -1,4 +1,4 @@
-# Basic Concepts     {#basic_concepts_page}
+# Basic Concepts
 
 There are a small set of headers that will bring all the library functionalities that need to be exposed to the user:
 

@@ -26,4 +26,11 @@
 #include "serialization/deserialize.h"
 #include "serialization/serialize.h"
 
+/**
+ * @defgroup io I/O functions
+ *
+ * @brief List of functions and classes that allow to serialize and deserialize
+ * objects, and to read and write files.
+ */
+
 #endif // VCL_IO_SERIALIZATION_H

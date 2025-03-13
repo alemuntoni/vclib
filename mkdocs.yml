@@ -1,0 +1,136 @@
+site_name: Visual Computing Library
+
+site_author: Alessandro Muntoni
+site_description: >-
+  a C++20 modern, multi-platform Mesh and Geometry Processing library.
+
+repo_name: VCLib
+repo_url: https://github.com/cnr-isti-vclab/vclib/
+
+# Copyright
+copyright: Copyright © 2025 Visual Computing Lab - ISTI - Italian National Research Council
+
+theme:
+  name: material
+  language: en
+  # logo: assets/logo.png
+  # favicon: assets/logo.png
+  features:
+    - navigation.tabs
+    - navigation.indexes
+    - navigation.top
+    # - navigation.instant
+    # - navigation.tracking
+
+  icon:
+    repo: fontawesome/brands/github
+
+  palette:
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/cnr-isti-vclab
+    # - icon: fontawesome/brands/twitter
+    #   link: https://twitter.com/KubaAndrysek
+    # - icon: fontawesome/brands/linkedin
+    #   link: https://www.linkedin.com/in/jakub-andrysek/
+  # analytics:
+  #   provider: google
+  #   property: G-6VB0GPP3MT
+  #   feedback:
+  #     title: Was this page helpful?
+  #     ratings:
+  #       - icon: material/emoticon-happy-outline
+  #         name: This page was helpful
+  #         data: 1
+  #         note: >-
+  #           Thanks for your feedback!
+  #       - icon: material/emoticon-sad-outline
+  #         name: This page could be improved
+  #         data: 0
+  #         note: >-
+  #           Thanks for your feedback!
+
+use_directory_urls: True
+
+plugins:
+  - search
+  - glightbox
+  - open-in-new-tab
+  - mkdoxy:
+      projects:
+        VCLib:
+          src-dirs: docs vclib/core/include vclib/render/include vclib/render/src
+          full-doc: True # if you want to generate full documentation
+          doxy-cfg: # standard doxygen configuration (key: value)
+            FILE_PATTERNS: "*.cpp *.h*" # specify file patterns to filter out
+            RECURSIVE: True # recursive search in source directories
+            EXTRACT_ALL: True # extract all members
+            EXTRACT_PRIVATE: True # extract private members
+            EXTRACT_STATIC: True # extract static members
+            CASE_SENSE_NAMES: True # case sensitive names
+            EXCLUDE_SYMBOLS: "std detail mapbox Eigen ImGui bx bgfx" # exclude symbols with this name
+            GENERATE_TREEVIEW: True # generate treeview
+            DOT_GRAPH_MAX_NODES: 100 # maximum number of nodes in a graph
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+nav:
+  - "Home":
+    - "Welcome": index.md
+  - "User Guide": 
+    - "Getting Started": pages/user_guide/1_get_started.md
+    - "Core":
+      - "Basic Concepts": pages/user_guide/core/2_basic_concepts.md
+      - "Meshes":
+        - "Mesh": pages/user_guide/core/3_mesh.md
+        - "Components": pages/user_guide/core/mesh/1_components.md
+        - "Elements": pages/user_guide/core/mesh/2_elements.md
+        - "Containers": pages/user_guide/core//mesh/3_containers.md
+      - "Spatial Data Structures": pages/user_guide/core//4_space.md
+    - "Render": ""
+    - "External": ""
+    - "Processing": ""
+  - "Modules":
+    - "Introduction": "pages/modules/0_introduction.md"
+    - "Core": 
+      - "Types": "VCLib/group__types.md"
+      - "Concepts": "VCLib/group__concepts.md"
+      - "Math": "VCLib/group__math.md"
+      - "Views": "VCLib/group__views.md"
+      - "Exceptions": "VCLib/group__exceptions.md"
+      - "Miscellaneous": "VCLib/group__miscellaneous.md"
+      - "IO": "VCLib/group__io.md"
+      - "Spatial Data Structures": 
+        - "Core": "VCLib/group__space__core.md"
+        - "Complex": "VCLib/group__space__complex.md"
+      - "Mesh": "VCLib/group__mesh.md"
+      - "Meshes": "VCLib/group__meshes.md"
+      - "Load/Save": "VCLib/group__load__save.md"
+      - "Algorithms":
+        - "Core": "VCLib/group__algorithms__core.md"
+        - "Mesh": "VCLib/group__algorithms__mesh.md"
+    - "Render": "pages/modules/2_render.md"
+    - "External": "pages/modules/3_external.md"
+    - "Processing": "pages/modules/4_processing.md"
+    - "Bindings": "pages/modules/5_bindings.md"
+  - "API Reference":
+    - "Class Index": "VCLib/classes.md"
+    - "Namespaces": "VCLib/namespaces.md"
+  

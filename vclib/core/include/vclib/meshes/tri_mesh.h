@@ -81,6 +81,9 @@ namespace vcl {
 
 /**
  * @brief The TriMeshT class
+ * @extends mesh::VertexContainer
+ * @extends mesh::FaceContainer
+ * @extends mesh::BoundingBox3
  * @ingroup meshes
  */
 template<typename Scalar, bool INDEXED>

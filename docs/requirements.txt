@@ -1,0 +1,10 @@
+# pip packages required to build the documentation
+# Run `pip install -r docs/requirements.txt` from the root of the repo to install them
+mkdocs
+mkdocs-material
+Jinja2
+ruamel.yaml
+mkdoxy
+mkdocs-glightbox
+mkdocs-open-in-new-tab
+mkdocs-git-revision-date-localized-plugin
