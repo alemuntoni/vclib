@@ -62,7 +62,6 @@ endif()
 target_include_directories(${PROJECT_NAME} ${VCLIB_CORE_TARGET_LINK_TYPE} ${VCLIB_CORE_INCLUDE_DIR})
 
 add_library(vclib::core ALIAS ${PROJECT_NAME})
-target_include_directories(${PROJECT_NAME} INTERFACE ${VCLIB_CORE_INCLUDE_DIR})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VCLIB_CORE_INCLUDE_DIR ${VCLIB_CORE_INCLUDE_DIR})
