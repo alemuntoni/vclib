@@ -58,10 +58,13 @@ TEMPLATE_TEST_CASE(
         std::vector<PointType> points =
             randomPoints(N_POINTS_TEST, tm.boundingBox(), seed);
 
+// msvc fails to compile this with modules enabled
+#if !(defined(VCLIB_WITH_MODULES) && defined(_MSC_VER))
         SECTION("HashTableGrid")
         {
             closestFacesTest<HSGrid3>(tm, points, "HashTableGrid");
         }
+#endif
 
         SECTION("StaticGrid")
         {
@@ -81,10 +84,13 @@ TEMPLATE_TEST_CASE(
         std::vector<PointType> points =
             randomPoints(N_POINTS_TEST, pm.boundingBox(), seed);
 
+// msvc fails to compile this with modules enabled
+#if !(defined(VCLIB_WITH_MODULES) && defined(_MSC_VER))
         SECTION("HashTableGrid")
         {
             closestFacesTest<HSGrid3>(pm, points, "HashTableGrid");
         }
+#endif
 
         SECTION("StaticGrid")
         {
@@ -122,10 +128,13 @@ TEMPLATE_TEST_CASE(
         std::vector<PointType> points =
             randomPoints(N_POINTS_TEST, tm.boundingBox(), seed);
 
+// msvc fails to compile this with modules enabled
+#if !(defined(VCLIB_WITH_MODULES) && defined(_MSC_VER))
         SECTION("HashTableGrid")
         {
             kNearestFacesTest<HSGrid3>(tm, points, K_NEAREST, "HashTableGrid");
         }
+#endif
 
         SECTION("StaticGrid")
         {
@@ -146,10 +155,13 @@ TEMPLATE_TEST_CASE(
         std::vector<PointType> points =
             randomPoints(N_POINTS_TEST, pm.boundingBox(), seed);
 
+// msvc fails to compile this with modules enabled
+#if !(defined(VCLIB_WITH_MODULES) && defined(_MSC_VER))
         SECTION("HashTableGrid")
         {
             kNearestFacesTest<HSGrid3>(pm, points, K_NEAREST, "HashTableGrid");
         }
+#endif
 
         SECTION("StaticGrid")
         {
@@ -188,10 +200,13 @@ TEMPLATE_TEST_CASE(
         std::vector<SphereType> spheres =
             randomSpheres(N_POINTS_TEST, tm, seed);
 
+// msvc fails to compile this with modules enabled
+#if !(defined(VCLIB_WITH_MODULES) && defined(_MSC_VER))
         SECTION("HashTableGrid")
         {
             facesInSpheresTest<HSGrid3>(tm, spheres, "HashTableGrid");
         }
+#endif
 
         SECTION("StaticGrid")
         {
@@ -213,10 +228,13 @@ TEMPLATE_TEST_CASE(
         std::vector<SphereType> spheres =
             randomSpheres(N_POINTS_TEST, pm, seed);
 
+// msvc fails to compile this with modules enabled
+#if !(defined(VCLIB_WITH_MODULES) && defined(_MSC_VER))
         SECTION("HashTableGrid")
         {
             facesInSpheresTest<HSGrid3>(pm, spheres, "HashTableGrid");
         }
+#endif
 
         SECTION("StaticGrid")
         {
