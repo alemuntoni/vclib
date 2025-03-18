@@ -28,9 +28,6 @@
 #include <vclib/meshes.h>
 #include <vclib/space.h>
 #include <vclib/views.h>
-#else
-#include <vclib/modules_required_headers.h>
-import vclib.core;
 #endif
 
 #include <iostream>

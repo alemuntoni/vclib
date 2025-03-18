@@ -20,6 +20,11 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
+#ifdef VCLIB_WITH_MODULES
+#include <vclib/modules_required_headers.h>
+import vclib.core;
+#endif
+
 #include "k_nearest.h"
 #include "nearest.h"
 #include "sphere.h"
