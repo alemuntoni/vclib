@@ -46,6 +46,12 @@ add_subdirectory(017-serialization)
 add_subdirectory(018-polygon)
 add_subdirectory(019-export-matrix)
 add_subdirectory(020-append-buffer)
-add_subdirectory(021-grid-query)
+
+# avoid to build this test with MSVC and with C++20 modules on github
+# actions - this is a workaround to non-sense errors not replicable elsewhere
+# (it does not find vclib.core module ONLY on this example ONLY on github actions)
+if (NOT MSVC OR NOT VCLIB_BUILD_CXX20_MODULES)
+    add_subdirectory(021-grid-query)
+endif()
 
 
