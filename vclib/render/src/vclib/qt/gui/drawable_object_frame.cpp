@@ -63,7 +63,7 @@ DrawableObjectFrame::DrawableObjectFrame(
 
     connect(
         mUI->visibilityCheckBox,
-        &QCheckBox::stateChanged,
+        &QCheckBox::checkStateChanged,
         this,
         &DrawableObjectFrame::visibilityCheckBoxStateChanged);
 }
@@ -73,9 +73,15 @@ DrawableObjectFrame::~DrawableObjectFrame()
     delete mUI;
 }
 
-void DrawableObjectFrame::visibilityCheckBoxStateChanged(int arg1)
+void DrawableObjectFrame::setIcon(const QIcon& icon, const QString& tooltip)
 {
-    mObj->setVisibility(arg1 == Qt::Checked);
+    mUI->iconLabel->setPixmap(icon.pixmap(16, 16));
+    mUI->iconLabel->setToolTip(tooltip);
+}
+
+void DrawableObjectFrame::visibilityCheckBoxStateChanged(Qt::CheckState arg1)
+{
+    mObj->setVisibility(arg1 == Qt::CheckState::Checked);
     emit visibilityChanged();
 }
 

@@ -285,6 +285,13 @@ protected:
                     ImGui_ImplQt_MouseButtonToImGuiButton(button), press);
                 return BLOCK_EVENTS;
             }
+            case QEvent::MouseButtonDblClick: {
+                QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+                const auto   button     = mouseEvent->button();
+                io.AddMouseButtonEvent(
+                    ImGui_ImplQt_MouseButtonToImGuiButton(button), true);
+                return BLOCK_EVENTS;
+            }
             case QEvent::MouseMove: {
                 QMouseEvent*  mouseEvent = static_cast<QMouseEvent*>(event);
                 const QPointF pos        = mouseEvent->position();
@@ -304,12 +311,17 @@ protected:
                 ImGui_ImplQt_UpdateFocusEvent(event->type() == QEvent::FocusIn);
                 return BLOCK_EVENTS;
             }
-            case QEvent::Enter:
+            case QEvent::WindowActivate:
+            case QEvent::WindowDeactivate: {
+                ImGui_ImplQt_UpdateFocusEvent(
+                    event->type() == QEvent::WindowActivate);
+                return BLOCK_EVENTS;
+            }
             case QEvent::Leave: {
                 ImGui_ImplQt_UpdateMouseData();
                 return BLOCK_EVENTS;
             }
-            default: break;
+            default: return BLOCK_EVENTS;
             }
         }
         // standard event processing

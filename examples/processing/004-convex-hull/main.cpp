@@ -32,24 +32,19 @@ import vclib.processing;
 
 int main()
 {
-    vcl::proc::ActionManager manager;
+    using namespace vcl::proc;
 
-    manager.add(vcl::proc::vclibActions());
+    vcl::TriEdgeMesh bunny =
+        ActionManager::loadMeshActions("obj")->load<vcl::TriEdgeMesh>(
+            VCLIB_EXAMPLE_MESHES_PATH "/bunny.obj");
 
-    auto pm0 = manager.loadMeshAction("obj")->load(VCLIB_EXAMPLE_MESHES_PATH
-                                                   "/bunny.obj");
+    std::vector<vcl::TriEdgeMesh> out;
 
-    vcl::proc::MeshVector mv;
+    ActionManager::filterActions("Convex Hull")
+        ->execute({&std::as_const(bunny)}, out);
 
-    vcl::proc::MeshVector outputMeshes;
-
-    mv.pushBack(pm0);
-
-    manager.filterMeshActionByName("Convex Hull")
-        ->applyFilter(mv, outputMeshes);
-
-    manager.saveMeshAction("ply")->save(
-        VCLIB_RESULTS_PATH "/convex_hull_bunny.ply", *outputMeshes.front());
+    ActionManager::saveMeshActions("ply")->save(
+        VCLIB_RESULTS_PATH "/convex_hull_bunny.ply", out.front());
 
     return 0;
 }

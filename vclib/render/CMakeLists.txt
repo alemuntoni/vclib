@@ -134,29 +134,6 @@ if (TARGET vclib-3rd-qt)
     endif()
 endif()
 
-# todo: this is a terrible hack
-# these files should be organized in a better way
-if (NOT TARGET vclib-processing)
-    # remove from HEADERS, SOURCES, FORMS all the files that use the processing
-    # module (they contain the 'processing' string in the path)
-
-    foreach(FILE ${HEADERS})
-        if (FILE MATCHES "processing")
-            list(REMOVE_ITEM HEADERS ${FILE})
-        endif()
-    endforeach()
-    foreach(FILE ${SOURCES})
-        if (FILE MATCHES "processing")
-            list(REMOVE_ITEM SOURCES ${FILE})
-        endif()
-    endforeach()
-    foreach(FILE ${FORMS})
-        if (FILE MATCHES "processing")
-            list(REMOVE_ITEM FORMS ${FILE})
-        endif()
-    endforeach()
-endif()
-
 # vclib-render target
 if (WIN32)
     # on windows vclib-render must be static - needed for bgfx
@@ -168,6 +145,7 @@ endif()
 
 add_library(${PROJECT_NAME} ${VLIB_RENDER_LIB_TYPE}
     ${HEADERS} ${SOURCES} ${SHADERS} ${FORMS})
+add_library(vclib::render ALIAS ${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${VCLIB_RENDER_INCLUDE_DIR})
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -191,10 +169,6 @@ if (VCLIB_RENDER_BACKEND STREQUAL "opengl2")
     target_compile_definitions(${PROJECT_NAME} PUBLIC VCLIB_RENDER_BACKEND_OPENGL2)
 endif()
 
-if (TARGET vclib-processing)
-    target_link_libraries(${PROJECT_NAME} PUBLIC vclib-processing)
-endif()
-
 if (TARGET vclib-3rd-qt)
     set_property(TARGET ${PROJECT_NAME} PROPERTY AUTOMOC ON)
     set_property(TARGET ${PROJECT_NAME} PROPERTY AUTORCC ON)
@@ -202,4 +176,4 @@ if (TARGET vclib-3rd-qt)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-    ${VCLIB_RENDER_3RDPARTY_LIBRARIES} vclib-core)
+    ${VCLIB_RENDER_3RDPARTY_LIBRARIES} vclib::core)

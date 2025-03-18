@@ -23,582 +23,994 @@
 #ifndef VCL_RENDER_DRAWABLE_MESH_MESH_RENDER_DATA_H
 #define VCL_RENDER_DRAWABLE_MESH_MESH_RENDER_DATA_H
 
-#include "mesh_buffer_id.h"
-#include "mesh_render_settings.h"
-
 #include <vclib/algorithms/mesh/import_export/append_replace_to_buffer.h>
 #include <vclib/algorithms/mesh/import_export/export_buffer.h>
 #include <vclib/algorithms/mesh/stat/topology.h>
-#include <vclib/math/min_max.h>
 #include <vclib/mesh/requirements.h>
+#include <vclib/render/drawable/mesh/mesh_render_info.h>
 #include <vclib/space/complex/tri_poly_index_bimap.h>
-#include <vclib/space/core/image.h>
-#include <vclib/space/core/texture.h>
 
 namespace vcl {
 
-template<MeshConcept MeshType>
+/**
+ * @brief The MeshRenderData class provides a common interface to automatically
+ * update the buffers used to render a mesh, with the possibility to update only
+ * a subset of the buffers, taking into account different scenarios (e.g.,
+ * vertex duplication, polygonal faces triangulation) consistently.
+ *
+ * The class uses the Curiously Recurring Template Pattern (CRTP) to allow this
+ * class to call functions to set the buffers (that are managed by the derived
+ * class, since they depend on the rendering backend used) when the users
+ * requires to update the mesh data (that may be all the data, or a subset).
+ *
+ * It also provides a set of protected functions that may be used by the derived
+ * class to fill the buffers in a consistent way, managing automatically all the
+ * possible scenarios.
+ *
+ * The derived class should implement all the functions that set the buffers
+ * (the `set*(const MeshType& mesh)` member functions listed in this class). If
+ * the derived class does not implement one of these functions, the base class
+ * will use the default implementation, that does nothing.
+ *
+ * An example of implementation in a derived class is the following (assuming
+ * that `Base` is this class, and `MeshType` is the mesh type that will be used
+ * to render the mesh). Here we first fill the vertex coordinates to a
+ * std::vector:
+ *
+ * @code{.cpp}
+ * void setVertexCoordsBuffer(const MeshType& mesh)
+ * {
+ *     // get the number of vertices (with eventual duplication)
+ *     uint nv = Base::numVerts();
+ *
+ *     std::vector<float> vertexCoords(nv * 3);
+ *     // fill the vertex coordinates
+ *     Base::fillVertexCoords(mesh, vertexCoords.data());
+ *
+ *     // create the gpu vertex buffer using the desired rendering backend,
+ *     // (be sure to first delete the previous buffer if it exists) and send
+ *     // the data to the gpu
+ * }
+ * @endcode
+ *
+ * Refer to the documentation of the functions that set the buffers for more
+ * details on how to fill the buffers.
+ */
+template<typename MeshRenderDerived>
 class MeshRenderData
 {
-    BuffersToFill mBuffersToFill = BUFFERS_TO_FILL_ALL;
+    using MRI = MeshRenderInfo;
 
-    std::vector<float>    mVerts;
-    std::vector<uint32_t> mTris;
-    std::vector<uint32_t> mEdges;
-    std::vector<uint32_t> mWireframe;
+    // Auxiliary data that can be used by the derived class to properly allocate
+    // and fill the buffers
 
-    std::vector<float>    mVNormals;
-    std::vector<uint32_t> mVColors;
-    std::vector<float>    mVTexCoords;
-    std::vector<uint32_t> mVTexIds;
+    uint mNumVerts       = 0;
+    uint mNumTris        = 0;
+    uint mNumEdges       = 0;
+    uint nWireframeLines = 0;
 
-    std::vector<float>    mTNormals;
-    std::vector<uint32_t> mTColors;
-    std::vector<float>    mWTexCoords;
-    std::vector<uint32_t> mWTexIds;
+    // Vector that tells, for each non-duplicated vertex, which wedges it
+    // belongs to. Each pair is the face index and the vertex index in the face.
+    // It allows to access the wedge texcoords for each non-duplicated vertex
+    std::vector<std::pair<uint, uint>> mVertWedgeMap;
 
-    std::vector<float>    mENormals;
-    std::vector<uint32_t> mEColors;
+    // The list of vertices that has been duplicated (each element of the list
+    // is the index of the vertex to duplicate)
+    std::list<uint> mVertsToDuplicate;
 
-    std::array<float, 4> mMeshColor = {0.5, 0.5, 0.5, 1};
+    // A list that tells, for each duplicated vertex, the list of faces that
+    // must be reassigned to the corresponding duplicated vertex.
+    // Each duplicated vertex has a list of pairs face/vertex index in the face,
+    // that must be/have been reassigned to the duplicated vertex
+    std::list<std::list<std::pair<uint, uint>>> mFacesToReassign;
 
-    std::vector<vcl::Image> mTextures;
+    // data used to manage the mapping beteween the original polygonal faces
+    // and the triangle faces
+
+    // map that stores the correspondence between the original polygonal faces
+    // and the triangle faces
+    TriPolyIndexBiMap mIndexMap;
+
+    // bitset that tells which buffers must be filled (this value has been set
+    // at construction time). It may differ from the value passed to the update
+    // function, since the user may want to update only a subset of the buffers
+    MRI::BuffersBitSet mBuffersToFill = MRI::BUFFERS_ALL;
 
 public:
+    /**
+     * @brief Update the buffers used to render the mesh.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     * @param[in] buffersToUpdate: the buffers that must be updated. By default,
+     * all the buffers are updated.
+     */
+    void update(
+        const MeshConcept auto& mesh,
+        MRI::BuffersBitSet      buffersToUpdate = MRI::BUFFERS_ALL)
+    {
+        using enum MRI::Buffers;
+
+        MRI::BuffersBitSet btu = mBuffersToFill & buffersToUpdate;
+
+        // first thing to do
+        updateAuxiliaryData(mesh, btu);
+
+        // set data for vertices
+        updateVerticesData(mesh, btu);
+
+        // set data for faces
+        updateFacesData(mesh, btu);
+
+        // set data for edges
+        updateEdgesData(mesh, btu);
+
+        // set data for mesh
+        updateMeshData(mesh, btu);
+
+        // set data for textures
+        updateTextureData(mesh, btu);
+    }
+
+protected:
     MeshRenderData() = default;
 
-    MeshRenderData(
-        const MeshType& m,
-        BuffersToFill   buffersToFill = BUFFERS_TO_FILL_ALL) :
+    MeshRenderData(MRI::BuffersBitSet buffersToFill) :
             mBuffersToFill(buffersToFill)
     {
-        update(m);
     }
 
-    void update(const MeshType& mesh)
+    void swap(MeshRenderData& other)
     {
-        using enum MeshBufferId;
-
-        clear();
-
-        std::vector<std::pair<uint, uint>>          vwm;
-        std::list<uint>                             vtd;
-        std::list<std::list<std::pair<uint, uint>>> ftr;
-
-        if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
-            if (mesh.isPerFaceWedgeTexCoordsEnabled()) {
-                countVerticesToDuplicateByWedgeTexCoords(mesh, vwm, vtd, ftr);
-            }
-        }
-
-        TriPolyIndexBiMap indexMap;
-        uint              numTris = 0;
-
-        fillMeshAttribs(mesh);
-
-        if (mBuffersToFill[toUnderlying(VERTICES)]) {
-            // vertex buffer (coordinates)
-            createVertexCoordsBuffer(mesh, vwm, vtd, ftr);
-
-            // vertex buffer (normals)
-            createVertexNormalsBuffer(mesh, vwm, vtd, ftr);
-
-            // vertex buffer (colors)
-            createVertexColorsBuffer(mesh, vwm, vtd, ftr);
-
-            // vertex buffer (UVs)
-            createVertexTexCoordsBuffer(mesh, vwm, vtd, ftr);
-
-            // vertex wedges buffer (duplicated vertices)
-            createWedgeTexCoordsBuffer(mesh, vwm, vtd, ftr);
-
-            if (mBuffersToFill[toUnderlying(TRIANGLES)]) {
-                // triangle index buffer
-                createTriangleIndicesBuffer(mesh, vwm, vtd, ftr, indexMap);
-
-                // triangle normal buffer
-                createTriangleNormalsBuffer(mesh, indexMap);
-
-                // triangle color buffer
-                createTriangleColorsBuffer(mesh, indexMap);
-
-                // triangle vertex texture indices buffer
-                createVertexTextureIndicesBuffer(mesh, indexMap);
-
-                // triangle wedge texture indices buffer
-                createWedgeTextureIndicesBuffer(mesh, indexMap);
-            }
-
-            if (mBuffersToFill[toUnderlying(EDGES)]) {
-                // edge index buffer
-                createEdgeIndicesBuffer(mesh);
-
-                // edge normal buffer
-                createEdgeNormalsBuffer(mesh);
-
-                // edge color buffer
-                createEdgeColorsBuffer(mesh);
-            }
-
-            if (mBuffersToFill[toUnderlying(WIREFRAME)]) {
-                // wireframe index buffer
-                createWireframeIndicesBuffer(mesh);
-            }
-
-            if (mBuffersToFill[toUnderlying(TEXTURES)]) {
-                // textures
-                createTextureUnits(mesh);
-            }
-        }
+        using std::swap;
+        swap(mNumVerts, other.mNumVerts);
+        swap(mNumTris, other.mNumTris);
+        swap(mVertWedgeMap, other.mVertWedgeMap);
+        swap(mVertsToDuplicate, other.mVertsToDuplicate);
+        swap(mFacesToReassign, other.mFacesToReassign);
+        swap(mIndexMap, other.mIndexMap);
+        swap(mBuffersToFill, other.mBuffersToFill);
     }
 
-    void clear()
+    /**
+     * @brief Returns the number of vertices that will be used to render the
+     * mesh.
+     *
+     * The number of vertices must be used to compute the size of the buffers
+     * that will store the vertex data (coordinates, normals, colors, etc).
+     *
+     * It can be used along with the functions `fillVertex*` provided by this
+     * class. A common workflow is the following:
+     *
+     * @code{.cpp}
+     * uint nv = numVerts();
+     * // assuming that the buffer is a vector of floats
+     * std::vector<float> vertexCoords(nv * 3);
+     * fillVertexCoords(mesh, vertexCoords.data());
+     * @endcode
+     *
+     * @note The returned values may be different from the number of vertices
+     * in the input mesh. This is because the mesh may have duplicated vertices
+     * (e.g., when the mesh has wedge texture coordinates).
+     *
+     * @note Always check the required buffer size before filling the buffers
+     * on the `fill*` functions documentation.
+     *
+     * @return The number of vertices that will be used to render the mesh.
+     */
+    uint numVerts() const { return mNumVerts; }
+
+    /**
+     * @brief Returns the number of triangles that will be used to render the
+     * mesh.
+     *
+     * The number of triangles must be used to compute the size of the buffers
+     * that will store the triangles data (indices, normals, colors, etc).
+     *
+     * It can be used along with the functions `fillTriangle*` provided by this
+     * class. A common workflow is the following:
+     *
+     * @code{.cpp}
+     * uint nt = numTris();
+     * // assuming that the buffer is a vector of uints
+     * std::vector<uint> triIndices(nt * 3);
+     * fillTriangleIndices(mesh, triIndices.data());
+     * @endcode
+     *
+     * @note The returned values may be different from the number of faces
+     * in the input mesh. This is because the mesh may have polygonal faces
+     * that are triangulated.
+     *
+     * @note Always check the required buffer size before filling the buffers
+     * on the `fill*` functions documentation.
+     *
+     * @return The number of triangles that will be used to render the mesh.
+     */
+    uint numTris() const { return mNumTris; }
+
+    /**
+     * @brief Returns the number of edges that will be used to render the
+     * mesh.
+     *
+     * The number of edges must be used to compute the size of the buffers
+     * that will store the edges data (indices, normals, colors, etc).
+     *
+     * It can be used along with the functions `fillEdge*` provided by this
+     * class. A common workflow is the following:
+     *
+     * @code{.cpp}
+     * uint ne = numEdges();
+     * // assuming that the buffer is a vector of uints
+     * std::vector<uint> edgeIndices(ne * 2);
+     * fillEdgeIndices(mesh, edgeIndices.data());
+     * @endcode
+     *
+     * @note Always check the required buffer size before filling the buffers
+     * on the `fill*` functions documentation.
+     *
+     * @return The number of edges that will be used to render the mesh.
+     */
+    uint numEdges() const { return mNumEdges; }
+
+    /**
+     * @brief Returns the number of wireframe lines that will be used to render
+     * the mesh.
+     *
+     * The number of wireframe lines must be used to compute the size of the
+     * buffers that will store the wireframe data (indices).
+     *
+     * It can be used along with the functions `fillWireframe*` provided by this
+     * class. A common workflow is the following:
+     *
+     * @code{.cpp}
+     * uint nw = numWireframeLines();
+     * // assuming that the buffer is a vector of uints
+     * std::vector<uint> wireframeIndices(nw * 2);
+     * fillWireframeIndices(mesh, wireframeIndices.data());
+     * @endcode
+     *
+     * @note The returned values may be different from the number of faces * 3
+     * in the input mesh. This is because the mesh may have polygonal faces
+     * that are triangulated.
+     *
+     * @note Always check the required buffer size before filling the buffers
+     * on the `fill*` functions documentation.
+     *
+     * @return The number of wireframe lines that will be used to render the
+     * mesh.
+     */
+    uint numWireframeLines() const { return nWireframeLines; }
+
+    // utility functions to fill the buffers
+
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the vertex coordinates of the mesh.
+     *
+     * The buffer must be preallocated with the correct size: `numVerts() * 3`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillVertexCoords(const MeshConcept auto& mesh, auto* buffer)
     {
-        mVerts.clear();
-        mTris.clear();
-        mEdges.clear();
-        mWireframe.clear();
-        mVNormals.clear();
-        mVColors.clear();
-        mTNormals.clear();
-        mTColors.clear();
-        mVTexCoords.clear();
-        mVTexIds.clear();
-        mWTexCoords.clear();
-        mWTexIds.clear();
-        mENormals.clear();
-        mEColors.clear();
-        mMeshColor = {0.5, 0.5, 0.5, 1};
-        mTextures.clear();
+        vertexCoordsToBuffer(mesh, buffer);
+        appendDuplicateVertexCoordsToBuffer(mesh, mVertsToDuplicate, buffer);
     }
 
-    uint vertexNumber() const { return mVerts.size() / 3; }
-
-    uint triangleNumber() const { return mTris.size() / 3; }
-
-    uint edgeNumber() const { return mEdges.size() / 2; }
-
-    uint wireframeEdgeNumber() const { return mWireframe.size() / 2; }
-
-    uint textureNumber() const { return mTextures.size(); }
-
-    vcl::Point2i textureSize(uint ti) const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the vertex normals of the mesh.
+     *
+     * The buffer must be preallocated with the correct size: `numVerts() * 3`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillVertexNormals(const MeshConcept auto& mesh, auto* buffer)
     {
-        return vcl::Point2i(mTextures[ti].width(), mTextures[ti].height());
+        vertexNormalsToBuffer(mesh, buffer);
+        appendDuplicateVertexNormalsToBuffer(mesh, mVertsToDuplicate, buffer);
     }
 
-    const float* vertexBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the vertex colors of the mesh (each color is packed in a single uint).
+     *
+     * The buffer must be preallocated with the correct size: `numVerts()`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillVertexColors(
+        const MeshConcept auto& mesh,
+        auto*                   buffer,
+        Color::Format           fmt)
     {
-        if (mVerts.empty())
-            return nullptr;
-        return mVerts.data();
+        vertexColorsToBuffer(mesh, buffer, fmt);
+        appendDuplicateVertexColorsToBuffer(
+            mesh, mVertsToDuplicate, buffer, fmt);
     }
 
-    uint vertexBufferSize() const { return mVerts.size(); }
-
-    const uint32_t* triangleBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the vertex texcoords of the mesh.
+     *
+     * The buffer must be preallocated with the correct size: `numVerts() * 2`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillVertexTexCoords(const MeshConcept auto& mesh, auto* buffer)
     {
-        if (mTris.empty())
-            return nullptr;
-        return mTris.data();
+        vertexTexCoordsToBuffer(mesh, buffer);
+        appendDuplicateVertexTexCoordsToBuffer(mesh, mVertsToDuplicate, buffer);
     }
 
-    uint triangleBufferSize() const { return mTris.size(); }
-
-    const uint32_t* edgeBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the wedge texcoors of the mesh.
+     *
+     * Although the wedge texcoords are associated to the faces in the vclib
+     * meshes, for rendering purposes it is useful to have them associated to
+     * the vertices (that must be duplicated accordingly, and only when
+     * necessary).
+     *
+     * The buffer must be preallocated with the correct size: `numVerts() * 2`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillWedgeTexCoords(const FaceMeshConcept auto& mesh, auto* buffer)
     {
-        if (mEdges.empty())
-            return nullptr;
-        return mEdges.data();
+        wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
+            mesh, mVertWedgeMap, mFacesToReassign, buffer);
     }
 
-    uint edgeBufferSize() const { return mEdges.size(); }
-
-    const uint32_t* wireframeBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the triangle indices of the mesh.
+     *
+     * The buffer must be preallocated with the correct size: `numTris() * 3`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillTriangleIndices(const FaceMeshConcept auto& mesh, auto* buffer)
     {
-        if (mWireframe.empty())
-            return nullptr;
-        return mWireframe.data();
+        triangulatedFaceIndicesToBuffer(
+            mesh, buffer, mIndexMap, MatrixStorageType::ROW_MAJOR, mNumTris);
+        replaceTriangulatedFaceIndicesByVertexDuplicationToBuffer(
+            mesh, mVertsToDuplicate, mFacesToReassign, mIndexMap, buffer);
     }
 
-    uint wireframeBufferSize() const { return mWireframe.size(); }
-
-    const float* vertexNormalBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the triangle normals of the mesh.
+     *
+     * The buffer must be preallocated with the correct size: `numTris() * 3`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillTriangleNormals(const FaceMeshConcept auto& mesh, auto* buffer)
     {
-        if (mVNormals.empty())
-            return nullptr;
-        return mVNormals.data();
+        triangulatedFaceNormalsToBuffer(
+            mesh, buffer, mIndexMap, MatrixStorageType::ROW_MAJOR);
     }
 
-    const uint32_t* vertexColorBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the triangle colors of the mesh (each color is packed in a single uint).
+     *
+     * The buffer must be preallocated with the correct size: `numTris()`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillTriangleColors(
+        const FaceMeshConcept auto& mesh,
+        auto*                       buffer,
+        Color::Format               fmt)
     {
-        if (mVColors.empty())
-            return nullptr;
-        return mVColors.data();
+        triangulatedFaceColorsToBuffer(mesh, buffer, mIndexMap, fmt);
     }
 
-    const float* triangleNormalBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the vertex texture indices of the mesh.
+     *
+     * Although the vertex texcoords are associated to the vertices in the vclib
+     * meshes, for rendering purposes the index of each vertex texcoord is
+     * associated to the triangles (that must be triangulated accordingly).
+     *
+     * The buffer must be preallocated with the correct size: `numTris()`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillVertexTextureIndices(
+        const FaceMeshConcept auto& mesh,
+        auto*                       buffer)
     {
-        if (mTNormals.empty())
-            return nullptr;
-        return mTNormals.data();
+        vertexTexCoordIndicesAsTriangulatedFaceTexCoordIndicesToBuffer(
+            mesh, buffer, mIndexMap);
     }
 
-    const uint32_t* triangleColorBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the wedge texture indices of the mesh.
+     *
+     * The buffer must be preallocated with the correct size: `numTris()`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillWedgeTextureIndices(const FaceMeshConcept auto& mesh, auto* buffer)
     {
-        if (mTColors.empty())
-            return nullptr;
-        return mTColors.data();
+        triangulatedFaceWedgeTexCoordIndicesToBuffer(mesh, buffer, mIndexMap);
     }
 
-    const float* vertexTexCoordsBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the edge indices of the mesh.
+     *
+     * The buffer must be preallocated with the correct size: `numEdges() * 2`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillEdgeIndices(const EdgeMeshConcept auto& mesh, auto* buffer)
     {
-        if (mVTexCoords.empty())
-            return nullptr;
-        return mVTexCoords.data();
+        edgeIndicesToBuffer(mesh, buffer);
     }
 
-    const uint32_t* vertexTextureIDsBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the edge normals of the mesh.
+     *
+     * The buffer must be preallocated with the correct size: `numEdges() * 3`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillEdgeNormals(const EdgeMeshConcept auto& mesh, auto* buffer)
     {
-        if (mVTexIds.empty())
-            return nullptr;
-        return mVTexIds.data();
+        edgeNormalsToBuffer(mesh, buffer);
     }
 
-    const float* wedgeTexCoordsBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the edge colors of the mesh (each color is packed in a single uint).
+     *
+     * The buffer must be preallocated with the correct size: `numEdges()`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillEdgeColors(
+        const EdgeMeshConcept auto& mesh,
+        auto*                       buffer,
+        Color::Format               fmt)
     {
-        if (mWTexCoords.empty())
-            return nullptr;
-        return mWTexCoords.data();
+        edgeColorsToBuffer(mesh, buffer, fmt);
     }
 
-    const uint32_t* wedgeTextureIDsBufferData() const
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the wireframe indices of the mesh.
+     *
+     * The buffer must be preallocated with the correct size:
+     * `numWireframeLines()`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillWireframeIndices(const FaceMeshConcept auto& mesh, auto* buffer)
     {
-        if (mWTexIds.empty())
-            return nullptr;
-        return mWTexIds.data();
+        wireframeIndicesToBuffer(mesh, buffer);
     }
 
-    const float* edgeNormalBufferData() const
-    {
-        if (mENormals.empty())
-            return nullptr;
-        return mENormals.data();
-    }
+    // functions that must be may implemented by the derived classes to set
+    // the buffers:
 
-    const uint32_t* edgeColorBufferData() const
-    {
-        if (mEColors.empty())
-            return nullptr;
-        return mEColors.data();
-    }
+    /**
+     * @brief Function that sets the content of vertex coordinates buffer and
+     * sends the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the vertex
+     * coordinates using the `numVerts() * 3` and `fillVertexCoords()`
+     * functions, and then send the data to the GPU using the rendering backend.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setVertexCoordsBuffer(const MeshConcept auto&) {}
 
-    const float* meshColorBufferData() const { return mMeshColor.data(); }
+    /**
+     * @brief Function that sets the content of vertex normals buffer and sends
+     * the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the vertex
+     * normals using the `numVerts() * 3` and `fillVertexNormals()` functions,
+     * and then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide per-vertex normals
+     * since the function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setVertexNormalsBuffer(const MeshConcept auto&) {}
 
-    const unsigned char* textureBufferData(uint ti) const
-    {
-        return mTextures[ti].data();
-    }
+    /**
+     * @brief Function that sets the content of vertex colors buffer and sends
+     * the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the vertex
+     * colors using the `numVerts()` and `fillVertexColors()` functions, and
+     * then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide per-vertex colors
+     * since the function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setVertexColorsBuffer(const MeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the content of vertex texture coordinates
+     * buffer and sends the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the vertex
+     * texcoords using the `numVerts() * 2` and `fillVertexTexCoords()`
+     * functions, and then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide per-vertex
+     * texcoords since the function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setVertexTexCoordsBuffer(const MeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the content of wedge texture coordinates buffer
+     * and sends the data to the GPU.
+     *
+     * Although the wedge texcoords are associated to the faces in the vclib
+     * meshes, for rendering purposes it is useful to have them associated to
+     * the vertices (that must be duplicated accordingly, and only when
+     * necessary).
+     *
+     * The function should allocate and fill a cpu buffer to store the wedge
+     * texcoords using the `numVerts() * 2` and `fillWedgeTexCoords()`
+     * functions, and then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide per-face wedge
+     * texcoords since the function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setWedgeTexCoordsBuffer(const MeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the content of triangle indices buffer and
+     * sends the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the triangle
+     * indices using the `numTris() * 3` and `fillTriangleIndices()` functions,
+     * and then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide faces since the
+     * function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setTriangleIndicesBuffer(const FaceMeshConcept auto&) {};
+
+    /**
+     * @brief Function that sets the content of triangle normals buffer and
+     * sends the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the triangle
+     * normals using the `numTris() * 3` and `fillTriangleNormals()` functions,
+     * and then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide per-face normals
+     * since the function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setTriangleNormalsBuffer(const FaceMeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the content of triangle colors buffer and
+     * sends the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the triangle
+     * colors using the `numTris()` and `fillTriangleColors()` functions, and
+     * then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide per-face colors
+     * since the function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setTriangleColorsBuffer(const FaceMeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the content of vertex texture indices buffer
+     * and sends the data to the GPU.
+     *
+     * Although the vertex texcoords are associated to the vertices in the vclib
+     * meshes, for rendering purposes the index of each vertex texcoord is
+     * associated to the triangles (that must be triangulated accordingly).
+     *
+     * The function should allocate and fill a cpu buffer to store the vertex
+     * texcoord indices using the `numTris()` and `fillVertexTextureIndices()`
+     * functions, and then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide per-vertex
+     * texcoords since the function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setVertexTextureIndicesBuffer(const FaceMeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the content of wedge texture indices buffer and
+     * sends the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the wedge
+     * texcoord indices using the `numTris()` and `fillWedgeTextureIndices()`
+     * functions, and then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide per-face wedge
+     * texcoords since the function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setWedgeTextureIndicesBuffer(const FaceMeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the content of wireframe indices buffer and
+     * sends the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the wireframe
+     * indices using the `numWireframeLines() * 2` and `fillWireframeIndices()`
+     * functions, and then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide faces since the
+     * function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setWireframeIndicesBuffer(const FaceMeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the content of edge indices buffer and sends
+     * the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the edge
+     * indices using the `numEdges() * 2` and `fillEdgeIndices()` functions, and
+     * then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide edges since the
+     * function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setEdgeIndicesBuffer(const EdgeMeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the content of edge normals buffer and sends
+     * the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the edge
+     * normals using the `numEdges() * 3` and `fillEdgeNormals()` functions, and
+     * then send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide per-edge normals
+     * since the function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setEdgeNormalsBuffer(const EdgeMeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the content of edge colors buffer and sends
+     * the data to the GPU.
+     *
+     * The function should allocate and fill a cpu buffer to store the edge
+     * colors using the `numEdges()` and `fillEdgeColors()` functions, and then
+     * send the data to the GPU using the rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide per-edge colors
+     * since the function is called only if the mesh has them.
+     *
+     * See the @ref MeshRenderData class documentation for an example of
+     * implementation.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setEdgeColorsBuffer(const EdgeMeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the texture units from the mesh and sends
+     * the data to the GPU.
+     *
+     * The function should take the texture from the mesh (loading them if
+     * they are not available in the mesh) and send them to the GPU using the
+     * rendering backend.
+     *
+     * There is no need to check whether the Mesh can provide texture paths,
+     * since the function is called only if the mesh has them. However, it is
+     * necessary to check whether the mesh has texture images and, in that case,
+     * check whether the texture is already loaded.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setTextureUnits(const MeshConcept auto&) {}
+
+    /**
+     * @brief Function that sets the mesh uniforms from the mesh.
+     *
+     * The function should set the uniforms of the mesh (e.g., mesh color,
+     * transform) and prepare them to be bound to the shader program.
+     *
+     * @param[in] mesh: the input mesh from which to get the data
+     */
+    void setMeshUniforms(const MeshConcept auto&) {}
 
 private:
-    void fillMeshAttribs(const MeshType& m)
+    MeshRenderDerived& derived()
     {
-        if constexpr (vcl::HasColor<MeshType>) {
-            mMeshColor[0] = m.color().redF();
-            mMeshColor[1] = m.color().greenF();
-            mMeshColor[2] = m.color().blueF();
-            mMeshColor[3] = m.color().alphaF();
+        return static_cast<MeshRenderDerived&>(*this);
+    }
+
+    const MeshRenderDerived& derived() const
+    {
+        return static_cast<const MeshRenderDerived&>(*this);
+    }
+
+    void updateAuxiliaryData(
+        const MeshConcept auto&       mesh,
+        MeshRenderInfo::BuffersBitSet btu)
+    {
+        using MeshType = MeshRenderDerived::MeshType;
+        using enum MRI::Buffers;
+
+        if (btu[toUnderlying(VERTICES)] || btu[toUnderlying(WEDGE_TEXCOORDS)] ||
+            btu[toUnderlying(TRIANGLES)]) {
+            mVertWedgeMap.clear();
+            mVertsToDuplicate.clear();
+            mFacesToReassign.clear();
+
+            if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
+                if (mesh.isPerFaceWedgeTexCoordsEnabled()) {
+                    countVerticesToDuplicateByWedgeTexCoords(
+                        mesh,
+                        mVertWedgeMap,
+                        mVertsToDuplicate,
+                        mFacesToReassign);
+                }
+            }
+
+            mNumVerts = mesh.vertexNumber() + mVertsToDuplicate.size();
+        }
+
+        if constexpr (HasFaces<MeshType>) {
+            if (btu[toUnderlying(TRIANGLES)])
+                mNumTris = countTriangulatedTriangles(mesh);
+            if (btu[toUnderlying(WIREFRAME)])
+                nWireframeLines = countPerFaceVertexReferences(mesh);
+        }
+
+        if constexpr (HasEdges<MeshType>) {
+            if (btu[toUnderlying(EDGES)])
+                mNumEdges = mesh.edgeNumber();
         }
     }
 
-    void createVertexCoordsBuffer(
-        const MeshType& mesh,
-        const auto&     vmw,
-        const auto&     vtd,
-        const auto&     ftr)
+    void updateVerticesData(
+        const MeshConcept auto&       mesh,
+        MeshRenderInfo::BuffersBitSet btu)
     {
-        uint nv = mesh.vertexNumber() + vtd.size();
+        using MeshType = MeshRenderDerived::MeshType;
+        using enum MRI::Buffers;
 
-        mVerts.resize(nv * 3);
-
-        vertexCoordsToBuffer(mesh, mVerts.data());
-        appendDuplicateVertexCoordsToBuffer(mesh, vtd, mVerts.data());
-    }
-
-    void createVertexNormalsBuffer(
-        const MeshType& mesh,
-        const auto&     vmw,
-        const auto&     vtd,
-        const auto&     ftr)
-    {
-        using enum MeshBufferId;
+        if (btu[toUnderlying(VERTICES)]) {
+            // vertex buffer (coordinates)
+            derived().setVertexCoordsBuffer(mesh);
+        }
 
         if constexpr (vcl::HasPerVertexNormal<MeshType>) {
-            if (mBuffersToFill[toUnderlying(VERT_NORMALS)]) {
-                if (vcl::isPerVertexNormalAvailable(mesh)) {
-                    uint nv = mesh.vertexNumber() + vtd.size();
-
-                    mVNormals.resize(nv * 3);
-
-                    vertexNormalsToBuffer(mesh, mVNormals.data());
-                    appendDuplicateVertexNormalsToBuffer(
-                        mesh, vtd, mVNormals.data());
+            if (vcl::isPerVertexNormalAvailable(mesh)) {
+                if (btu[toUnderlying(VERT_NORMALS)]) {
+                    // vertex buffer (normals)
+                    derived().setVertexNormalsBuffer(mesh);
                 }
             }
         }
-    }
-
-    void createVertexColorsBuffer(
-        const MeshType& mesh,
-        const auto&     vmw,
-        const auto&     vtd,
-        const auto&     ftr)
-    {
-        using enum MeshBufferId;
 
         if constexpr (vcl::HasPerVertexColor<MeshType>) {
-            if (mBuffersToFill[toUnderlying(VERT_COLORS)]) {
-                if (vcl::isPerVertexColorAvailable(mesh)) {
-                    uint nv = mesh.vertexNumber() + vtd.size();
-
-                    mVColors.resize(nv);
-
-                    vertexColorsToBuffer(
-                        mesh, mVColors.data(), Color::Format::ABGR);
-                    appendDuplicateVertexColorsToBuffer(
-                        mesh, vtd, mVColors.data(), Color::Format::ABGR);
+            if (vcl::isPerVertexColorAvailable(mesh)) {
+                if (btu[toUnderlying(VERT_COLORS)]) {
+                    // vertex buffer (colors)
+                    derived().setVertexColorsBuffer(mesh);
                 }
             }
         }
-    }
-
-    void createVertexTexCoordsBuffer(
-        const MeshType& mesh,
-        const auto&     vmw,
-        const auto&     vtd,
-        const auto&     ftr)
-    {
-        using enum MeshBufferId;
 
         if constexpr (vcl::HasPerVertexTexCoord<MeshType>) {
-            if (mBuffersToFill[toUnderlying(VERT_TEXCOORDS)]) {
-                if (vcl::isPerVertexTexCoordAvailable(mesh)) {
-                    uint nv = mesh.vertexNumber() + vtd.size();
-
-                    mVTexCoords.resize(nv * 2);
-
-                    vertexTexCoordsToBuffer(mesh, mVTexCoords.data());
-                    appendDuplicateVertexTexCoordsToBuffer(
-                        mesh, vtd, mVTexCoords.data());
+            if (vcl::isPerVertexTexCoordAvailable(mesh)) {
+                if (btu[toUnderlying(VERT_TEXCOORDS)]) {
+                    // vertex buffer (UVs)
+                    derived().setVertexTexCoordsBuffer(mesh);
                 }
             }
         }
     }
 
-    void createWedgeTexCoordsBuffer(
-        const MeshType& mesh,
-        const auto&     vmw,
-        const auto&     vtd,
-        const auto&     ftr)
+    void updateFacesData(
+        const MeshConcept auto&       mesh,
+        MeshRenderInfo::BuffersBitSet btu)
     {
-        using enum MeshBufferId;
-
-        if constexpr (vcl::HasPerFaceWedgeTexCoords<MeshType>) {
-            if (mBuffersToFill[toUnderlying(WEDGE_TEXCOORDS)]) {
-                if (isPerFaceWedgeTexCoordsAvailable(mesh)) {
-                    uint nv = mesh.vertexNumber() + vtd.size();
-
-                    mWTexCoords.resize(nv * 2);
-
-                    wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
-                        mesh, vmw, ftr, mWTexCoords.data());
-                }
-            }
-        }
-    }
-
-    void createTriangleIndicesBuffer(
-        const MeshType&    mesh,
-        const auto&        vmw,
-        const auto&        vtd,
-        const auto&        ftr,
-        TriPolyIndexBiMap& indexMap)
-    {
-        using enum MeshBufferId;
+        using MeshType = MeshRenderDerived::MeshType;
+        using enum MRI::Buffers;
 
         if constexpr (vcl::HasFaces<MeshType>) {
-            const uint NUM_TRIS = vcl::countTriangulatedTriangles(mesh);
+            if (btu[toUnderlying(TRIANGLES)]) {
+                // triangle index buffer
+                derived().setTriangleIndicesBuffer(mesh);
+            }
 
-            mTris.resize(NUM_TRIS * 3);
+            if constexpr (vcl::HasPerFaceWedgeTexCoords<MeshType>) {
+                if (isPerFaceWedgeTexCoordsAvailable(mesh)) {
+                    if (btu[toUnderlying(WEDGE_TEXCOORDS)]) {
+                        // vertex wedges buffer (duplicated vertices)
+                        derived().setWedgeTexCoordsBuffer(mesh);
+                    }
+                }
+            }
 
-            triangulatedFaceIndicesToBuffer(
-                mesh,
-                mTris.data(),
-                indexMap,
-                MatrixStorageType::ROW_MAJOR,
-                NUM_TRIS);
-            replaceTriangulatedFaceIndicesByVertexDuplicationToBuffer(
-                mesh, vtd, ftr, indexMap, mTris.data());
-        }
-    }
-
-    void createTriangleNormalsBuffer(
-        const MeshType&          mesh,
-        const TriPolyIndexBiMap& indexMap)
-    {
-        using enum MeshBufferId;
-
-        if constexpr (vcl::HasPerFaceNormal<MeshType>) {
-            if (mBuffersToFill[toUnderlying(TRI_NORMALS)]) {
+            if constexpr (vcl::HasPerFaceNormal<MeshType>) {
                 if (vcl::isPerFaceNormalAvailable(mesh)) {
-                    const uint NUM_TRIS = indexMap.triangleNumber();
-
-                    mTNormals.resize(NUM_TRIS * 3);
-
-                    triangulatedFaceNormalsToBuffer(
-                        mesh,
-                        mTNormals.data(),
-                        indexMap,
-                        MatrixStorageType::ROW_MAJOR);
+                    if (btu[toUnderlying(TRI_NORMALS)]) {
+                        // triangle normal buffer
+                        derived().setTriangleNormalsBuffer(mesh);
+                    }
                 }
             }
-        }
-    }
 
-    void createTriangleColorsBuffer(
-        const MeshType&          mesh,
-        const TriPolyIndexBiMap& indexMap)
-    {
-        using enum MeshBufferId;
-
-        if constexpr (vcl::HasPerFaceColor<MeshType>) {
-            if (mBuffersToFill[toUnderlying(TRI_COLORS)]) {
+            if constexpr (vcl::HasPerFaceColor<MeshType>) {
                 if (vcl::isPerFaceColorAvailable(mesh)) {
-                    const uint NUM_TRIS = indexMap.triangleNumber();
-
-                    mTColors.resize(NUM_TRIS);
-
-                    triangulatedFaceColorsToBuffer(
-                        mesh, mTColors.data(), indexMap, Color::Format::ABGR);
+                    if (btu[toUnderlying(TRI_COLORS)]) {
+                        // triangle color buffer
+                        derived().setTriangleColorsBuffer(mesh);
+                    }
                 }
             }
-        }
-    }
 
-    void createVertexTextureIndicesBuffer(
-        const MeshType&          mesh,
-        const TriPolyIndexBiMap& indexMap)
-    {
-        using enum MeshBufferId;
-
-        if constexpr (
-            vcl::HasFaces<MeshType> && vcl::HasPerVertexTexCoord<MeshType>) {
-            if (mBuffersToFill[toUnderlying(VERT_TEXCOORDS)]) {
+            // texture indices are stored per face (each face has its own
+            // texture index)
+            if constexpr (vcl::HasPerVertexTexCoord<MeshType>) {
                 if (vcl::isPerVertexTexCoordAvailable(mesh)) {
-                    const uint NUM_TRIS = vcl::countTriangulatedTriangles(mesh);
-
-                    mVTexIds.resize(NUM_TRIS);
-
-                    vertexTexCoordIndicesAsTriangulatedFaceWedgeTexCoordIndicesToBuffer(
-                        mesh, mVTexIds.data(), indexMap);
+                    if (btu[toUnderlying(VERT_TEXCOORDS)]) {
+                        // triangle vertex texture indices buffer
+                        derived().setVertexTextureIndicesBuffer(mesh);
+                    }
                 }
             }
-        }
-    }
 
-    void createWedgeTextureIndicesBuffer(
-        const MeshType&          mesh,
-        const TriPolyIndexBiMap& indexMap)
-    {
-        using enum MeshBufferId;
-
-        if constexpr (vcl::HasPerFaceWedgeTexCoords<MeshType>) {
-            if (mBuffersToFill[toUnderlying(WEDGE_TEXCOORDS)]) {
+            if constexpr (vcl::HasPerFaceWedgeTexCoords<MeshType>) {
                 if (isPerFaceWedgeTexCoordsAvailable(mesh)) {
-                    const uint NUM_TRIS = indexMap.triangleNumber();
-
-                    mWTexIds.resize(NUM_TRIS);
-
-                    triangulatedFaceWedgeTexCoordIndicesToBuffer(
-                        mesh, mWTexIds.data(), indexMap);
+                    if (btu[toUnderlying(WEDGE_TEXCOORDS)]) {
+                        // triangle wedge texture indices buffer
+                        derived().setWedgeTextureIndicesBuffer(mesh);
+                    }
                 }
+            }
+
+            if (btu[toUnderlying(WIREFRAME)]) {
+                // wireframe index buffer
+                derived().setWireframeIndicesBuffer(mesh);
             }
         }
     }
 
-    void createEdgeIndicesBuffer(const MeshType& mesh)
+    void updateEdgesData(
+        const MeshConcept auto&       mesh,
+        MeshRenderInfo::BuffersBitSet btu)
     {
+        using MeshType = MeshRenderDerived::MeshType;
+        using enum MRI::Buffers;
+
         if constexpr (vcl::HasEdges<MeshType>) {
-            mEdges.resize(mesh.edgeNumber() * 2);
+            if (btu[toUnderlying(EDGES)]) {
+                // edge index buffer
+                derived().setEdgeIndicesBuffer(mesh);
+            }
 
-            edgeIndicesToBuffer(mesh, mEdges.data());
-        }
-    }
-
-    void createEdgeNormalsBuffer(const MeshType& mesh)
-    {
-        using enum MeshBufferId;
-
-        if constexpr (vcl::HasPerEdgeNormal<MeshType>) {
-            if (mBuffersToFill[toUnderlying(EDGE_NORMALS)]) {
+            if constexpr (vcl::HasPerEdgeNormal<MeshType>) {
                 if (vcl::isPerEdgeNormalAvailable(mesh)) {
-                    mENormals.resize(mesh.edgeNumber() * 3);
-
-                    edgeNormalsToBuffer(mesh, mENormals.data());
+                    if (btu[toUnderlying(EDGE_NORMALS)]) {
+                        // edge normal buffer
+                        derived().setEdgeNormalsBuffer(mesh);
+                    }
                 }
             }
-        }
-    }
 
-    void createEdgeColorsBuffer(const MeshType& mesh)
-    {
-        using enum MeshBufferId;
-
-        if constexpr (vcl::HasPerEdgeColor<MeshType>) {
-            if (mBuffersToFill[toUnderlying(EDGE_COLORS)]) {
+            if constexpr (vcl::HasPerEdgeColor<MeshType>) {
                 if (vcl::isPerEdgeColorAvailable(mesh)) {
-                    mEColors.resize(mesh.edgeNumber());
-
-                    edgeColorsToBuffer(
-                        mesh, mEColors.data(), Color::Format::ABGR);
+                    if (btu[toUnderlying(EDGE_COLORS)]) {
+                        // edge color buffer
+                        derived().setEdgeColorsBuffer(mesh);
+                    }
                 }
             }
         }
     }
 
-    void createWireframeIndicesBuffer(const MeshType& mesh)
+    void updateMeshData(
+        const MeshConcept auto&       mesh,
+        MeshRenderInfo::BuffersBitSet btu)
     {
-        using enum MeshBufferId;
+        using enum MRI::Buffers;
 
-        if constexpr (vcl::HasFaces<MeshType>) {
-            const uint NUM_EDGES = vcl::countPerFaceVertexReferences(mesh);
-
-            mWireframe.resize(NUM_EDGES * 2);
-
-            wireframeIndicesToBuffer(mesh, mWireframe.data());
+        if (btu[toUnderlying(MESH_UNIFORMS)]) {
+            // mesh uniforms
+            derived().setMeshUniforms(mesh);
         }
     }
 
-    void createTextureUnits(const MeshType& mesh)
+    void updateTextureData(
+        const MeshConcept auto&       mesh,
+        MeshRenderInfo::BuffersBitSet btu)
     {
-        if constexpr (vcl::HasTextureImages<MeshType>) {
-            for (const vcl::Texture& t : mesh.textures()) {
-                if (t.image().isNull()) {
-                    vcl::Image txt(mesh.meshBasePath() + t.path());
-                    txt.mirror();
-                    mTextures.push_back(txt);
-                }
-                else {
-                    mTextures.push_back(t.image());
-                    mTextures.back().mirror();
-                }
-            }
-        }
-        else if constexpr (vcl::HasTexturePaths<MeshType>) {
-            for (uint i = 0; i < mesh.textureNumber(); ++i) {
-                vcl::Image txt(mesh.meshBasePath() + mesh.texturePath(i));
-                txt.mirror();
-                mTextures.push_back(txt);
+        using MeshType = MeshRenderDerived::MeshType;
+        using enum MRI::Buffers;
+
+        if constexpr (vcl::HasTexturePaths<MeshType>) {
+            if (btu[toUnderlying(TEXTURES)]) {
+                // textures
+                derived().setTextureUnits(mesh);
             }
         }
     }

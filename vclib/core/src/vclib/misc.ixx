@@ -51,6 +51,7 @@ module;
 export module vclib.misc;
 
 import vclib.concepts;
+import vclib.math;
 import vclib.types;
 
 export {

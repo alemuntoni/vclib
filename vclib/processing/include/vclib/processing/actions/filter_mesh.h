@@ -29,27 +29,4 @@
 #include "filter_mesh/generate.h"
 #endif
 
-namespace vcl::proc {
-
-std::vector<std::shared_ptr<Action>> vclibFilterMeshActions()
-{
-    std::vector<std::shared_ptr<Action>> vec;
-
-    // Apply filters
-    auto applyFilters = vclibApplyFilterMeshActions();
-    vec.insert(vec.end(), applyFilters.begin(), applyFilters.end());
-
-    // Create filters
-    auto createFilters = vclibCreateFilterMeshActions();
-    vec.insert(vec.end(), createFilters.begin(), createFilters.end());
-
-    // Generate filters
-    auto generateFilters = vclibGenerateFilterMeshActions();
-    vec.insert(vec.end(), generateFilters.begin(), generateFilters.end());
-
-    return vec;
-}
-
-} // namespace vcl::proc
-
 #endif // VCL_PROCESSING_ACTIONS_FILTER_MESH_H

@@ -23,52 +23,38 @@
 #ifndef VCL_PROCESSING_FUNCTIONS_H
 #define VCL_PROCESSING_FUNCTIONS_H
 
-#ifndef VCLIB_WITH_MODULES
-#include "action_manager.h"
+#include "manager.h"
 
-#include <vclib/io/file_format.h>
-#include <vclib/io/file_info.h>
-#endif
+#include <any>
 
 namespace vcl::proc {
 
-template<MeshConcept MeshType>
-void saveMeshTextures(
-    const MeshType&    mesh,
-    const std::string& filepath,
-    ActionManager*     manager)
+template<template<typename> typename Action, typename MeshType>
+auto actionDownCast(const std::shared_ptr<vcl::proc::Action>& action)
 {
-    for (const vcl::Texture& texture : mesh.textures()) {
-        std::string ext = FileInfo::extension(texture.path());
-
-        try {
-            auto act = manager->saveImageAction(ext);
-            act->save(filepath + texture.path(), texture.image());
-        }
-        catch (const std::exception& e) {
-            // todo: log error
-            std::cerr << "Error saving texture: " << e.what() << std::endl;
-        }
-    }
+    return std::dynamic_pointer_cast<Action<MeshType>>(action);
 }
 
-template<MeshConcept MeshType>
-void loadMeshTextures(
-    MeshType&          mesh,
-    const std::string& filepath,
-    ActionManager*     manager)
+std::pair<std::any, MeshTypeId> loadMeshBestFit(
+    const std::string&     filename,
+    const ParameterVector& parameters,
+    auto&                  logger)
 {
-    for (vcl::Texture& texture : mesh.textures()) {
-        std::string ext = FileInfo::extension(texture.path());
+    std::any    res;
+    std::string ext = FileInfo::extension(filename);
 
-        try {
-            auto act        = manager->loadImageAction(ext);
-            texture.image() = act->load(filepath + texture.path());
-        }
-        catch (const std::exception& e) {
-            // todo: log error
-            std::cerr << "Error loading texture: " << e.what() << std::endl;
-        }
+    PolyEdgeMesh mesh = ActionManager::loadMeshActions(ext)->load<PolyEdgeMesh>(
+        filename, parameters, logger);
+
+    if (isTriangleMesh(mesh)) {
+        TriEdgeMesh m;
+        m.importFrom(mesh);
+        res = std::move(m);
+        return {res, MeshTypeId::TRIANGLE_MESH};
+    }
+    else {
+        res = std::move(mesh);
+        return {res, MeshTypeId::POLYGON_MESH};
     }
 }
 

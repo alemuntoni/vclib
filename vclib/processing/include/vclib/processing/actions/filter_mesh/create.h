@@ -23,24 +23,6 @@
 #ifndef VCL_PROCESSING_ACTIONS_FILTER_MESH_CREATE_H
 #define VCL_PROCESSING_ACTIONS_FILTER_MESH_CREATE_H
 
-#ifndef VCLIB_WITH_MODULES
 #include "create/create_cone_filter.h"
-
-#include <memory>
-#include <vector>
-#endif
-
-namespace vcl::proc {
-
-std::vector<std::shared_ptr<Action>> vclibCreateFilterMeshActions()
-{
-    std::vector<std::shared_ptr<Action>> vec;
-
-    vec.push_back(CreateConeFilter().clone());
-
-    return vec;
-}
-
-} // namespace vcl::proc
 
 #endif // VCL_PROCESSING_ACTIONS_FILTER_MESH_CREATE_H

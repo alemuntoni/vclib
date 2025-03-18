@@ -47,6 +47,7 @@ public:
     Sphere(const Point3<Scalar>& center, Scalar radius) :
             mCenter(center), mRadius(radius)
     {
+        assert(radius >= 0);
     }
 
     const Point3<Scalar>& center() const { return mCenter; }

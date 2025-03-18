@@ -24,6 +24,7 @@
 #define VCL_LOAD_SAVE_PLY_LOAD_H
 
 #ifndef VCLIB_WITH_MODULES
+#include "detail/edge.h"
 #include "detail/extra.h"
 #include "detail/face.h"
 #include "detail/tristrip.h"

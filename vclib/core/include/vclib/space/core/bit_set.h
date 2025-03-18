@@ -79,8 +79,12 @@ public:
     template<NonBoolIntegralOrEnum I>
     BitSet(std::initializer_list<I> l)
     {
-        for (const auto& i : l)
-            at(i) = true;
+        for (const auto& i : l) {
+            if constexpr (std::is_enum_v<I>)
+                at(toUnderlying(i)) = true;
+            else
+                at(i) = true;
+        }
     }
 
     /**
@@ -100,8 +104,7 @@ public:
                 "BitSet: list size is greater than the number of bits of the "
                 "BitSet");
 
-        uint i = 0;
-        for (const auto& b : l)
+        for (uint i = 0; const auto& b : l)
             at(i++) = b;
     }
 
@@ -353,6 +356,10 @@ public:
     /// @private
     template<typename U>
     friend std::ostream& operator<<(std::ostream& os, const BitSet<U>& bs);
+
+private:
+    // constructor to initialize the BitSet with a given integral value
+    BitSet(T bits) : mBits(bits) {}
 };
 
 /**

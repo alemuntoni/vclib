@@ -25,8 +25,8 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include "base.h"
+#include "filter_types.h"
 #include "pointers.h"
-#include "variadic_templates.h"
 #endif
 
 namespace vcl {

@@ -37,6 +37,8 @@ namespace vcl {
 template<MeshConcept MeshType>
 class DrawableMeshBGFX : public AbstractDrawableMesh, public MeshType
 {
+    using MRI = MeshRenderInfo;
+
     Box3d mBoundingBox;
 
     MeshRenderBuffers<MeshType> mMRB;
@@ -100,7 +102,8 @@ public:
         return *this;
     }
 
-    void updateBuffers() override
+    void updateBuffers(
+        MRI::BuffersBitSet buffersToUpdate = MRI::BUFFERS_ALL) override
     {
         if constexpr (HasName<MeshType>) {
             AbstractDrawableMesh::name() = MeshType::name();
@@ -121,7 +124,7 @@ public:
             mBoundingBox = vcl::boundingBox(*this);
         }
 
-        mMRB.update(*this);
+        mMRB.update(*this, buffersToUpdate);
         mMRS.setRenderCapabilityFrom(*this);
         mMeshRenderSettingsUniforms.updateSettings(mMRS);
     }
@@ -152,7 +155,7 @@ public:
                          BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LEQUAL |
                          BGFX_STATE_BLEND_NORMAL;
 
-        if (mMRS.isPointVisible()) {
+        if (mMRS.isPoints(MRI::Points::VISIBLE)) {
             if (bgfx::isValid(mProgramPoints)) {
                 mMRB.bindVertexBuffers(mMRS);
                 bindUniforms();
@@ -163,11 +166,11 @@ public:
             }
         }
 
-        if (mMRS.isSurfaceVisible()) {
+        if (mMRS.isSurface(MRI::Surface::VISIBLE)) {
             if (bgfx::isValid(mProgramSurface)) {
                 mMRB.bindTextures(); // Bind textures before vertex buffers!!
                 mMRB.bindVertexBuffers(mMRS);
-                mMRB.bindIndexBuffers();
+                mMRB.bindIndexBuffers(mMRS);
                 bindUniforms();
 
                 bgfx::setState(state);
@@ -176,10 +179,10 @@ public:
             }
         }
 
-        if (mMRS.isWireframeVisible()) {
+        if (mMRS.isWireframe(MRI::Wireframe::VISIBLE)) {
             if (bgfx::isValid(mProgramWireframe)) {
                 mMRB.bindVertexBuffers(mMRS);
-                mMRB.bindIndexBuffers(MeshBufferId::WIREFRAME);
+                mMRB.bindIndexBuffers(mMRS, MRI::Buffers::WIREFRAME);
                 bindUniforms();
 
                 bgfx::setState(state | BGFX_STATE_PT_LINES);
@@ -188,10 +191,10 @@ public:
             }
         }
 
-        if (mMRS.isEdgesVisible()) {
+        if (mMRS.isEdges(MRI::Edges::VISIBLE)) {
             if (bgfx::isValid(mProgramEdges)) {
                 mMRB.bindVertexBuffers(mMRS);
-                mMRB.bindIndexBuffers(MeshBufferId::EDGES);
+                mMRB.bindIndexBuffers(mMRS, MRI::Buffers::EDGES);
                 bindUniforms();
 
                 bgfx::setState(state | BGFX_STATE_PT_LINES);

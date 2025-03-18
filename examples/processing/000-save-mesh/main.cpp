@@ -32,27 +32,36 @@ import vclib.processing;
 
 int main()
 {
+    using namespace vcl::proc;
+
+    auto suppFormats = ActionManager::saveMeshFormats();
+
+    std::cerr << "All the supported save formats:" << std::endl;
+    for (const auto& fmt : suppFormats) {
+        std::cerr << fmt.description() << std::endl;
+    }
+
     vcl::LoadSettings s;
     s.loadTextureImages = true;
 
-    vcl::proc::TriMesh mesh = vcl::load<vcl::proc::TriMesh>(
+    vcl::TriEdgeMesh mesh = vcl::load<vcl::TriEdgeMesh>(
         VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.ply", s);
 
-    vcl::proc::ActionManager manager;
-
-    manager.add(vcl::proc::vclibActions());
-
     // saving obj
-    manager.saveMeshAction("obj")->save("td.obj", mesh);
+    ActionManager::saveMeshActions("obj")->save(
+        VCLIB_RESULTS_PATH "/td.obj", mesh);
 
     // saving off
-    manager.saveMeshAction("off")->save("td.off", mesh);
+    ActionManager::saveMeshActions("off")->save(
+        VCLIB_RESULTS_PATH "/td.off", mesh);
 
     // saving ply
-    manager.saveMeshAction("ply")->save("td.ply", mesh);
+    ActionManager::saveMeshActions("ply")->save(
+        VCLIB_RESULTS_PATH "/td.ply", mesh);
 
     // saving stl
-    manager.saveMeshAction("stl")->save("td.stl", mesh);
+    ActionManager::saveMeshActions("stl")->save(
+        VCLIB_RESULTS_PATH "/td.stl", mesh);
 
     return 0;
 }

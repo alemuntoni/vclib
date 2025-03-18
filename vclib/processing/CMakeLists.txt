@@ -25,36 +25,12 @@ project(vclib-processing)
 
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "include/vclib/*.h")
 
-file(GLOB_RECURSE MODULES CONFIGURE_DEPENDS "src/*.ixx")
+add_library(${PROJECT_NAME} INTERFACE ${HEADERS})
+add_library(vclib::processing ALIAS ${PROJECT_NAME})
 
-set(VCLIB_PROCESSING_TARGET_LINK_TYPE INTERFACE) # header only library
-
-if (VCLIB_BUILD_CXX20_MODULES)
-    add_library(${PROJECT_NAME})
-
-    set(VCLIB_PROCESSING_TARGET_LINK_TYPE PUBLIC)
-
-    target_sources(${PROJECT_NAME}
-      PUBLIC
-        FILE_SET CXX_MODULES FILES ${MODULES}
-    )
-
-    target_compile_definitions(${PROJECT_NAME} PUBLIC VCLIB_WITH_MODULES)
-
-    # avoid warnings when using modules
-    # todo: remove this when modules are and header units stable and supported by all compilers
-    if (MSVC)
-        target_compile_options(${PROJECT_NAME} PRIVATE "/wd5244;")
-    else()
-        target_compile_options(${PROJECT_NAME} PRIVATE -Wno-include-angled-in-module-purview)
-    endif()
-else()
-    add_library(${PROJECT_NAME} INTERFACE ${HEADERS})
-endif()
-
-target_include_directories(${PROJECT_NAME} ${VCLIB_PROCESSING_TARGET_LINK_TYPE}
+target_include_directories(${PROJECT_NAME} INTERFACE 
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(${PROJECT_NAME} ${VCLIB_PROCESSING_TARGET_LINK_TYPE} vclib-core)
+target_link_libraries(${PROJECT_NAME} INTERFACE vclib::core)
 
 target_sources(${PROJECT_NAME} PRIVATE ${HEADERS})

@@ -41,6 +41,7 @@
 
 namespace vcl::mesh {
 
+/// @cond VCLIB_HIDDEN_DOCS
 template<ElementConcept T>
 class ElementContainer : public ElementContainerTriggerer
 {
@@ -1077,6 +1078,8 @@ private:
         }
     }
 };
+
+/// @endcond
 
 } // namespace vcl::mesh
 

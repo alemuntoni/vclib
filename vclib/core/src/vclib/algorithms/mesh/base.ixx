@@ -58,5 +58,6 @@ export {
 #include <vclib/algorithms/mesh/face_topology.h>
 #include <vclib/algorithms/mesh/sort.h>
 #include <vclib/algorithms/mesh/shuffle.h>
+#include <vclib/algorithms/mesh/type_name.h>
 }
 

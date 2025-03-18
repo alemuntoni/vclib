@@ -35,33 +35,35 @@ import vclib.processing;
 
 int main()
 {
-    vcl::proc::ActionManager manager;
+    using namespace vcl::proc;
 
-    manager.add(vcl::proc::vclibActions());
+    auto suppFormats = ActionManager::loadMeshFormats();
 
-    std::shared_ptr<vcl::proc::MeshI> pm0 = manager.loadMeshAction("obj")->load(
-        VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.obj");
+    std::cerr << "All the supported load formats:" << std::endl;
+    for (const auto& fmt : suppFormats) {
+        std::cerr << fmt.description() << std::endl;
+    }
 
-    assert(pm0->is<vcl::proc::TriMesh>());
+    vcl::TriEdgeMesh td =
+        ActionManager::loadMeshActions("obj")->load<vcl::TriEdgeMesh>(
+            VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.obj");
 
-    auto pm1 = manager.loadMeshAction("obj")->load(VCLIB_EXAMPLE_MESHES_PATH
-                                                   "/greek_helmet.obj");
+    vcl::PolyEdgeMesh ghp =
+        ActionManager::loadMeshActions("obj")->load<vcl::PolyEdgeMesh>(
+            VCLIB_EXAMPLE_MESHES_PATH "/greek_helmet.obj");
 
-    assert(pm1->is<vcl::proc::PolyMesh>());
+    vcl::TriEdgeMesh ght =
+        ActionManager::loadMeshActions("obj")->load<vcl::TriEdgeMesh>(
+            VCLIB_EXAMPLE_MESHES_PATH "/greek_helmet.obj");
 
-    auto params = manager.loadMeshAction("obj")->parameters();
-    params.get("mesh_type")->setUintValue(1);
+    ActionManager::saveMeshActions("obj")->save(
+        VCLIB_RESULTS_PATH "/td1.obj", td);
 
-    auto pm2 = manager.loadMeshAction("obj")->load(
-        VCLIB_EXAMPLE_MESHES_PATH "/greek_helmet.obj", params);
+    ActionManager::saveMeshActions("obj")->save(
+        VCLIB_RESULTS_PATH "/greek_poly.obj", ghp);
 
-    assert(pm2->is<vcl::proc::TriMesh>());
-
-    manager.saveMeshAction("obj")->save("td1.obj", *pm0);
-
-    manager.saveMeshAction("obj")->save("greek_poly.obj", *pm1);
-
-    manager.saveMeshAction("obj")->save("greek_tri.obj", *pm2);
+    ActionManager::saveMeshActions("obj")->save(
+        VCLIB_RESULTS_PATH "/greek_tri.obj", ght);
 
     return 0;
 }

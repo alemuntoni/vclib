@@ -45,18 +45,20 @@ class FileFormat
     std::string              mDescription;
 
 public:
-    FileFormat(const char* extension, std::string description = "") :
+    constexpr FileFormat(const char* extension, std::string description = "") :
             mExtensions {extension}, mDescription(description)
     {
         clearExtension(mExtensions[0]);
     }
 
-    FileFormat(const std::string& extension, std::string description = "") :
+    constexpr FileFormat(
+        const std::string& extension,
+        std::string        description = "") :
             FileFormat(extension.c_str(), description)
     {
     }
 
-    FileFormat(Range auto extensions, std::string description = "") :
+    constexpr FileFormat(Range auto extensions, std::string description = "") :
             mExtensions(extensions), mDescription(description)
     {
         for (auto& ext : mExtensions) {
@@ -72,8 +74,9 @@ public:
 
     const std::vector<std::string>& extensions() const { return mExtensions; }
 
-    bool matchExtension(const std::string& extension) const
+    bool matchExtension(std::string extension) const
     {
+        clearExtension(extension);
         for (const auto& ext : mExtensions) {
             if (ext == extension) {
                 return true;
@@ -110,7 +113,7 @@ public:
     }
 
 private:
-    static void clearExtension(std::string& extension)
+    static constexpr void clearExtension(std::string& extension)
     {
         if (!extension.empty() && extension.front() == '.') {
             extension.erase(0, 1);

@@ -24,7 +24,7 @@
 #define VCL_TYPES_MESH_COMPONENTS_H
 
 #ifndef VCLIB_WITH_MODULES
-#include "variadic_templates.h"
+#include "filter_types.h"
 #endif
 
 // TODO: complete documentation

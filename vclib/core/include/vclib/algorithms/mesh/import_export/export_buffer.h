@@ -1471,7 +1471,7 @@ void vertexTexCoordIndicesToBuffer(const MeshType& mesh, auto* buffer)
  * @ingroup export_buffer
  */
 template<FaceMeshConcept MeshType>
-void vertexTexCoordIndicesAsFaceWedgeTexCoordIndicesToBuffer(
+void vertexTexCoordIndicesAsFaceTexCoordIndicesToBuffer(
     const MeshType& mesh,
     auto*           buffer)
 {
@@ -1509,7 +1509,7 @@ void vertexTexCoordIndicesAsFaceWedgeTexCoordIndicesToBuffer(
  * @ingroup export_buffer
  */
 template<FaceMeshConcept MeshType>
-void vertexTexCoordIndicesAsTriangulatedFaceWedgeTexCoordIndicesToBuffer(
+void vertexTexCoordIndicesAsTriangulatedFaceTexCoordIndicesToBuffer(
     const MeshType&          mesh,
     auto*                    buffer,
     const TriPolyIndexBiMap& indexMap)

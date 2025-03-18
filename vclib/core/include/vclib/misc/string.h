@@ -24,10 +24,13 @@
 #define VCL_MISC_STRING_H
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/math/min_max.h>
+
 #include <algorithm>
 #include <cctype>
 #include <sstream>
 #include <string>
+#include <vector>
 #endif
 
 namespace vcl {
@@ -96,19 +99,38 @@ inline bool containsCaseInsensitive(
     return findCaseInsensitive(input, substr) != input.end();
 }
 
-inline std::string toLower(const std::string& s)
+inline constexpr std::string toLower(const std::string& s)
 {
     std::string ret(s);
     std::transform(s.begin(), s.end(), ret.begin(), ::tolower);
     return ret;
 }
 
-inline std::string toUpper(const std::string& s)
+inline constexpr std::string toUpper(const std::string& s)
 {
     std::string ret(s);
     std::transform(s.begin(), s.end(), ret.begin(), [](unsigned char c) {
         return std::toupper(c);
     });
+    return ret;
+}
+
+/**
+ * @brief Converts a string from camel case to snake case.
+ *
+ * For example, "CamelCase" is converted to "camel_case".
+ *
+ * @param[in] s: input string.
+ * @return the input string converted to snake case.
+ */
+inline constexpr std::string camelCaseToSnakeCase(const std::string& s)
+{
+    std::string ret;
+    for (size_t i = 0; i < s.size(); i++) {
+        if (i > 0 && std::isupper(s[i]))
+            ret += '_';
+        ret += std::tolower(s[i]);
+    }
     return ret;
 }
 
@@ -125,6 +147,62 @@ inline void removeCarriageReturn(std::string& s)
 {
     if (s.size() > 0 && s[s.size() - 1] == '\r')
         s = s.substr(0, s.size() - 1);
+}
+
+/**
+ * @brief Computes the Levenshtein distance between two strings.
+ *
+ * The [Levenshtein
+ * distance](https://en.wikipedia.org/wiki/Levenshtein_distance) is the minimum
+ * number of single-character edits (insertions, deletions, or substitutions)
+ * required to change one word into another.
+ *
+ * @param[in] str1: first string.
+ * @param[in] str2: second string.
+ * @return the Levenshtein distance between `str2` and `str2`.
+ */
+inline uint levenshteinDist(const std::string& str1, const std::string& str2)
+{
+    std::vector<std::vector<uint>> d(
+        str1.size() + 1, std::vector<uint>(str2.size() + 1));
+
+    if (str1.size() == 0)
+        return str2.size();
+    if (str2.size() == 0)
+        return str1.size();
+
+    for (uint i = 0; i <= str1.size(); i++)
+        d[i][0] = i;
+    for (uint j = 0; j <= str2.size(); j++)
+        d[0][j] = j;
+
+    for (uint i = 1; i <= str1.size(); i++) {
+        for (uint j = 1; j <= str2.size(); j++) {
+            uint cost = (str2[j - 1] == str1[i - 1]) ? 0 : 1;
+
+            uint deletion     = d[i - 1][j] + 1;
+            uint insertion    = d[i][j - 1] + 1;
+            uint substitution = d[i - 1][j - 1] + cost;
+
+            d[i][j] = vcl::min(deletion, insertion, substitution);
+        }
+    }
+
+    return d[str1.size()][str2.size()];
+}
+
+/**
+ * @brief Computes the distance between two strings.
+ *
+ * This function is an alias for `levenshteinDist`.
+ *
+ * @param[in] str1: first string.
+ * @param[in] str2: second string.
+ * @return the Levenshtein distance between `str1` and `str2`.
+ */
+inline uint distance(const std::string& str1, const std::string& str2)
+{
+    return levenshteinDist(str1, str2);
 }
 
 } // namespace vcl

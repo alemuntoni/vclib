@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['ubuntu-22.04', 'ubuntu-24.04', 'macos-13', 'macos-latest', 'windows-latest']
+        os: ['ubuntu-24.04', 'macos-13', 'macos-latest', 'windows-latest']
         build-with: ['headers', 'modules']
         exclude:
           - os: 'macos-13'
@@ -54,18 +54,20 @@ jobs:
     - name: Ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
-        key: core-${{ matrix.os }}-${{ matrix.build-with }}-${{ github.ref }}
+        key: core-${{ matrix.os }}-${{ matrix.build-with }}-${{ github.ref_name }}
     - name: Setup cmake arguments
       shell: bash
       run: |
         # if modules are enabled, we need to set the CMake arguments
         CMAKE_ARGUMENTS=""
         if [ "${{ matrix.build-with }}" == "modules" ]; then
-          CMAKE_ARGUMENTS="-DVCLIB_BUILD_CXX20_MODULES=ON"
+          CMAKE_ARGUMENTS="--preset=vclib-core-cxx20-modules-release"
           # if we are on linux, we need to set the CMake arguments
           if [ "${{ runner.os }}" == "Linux" ]; then
             CMAKE_ARGUMENTS="$CMAKE_ARGUMENTS -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19"
           fi
+        else
+          CMAKE_ARGUMENTS="--preset=vclib-core-release"
         fi
         echo "Additional cmake arguments: $CMAKE_ARGUMENTS"
         # make CMAKE_ARGUMENTS available to the next steps
@@ -89,13 +91,9 @@ jobs:
         fi
 
         mkdir build
-        cd build
-        cmake -GNinja \
-          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-          -DCMAKE_BUILD_TYPE=Release \
-          $CMAKE_ARGUMENTS \
-          ..
-        ninja
+        cmake -B build $CMAKE_ARGUMENTS \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        cmake --build build --parallel
     - name: Run Tests
       shell: bash
       run: |

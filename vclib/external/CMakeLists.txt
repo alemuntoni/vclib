@@ -59,9 +59,10 @@ else()
     add_library(${PROJECT_NAME} INTERFACE ${HEADERS})
 endif()
 
-target_include_directories(${PROJECT_NAME} ${VCLIB_EXTERNAL_TARGET_LINK_TYPE} ${VCLIB_EXTERNAL_INCLUDE_DIR})
+add_library(vclib::external ALIAS ${PROJECT_NAME})
+target_include_directories(${PROJECT_NAME} INTERFACE ${VCLIB_EXTERNAL_INCLUDE_DIR})
 
-target_link_libraries(${PROJECT_NAME} ${VCLIB_EXTERNAL_TARGET_LINK_TYPE}
-    ${VCLIB_EXTERNAL_3RDPARTY_LIBRARIES} vclib-core)
+target_link_libraries(${PROJECT_NAME} INTERFACE
+    ${VCLIB_EXTERNAL_3RDPARTY_LIBRARIES} vclib::core)
 
 target_sources(${PROJECT_NAME} PRIVATE ${HEADERS})
