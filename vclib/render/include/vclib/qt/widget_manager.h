@@ -29,10 +29,10 @@
 #include <vclib/render/window_managers.h>
 #include <vclib/space/core/point.h>
 
-#if defined(VCLIB_RENDER_BACKEND_BGFX)
-#include <QWidget>
-#elif defined(VCLIB_RENDER_BACKEND_OPENGL2)
+#if defined(VCLIB_RENDER_BACKEND_OPENGL2)
 #include <QOpenGLWidget>
+#else
+#include <QWidget>
 #endif
 
 #include <QGuiApplication>
@@ -42,16 +42,16 @@ namespace vcl::qt {
 
 template<typename DerivedRenderApp>
 class WidgetManager :
-#if defined(VCLIB_RENDER_BACKEND_BGFX)
-        public QWidget
-#elif defined(VCLIB_RENDER_BACKEND_OPENGL2)
+#if defined(VCLIB_RENDER_BACKEND_OPENGL2)
         public QOpenGLWidget
+#else
+        public QWidget
 #endif
 {
-#if defined(VCLIB_RENDER_BACKEND_BGFX)
-    using Base = QWidget;
-#elif defined(VCLIB_RENDER_BACKEND_OPENGL2)
+#if defined(VCLIB_RENDER_BACKEND_OPENGL2)
     using Base = QOpenGLWidget;
+#else
+    using Base = QWidget;
 #endif
 
 public:
@@ -170,30 +170,30 @@ protected:
     }
 #endif
 
-#if defined(VCLIB_RENDER_BACKEND_BGFX)
-    void resizeEvent(QResizeEvent* event) override
-    {
-        Base::resizeEvent(event);
-        DerivedRenderApp::WM::resize(
-            derived(), width() * pixelRatio(), height() * pixelRatio());
-    }
-#elif defined(VCLIB_RENDER_BACKEND_OPENGL2)
+#ifdef VCLIB_RENDER_BACKEND_OPENGL2
     void resizeGL(int w, int h) override
     {
         Base::resizeGL(w, h);
         DerivedRenderApp::WM::resize(
             derived(), w * pixelRatio(), h * pixelRatio());
     }
+#else
+    void resizeEvent(QResizeEvent* event) override
+    {
+        Base::resizeEvent(event);
+        DerivedRenderApp::WM::resize(
+            derived(), width() * pixelRatio(), height() * pixelRatio());
+    }
 #endif
 
-#if defined(VCLIB_RENDER_BACKEND_BGFX)
+#ifdef VCLIB_RENDER_BACKEND_OPENGL2
+    void initializeGL() override { DerivedRenderApp::WM::init(derived()); }
+#else
     void showEvent(QShowEvent* event) override
     {
         Base::showEvent(event);
         DerivedRenderApp::WM::init(derived());
     }
-#elif defined(VCLIB_RENDER_BACKEND_OPENGL2)
-    void initializeGL() override { DerivedRenderApp::WM::init(derived()); }
 #endif
 
     void keyPressEvent(QKeyEvent* event) override
@@ -284,14 +284,14 @@ protected:
     }
 
 private:
-#if defined(VCLIB_RENDER_BACKEND_BGFX)
+#ifdef VCLIB_RENDER_BACKEND_OPENGL2
+    void paintGL() override { DerivedRenderApp::WM::paint(derived()); }
+#else
     void paintEvent(QPaintEvent* event) override
     {
         DerivedRenderApp::WM::paint(derived());
         QWidget::paintEvent(event);
     }
-#elif defined(VCLIB_RENDER_BACKEND_OPENGL2)
-    void paintGL() override { DerivedRenderApp::WM::paint(derived()); }
 #endif
 
     auto* derived() { return static_cast<DerivedRenderApp*>(this); }

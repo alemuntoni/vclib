@@ -25,6 +25,7 @@
 
 // default render backend is bgfx
 #if !defined(VCLIB_RENDER_BACKEND_BGFX) && \
+    !defined(VCLIB_RENDER_BACKEND_WEBGPU) && \
     !defined(VCLIB_RENDER_BACKEND_OPENGL2)
 #define VCLIB_RENDER_BACKEND_BGFX
 #endif

@@ -20,40 +20,58 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_RENDER_DRAWABLE_DRAWABLE_MESH_H
-#define VCL_RENDER_DRAWABLE_DRAWABLE_MESH_H
+#ifndef VCL_WEBGPU_DRAWERS_VIEWER_DRAWER_H
+#define VCL_WEBGPU_DRAWERS_VIEWER_DRAWER_H
 
-#include <vclib/render/config.h>
-
-#ifdef VCLIB_RENDER_BACKEND_BGFX
-#include <vclib/bgfx/drawable/drawable_mesh.h>
-#endif
-
-#ifdef VCLIB_RENDER_BACKEND_WEBGPU
-#include <vclib/webgpu/drawable/drawable_mesh.h>
-#endif
-
-#ifdef VCLIB_RENDER_BACKEND_OPENGL2
-#include <vclib/opengl2/drawable/drawable_mesh.h>
-#endif
+#include <vclib/render/drawers/abstract_viewer_drawer.h>
 
 namespace vcl {
 
-#ifdef VCLIB_RENDER_BACKEND_BGFX
-template<MeshConcept MeshType>
-using DrawableMesh = DrawableMeshBGFX<MeshType>;
-#endif
+template<typename DerivedRenderApp>
+class ViewerDrawerWebGPU : public AbstractViewerDrawer<DerivedRenderApp>
+{
+    using ParentViewer = AbstractViewerDrawer<DerivedRenderApp>;
+    using DTB          = ParentViewer::DTB;
 
-#ifdef VCLIB_RENDER_BACKEND_WEBGPU
-template<MeshConcept MeshType>
-using DrawableMesh = DrawableMeshWebGPU<MeshType>;
-#endif
+public:
+    ViewerDrawerWebGPU(uint width = 1024, uint height = 768) :
+            ParentViewer(width, height)
+    {
+    }
 
-#ifdef VCLIB_RENDER_BACKEND_OPENGL2
-template<MeshConcept MeshType>
-using DrawableMesh = DrawableMeshOpenGL2<MeshType>;
-#endif
+    void onInit(uint viewId) override
+    {
+        // todo
+    }
+
+    void onResize(uint width, uint height) override
+    {
+        DTB::resizeViewer(width, height);
+    }
+
+    void onDraw(uint viewId) override { onDrawContent(viewId); }
+
+    void onDrawContent(uint viewId) override
+    {
+        // todo
+    }
+
+    void onPostDraw() override
+    {
+        // todo
+    }
+
+    void toggleAxisVisibility() override
+    {
+        // todo
+    }
+
+    void toggleTrackBallVisibility() override
+    {
+        // todo
+    }
+};
 
 } // namespace vcl
 
-#endif // VCL_RENDER_DRAWABLE_DRAWABLE_MESH_H
+#endif // VCL_WEBGPU_DRAWERS_VIEWER_DRAWER_H

@@ -29,6 +29,10 @@
 #include <vclib/bgfx/drawers/viewer_drawer.h>
 #endif
 
+#ifdef VCLIB_RENDER_BACKEND_WEBGPU
+#include <vclib/webgpu/drawers/viewer_drawer.h>
+#endif
+
 #ifdef VCLIB_RENDER_BACKEND_OPENGL2
 #include <vclib/opengl2/drawers/viewer_drawer.h>
 #endif
@@ -38,6 +42,11 @@ namespace vcl {
 #ifdef VCLIB_RENDER_BACKEND_BGFX
 template<typename DerivedRenderApp>
 using ViewerDrawer = ViewerDrawerBGFX<DerivedRenderApp>;
+#endif
+
+#ifdef VCLIB_RENDER_BACKEND_WEBGPU
+template<typename DerivedRenderApp>
+using ViewerDrawer = ViewerDrawerWebGPU<DerivedRenderApp>;
 #endif
 
 #ifdef VCLIB_RENDER_BACKEND_OPENGL2

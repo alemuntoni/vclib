@@ -29,6 +29,10 @@
 #include <vclib/bgfx/canvas.h>
 #endif
 
+#ifdef VCLIB_RENDER_BACKEND_WEBGPU
+#include <vclib/webgpu/canvas.h>
+#endif
+
 #ifdef VCLIB_RENDER_BACKEND_OPENGL2
 #include <vclib/opengl2/canvas.h>
 #endif
@@ -38,6 +42,11 @@ namespace vcl {
 #ifdef VCLIB_RENDER_BACKEND_BGFX
 template<typename DerivedRenderApp>
 using Canvas = CanvasBGFX<DerivedRenderApp>;
+#endif
+
+#ifdef VCLIB_RENDER_BACKEND_WEBGPU
+template<typename DerivedRenderApp>
+using Canvas = CanvasWebGPU<DerivedRenderApp>;
 #endif
 
 #ifdef VCLIB_RENDER_BACKEND_OPENGL2

@@ -20,40 +20,62 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_RENDER_DRAWABLE_DRAWABLE_MESH_H
-#define VCL_RENDER_DRAWABLE_DRAWABLE_MESH_H
+#ifndef VCL_WEBGPU_CANVAS_H
+#define VCL_WEBGPU_CANVAS_H
 
-#include <vclib/render/config.h>
+#include <vclib/render/concepts/render_app.h>
+#include <vclib/render/read_buffer_types.h>
 
-#ifdef VCLIB_RENDER_BACKEND_BGFX
-#include <vclib/bgfx/drawable/drawable_mesh.h>
-#endif
-
-#ifdef VCLIB_RENDER_BACKEND_WEBGPU
-#include <vclib/webgpu/drawable/drawable_mesh.h>
-#endif
-
-#ifdef VCLIB_RENDER_BACKEND_OPENGL2
-#include <vclib/opengl2/drawable/drawable_mesh.h>
-#endif
+#include <vclib/space.h>
+#include <vclib/types.h>
 
 namespace vcl {
 
-#ifdef VCLIB_RENDER_BACKEND_BGFX
-template<MeshConcept MeshType>
-using DrawableMesh = DrawableMeshBGFX<MeshType>;
-#endif
+template<typename DerivedRenderApp>
+class CanvasWebGPU
+{
+    Point2<uint> mSize = {0, 0};
 
-#ifdef VCLIB_RENDER_BACKEND_WEBGPU
-template<MeshConcept MeshType>
-using DrawableMesh = DrawableMeshWebGPU<MeshType>;
-#endif
+public:
+    using CallbackReadBuffer = ReadBufferTypes::CallbackReadBuffer;
 
-#ifdef VCLIB_RENDER_BACKEND_OPENGL2
-template<MeshConcept MeshType>
-using DrawableMesh = DrawableMeshOpenGL2<MeshType>;
-#endif
+    CanvasWebGPU(
+        void* winId,
+        uint  width,
+        uint  height,
+        void* displayId = nullptr)
+    {
+        static_assert(
+            RenderAppConcept<DerivedRenderApp>,
+            "The DerivedRenderApp must satisfy the RenderAppConcept.");
+    }
+
+    Point2<uint> size() const { return mSize; }
+
+    uint viewId() const { return 0; }
+
+    void setDefaultClearColor(Color color) {}
+
+    void onInit() {}
+
+    void onResize(uint width, uint height) {}
+
+    void onPaint() {}
+
+    bool onReadDepth(const Point2i& point, CallbackReadBuffer callback)
+    {
+        return false;
+    }
+
+    bool onScreenshot(
+        const std::string& filename,
+        uint               width  = 0,
+        uint               height = 0)
+    {
+        return false;
+    }
+};
 
 } // namespace vcl
 
-#endif // VCL_RENDER_DRAWABLE_DRAWABLE_MESH_H
+#endif // VCL_WEBGPU_CANVAS_H

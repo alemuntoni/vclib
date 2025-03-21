@@ -25,7 +25,7 @@ project(vclib-render)
 
 # Options
 set(VCLIB_RENDER_BACKEND "bgfx" CACHE STRING "Select the rendering engine")
-set_property(CACHE VCLIB_RENDER_BACKEND PROPERTY STRINGS bgfx opengl2 none)
+set_property(CACHE VCLIB_RENDER_BACKEND PROPERTY STRINGS bgfx webgpu opengl2 none)
 
 # external libraries
 message(STATUS "VCLib-Render: 3rdparty libraries")
@@ -90,6 +90,16 @@ if (VCLIB_RENDER_BACKEND STREQUAL "opengl2")
     file(GLOB_RECURSE SOURCES_OPENGL2 CONFIGURE_DEPENDS
         "src/vclib/opengl2/*.cpp")
     list(APPEND SOURCES ${SOURCES_OPENGL2})
+endif()
+
+if (VCLIB_RENDER_BACKEND STREQUAL "webgpu")
+    file(GLOB_RECURSE HEADERS_WEBGPU CONFIGURE_DEPENDS
+        "include/vclib/webgpu/*.h")
+    list(APPEND HEADERS ${HEADERS_WEBGPU})
+
+    file(GLOB_RECURSE SOURCES_WEBGPU CONFIGURE_DEPENDS
+        "src/vclib/webgpu/*.cpp")
+    list(APPEND SOURCES ${SOURCES_WEBGPU})
 endif()
 
 if (TARGET vclib-3rd-glfw)
@@ -163,6 +173,10 @@ if (VCLIB_RENDER_BACKEND STREQUAL "bgfx")
 
     build_bgfx_shaders_to_headers(${SHADERS})
     build_assets_to_headers(${ASSETS})
+endif()
+
+if (VCLIB_RENDER_BACKEND STREQUAL "webgpu")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC VCLIB_RENDER_BACKEND_WEBGPU)
 endif()
 
 if (VCLIB_RENDER_BACKEND STREQUAL "opengl2")
