@@ -50,10 +50,11 @@ public:
     Image load(const std::string& filename, AbstractLogger& log = logger())
         const final
     {
-        Image img(filename);
-        if (img.isNull()) {
-            throw std::runtime_error("Error loading image from " + filename);
-        }
+        Image img/*(filename)*/;
+        // TODO
+        // if (img.isNull()) {
+        //     throw std::runtime_error("Error loading image from " + filename);
+        // }
         return img;
     }
 
@@ -63,7 +64,8 @@ public:
         AbstractLogger&    log = logger()) const final
     {
         assert(!image.isNull());
-        image.save(filename);
+        // TODO
+        // image.save(filename);
     }
 };
 

@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_IO_IMAGE_H
-#define VCL_IO_IMAGE_H
+#ifndef VCL_STB_LOAD_SAVE_IMAGE_H
+#define VCL_STB_LOAD_SAVE_IMAGE_H
 
 #include <vclib/io/file_info.h>
 #include <vclib/misc/string.h>
@@ -53,7 +53,7 @@
 #include <memory>
 #include <string>
 
-namespace vcl {
+namespace vcl::stb {
 
 inline std::shared_ptr<unsigned char> loadImageData(
     const std::string& filename,
@@ -96,6 +96,6 @@ inline void saveImageData(
     }
 }
 
-} // namespace vcl
+} // namespace vcl::stb
 
-#endif // VCL_IO_IMAGE_H
+#endif // VCL_STB_LOAD_SAVE_IMAGE_H

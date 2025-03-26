@@ -113,8 +113,9 @@ void Callback::screenShot(
     uint32_t    size,
     bool        yflip)
 {
-    vcl::Image img(data, width, height, yflip, vcl::Color::Format::ARGB);
-    img.save(filePath);
+    // TODO: implement this
+    // vcl::Image img(data, width, height, yflip, vcl::Color::Format::ARGB);
+    // img.save(filePath);
 }
 
 void Callback::captureBegin(

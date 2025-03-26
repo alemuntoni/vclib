@@ -23,10 +23,11 @@
 #ifndef VCL_OPENGL2_CANVAS_H
 #define VCL_OPENGL2_CANVAS_H
 
-#include <vclib/io/image.h>
+#include <vclib/io/image_bmp.h>
 #include <vclib/render/concepts/render_app.h>
 #include <vclib/render/read_buffer_types.h>
 #include <vclib/space/core/color.h>
+#include <vclib/space/core/image.h>
 #include <vclib/space/core/point.h>
 #include <vclib/types.h>
 
@@ -215,16 +216,22 @@ public:
             GL_UNSIGNED_BYTE,
             buffer.data());
 
+        vcl::Image img(
+            buffer.data(),
+            mSize.x(),
+            mSize.y(),
+            true,
+            vcl::Color::Format::ARGB);
+
         // write image using stb
         bool ret = true;
-        stbi_flip_vertically_on_write(1);
+
         try {
-            saveImageData(filename, mSize.x(), mSize.y(), buffer.data());
+            saveImageToBmp(filename, img.width(), img.height(), img.data());
         }
         catch (const std::exception& e) {
             ret = false;
         }
-        stbi_flip_vertically_on_write(0);
 
         return ret;
     }
