@@ -32,7 +32,7 @@ if (VCLIB_ALLOW_BUNDLED_STB AND EXISTS ${VCLIB_STB_DIR}/stb/stb_image.h)
 
     target_include_directories(vclib-3rd-stb INTERFACE ${STB_INCLUDE_DIRS})
 
-    list(APPEND VCLIB_CORE_3RDPARTY_LIBRARIES vclib-3rd-stb)
+    list(APPEND VCLIB_EXTERNAL_3RDPARTY_LIBRARIES vclib-3rd-stb)
 
     if (VCLIB_ALLOW_INSTALL_STB)
         install(DIRECTORY ${VCLIB_STB_DIR}/stb

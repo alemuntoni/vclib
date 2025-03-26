@@ -43,10 +43,6 @@ option(VCLIB_ALLOW_BUNDLED_ZIP_VIEWS
 option(VCLIB_ALLOW_INSTALL_ZIP_VIEWS
     "Allow install ZipViews source" ON)
 
-# STB
-option(VCLIB_ALLOW_BUNDLED_STB "Allow use of bundled STB source" ON)
-option(VCLIB_ALLOW_INSTALL_STB "Allow install STB source" ON)
-
 # poolSTL
 option(VCLIB_ALLOW_BUNDLED_POOLSTL "Allow use of bundled poolSTL source" ON)
 option(VCLIB_ALLOW_INSTALL_POOLSTL "Allow install poolSTL source" ON)
@@ -69,9 +65,6 @@ include(mapbox.cmake)
 
 ### Zip iterator
 include(zip-views.cmake)
-
-### STB
-include(stb.cmake)
 
 ### TBB
 include(tbb.cmake) # leave this BEFORE poolSTL

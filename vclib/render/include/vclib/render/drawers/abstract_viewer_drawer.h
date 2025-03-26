@@ -144,7 +144,7 @@ public:
         case Key::S:
             if (modifiers[KeyModifier::CONTROL])
                 DerivedRenderApp::DRW::screenshot(
-                    derived(), "viewer_screenshot.png");
+                    derived(), "viewer_screenshot.bmp");
             break;
 
         case Key::T: toggleTrackBallVisibility(); break;

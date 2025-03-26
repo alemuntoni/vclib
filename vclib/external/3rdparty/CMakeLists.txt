@@ -27,6 +27,10 @@ include(FetchContent)
 
 # === OPTIONAL === #
 
+# STB
+option(VCLIB_ALLOW_BUNDLED_STB "Allow use of bundled STB source" ON)
+option(VCLIB_ALLOW_INSTALL_STB "Allow install STB source" ON)
+
 #VCG
 option(VCLIB_ALLOW_DOWNLOAD_VCG "Allow use of downloaded VCG source" ON)
 option(VCLIB_ALLOW_SYSTEM_VCG "Allow use of system-provided VCG" ON)
@@ -35,6 +39,9 @@ option(VCLIB_ALLOW_SYSTEM_VCG "Allow use of system-provided VCG" ON)
 # === Fetch dependencies === #
 
 set(VCLIB_EXTERNAL_3RDPARTY_LIBRARIES "")
+
+### STB
+include(stb.cmake)
 
 ### VCG
 include(vcg.cmake)

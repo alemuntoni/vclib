@@ -35,7 +35,7 @@ template<typename T>
 concept ImageConcept = requires (T&& obj, const void* dataPtr, uint n) {
     // constructors
     RemoveRef<T>();
-    RemoveRef<T>(std::string());
+    //RemoveRef<T>(std::string());
     RemoveRef<T>(dataPtr, n, n);
     RemoveRef<T>(dataPtr, n, n, bool());
 
@@ -49,12 +49,12 @@ concept ImageConcept = requires (T&& obj, const void* dataPtr, uint n) {
 
     { obj.data() } -> std::same_as<const unsigned char*>;
 
-    { obj.save(std::string()) } -> std::same_as<void>;
-    { obj.save(std::string(), uint()) } -> std::same_as<void>;
+    // { obj.save(std::string()) } -> std::same_as<void>;
+    // { obj.save(std::string(), uint()) } -> std::same_as<void>;
 
     // non const requirements
     requires IsConst<T> || requires {
-        { obj.load(std::string()) } -> std::same_as<bool>;
+        // { obj.load(std::string()) } -> std::same_as<bool>;
 
         { obj.mirror() } -> std::same_as<void>;
         { obj.mirror(bool()) } -> std::same_as<void>;

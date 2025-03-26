@@ -394,37 +394,40 @@ private:
         mTextureUnits.reserve(mesh.textureNumber());
         for (uint i = 0; i < mesh.textureNumber(); ++i) {
             vcl::Image txt;
-            if constexpr (vcl::HasTextureImages<MeshType>) {
-                if (mesh.texture(i).image().isNull()) {
-                    txt = vcl::Image(mesh.meshBasePath() + mesh.texturePath(i));
-                }
-                else {
-                    txt = mesh.texture(i).image();
-                }
+            // TODO
+            // if constexpr (vcl::HasTextureImages<MeshType>) {
+            //     if (mesh.texture(i).image().isNull()) {
+            //         txt = vcl::Image(mesh.meshBasePath() + mesh.texturePath(i));
+            //     }
+            //     else {
+            //         txt = mesh.texture(i).image();
+            //     }
+            // }
+            // else {
+            //     txt = vcl::Image(mesh.meshBasePath() + mesh.texturePath(i));
+            // }
+            if (!txt.isNull()) {
+                txt.mirror();
+
+                const uint size = txt.width() * txt.height();
+
+                auto [buffer, releaseFn] =
+                    getAllocatedBufferAndReleaseFn<uint>(size);
+
+                const uint* tdata = reinterpret_cast<const uint*>(txt.data());
+
+                std::copy(tdata, tdata + size, buffer);
+
+                auto tu = std::make_unique<TextureUnit>();
+                tu->set(
+                    buffer,
+                    vcl::Point2i(txt.width(), txt.height()),
+                    "s_tex" + std::to_string(i),
+                    false,
+                    releaseFn);
+
+                mTextureUnits.push_back(std::move(tu));
             }
-            else {
-                txt = vcl::Image(mesh.meshBasePath() + mesh.texturePath(i));
-            }
-            txt.mirror();
-
-            const uint size = txt.width() * txt.height();
-
-            auto [buffer, releaseFn] =
-                getAllocatedBufferAndReleaseFn<uint>(size);
-
-            const uint* tdata = reinterpret_cast<const uint*>(txt.data());
-
-            std::copy(tdata, tdata + size, buffer);
-
-            auto tu = std::make_unique<TextureUnit>();
-            tu->set(
-                buffer,
-                vcl::Point2i(txt.width(), txt.height()),
-                "s_tex" + std::to_string(i),
-                false,
-                releaseFn);
-
-            mTextureUnits.push_back(std::move(tu));
         }
     }
 

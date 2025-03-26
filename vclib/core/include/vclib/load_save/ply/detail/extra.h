@@ -44,17 +44,17 @@ void readPlyTextures(
     if constexpr (HasTexturePaths<MeshType>) {
         for (const std::string& str : header.textureFileNames()) {
             mesh.pushTexturePath(str);
-            if constexpr (HasTextureImages<MeshType>) {
-                uint k = mesh.textureNumber() - 1;
-                if (settings.loadTextureImages) {
-                    bool b =
-                        mesh.texture(k).image().load(mesh.meshBasePath() + str);
-                    if (!b) {
-                        log.log(
-                            "Cannot load texture " + str, LogType::WARNING_LOG);
-                    }
-                }
-            }
+            // if constexpr (HasTextureImages<MeshType>) {
+            //     uint k = mesh.textureNumber() - 1;
+            //     if (settings.loadTextureImages) {
+            //         bool b =
+            //             mesh.texture(k).image().load(mesh.meshBasePath() + str);
+            //         if (!b) {
+            //             log.log(
+            //                 "Cannot load texture " + str, LogType::WARNING_LOG);
+            //         }
+            //     }
+            // }
         }
     }
 }
@@ -71,16 +71,16 @@ void writePlyTextures(
         for (const std::string& str : mesh.texturePaths()) {
             header.pushTextureFileName(str);
             k++;
-            if constexpr (HasTextureImages<MeshType>) {
-                if (settings.saveTextureImages) {
-                    try {
-                        mesh.texture(k).image().save(mesh.meshBasePath() + str);
-                    }
-                    catch (const std::runtime_error& e) {
-                        log.log(e.what(), LogType::WARNING_LOG);
-                    }
-                }
-            }
+            // if constexpr (HasTextureImages<MeshType>) {
+            //     if (settings.saveTextureImages) {
+            //         try {
+            //             mesh.texture(k).image().save(mesh.meshBasePath() + str);
+            //         }
+            //         catch (const std::runtime_error& e) {
+            //             log.log(e.what(), LogType::WARNING_LOG);
+            //         }
+            //     }
+            // }
         }
     }
 }

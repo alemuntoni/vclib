@@ -26,7 +26,7 @@
 #include <vclib/bgfx/context.h>
 #include <vclib/bgfx/read_framebuffer_request.h>
 #include <vclib/bgfx/system/native_window_handle.h>
-#include <vclib/io/image.h>
+#include <vclib/io/image_bmp.h>
 #include <vclib/render/concepts/render_app.h>
 #include <vclib/render/input.h>
 #include <vclib/render/read_buffer_types.h>
@@ -271,9 +271,9 @@ public:
                 std::holds_alternative<ReadFramebufferRequest::ByteData>(data));
             const auto& d = std::get<ReadFramebufferRequest::ByteData>(data);
 
-            // save rgb image data into file using stb depending on file
+            // save rgb image data into bmp file
             try {
-                vcl::saveImageData(filename, size.x(), size.y(), d.data());
+                vcl::saveImageToBmp(filename, size.x(), size.y(), d.data());
             }
             catch (const std::exception& e) {
                 std::cerr << "Error saving image: " << e.what() << std::endl;
