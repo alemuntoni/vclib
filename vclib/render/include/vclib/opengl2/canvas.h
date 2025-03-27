@@ -23,7 +23,13 @@
 #ifndef VCL_OPENGL2_CANVAS_H
 #define VCL_OPENGL2_CANVAS_H
 
+// if vclib uses external module
+#ifdef VCLIB_EXTERNAL_MODULE
+#include <vclib/io/image.h>
+#else // allow only save bmp
 #include <vclib/io/image_bmp.h>
+#endif
+
 #include <vclib/render/concepts/render_app.h>
 #include <vclib/render/read_buffer_types.h>
 #include <vclib/space/core/color.h>
@@ -227,7 +233,12 @@ public:
         bool ret = true;
 
         try {
+#ifdef VCLIB_EXTERNAL_MODULE
+            saveImageData(filename, img.width(), img.height(), img.data());
+#else
+            // save rgb image data into bmp file
             saveImageToBmp(filename, img.width(), img.height(), img.data());
+#endif
         }
         catch (const std::exception& e) {
             ret = false;

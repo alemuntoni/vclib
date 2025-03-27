@@ -23,10 +23,16 @@
 #ifndef VCL_BGFX_CANVAS_H
 #define VCL_BGFX_CANVAS_H
 
+// if vclib uses external module
+#ifdef VCLIB_EXTERNAL_MODULE
+#include <vclib/io/image.h>
+#else // allow only save bmp
+#include <vclib/io/image_bmp.h>
+#endif
+
 #include <vclib/bgfx/context.h>
 #include <vclib/bgfx/read_framebuffer_request.h>
 #include <vclib/bgfx/system/native_window_handle.h>
-#include <vclib/io/image_bmp.h>
 #include <vclib/render/concepts/render_app.h>
 #include <vclib/render/input.h>
 #include <vclib/render/read_buffer_types.h>
@@ -271,9 +277,14 @@ public:
                 std::holds_alternative<ReadFramebufferRequest::ByteData>(data));
             const auto& d = std::get<ReadFramebufferRequest::ByteData>(data);
 
-            // save rgb image data into bmp file
+
             try {
-                vcl::saveImageToBmp(filename, size.x(), size.y(), d.data());
+#ifdef VCLIB_EXTERNAL_MODULE
+                saveImageData(filename, size.x(), size.y(), d.data());
+#else
+                // save rgb image data into bmp file
+                saveImageToBmp(filename, size.x(), size.y(), d.data());
+#endif
             }
             catch (const std::exception& e) {
                 std::cerr << "Error saving image: " << e.what() << std::endl;
