@@ -147,6 +147,10 @@ add_library(${PROJECT_NAME} ${VLIB_RENDER_LIB_TYPE}
     ${HEADERS} ${SOURCES} ${SHADERS} ${FORMS})
 add_library(vclib::render ALIAS ${PROJECT_NAME})
 
+if (TARGET vclib::external)
+    target_link_libraries(${PROJECT_NAME} PUBLIC vclib::external)
+endif()
+
 target_include_directories(${PROJECT_NAME} PUBLIC ${VCLIB_RENDER_INCLUDE_DIR})
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}/include)

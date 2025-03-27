@@ -36,15 +36,8 @@
 #define STB_IMAGE_WRITE_STATIC
 #define STB_IMAGE_IMPLEMENTATION // and then include the implementation
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#if __has_include(<stb/stb_image.h>)
 #include <stb/stb_image.h>
 #include <stb/stb_image_write.h>
-#else
-// inclusion for usage of vclib without CMake - not ideal but necessary for
-// header-only
-#include "../../../external/stb-master/stb/stb_image.h"
-#include "../../../external/stb-master/stb/stb_image_write.h"
-#endif
 
 #if defined(__clang__)
 #pragma clang diagnostic pop
