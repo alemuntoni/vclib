@@ -36,11 +36,8 @@ int main()
         std::cerr << fmt.description() << std::endl;
     }
 
-    vcl::LoadSettings s;
-    s.loadTextureImages = true;
-
     vcl::TriEdgeMesh mesh = vcl::load<vcl::TriEdgeMesh>(
-        VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.ply", s);
+        VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.ply");
 
     vcl::loadTextureImages(mesh);
 

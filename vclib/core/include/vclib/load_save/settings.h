@@ -41,17 +41,6 @@ struct LoadSettings
      * It applies to all the loading functions.
      */
     bool enableOptionalComponents = true;
-
-    /**
-     * @brief If true, and if the Mesh has the TextureImages component, the
-     * loading function will try to load the texture images from the paths
-     * stored in the TextureImages component. Otherwise, only the paths of the
-     * textures will be loaded.
-     *
-     * It applies to all the loading functions that load from a file format that
-     * supports textures.
-     */
-    bool loadTextureImages = false;
 };
 
 /**
@@ -68,24 +57,6 @@ struct SaveSettings
      * supports both binary and ASCII format.
      */
     bool binary = true;
-
-    /**
-     * @brief If true, and if the Mesh has the TextureImages component, the
-     * saving function will save the texture images to the paths stored in the
-     * TextureImages component. Otherwise, only the paths of the textures will
-     * be saved (meaning that the file will contain the paths to the textures,
-     * but the texture images will not be saved).
-     *
-     * This is useful when the texture images are in a format not supported by
-     * the saving function, or when the texture images are already saved.
-     *
-     * It applies to all the saving functions that save to a file format that
-     * supports textures.
-     *
-     * @note To avoid saving also the texture paths in the file, you should use
-     * the info class and set the TEXTURES component to false.
-     */
-    bool saveTextureImages = false;
 
     /**
      * @brief Applied only to STL binary files. Magics mode is a specific file
