@@ -20,45 +20,53 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <vclib/processing.h>
+#ifndef VCL_LOAD_SAVE_TEXTURE_IMAGES_H
+#define VCL_LOAD_SAVE_TEXTURE_IMAGES_H
 
-#include <vclib/external.h>
-#include <vclib/load_save.h>
+#ifdef VCLIB_WITH_STB
+#include <vclib/stb/load_save_image.h>
+#endif
 
-int main()
+#include <vclib/concepts/mesh.h>
+#include <vclib/space/core/texture.h>
+
+namespace vcl {
+
+template<MeshConcept MeshType>
+void loadTextureImages(MeshType& mesh)
 {
-    using namespace vcl::proc;
-
-    auto suppFormats = ActionManager::saveMeshFormats();
-
-    std::cerr << "All the supported save formats:" << std::endl;
-    for (const auto& fmt : suppFormats) {
-        std::cerr << fmt.description() << std::endl;
+    std::string meshBasePath = mesh.meshBasePath();
+    for (vcl::Texture& t: mesh.textures()) {
+        std::string path = meshBasePath + "/" + t.path();
+        // TODO:
+        // 1- check for format;
+        // 2- check the external library that supports it
+        // 3- use the library to load it
+#ifdef VCLIB_WITH_STB
+        int w, h;
+        auto data = vcl::stb::loadImageData(path, w, h);
+        t.image() = vcl::Image(data.get(), w, h);
+#endif
     }
-
-    vcl::LoadSettings s;
-    s.loadTextureImages = true;
-
-    vcl::TriEdgeMesh mesh = vcl::load<vcl::TriEdgeMesh>(
-        VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.ply", s);
-
-    vcl::loadTextureImages(mesh);
-
-    // saving obj
-    ActionManager::saveMeshActions("obj")->save(
-        VCLIB_RESULTS_PATH "/td.obj", mesh);
-
-    // saving off
-    ActionManager::saveMeshActions("off")->save(
-        VCLIB_RESULTS_PATH "/td.off", mesh);
-
-    // saving ply
-    ActionManager::saveMeshActions("ply")->save(
-        VCLIB_RESULTS_PATH "/td.ply", mesh);
-
-    // saving stl
-    ActionManager::saveMeshActions("stl")->save(
-        VCLIB_RESULTS_PATH "/td.stl", mesh);
-
-    return 0;
 }
+
+template<MeshConcept MeshType>
+void saveTextureImages(const MeshType& mesh)
+{
+    std::string meshBasePath = mesh.meshBasePath();
+    for (vcl::Texture& t: mesh.textures()) {
+        std::string path = meshBasePath + "/" + t.path();
+        // TODO:
+        // 1- check for format;
+        // 2- check the external library that supports it
+        // 3- use the library to save it
+#ifdef VCLIB_WITH_STB
+        vcl::stb::saveImageData(
+            path, t.image().width(), t.image().height(), t.image().data());
+#endif
+    }
+}
+
+} // namespace vcl
+
+#endif // VCL_LOAD_SAVE_TEXTURE_IMAGES_H

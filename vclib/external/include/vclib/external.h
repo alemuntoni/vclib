@@ -20,45 +20,15 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <vclib/processing.h>
+#ifndef VCL_EXTERNAL_H
+#define VCL_EXTERNAL_H
 
-#include <vclib/external.h>
-#include <vclib/load_save.h>
+#include "io/image.h"
+#include "load_save/texture_images.h"
 
-int main()
-{
-    using namespace vcl::proc;
+#ifdef VCLIB_WITH_VCG
+#include "vcg/export.h"
+#include "vcg/import.h"
+#endif
 
-    auto suppFormats = ActionManager::saveMeshFormats();
-
-    std::cerr << "All the supported save formats:" << std::endl;
-    for (const auto& fmt : suppFormats) {
-        std::cerr << fmt.description() << std::endl;
-    }
-
-    vcl::LoadSettings s;
-    s.loadTextureImages = true;
-
-    vcl::TriEdgeMesh mesh = vcl::load<vcl::TriEdgeMesh>(
-        VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.ply", s);
-
-    vcl::loadTextureImages(mesh);
-
-    // saving obj
-    ActionManager::saveMeshActions("obj")->save(
-        VCLIB_RESULTS_PATH "/td.obj", mesh);
-
-    // saving off
-    ActionManager::saveMeshActions("off")->save(
-        VCLIB_RESULTS_PATH "/td.off", mesh);
-
-    // saving ply
-    ActionManager::saveMeshActions("ply")->save(
-        VCLIB_RESULTS_PATH "/td.ply", mesh);
-
-    // saving stl
-    ActionManager::saveMeshActions("stl")->save(
-        VCLIB_RESULTS_PATH "/td.stl", mesh);
-
-    return 0;
-}
+#endif // VCL_EXTERNAL_H
