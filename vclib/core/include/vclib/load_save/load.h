@@ -33,6 +33,8 @@
  * @ingroup load_save
  *
  * @brief List of functions that allow to load from file an input Mesh.
+ *
+ * @copydoc VCL_HIDE_common_load_note
  */
 
 /// @brief
@@ -42,6 +44,8 @@ namespace vcl {
  * @brief Loads a mesh from a file with the given filename and stores it in the
  * given mesh object. Checks automatically the file format to load from the
  * given filename.
+ *
+ * @copydoc VCL_HIDE_common_load_note
  *
  * @tparam MeshType The type of mesh to load. It must satisfy the MeshConcept.
  * @tparam LogType The type of logger to use. It must satisfy the LoggerConcept.
@@ -94,6 +98,8 @@ void load(
  * given mesh object. Checks automatically the file format to load from the
  * given filename.
  *
+ * @copydoc VCL_HIDE_common_load_note
+ *
  * @tparam MeshType The type of mesh to load. It must satisfy the MeshConcept.
  * @tparam LogType The type of logger to use. It must satisfy the LoggerConcept.
  *
@@ -123,6 +129,8 @@ void load(
  * @brief Loads a mesh from a file with the given filename and stores it in the
  * returned mesh object. Checks automatically the file format to load from the
  * given filename.
+ *
+ * @copydoc VCL_HIDE_common_load_note
  *
  * @tparam MeshType The type of mesh to load. It must satisfy the MeshConcept.
  * @tparam LogType The type of logger to use. It must satisfy the LoggerConcept.
@@ -157,6 +165,8 @@ MeshType load(
  * returned mesh object. Checks automatically the file format to load from the
  * given filename.
  *
+ * @copydoc VCL_HIDE_common_load_note
+ *
  * @tparam MeshType The type of mesh to load. It must satisfy the MeshConcept.
  * @tparam LogType The type of logger to use. It must satisfy the LoggerConcept.
  *
@@ -186,6 +196,8 @@ MeshType load(
  * returned mesh object. Checks automatically the file format to load from the
  * given filename.
  *
+ * @copydoc VCL_HIDE_common_load_note
+ *
  * @tparam MeshType The type of mesh to load. It must satisfy the MeshConcept.
  * @tparam LogType The type of logger to use. It must satisfy the LoggerConcept.
  *
@@ -211,5 +223,14 @@ MeshType load(
 }
 
 } // namespace vcl
+
+/**
+ * @class VCL_HIDE_common_load_note
+ * @note Since the library does not support native loading of images, the
+ * eventual texture images are not loaded. Only the paths to the texture images
+ * are loaded. If the MeshType supports texture images, the user can load the
+ * textures by calling the @ref vcl::loadTextureImages function provided in the
+ * external module of the library.
+ */
 
 #endif // VCL_LOAD_SAVE_LOAD_H

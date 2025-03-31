@@ -33,6 +33,8 @@
  * @ingroup load_save
  *
  * @brief List of functions that allow to save to file an input Mesh.
+ *
+ * @copydoc VCL_HIDE_common_save_note
  */
 
 namespace vcl {
@@ -40,6 +42,8 @@ namespace vcl {
 /**
  * @brief Saves a mesh to a file with the given filename. Checks automatically
  * the file format to save from the given filename.
+ *
+ * @copydoc VCL_HIDE_common_save_note
  *
  * @tparam MeshType The type of mesh to save. It must satisfy the MeshConcept.
  * @tparam LogType The type of logger to use. It must satisfy the LoggerConcept.
@@ -85,6 +89,8 @@ void save(
  * @brief Saves a mesh to a file with the given filename. Checks automatically
  * the file format to save from the given filename.
  *
+ * @copydoc VCL_HIDE_common_save_note
+ *
  * @tparam MeshType The type of mesh to save. It must satisfy the MeshConcept.
  * @tparam LogType The type of logger to use. It must satisfy the LoggerConcept.
  *
@@ -105,5 +111,14 @@ void save(
 }
 
 } // namespace vcl
+
+/**
+ * @class VCL_HIDE_common_save_note
+ * @note Since the library does not support native saving of images, the
+ * eventual texture images are not saved. Only the paths to the texture images
+ * are saved in the output file. If the MeshType supports texture images, the
+ * user can save the textures by calling the @ref vcl::saveTextureImages
+ * function provided in the external module of the library.
+ */
 
 #endif // VCL_LOAD_SAVE_SAVE_H

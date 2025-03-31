@@ -32,6 +32,14 @@
 
 namespace vcl {
 
+/**
+ * @brief Load the texture images of a mesh, populating the image field of each
+ * texture with the image data.
+ *
+ * @param[in] mesh
+ *
+ * @ingroup load
+ */
 template<MeshConcept MeshType>
 void loadTextureImages(MeshType& mesh)
 {
@@ -50,6 +58,13 @@ void loadTextureImages(MeshType& mesh)
     }
 }
 
+/**
+ * @brief Save the texture images of a mesh to their respective files.
+ *
+ * @param[in] mesh
+ *
+ * @ingroup save
+ */
 template<MeshConcept MeshType>
 void saveTextureImages(const MeshType& mesh)
 {

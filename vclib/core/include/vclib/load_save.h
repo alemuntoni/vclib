@@ -33,6 +33,12 @@
  *
  * @brief List of functions that allow to load from file or save to a file an
  * input Mesh.
+ *
+ * @note Since the library does not support native loading and saving of images,
+ * eventual texture images are not loaded/saved. Only the paths to the texture
+ * images are loaded/saved. If the MeshType supports texture images, the user
+ * can load/save the textures by calling the [load/save]TextureImages function
+ * provided in the external module of the library.
  */
 
 #endif // VCL_LOAD_SAVE_H
