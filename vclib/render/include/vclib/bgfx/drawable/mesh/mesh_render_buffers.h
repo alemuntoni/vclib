@@ -25,12 +25,17 @@
 
 #include "mesh_render_buffers_macros.h"
 
+#include <vclib/algorithms/core/create.h>
 #include <vclib/bgfx/buffers.h>
 #include <vclib/bgfx/drawable/uniforms/drawable_mesh_uniforms.h>
 #include <vclib/bgfx/texture_unit.h>
 #include <vclib/render/drawable/mesh/mesh_render_data.h>
 #include <vclib/render/drawable/mesh/mesh_render_settings.h>
 #include <vclib/space/core/image.h>
+
+#ifdef VCLIB_EXTERNAL_MODULE
+#include <vclib/io/image.h>
+#endif
 
 #include <bgfx/bgfx.h>
 
@@ -394,40 +399,45 @@ private:
         mTextureUnits.reserve(mesh.textureNumber());
         for (uint i = 0; i < mesh.textureNumber(); ++i) {
             vcl::Image txt;
-            // TODO
-            // if constexpr (vcl::HasTextureImages<MeshType>) {
-            //     if (mesh.texture(i).image().isNull()) {
-            //         txt = vcl::Image(mesh.meshBasePath() + mesh.texturePath(i));
-            //     }
-            //     else {
-            //         txt = mesh.texture(i).image();
-            //     }
-            // }
-            // else {
-            //     txt = vcl::Image(mesh.meshBasePath() + mesh.texturePath(i));
-            // }
-            if (!txt.isNull()) {
-                txt.mirror();
-
-                const uint size = txt.width() * txt.height();
-
-                auto [buffer, releaseFn] =
-                    getAllocatedBufferAndReleaseFn<uint>(size);
-
-                const uint* tdata = reinterpret_cast<const uint*>(txt.data());
-
-                std::copy(tdata, tdata + size, buffer);
-
-                auto tu = std::make_unique<TextureUnit>();
-                tu->set(
-                    buffer,
-                    vcl::Point2i(txt.width(), txt.height()),
-                    "s_tex" + std::to_string(i),
-                    false,
-                    releaseFn);
-
-                mTextureUnits.push_back(std::move(tu));
+            if constexpr (vcl::HasTextureImages<MeshType>) {
+                if (mesh.texture(i).image().isNull()) {
+#ifdef VCLIB_EXTERNAL_MODULE
+                    txt = vcl::loadImage(
+                        mesh.meshBasePath() + mesh.texturePath(i));
+#endif
+                }
+                else {
+                    txt = mesh.texture(i).image();
+                }
             }
+            else {
+#ifdef VCLIB_EXTERNAL_MODULE
+                txt = vcl::loadImage(mesh.meshBasePath() + mesh.texturePath(i));
+#endif
+            }
+            if (txt.isNull()) {
+                txt = vcl::createCheckBoardImage(512);
+            }
+            txt.mirror();
+
+            const uint size = txt.width() * txt.height();
+
+            auto [buffer, releaseFn] =
+                getAllocatedBufferAndReleaseFn<uint>(size);
+
+            const uint* tdata = reinterpret_cast<const uint*>(txt.data());
+
+            std::copy(tdata, tdata + size, buffer);
+
+            auto tu = std::make_unique<TextureUnit>();
+            tu->set(
+                buffer,
+                vcl::Point2i(txt.width(), txt.height()),
+                "s_tex" + std::to_string(i),
+                false,
+                releaseFn);
+
+            mTextureUnits.push_back(std::move(tu));
         }
     }
 

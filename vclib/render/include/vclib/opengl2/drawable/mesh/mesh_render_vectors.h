@@ -23,6 +23,7 @@
 #ifndef VCL_OPENGL2_DRAWABLE_MESH_MESH_RENDER_VECTORS_H
 #define VCL_OPENGL2_DRAWABLE_MESH_MESH_RENDER_VECTORS_H
 
+#include <vclib/algorithms/core/create.h>
 #include <vclib/algorithms/mesh/import_export/append_replace_to_buffer.h>
 #include <vclib/algorithms/mesh/import_export/export_buffer.h>
 #include <vclib/algorithms/mesh/stat/topology.h>
@@ -33,6 +34,10 @@
 #include <vclib/space/complex/tri_poly_index_bimap.h>
 #include <vclib/space/core/image.h>
 #include <vclib/space/core/texture.h>
+
+#ifdef VCLIB_EXTERNAL_MODULE
+#include <vclib/io/image.h>
+#endif
 
 namespace vcl {
 
@@ -363,22 +368,28 @@ private:
         mTextures.reserve(mesh.textureNumber());
         for (uint i = 0; i < mesh.textureNumber(); ++i) {
             vcl::Image txt;
-            // TODO
-            // if constexpr (vcl::HasTextureImages<MeshType>) {
-            //     if (mesh.texture(i).image().isNull()) {
-            //         txt = vcl::Image(mesh.meshBasePath() + mesh.texturePath(i));
-            //     }
-            //     else {
-            //         txt = mesh.texture(i).image();
-            //     }
-            // }
-            // else {
-            //     txt = vcl::Image(mesh.meshBasePath() + mesh.texturePath(i));
-            // }
-            if (!txt.isNull()) {
-                txt.mirror();
-                mTextures.push_back(txt);
+            if constexpr (vcl::HasTextureImages<MeshType>) {
+                if (mesh.texture(i).image().isNull()) {
+#ifdef VCLIB_EXTERNAL_MODULE
+                    txt = vcl::loadImage(
+                        mesh.meshBasePath() + mesh.texturePath(i));
+#endif
+                }
+                else {
+                    txt = mesh.texture(i).image();
+                }
             }
+            else {
+#ifdef VCLIB_EXTERNAL_MODULE
+                txt = vcl::loadImage(mesh.meshBasePath() + mesh.texturePath(i));
+#endif
+            }
+
+            if (txt.isNull()) {
+                txt = vcl::createCheckBoardImage(512);
+            }
+            txt.mirror();
+            mTextures.push_back(txt);
         }
     }
 

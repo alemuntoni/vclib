@@ -28,6 +28,7 @@
 #endif
 
 #include <vclib/concepts/mesh.h>
+#include <vclib/misc/logger.h>
 #include <vclib/space/core/texture.h>
 
 namespace vcl {
@@ -40,21 +41,28 @@ namespace vcl {
  *
  * @ingroup load
  */
-template<MeshConcept MeshType>
-void loadTextureImages(MeshType& mesh)
+template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
+void loadTextureImages(MeshType& mesh, LogType& log = nullLogger)
 {
-    std::string meshBasePath = mesh.meshBasePath();
-    for (vcl::Texture& t: mesh.textures()) {
-        std::string path = meshBasePath + "/" + t.path();
-        // TODO:
-        // 1- check for format;
-        // 2- check the external library that supports it
-        // 3- use the library to load it
+    if constexpr (HasTextureImages<MeshType>) {
+        std::string meshBasePath = mesh.meshBasePath();
+        for (vcl::Texture& t: mesh.textures()) {
+            std::string path = meshBasePath + t.path();
+            // TODO:
+            // 1- check for format;
+            // 2- check the external library that supports it
+            // 3- use the library to load it
 #ifdef VCLIB_WITH_STB
-        int w, h;
-        auto data = vcl::stb::loadImageData(path, w, h);
-        t.image() = vcl::Image(data.get(), w, h);
+            int w, h;
+            auto data = vcl::stb::loadImageData(path, w, h);
+            if (data) {
+                t.image() = vcl::Image(data.get(), w, h);
+            }
+            else {
+                log.log("Cannot load texture " + t.path(), LogType::WARNING_LOG);
+            }
 #endif
+        }
     }
 }
 
@@ -65,20 +73,27 @@ void loadTextureImages(MeshType& mesh)
  *
  * @ingroup save
  */
-template<MeshConcept MeshType>
-void saveTextureImages(const MeshType& mesh)
+template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
+void saveTextureImages(const MeshType& mesh, LogType& log = nullLogger)
 {
-    std::string meshBasePath = mesh.meshBasePath();
-    for (vcl::Texture& t: mesh.textures()) {
-        std::string path = meshBasePath + "/" + t.path();
-        // TODO:
-        // 1- check for format;
-        // 2- check the external library that supports it
-        // 3- use the library to save it
-#ifdef VCLIB_WITH_STB
-        vcl::stb::saveImageData(
-            path, t.image().width(), t.image().height(), t.image().data());
-#endif
+    if constexpr (HasTextureImages<MeshType>) {
+        std::string meshBasePath = mesh.meshBasePath();
+        for (vcl::Texture& t: mesh.textures()) {
+            try {
+                std::string path = meshBasePath + t.path();
+                // TODO:
+                // 1- check for format;
+                // 2- check the external library that supports it
+                // 3- use the library to save it
+    #ifdef VCLIB_WITH_STB
+                vcl::stb::saveImageData(
+                    path, t.image().width(), t.image().height(), t.image().data());
+    #endif
+            }
+            catch (const std::runtime_error& e) {
+                log.log(e.what(), LogType::WARNING_LOG);
+            }
+        }
     }
 }
 

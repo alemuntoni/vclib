@@ -30,12 +30,19 @@
 
 #include <vclib/render/drawable/drawable_mesh.h>
 
+#ifdef VCLIB_EXTERNAL_MODULE
+#include <vclib/external.h>
+#endif
+
 template<vcl::MeshConcept MeshType>
 inline vcl::DrawableMesh<MeshType> getDrawableMesh(
     const std::string& filename = "bimba.obj")
 {
     // load a mesh:
     MeshType m = vcl::load<MeshType>(VCLIB_EXAMPLE_MESHES_PATH "/" + filename);
+#ifdef VCLIB_EXTERNAL_MODULE
+    vcl::loadTextureImages(m);
+#endif
     vcl::updatePerVertexAndFaceNormals(m);
 
     // enable the vertex color of the mesh and set it to gray

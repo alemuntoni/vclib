@@ -63,9 +63,7 @@ public:
         const final
     {
 #ifdef VCLIB_WITH_STB
-        int w, h;
-        std::shared_ptr<unsigned char> data = loadImageData(filename, w, h);
-        return Image(data.get(), w, h);
+        return loadImage(filename);
 #else
         throw std::runtime_error("Image loading is not supported");
 #endif
@@ -78,7 +76,7 @@ public:
     {
         assert(!image.isNull());
 #ifdef VCLIB_WITH_STB
-        saveImageData(filename, image.width(), image.height(), image.data());
+        saveImage(filename, image);
 #else
         saveImageToBmp(filename, image.width(), image.height(), image.data());
 #endif

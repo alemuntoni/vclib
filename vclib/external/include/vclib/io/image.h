@@ -29,6 +29,8 @@
 #include <vclib/stb/load_save_image.h>
 #endif
 
+#include <vclib/space/core/image.h>
+
 namespace vcl {
 
 inline std::shared_ptr<unsigned char> loadImageData(
@@ -41,6 +43,16 @@ inline std::shared_ptr<unsigned char> loadImageData(
 #else
     return nullptr;
 #endif
+}
+
+inline Image loadImage(const std::string& filename)
+{
+    int w, h;
+    auto data = loadImageData(filename, w, h);
+    if (!data) {
+        return Image();
+    }
+    return Image(data.get(), w, h);
 }
 
 inline void saveImageData(
@@ -56,6 +68,11 @@ inline void saveImageData(
     // save rgb image data into bmp file
     saveImageToBmp(filename, w, h, data);
 #endif
+}
+
+inline void saveImage(const std::string& filename, const Image& image)
+{
+    saveImageData(filename, image.width(), image.height(), image.data());
 }
 
 } // namespace vcl
