@@ -22,8 +22,11 @@
 
 #include <vclib/processing.h>
 
-#include <vclib/external.h>
 #include <vclib/load_save.h>
+
+#ifdef VCLIB_EXTERNAL_MODULE
+#include <vclib/external.h>
+#endif
 
 int main()
 {
@@ -39,7 +42,9 @@ int main()
     vcl::TriEdgeMesh mesh = vcl::load<vcl::TriEdgeMesh>(
         VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.ply");
 
+#ifdef VCLIB_EXTERNAL_MODULE
     vcl::loadTextureImages(mesh);
+#endif
 
     // saving obj
     ActionManager::saveMeshActions("obj")->save(
