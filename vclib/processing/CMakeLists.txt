@@ -31,6 +31,10 @@ file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "include/vclib/*.h")
 add_library(${PROJECT_NAME} INTERFACE ${HEADERS})
 add_library(vclib::processing ALIAS ${PROJECT_NAME})
 
+if (TARGET vclib::external)
+    target_link_libraries(${PROJECT_NAME} INTERFACE vclib::external)
+endif()
+
 target_include_directories(${PROJECT_NAME} INTERFACE 
     ${VCLIB_PROCESSING_INCLUDE_DIR})
 

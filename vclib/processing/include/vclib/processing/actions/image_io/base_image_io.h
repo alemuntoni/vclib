@@ -25,6 +25,10 @@
 
 #include <vclib/processing/engine.h>
 
+#ifdef VCLIB_WITH_STB
+#include <vclib/io/image.h>
+#endif
+
 namespace vcl::proc {
 
 class BaseImageIO : public ImageIOAction
@@ -32,30 +36,39 @@ class BaseImageIO : public ImageIOAction
 public:
     std::string name() const final { return "Base IO Image"; }
 
-    IOSupport ioSupport() const final { return IOSupport::BOTH; }
+    IOSupport ioSupport() const final
+    {
+#ifdef VCLIB_WITH_STB
+        return IOSupport::BOTH;
+#else
+        return IOIOSupport::SAVE;
+#endif
+    }
 
     std::vector<FileFormat> supportedFormats() const final
     {
         std::vector<FileFormat> formats;
-        formats.push_back(FileFormat("png", "Portable Network Graphics"));
         formats.push_back(FileFormat("bmp", "Bitmap"));
+#ifdef VCLIB_WITH_STB
+        formats.push_back(FileFormat("png", "Portable Network Graphics"));
         formats.push_back(FileFormat("tga", "Truevision TGA"));
         formats.push_back(FileFormat(
             std::vector<std::string> {"jpg", "jpeg"},
             "Joint Photographic Experts Group"));
-
+#endif
         return formats;
     }
 
     Image load(const std::string& filename, AbstractLogger& log = logger())
         const final
     {
-        Image img/*(filename)*/;
-        // TODO
-        // if (img.isNull()) {
-        //     throw std::runtime_error("Error loading image from " + filename);
-        // }
-        return img;
+#ifdef VCLIB_WITH_STB
+        int w, h;
+        std::shared_ptr<unsigned char> data = loadImageData(filename, w, h);
+        return Image(data.get(), w, h);
+#else
+        throw std::runtime_error("Image loading is not supported");
+#endif
     }
 
     void save(
@@ -64,8 +77,11 @@ public:
         AbstractLogger&    log = logger()) const final
     {
         assert(!image.isNull());
-        // TODO
-        // image.save(filename);
+#ifdef VCLIB_WITH_STB
+        saveImageData(filename, image.width(), image.height(), image.data());
+#else
+        saveImageToBmp(filename, image.width(), image.height(), image.data());
+#endif
     }
 };
 

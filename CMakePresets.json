@@ -161,7 +161,7 @@
         },
         {
             "name": "vclib-processing-debug",
-            "inherits": "vclib-core-no-tests-debug",
+            "inherits": "vclib-external-no-tests-debug",
             "displayName": "VCLib::Processing - Debug",
             "description": "Processing module",
             "cacheVariables": {
@@ -170,7 +170,7 @@
         },
         {
             "name": "vclib-processing-release",
-            "inherits": "vclib-core-no-tests-release",
+            "inherits": "vclib-external-no-tests-release",
             "displayName": "VCLib::Processing - Release",
             "description": "Processing module",
             "cacheVariables": {
