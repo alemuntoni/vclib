@@ -23,9 +23,7 @@
 #ifndef VCL_LOAD_SAVE_TEXTURE_IMAGES_H
 #define VCL_LOAD_SAVE_TEXTURE_IMAGES_H
 
-#ifdef VCLIB_WITH_STB
-#include <vclib/stb/load_save_image.h>
-#endif
+#include <vclib/io/image.h>
 
 #include <vclib/concepts/mesh.h>
 #include <vclib/misc/logger.h>
@@ -47,21 +45,17 @@ void loadTextureImages(MeshType& mesh, LogType& log = nullLogger)
     if constexpr (HasTextureImages<MeshType>) {
         std::string meshBasePath = mesh.meshBasePath();
         for (vcl::Texture& t: mesh.textures()) {
-            std::string path = meshBasePath + t.path();
-            // TODO:
-            // 1- check for format;
-            // 2- check the external library that supports it
-            // 3- use the library to load it
-#ifdef VCLIB_WITH_STB
-            int w, h;
-            auto data = vcl::stb::loadImageData(path, w, h);
-            if (data) {
-                t.image() = vcl::Image(data.get(), w, h);
+            try {
+                std::string path = meshBasePath + t.path();
+                int w, h;
+                auto data = vcl::loadImageData(path, w, h);
+                if (data) {
+                    t.image() = vcl::Image(data.get(), w, h);
+                }
             }
-            else {
-                log.log("Cannot load texture " + t.path(), LogType::WARNING_LOG);
+            catch (const std::runtime_error& e) {
+                log.log(e.what(), LogType::WARNING_LOG);
             }
-#endif
         }
     }
 }
@@ -69,26 +63,35 @@ void loadTextureImages(MeshType& mesh, LogType& log = nullLogger)
 /**
  * @brief Save the texture images of a mesh to their respective files.
  *
- * @param[in] mesh
+ * The images are saved by default in the directory given by the meshBasePath of
+ * the mesh (`mesh.meshBasePath()`). This path can be overridden by
+ * providing a different `meshFilePath` trough the @par meshFilePath argument.
+ *
+ * @param[in] mesh: the mesh to save the texture images from.
+ * @param[in] meshFilePath: the path to the directory where the images will be
+ * saved. If empty, the meshBasePath of the mesh will be used.
  *
  * @ingroup save
  */
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
-void saveTextureImages(const MeshType& mesh, LogType& log = nullLogger)
+void saveTextureImages(
+    const MeshType&    mesh,
+    const std::string& meshFilePath = "",
+    LogType&           log      = nullLogger)
 {
     if constexpr (HasTextureImages<MeshType>) {
         std::string meshBasePath = mesh.meshBasePath();
-        for (vcl::Texture& t: mesh.textures()) {
+        if (!meshFilePath.empty()) {
+            meshBasePath = meshFilePath;
+        }
+        for (vcl::Texture& t : mesh.textures()) {
             try {
                 std::string path = meshBasePath + t.path();
-                // TODO:
-                // 1- check for format;
-                // 2- check the external library that supports it
-                // 3- use the library to save it
-    #ifdef VCLIB_WITH_STB
-                vcl::stb::saveImageData(
-                    path, t.image().width(), t.image().height(), t.image().data());
-    #endif
+                vcl::saveImageData(
+                    path,
+                    t.image().width(),
+                    t.image().height(),
+                    t.image().data());
             }
             catch (const std::runtime_error& e) {
                 log.log(e.what(), LogType::WARNING_LOG);

@@ -33,6 +33,14 @@
 
 namespace vcl {
 
+/**
+ * @brief Returns the set of image formats supported for loading.
+ *
+ * The set contains all the image formats that can be loaded using all the
+ * external libraries compiled with VCLib.
+ *
+ * @return A set of image formats supported for loading.
+ */
 inline std::set<FileFormat> loadImageFormats()
 {
     std::set<FileFormat> ff;
@@ -48,23 +56,36 @@ inline std::shared_ptr<unsigned char> loadImageData(
     int&               w,
     int&               h)
 {
+    FileFormat ff = FileInfo::fileFormat(filename);
+
 #ifdef VCLIB_WITH_STB
-    return stb::loadImageData(filename, w, h);
-#else
-    return nullptr;
+    if (stb::loadImageFormats().contains(ff)) {
+        return stb::loadImageData(filename, w, h);
+    }
 #endif
+    throw std::runtime_error(
+        "File Format " + ff.extensions().front() +
+        " not supported for loading image data");
 }
 
 inline Image loadImage(const std::string& filename)
 {
-    int w, h;
+    int  w, h;
     auto data = loadImageData(filename, w, h);
     if (!data) {
         return Image();
     }
     return Image(data.get(), w, h);
 }
- 
+
+/**
+ * @brief Returns the set of image formats supported for saving.
+ *
+ * The set contains all the image formats that can be saved using all the
+ * external libraries compiled with VCLib.
+ *
+ * @return A set of image formats supported for saving.
+ */
 inline std::set<FileFormat> saveImageFormats()
 {
     std::set<FileFormat> ff;
@@ -82,12 +103,20 @@ inline void saveImageData(
     const unsigned char* data,
     uint                 quality = 90)
 {
+    FileFormat ff = FileInfo::fileFormat(filename);
+
 #ifdef VCLIB_WITH_STB
-    stb::saveImageData(filename, w, h, data, quality);
-#else
-    // save rgb image data into bmp file
-    saveImageToBmp(filename, w, h, data);
+    if (stb::saveImageFormats().contains(ff)) {
+        return stb::saveImageData(filename, w, h, data, quality);
+    }
 #endif
+    if (ff == FileFormat("bmp")) {
+        // save rgb image data into bmp file
+        return saveImageToBmp(filename, w, h, data);
+    }
+    throw std::runtime_error(
+        "File Format " + ff.extensions().front() +
+        " not supported for saving image data");
 }
 
 inline void saveImage(const std::string& filename, const Image& image)
