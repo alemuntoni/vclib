@@ -23,6 +23,7 @@
 #ifndef VCL_STB_LOAD_SAVE_IMAGE_H
 #define VCL_STB_LOAD_SAVE_IMAGE_H
 
+#include <vclib/io/file_format.h>
 #include <vclib/io/file_info.h>
 #include <vclib/misc/string.h>
 
@@ -44,9 +45,22 @@
 #endif
 
 #include <memory>
+#include <set>
 #include <string>
 
 namespace vcl::stb {
+
+inline std::set<FileFormat> loadImageFormats()
+{
+    return {
+        FileFormat("png", "Portable Network Graphics"),
+        FileFormat("bmp", "Bitmap"),
+        FileFormat("tga", "Truevision TGA"),
+        FileFormat(
+            std::vector<std::string> {"jpg", "jpeg"},
+            "Joint Photographic Experts Group"),
+    };
+}
 
 inline std::shared_ptr<unsigned char> loadImageData(
     const std::string& filename,
@@ -56,6 +70,18 @@ inline std::shared_ptr<unsigned char> loadImageData(
     std::shared_ptr<unsigned char> ptr(
         stbi_load(filename.c_str(), &w, &h, nullptr, 4), stbi_image_free);
     return ptr;
+}
+
+inline std::set<FileFormat> saveImageFormats()
+{
+    return {
+        FileFormat("png", "Portable Network Graphics"),
+        FileFormat("bmp", "Bitmap"),
+        FileFormat("tga", "Truevision TGA"),
+        FileFormat(
+            std::vector<std::string> {"jpg", "jpeg"},
+            "Joint Photographic Experts Group"),
+    };
 }
 
 inline void saveImageData(

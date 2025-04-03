@@ -33,6 +33,16 @@
 
 namespace vcl {
 
+inline std::set<FileFormat> loadImageFormats()
+{
+    std::set<FileFormat> ff;
+
+#ifdef VCLIB_WITH_STB
+    ff = stb::loadImageFormats();
+#endif
+    return ff;
+}
+
 inline std::shared_ptr<unsigned char> loadImageData(
     const std::string& filename,
     int&               w,
@@ -53,6 +63,16 @@ inline Image loadImage(const std::string& filename)
         return Image();
     }
     return Image(data.get(), w, h);
+}
+ 
+inline std::set<FileFormat> saveImageFormats()
+{
+    std::set<FileFormat> ff;
+
+#ifdef VCLIB_WITH_STB
+    ff = stb::saveImageFormats();
+#endif
+    return ff;
 }
 
 inline void saveImageData(
