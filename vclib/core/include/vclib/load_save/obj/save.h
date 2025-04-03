@@ -147,24 +147,6 @@ void writeElementObjMaterial(
             // save the material in the mtl file
             mtlfp << "newmtl " << mname << std::endl;
             mtlfp << mat << std::endl;
-            // if constexpr (HasTextureImages<MeshType>) {
-            //     if (settings.saveTextureImages && mat.hasTexture) {
-            //         // we need to save the texture image
-            //         // first, get the index of the texture: 0 if vertex,
-            //         // textureIndex if face
-            //         uint textureIndex = 0;
-            //         if constexpr (EL_IS_FACE) {
-            //             textureIndex = e.textureIndex();
-            //         }
-            //         const Texture& t = m.texture(textureIndex);
-            //         try {
-            //             t.image().save(m.meshBasePath() + mat.map_Kd);
-            //         }
-            //         catch (const std::runtime_error& e) {
-            //             log.log(e.what(), LogType::WARNING_LOG);
-            //         }
-            //     }
-            // }
         }
         else { // get the name of the material
             mname = it->second;

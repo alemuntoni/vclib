@@ -659,20 +659,6 @@ void loadObj(
         }
     }
 
-    // if constexpr (HasTextureImages<MeshType>) {
-    //     if (settings.loadTextureImages) {
-    //         for (Texture& texture : m.textures()) {
-    //             bool b =
-    //                 texture.image().load(m.meshBasePath() + texture.path());
-    //             if (!b) {
-    //                 log.log(
-    //                     "Cannot load texture " + texture.path(),
-    //                     LogType::WARNING_LOG);
-    //             }
-    //         }
-    //     }
-    // }
-
     log.endProgress();
 }
 
