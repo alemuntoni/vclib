@@ -17,6 +17,11 @@ jobs:
         submodules: recursive
     - name: Setup MSVC
       uses: ilammy/msvc-dev-cmd@v1
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        cache: 'true'
+        version: '6.8.2'
     - name: Install dependencies
       if: runner.os == 'Linux'
       run: |

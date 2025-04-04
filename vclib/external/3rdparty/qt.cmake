@@ -20,37 +20,29 @@
 #* (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
 #****************************************************************************/
 
-cmake_minimum_required(VERSION 3.24)
-project(vclib-external-3rdparty)
+set(QT_MINIMUM_VERSION 6.7)
 
-include(FetchContent)
+set(QT_COMPONENTS Core Gui)
 
-# === OPTIONAL === #
+find_package(Qt6 ${QT_MINIMUM_VERSION} COMPONENTS ${QT_COMPONENTS} QUIET)
 
-# STB
-option(VCLIB_ALLOW_BUNDLED_STB "Allow use of bundled STB source" ON)
-option(VCLIB_ALLOW_INSTALL_STB "Allow install STB source" ON)
+if (VCLIB_ALLOW_SYSTEM_QT)
+    if (Qt6_FOUND)
+        message(STATUS "- Qt6 - using system-provided library")
 
-# Qt
-option(VCLIB_ALLOW_SYSTEM_QT "Allow use of system-provided Qt" ON)
+        if (NOT TARGET vclib-3rd-qt)
+            add_library(vclib-3rd-qt INTERFACE)
+        endif()
+        target_compile_definitions(vclib-3rd-qt INTERFACE
+            VCLIB_WITH_QT)
 
-#VCG
-option(VCLIB_ALLOW_DOWNLOAD_VCG "Allow use of downloaded VCG source" ON)
-option(VCLIB_ALLOW_SYSTEM_VCG "Allow use of system-provided VCG" ON)
+        target_link_libraries(vclib-3rd-qt INTERFACE
+            Qt6::Core Qt6::Gui)
+
+        list(APPEND VCLIB_EXTERNAL_3RDPARTY_LIBRARIES vclib-3rd-qt)
+    else()
+        message(STATUS "- Qt - not found, skipping")
+    endif()
+endif()
 
 
-# === Fetch dependencies === #
-
-set(VCLIB_EXTERNAL_3RDPARTY_LIBRARIES "")
-
-### Qt
-include(qt.cmake)
-
-### STB
-include(stb.cmake)
-
-### VCG
-include(vcg.cmake)
-
-set(VCLIB_EXTERNAL_3RDPARTY_LIBRARIES
-    ${VCLIB_EXTERNAL_3RDPARTY_LIBRARIES} PARENT_SCOPE)

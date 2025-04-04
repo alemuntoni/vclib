@@ -23,12 +23,15 @@
 #ifndef VCL_IO_IMAGE_H
 #define VCL_IO_IMAGE_H
 
-#include <vclib/io/image_bmp.h>
+#ifdef VCLIB_WITH_QT
+#include <vclib/qt/load_save_image.h>
+#endif
 
 #ifdef VCLIB_WITH_STB
 #include <vclib/stb/load_save_image.h>
 #endif
 
+#include <vclib/io/image_bmp.h>
 #include <vclib/space/core/image.h>
 
 namespace vcl {
@@ -45,8 +48,14 @@ inline std::set<FileFormat> loadImageFormats()
 {
     std::set<FileFormat> ff;
 
+#ifdef VCLIB_WITH_QT
+    auto fqt = qt::loadImageFormats();
+    ff.insert(fqt.begin(), fqt.end());
+#endif
+
 #ifdef VCLIB_WITH_STB
-    ff = stb::loadImageFormats();
+    auto fstb = stb::loadImageFormats();
+    ff.insert(fstb.begin(), fstb.end());
 #endif
     return ff;
 }
@@ -57,6 +66,12 @@ inline std::shared_ptr<unsigned char> loadImageData(
     int&               h)
 {
     FileFormat ff = FileInfo::fileFormat(filename);
+
+#ifdef VCLIB_WITH_QT
+    if (qt::loadImageFormats().contains(ff)) {
+        return qt::loadImageData(filename, w, h);
+    }
+#endif
 
 #ifdef VCLIB_WITH_STB
     if (stb::loadImageFormats().contains(ff)) {
@@ -90,8 +105,14 @@ inline std::set<FileFormat> saveImageFormats()
 {
     std::set<FileFormat> ff;
 
+#ifdef VCLIB_WITH_QT
+    auto fqt = qt::saveImageFormats();
+    ff.insert(fqt.begin(), fqt.end());
+#endif
+
 #ifdef VCLIB_WITH_STB
-    ff = stb::saveImageFormats();
+    auto fstb = stb::saveImageFormats();
+    ff.insert(fstb.begin(), fstb.end());
 #endif
     return ff;
 }
@@ -104,6 +125,12 @@ inline void saveImageData(
     uint                 quality = 90)
 {
     FileFormat ff = FileInfo::fileFormat(filename);
+
+#ifdef VCLIB_WITH_QT
+    if (qt::saveImageFormats().contains(ff)) {
+        return qt::saveImageData(filename, w, h, data, quality);
+    }
+#endif
 
 #ifdef VCLIB_WITH_STB
     if (stb::saveImageFormats().contains(ff)) {
