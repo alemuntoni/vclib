@@ -26,9 +26,12 @@ module;
 #include <cassert>
 #include <list>
 #include <map>
+#include <numeric>
 #include <ranges>
 #include <utility>
 #include <vector>
+#define ZIP_VIEW_INJECT_STD_VIEWS_NAMESPACE
+#include <zip_view.hpp>
 
 #include <Eigen/Core>
 

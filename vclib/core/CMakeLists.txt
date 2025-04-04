@@ -60,6 +60,7 @@ else()
 endif()
 
 target_include_directories(${PROJECT_NAME} ${VCLIB_CORE_TARGET_LINK_TYPE} ${VCLIB_CORE_INCLUDE_DIR})
+target_compile_definitions(${PROJECT_NAME} ${VCLIB_CORE_TARGET_LINK_TYPE} VCLIB_CORE_MODULE)
 
 add_library(vclib::core ALIAS ${PROJECT_NAME})
 
@@ -73,3 +74,7 @@ target_sources(${PROJECT_NAME} PRIVATE ${HEADERS})
 if (MSVC)
     target_compile_options(${PROJECT_NAME} ${VCLIB_CORE_TARGET_LINK_TYPE} "/bigobj")
 endif()
+
+# Install
+install(DIRECTORY ${VCLIB_CORE_INCLUDE_DIR}/vclib
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
