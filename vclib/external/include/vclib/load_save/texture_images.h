@@ -84,7 +84,7 @@ void saveTextureImages(
         if (!meshFilePath.empty()) {
             meshBasePath = meshFilePath;
         }
-        for (vcl::Texture& t : mesh.textures()) {
+        for (const vcl::Texture& t : mesh.textures()) {
             try {
                 std::string path = meshBasePath + t.path();
                 vcl::saveImageData(

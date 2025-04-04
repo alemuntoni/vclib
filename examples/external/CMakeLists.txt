@@ -21,36 +21,10 @@
 #****************************************************************************/
 
 cmake_minimum_required(VERSION 3.24)
-project(vclib-examples)
+project(vclib-external-examples)
 
 set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 
-option(VCLIB_CORE_BUILD_EXAMPLES
-    "If true, the examples of VCLib-core will be built." ON)
+add_subdirectory(000-mesh-io-textured)
 
-option(VCLIB_EXTERNAL_BUILD_EXAMPLES
-    "If true, the examples of VCLib-external will be built." ON)
-
-option(VCLIB_PROCESSING_BUILD_EXAMPLES
-    "If true, the examples of VCLib-processing will be built." ON)
-
-option(VCLIB_RENDER_BUILD_EXAMPLES
-    "If true, the examples of VCLib-render will be built." ON)
-
-# examples
-if (VCLIB_CORE_BUILD_EXAMPLES)
-    add_subdirectory(core)
-endif()
-
-if (VCLIB_BUILD_MODULE_EXTERNAL AND VCLIB_EXTERNAL_BUILD_EXAMPLES)
-    add_subdirectory(external)
-endif()
-
-if (VCLIB_BUILD_MODULE_PROCESSING AND VCLIB_PROCESSING_BUILD_EXAMPLES)
-    add_subdirectory(processing)
-endif()
-
-if (VCLIB_BUILD_MODULE_RENDER AND VCLIB_RENDER_BUILD_EXAMPLES)
-    add_subdirectory(render)
-endif()
 
