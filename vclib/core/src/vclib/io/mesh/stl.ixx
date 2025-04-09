@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2024                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -20,49 +20,29 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_IO_IMAGE_QT_SAVE_H
-#define VCL_IO_IMAGE_QT_SAVE_H
+module;
 
-#ifndef VCLIB_WITH_MODULES
-#include <vclib/io/file_format.h>
+#include <bit>
+#include <fstream>
+#include <vector>
 
-#include <QImage>
+#include <Eigen/Core>
 
-#include <set>
-#endif // VCLIB_WITH_MODULES
+export module vclib.io:mesh_stl;
 
-namespace vcl::qt {
+import vclib.algorithms.core;
+import vclib.concepts;
+import vclib.exceptions;
+import vclib.misc;
+import vclib.space.complex;
+import vclib.space.core;
+import vclib.types;
 
-inline std::set<FileFormat> saveImageFormats()
-{
-    return {
-        FileFormat("bmp", "Bitmap"),
-        FileFormat(
-            std::vector<std::string> {"jpg", "jpeg"},
-            "Joint Photographic Experts Group"),
-        FileFormat("png", "Portable Network Graphics"),
-        FileFormat("ppm", "Portable Pixmap"),
-        FileFormat("xbm", "X11 Bitmap"),
-        FileFormat("xpm", "X11 Pixmap"),
-    };
+import :common;
+import :mesh_settings;
+
+export {
+#include <vclib/io/mesh/stl/capability.h>
+#include <vclib/io/mesh/stl/load.h>
+#include <vclib/io/mesh/stl/save.h>
 }
-
-inline void saveImageData(
-    const std::string&   filename,
-    int                  w,
-    int                  h,
-    const unsigned char* data,
-    uint                 quality = 90)
-{
-    QImage image(w, h, QImage::Format_RGBA8888);
-    std::copy(data, data + w * h * 4, image.bits());
-    bool res = image.save(QString::fromStdString(filename), nullptr, quality);
-    if (!res) {
-        throw std::runtime_error(
-            "Failed to save image data to file: " + filename);
-    }
-}
-
-} // namespace vcl::qt
-
-#endif // VCL_IO_IMAGE_QT_SAVE_H

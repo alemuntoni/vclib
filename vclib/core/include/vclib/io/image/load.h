@@ -23,6 +23,7 @@
 #ifndef VCL_IO_IMAGE_LOAD_H
 #define VCL_IO_IMAGE_LOAD_H
 
+#ifndef VCLIB_WITH_MODULES
 #ifdef VCLIB_WITH_QT
 #include "qt/load.h"
 #endif
@@ -37,6 +38,7 @@
 
 #include <memory>
 #include <string>
+#endif // VCLIB_WITH_MODULES
 
 namespace vcl {
 

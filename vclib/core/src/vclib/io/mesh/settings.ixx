@@ -22,29 +22,10 @@
 
 module;
 
-#include <string>
+export module vclib.io:mesh_settings;
 
-#include <Eigen/Core>
-
-export module vclib.load_save;
-
-export import :settings;
-
-export import :obj;
-export import :off;
-export import :ply;
-export import :stl;
-
-import vclib.concepts;
-import vclib.exceptions;
-import vclib.io;
-import vclib.misc;
 import vclib.space.complex;
-import vclib.types;
 
 export {
-#include <vclib/load_save/capability.h>
-#include <vclib/load_save/load.h>
-#include <vclib/load_save/save.h>
+#include <vclib/io/mesh/settings.h>
 }
-

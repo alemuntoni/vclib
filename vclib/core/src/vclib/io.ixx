@@ -22,46 +22,9 @@
 
 module;
 
-#include <algorithm>
-#include <array>
-#include <bit>
-#include <cassert>
-#include <cstdio>
-#include <filesystem>
-#include <fstream>
-#include <istream>
-#include <memory>
-#include <ostream>
-#include <string>
-#include <typeindex>
-#include <vector>
-
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb/stb_image.h>
-#include <stb/stb_image_write.h>
-
 export module vclib.io;
 
-import vclib.concepts;
-import vclib.exceptions;
-import vclib.misc;
-import vclib.types;
+export import :common;
+export import :image;
+export import :mesh;
 
-export {
-// serialization
-#include <vclib/io/serialization/endian.h>
-
-#include <vclib/io/serialization/deserialize.h>
-#include <vclib/io/serialization/serialize.h>
-
-// file_info and file_format
-#include <vclib/io/file_format.h>
-#include <vclib/io/file_info.h>
-#include <vclib/io/file_type.h>
-
-// image, read, write
-#include <vclib/io/image.h>
-#include <vclib/io/read.h>
-#include <vclib/io/write.h>
-}

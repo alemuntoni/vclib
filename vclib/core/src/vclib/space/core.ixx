@@ -48,9 +48,9 @@ export module vclib.space.core;
 
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.io;
 import vclib.math;
 import vclib.misc;
+import vclib.serialization;
 import vclib.types;
 
 export {

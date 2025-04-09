@@ -37,8 +37,8 @@ module;
 export module vclib.mesh:components;
 
 import vclib.concepts;
-import vclib.io;
 import vclib.misc;
+import vclib.serialization;
 import vclib.space.core;
 import vclib.types;
 

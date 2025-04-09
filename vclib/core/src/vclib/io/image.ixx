@@ -23,41 +23,54 @@
 module;
 
 #include <algorithm>
+#include <array>
 #include <bit>
 #include <cassert>
+#include <cstdio>
+#include <filesystem>
 #include <fstream>
-#include <list>
+#include <istream>
+#include <memory>
 #include <ostream>
+#include <set>
 #include <string>
+#include <typeindex>
 #include <vector>
 
-#include <Eigen/Core>
+#ifdef VCLIB_WITH_QT
+#include <QImage>
+#endif
 
-export module vclib.load_save:ply;
+#ifdef VCLIB_WITH_STB
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb/stb_image.h>
+#include <stb/stb_image_write.h>
+#endif
+
+export module vclib.io:image;
 
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.io;
-import vclib.mesh;
 import vclib.misc;
-import vclib.space.complex;
 import vclib.space.core;
 import vclib.types;
 
-import :settings;
+import :common;
 
 export {
-#include <vclib/load_save/ply/detail/ply.h>
+#include <vclib/io/image/bmp/save.h>
 
-#include <vclib/load_save/ply/detail/header.h>
+#ifdef VCLIB_WITH_QT
+#include <vclib/io/image/qt/load.h>
+#include <vclib/io/image/qt/save.h>
+#endif
 
-#include <vclib/load_save/ply/detail/edge.h>
-#include <vclib/load_save/ply/detail/extra.h>
-#include <vclib/load_save/ply/detail/face.h>
-#include <vclib/load_save/ply/detail/tristrip.h>
-#include <vclib/load_save/ply/detail/vertex.h>
+#ifdef VCLIB_WITH_STB
+#include <vclib/io/image/stb/load.h>
+#include <vclib/io/image/stb/save.h>
+#endif
 
-#include <vclib/load_save/ply/capability.h>
-#include <vclib/load_save/ply/load.h>
-#include <vclib/load_save/ply/save.h>
+#include <vclib/io/image/load.h>
+#include <vclib/io/image/save.h>
 }

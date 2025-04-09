@@ -23,30 +23,29 @@
 module;
 
 #include <algorithm>
+#include <bit>
 #include <cassert>
+#include <filesystem>
 #include <fstream>
-#include <map>
 #include <string>
 #include <vector>
+#include <typeindex>
 
-#include <Eigen/Core>
-
-export module vclib.load_save:obj;
+export module vclib.io:common;
 
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.io;
 import vclib.misc;
-import vclib.space.core;
-import vclib.space.complex;
+import vclib.serialization;
 import vclib.types;
 
-import :settings;
-
 export {
-#include <vclib/load_save/obj/material.h>
+// file_info and file_format
+#include <vclib/io/file_format.h>
+#include <vclib/io/file_info.h>
+#include <vclib/io/file_type.h>
 
-#include <vclib/load_save/obj/capability.h>
-#include <vclib/load_save/obj/load.h>
-#include <vclib/load_save/obj/save.h>
+// read, write
+#include <vclib/io/read.h>
+#include <vclib/io/write.h>
 }

@@ -22,10 +22,19 @@
 
 module;
 
-export module vclib.load_save:settings;
+#include <array>
+#include <bit>
+#include <cstdio>
+#include <iterator>
+#include <vector>
 
-import vclib.space.complex;
+export module vclib.serialization;
+
+import vclib.concepts;
 
 export {
-#include <vclib/load_save/settings.h>
+#include <vclib/serialization/endian.h>
+
+#include <vclib/serialization/deserialize.h>
+#include <vclib/serialization/serialize.h>
 }

@@ -23,6 +23,7 @@
 #ifndef VCL_IO_IMAGE_STB_SAVE_H
 #define VCL_IO_IMAGE_STB_SAVE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include <vclib/io/file_info.h>
 #include <vclib/misc/string.h>
 
@@ -42,6 +43,7 @@
 
 #include <set>
 #include <string>
+#endif // VCLIB_WITH_MODULES
 
 namespace vcl::stb {
 

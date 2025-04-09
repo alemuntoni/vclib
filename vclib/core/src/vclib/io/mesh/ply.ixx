@@ -22,27 +22,43 @@
 
 module;
 
+#include <algorithm>
 #include <bit>
+#include <cassert>
 #include <fstream>
+#include <list>
+#include <ostream>
+#include <string>
 #include <vector>
 
 #include <Eigen/Core>
 
-export module vclib.load_save:stl;
+export module vclib.io:mesh_ply;
 
-import vclib.algorithms.core;
 import vclib.concepts;
 import vclib.exceptions;
-import vclib.io;
+import vclib.mesh;
 import vclib.misc;
 import vclib.space.complex;
 import vclib.space.core;
 import vclib.types;
 
-import :settings;
+import :common;
+import :image;
+import :mesh_settings;
 
 export {
-#include <vclib/load_save/stl/capability.h>
-#include <vclib/load_save/stl/load.h>
-#include <vclib/load_save/stl/save.h>
+#include <vclib/io/mesh/ply/detail/ply.h>
+
+#include <vclib/io/mesh/ply/detail/header.h>
+
+#include <vclib/io/mesh/ply/detail/edge.h>
+#include <vclib/io/mesh/ply/detail/extra.h>
+#include <vclib/io/mesh/ply/detail/face.h>
+#include <vclib/io/mesh/ply/detail/tristrip.h>
+#include <vclib/io/mesh/ply/detail/vertex.h>
+
+#include <vclib/io/mesh/ply/capability.h>
+#include <vclib/io/mesh/ply/load.h>
+#include <vclib/io/mesh/ply/save.h>
 }

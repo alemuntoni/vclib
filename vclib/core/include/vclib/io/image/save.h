@@ -23,6 +23,7 @@
 #ifndef VCL_IO_IMAGE_SAVE_H
 #define VCL_IO_IMAGE_SAVE_H
 
+#ifndef VCLIB_WITH_MODULES
 #include "bmp/save.h"
 
 #ifdef VCLIB_WITH_QT
@@ -34,6 +35,7 @@
 #endif
 
 #include <vclib/space/core/image.h>
+#endif // VCLIB_WITH_MODULES
 
 namespace vcl {
 
