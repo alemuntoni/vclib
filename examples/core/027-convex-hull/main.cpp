@@ -22,7 +22,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/convex_hull.h>
-#include <vclib/load_save.h>
+#include <vclib/io.h>
 #include <vclib/meshes/tri_mesh.h>
 #else
 #include <vclib/modules_required_headers.h>

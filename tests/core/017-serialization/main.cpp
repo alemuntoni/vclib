@@ -21,9 +21,9 @@
  ****************************************************************************/
 
 #ifndef VCLIB_WITH_MODULES
+#include <vclib/io.h>
 #include <vclib/io/read.h>
 #include <vclib/io/write.h>
-#include <vclib/load_save.h>
 #include <vclib/meshes.h>
 #include <vclib/space.h>
 #else

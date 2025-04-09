@@ -23,7 +23,7 @@
 #include "montecarlo_sampling.h"
 
 #ifndef VCLIB_WITH_MODULES
-#include <vclib/load_save.h>
+#include <vclib/io.h>
 #endif
 
 int main(int argc, char** argv)

@@ -25,7 +25,7 @@
 
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms.h>
-#include <vclib/load_save.h>
+#include <vclib/io.h>
 #include <vclib/meshes.h>
 #include <vclib/misc/timer.h>
 #else

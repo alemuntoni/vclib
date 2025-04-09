@@ -23,7 +23,7 @@
 #ifndef VCLIB_WITH_MODULES
 #include <vclib/algorithms/mesh/create.h>
 #include <vclib/algorithms/mesh/update.h>
-#include <vclib/load_save.h>
+#include <vclib/io.h>
 #include <vclib/meshes.h>
 #else
 #include <vclib/modules_required_headers.h>

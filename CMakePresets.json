@@ -60,7 +60,27 @@
             }
         },
         {
-            "name": "vclib-core-cxx20-modules-debug",
+            "name": "vclib-core-no-3rd-io-debug",
+            "inherits": "vclib-core-debug",
+            "displayName": "VCLib::Core without 3rdparty IO libraries - Debug",
+            "description": "Core without 3rdparty IO libraries",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "VCLIB_BUILD_CORE_WITH_3RDPARTY_IO_LIBRARIES": "OFF"
+            }
+        },
+        {
+            "name": "vclib-core-no-3rd-io-release",
+            "inherits": "vclib-core-release",
+            "displayName": "VCLib::Core without 3rdparty IO libraries - Release",
+            "description": "Core without 3rdparty IO libraries",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "VCLIB_BUILD_CORE_WITH_3RDPARTY_IO_LIBRARIES": "OFF"
+            }
+        },
+        {
+        	"name": "vclib-core-cxx20-modules-debug",
             "inherits": "vclib-core-debug",
             "displayName": "VCLib::Core - C++20 Modules - Debug",
             "description": "Core with C++20 modules and default options",
