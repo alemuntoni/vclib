@@ -37,6 +37,8 @@ module;
 #include <typeindex>
 #include <vector>
 
+#include <Eigen/Core>
+
 #ifdef VCLIB_WITH_QT
 #include <QImage>
 #endif

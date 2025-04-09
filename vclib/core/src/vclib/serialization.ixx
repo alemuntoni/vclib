@@ -25,6 +25,7 @@ module;
 #include <array>
 #include <bit>
 #include <cstdio>
+#include <istream>
 #include <iterator>
 #include <vector>
 
