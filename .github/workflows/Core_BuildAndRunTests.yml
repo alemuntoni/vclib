@@ -21,6 +21,10 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get install cmake ninja-build libtbb-dev catch2
+        # install g++-14 and make it default
+        sudo apt-get install g++-14
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
     - name: Install dependencies
       if: runner.os == 'macOS'
       shell: bash
