@@ -20,12 +20,14 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_COMPACTNESS_H
-#define VCL_BASE_COMPACTNESS_H
+module;
 
-#include <vclib/base/base.h>
-
+#include <cassert>
 #include <vector>
+
+export module vclib.base:compactness;
+
+import :base;
 
 namespace vcl {
 
@@ -48,7 +50,7 @@ namespace vcl {
  * @param vec
  * @param newIndices
  */
-template<typename T, typename... Args>
+export template<typename T, typename... Args>
 void compactVector(
     std::vector<T, Args...>& vec,
     const std::vector<uint>& newIndices)
@@ -69,5 +71,3 @@ void compactVector(
 }
 
 } // namespace vcl
-
-#endif // VCL_BASE_COMPACTNESS_H

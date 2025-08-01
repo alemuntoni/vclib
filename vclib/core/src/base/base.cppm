@@ -20,8 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_BASE_H
-#define VCL_BASE_BASE_H
+module;
 
 #include <cassert>
 #include <cstdint>
@@ -29,11 +28,13 @@
 #include <memory>
 #include <type_traits>
 
+export module vclib.base:base;
+
 namespace vcl {
 
 // Define some basic types, for convenience
-using uint   = uint32_t;
-using ushort = uint16_t;
+export using uint   = uint32_t;
+export using ushort = uint16_t;
 
 /**
  * @brief The UINT_NULL value represent a null value of uint that is the maximum
@@ -45,7 +46,7 @@ using ushort = uint16_t;
  *
  * @ingroup base
  */
-constexpr uint UINT_NULL = std::numeric_limits<uint>::max();
+export constexpr uint UINT_NULL = std::numeric_limits<uint>::max();
 
 /**
  * @brief A simple type that enumerates the main primitive types.
@@ -55,7 +56,7 @@ constexpr uint UINT_NULL = std::numeric_limits<uint>::max();
  *
  * @ingroup base
  */
-enum class PrimitiveType {
+export enum class PrimitiveType {
     CHAR,
     UCHAR,
     SHORT,
@@ -73,7 +74,7 @@ enum class PrimitiveType {
  *
  * @ingroup base
  */
-enum class MatrixStorageType { ROW_MAJOR, COLUMN_MAJOR };
+export enum class MatrixStorageType { ROW_MAJOR, COLUMN_MAJOR };
 
 /**
  * @brief Returns the size in bytes of a primitive type.
@@ -81,7 +82,7 @@ enum class MatrixStorageType { ROW_MAJOR, COLUMN_MAJOR };
  * @return The size in bytes of the primitive type.
  */
 // TODO: from c++23 use fixed width floating-point types
-constexpr int sizeOf(PrimitiveType type) noexcept
+export constexpr int sizeOf(PrimitiveType type) noexcept
 {
     switch (type) {
     case PrimitiveType::CHAR: return sizeof(char);
@@ -102,7 +103,7 @@ constexpr int sizeOf(PrimitiveType type) noexcept
  * @return The value casted to the underlying type of the enum.
  */
 // TODO: remove from c++23 (std::to_underlying)
-template<typename E>
+export template<typename E>
 constexpr typename std::underlying_type<E>::type toUnderlying(E e) noexcept
 {
     return static_cast<typename std::underlying_type<E>::type>(e);
@@ -116,7 +117,7 @@ constexpr typename std::underlying_type<E>::type toUnderlying(E e) noexcept
  *
  * @ingroup base
  */
-template<class T>
+export template<class T>
 class FakePointerWithValue
 {
     T mValue;
@@ -128,5 +129,3 @@ public:
 };
 
 } // namespace vcl
-
-#endif // VCL_BASE_BASE_H

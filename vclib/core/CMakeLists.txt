@@ -20,7 +20,7 @@
 #* (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
 #****************************************************************************/
 
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.28)
 project(vclib-core)
 
 ### Options
@@ -35,9 +35,18 @@ add_subdirectory(3rdparty)
 set(VCLIB_CORE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "include/vclib/*.h")
+file(GLOB_RECURSE MODULES CONFIGURE_DEPENDS "src/*.cppm")
 
-add_library(${PROJECT_NAME} INTERFACE ${HEADERS})
+#add_library(${PROJECT_NAME} INTERFACE ${HEADERS})
+add_library(${PROJECT_NAME})
 add_library(vclib::core ALIAS ${PROJECT_NAME})
+
+target_sources(${PROJECT_NAME}
+    PUBLIC
+        FILE_SET CXX_MODULES FILES
+      ${MODULES}
+)
+
 target_include_directories(${PROJECT_NAME} INTERFACE ${VCLIB_CORE_INCLUDE_DIR})
 target_compile_definitions(${PROJECT_NAME} INTERFACE VCLIB_CORE_MODULE)
 

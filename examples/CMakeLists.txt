@@ -36,7 +36,7 @@ if (VCLIB_CORE_BUILD_EXAMPLES)
     add_subdirectory(core)
 endif()
 
-if (VCLIB_BUILD_MODULE_RENDER AND VCLIB_RENDER_BUILD_EXAMPLES)
-    add_subdirectory(render)
-endif()
+# if (VCLIB_BUILD_MODULE_RENDER AND VCLIB_RENDER_BUILD_EXAMPLES)
+#     add_subdirectory(render)
+# endif()
 

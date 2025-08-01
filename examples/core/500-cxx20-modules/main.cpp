@@ -1,0 +1,47 @@
+/*****************************************************************************
+ * VCLib                                                                     *
+ * Visual Computing Library                                                  *
+ *                                                                           *
+ * Copyright(C) 2021-2025                                                    *
+ * Visual Computing Lab                                                      *
+ * ISTI - Italian National Research Council                                  *
+ *                                                                           *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This program is free software; you can redistribute it and/or modify      *
+ * it under the terms of the Mozilla Public License Version 2.0 as published *
+ * by the Mozilla Foundation; either version 2 of the License, or            *
+ * (at your option) any later version.                                       *
+ *                                                                           *
+ * This program is distributed in the hope that it will be useful,           *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              *
+ * Mozilla Public License Version 2.0                                        *
+ * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
+ ****************************************************************************/
+
+#include <iostream>
+#include <vector>
+
+import vclib.base;
+
+int main()
+{
+    vcl::uint myValue = vcl::UINT_NULL;
+
+    std::cerr << "UINT_NULL value: " << myValue << std::endl;
+
+    std::vector<vcl::uint> vec = {1, 2, 3, vcl::UINT_NULL, 5};
+
+    std::vector<vcl::uint> newIndices = {0, 1, vcl::UINT_NULL, 2, 3};
+
+    vcl::compactVector(vec, newIndices);
+
+    std::cerr << "Compacted vector: " << std::endl;
+    for (const auto& val : vec) {
+        std::cerr << val << " ";
+    }
+    std::cerr << std::endl;
+
+    return 0;
+}

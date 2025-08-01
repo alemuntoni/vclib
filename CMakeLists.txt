@@ -20,7 +20,7 @@
 #* (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
 #****************************************************************************/
 
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.28)
 
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" VCLIB_VERSION)
 string(STRIP "${VCLIB_VERSION}" VCLIB_VERSION)
@@ -68,19 +68,19 @@ add_library(vclib::vclib ALIAS ${PROJECT_NAME})
 add_subdirectory(vclib/core ${VCLIB_CORE_EXCLUDE_FROM_ALL_OPTION})
 target_link_libraries(vclib INTERFACE vclib::core)
 
-if (VCLIB_BUILD_MODULE_EXTERNAL)
-    add_subdirectory(vclib/external ${VCLIB_EXTERNAL_EXCLUDE_FROM_ALL_OPTION})
-    target_link_libraries(vclib INTERFACE vclib::external)
-endif()
+# if (VCLIB_BUILD_MODULE_EXTERNAL)
+#     add_subdirectory(vclib/external ${VCLIB_EXTERNAL_EXCLUDE_FROM_ALL_OPTION})
+#     target_link_libraries(vclib INTERFACE vclib::external)
+# endif()
 
-if (VCLIB_BUILD_MODULE_RENDER)
-    add_subdirectory(vclib/render ${VCLIB_RENDER_EXCLUDE_FROM_ALL_OPTION})
-    target_link_libraries(vclib INTERFACE vclib::render)
-endif()
+# if (VCLIB_BUILD_MODULE_RENDER)
+#     add_subdirectory(vclib/render ${VCLIB_RENDER_EXCLUDE_FROM_ALL_OPTION})
+#     target_link_libraries(vclib INTERFACE vclib::render)
+# endif()
 
-if (VCLIB_BUILD_MODULE_BINDINGS)
-    add_subdirectory(vclib/bindings ${VCLIB_BINDINGS_EXCLUDE_FROM_ALL_OPTION})
-endif()
+# if (VCLIB_BUILD_MODULE_BINDINGS)
+#     add_subdirectory(vclib/bindings ${VCLIB_BINDINGS_EXCLUDE_FROM_ALL_OPTION})
+# endif()
 
 set(VCLIB_EXAMPLES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/examples)
 set(VCLIB_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -97,13 +97,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 add_subdirectory(${VCLIB_EXAMPLES_DIR})
 
-include(CTest)
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    VCLIB_TESTS_DIR ${VCLIB_TESTS_DIR})
+# include(CTest)
+# set_target_properties(${PROJECT_NAME} PROPERTIES
+#     VCLIB_TESTS_DIR ${VCLIB_TESTS_DIR})
 
-add_subdirectory(${VCLIB_TESTS_DIR})
+# add_subdirectory(${VCLIB_TESTS_DIR})
 
 
-# Install
-install(FILES ${CMAKE_CURRENT_LIST_DIR}/LICENSE
-    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/licenses/vclib)
+# # Install
+# install(FILES ${CMAKE_CURRENT_LIST_DIR}/LICENSE
+#     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/licenses/vclib)
