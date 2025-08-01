@@ -30,11 +30,12 @@ module;
 
 export module vclib.base:base;
 
+export
 namespace vcl {
 
 // Define some basic types, for convenience
-export using uint   = uint32_t;
-export using ushort = uint16_t;
+using uint   = uint32_t;
+using ushort = uint16_t;
 
 /**
  * @brief The UINT_NULL value represent a null value of uint that is the maximum
@@ -46,7 +47,7 @@ export using ushort = uint16_t;
  *
  * @ingroup base
  */
-export constexpr uint UINT_NULL = std::numeric_limits<uint>::max();
+constexpr uint UINT_NULL = std::numeric_limits<uint>::max();
 
 /**
  * @brief A simple type that enumerates the main primitive types.
@@ -56,7 +57,7 @@ export constexpr uint UINT_NULL = std::numeric_limits<uint>::max();
  *
  * @ingroup base
  */
-export enum class PrimitiveType {
+enum class PrimitiveType {
     CHAR,
     UCHAR,
     SHORT,
@@ -74,7 +75,7 @@ export enum class PrimitiveType {
  *
  * @ingroup base
  */
-export enum class MatrixStorageType { ROW_MAJOR, COLUMN_MAJOR };
+enum class MatrixStorageType { ROW_MAJOR, COLUMN_MAJOR };
 
 /**
  * @brief Returns the size in bytes of a primitive type.
@@ -82,7 +83,7 @@ export enum class MatrixStorageType { ROW_MAJOR, COLUMN_MAJOR };
  * @return The size in bytes of the primitive type.
  */
 // TODO: from c++23 use fixed width floating-point types
-export constexpr int sizeOf(PrimitiveType type) noexcept
+constexpr int sizeOf(PrimitiveType type) noexcept
 {
     switch (type) {
     case PrimitiveType::CHAR: return sizeof(char);
@@ -103,7 +104,7 @@ export constexpr int sizeOf(PrimitiveType type) noexcept
  * @return The value casted to the underlying type of the enum.
  */
 // TODO: remove from c++23 (std::to_underlying)
-export template<typename E>
+template<typename E>
 constexpr typename std::underlying_type<E>::type toUnderlying(E e) noexcept
 {
     return static_cast<typename std::underlying_type<E>::type>(e);
@@ -117,7 +118,7 @@ constexpr typename std::underlying_type<E>::type toUnderlying(E e) noexcept
  *
  * @ingroup base
  */
-export template<class T>
+template<class T>
 class FakePointerWithValue
 {
     T mValue;

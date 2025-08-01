@@ -29,6 +29,7 @@ export module vclib.base:compactness;
 
 import :base;
 
+export
 namespace vcl {
 
 /**
@@ -50,7 +51,7 @@ namespace vcl {
  * @param vec
  * @param newIndices
  */
-export template<typename T, typename... Args>
+template<typename T, typename... Args>
 void compactVector(
     std::vector<T, Args...>& vec,
     const std::vector<uint>& newIndices)

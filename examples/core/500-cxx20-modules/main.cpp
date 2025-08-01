@@ -43,5 +43,13 @@ int main()
     }
     std::cerr << std::endl;
 
+    vcl::uint val = 4;
+
+    vcl::uint* ptr = &val;
+
+    std::cerr << "Dereference ptr: " << vcl::dereferencePtr(val) << "; " << vcl::dereferencePtr(ptr) << std::endl;
+
+    std::cerr << "Address of: " << vcl::addressOfObj(val) << "; " << vcl::addressOfObj(ptr) << std::endl;
+
     return 0;
 }

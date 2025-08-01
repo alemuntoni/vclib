@@ -20,12 +20,14 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_POINTERS_H
-#define VCL_BASE_POINTERS_H
+module;
 
 #include <type_traits>
 #include <utility>
 
+export module vclib.base:pointers;
+
+export
 namespace vcl {
 
 /**
@@ -124,5 +126,3 @@ auto addressOfObj(T& obj)
 }
 
 } // namespace vcl
-
-#endif // VCL_BASE_POINTERS_H

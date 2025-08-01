@@ -20,12 +20,14 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_COMPARATORS_H
-#define VCL_BASE_COMPARATORS_H
+module;
 
 #include <algorithm>
 #include <utility>
 
+export module vclib.base:comparators;
+
+export
 namespace vcl {
 
 /**
@@ -90,5 +92,3 @@ struct FirstElementPairComparator
 };
 
 } // namespace vcl
-
-#endif // VCL_BASE_COMPARATORS_H
