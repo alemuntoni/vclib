@@ -30,6 +30,9 @@ jobs:
       shell: bash
       run: |
         brew install catch2
+        # latest version tested: xcode 16.4 with clang version 17
+        # install latest llvm and set llvm clang as default compiler
+        brew install llvm
     - name: Install dependencies
       if: runner.os == 'Windows'
       run: |
@@ -42,8 +45,17 @@ jobs:
       shell: bash
       run: |
         mkdir build
-        cmake -B build --preset=vclib-core-ci \
-          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        if [[ "${{ runner.os }}" == "macOS" ]]; then
+          export LLVM_PATH="$(brew --prefix llvm)"
+          export CC="$LLVM_PATH/bin/clang"
+          export CXX="$LLVM_PATH/bin/clang++"
+          cmake -B build --preset=vclib-core-ci \
+            -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        else
+          cmake -B build --preset=vclib-core-ci \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        fi
         cmake --build build --parallel
     - name: Run Tests
       shell: bash
