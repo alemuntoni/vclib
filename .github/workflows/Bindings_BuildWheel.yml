@@ -1,13 +1,14 @@
 name: Bindings - Build Wheel
 
 on:
-  push:
-  pull_request: 
-  workflow_dispatch:
-    inputs:
-      python-version:
-        description: 'Python version to use'
-        default: '3.12'
+  workflow_dispatch
+#  push:
+#  pull_request:
+#  workflow_dispatch:
+#    inputs:
+#      python-version:
+#        description: 'Python version to use'
+#        default: '3.12'
 
 jobs:
   bindings_build_wheel:
