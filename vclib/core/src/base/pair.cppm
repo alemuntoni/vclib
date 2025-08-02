@@ -20,9 +20,11 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_PAIR_H
-#define VCL_BASE_PAIR_H
+module;
 
+export module vclib.base:pair;
+
+export
 namespace vcl {
 
 template<typename T1, typename T2>
@@ -76,5 +78,3 @@ public:
 };
 
 } // namespace vcl
-
-#endif // VCL_BASE_PAIR_H

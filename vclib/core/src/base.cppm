@@ -39,6 +39,7 @@ export import :logger;
 export import :math;
 export import :min_max;
 
+export import :pair;
 export import :pointers;
 
 export import :templated_type_wrapper;
