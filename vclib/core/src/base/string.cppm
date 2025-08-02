@@ -20,10 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_STRING_H
-#define VCL_BASE_STRING_H
-
-#include <vclib/base/min_max.h>
+module;
 
 #include <algorithm>
 #include <cctype>
@@ -31,6 +28,12 @@
 #include <string>
 #include <vector>
 
+export module vclib.base:string;
+
+import :base;
+import :min_max;
+
+export
 namespace vcl {
 
 /**
@@ -204,5 +207,3 @@ inline uint distance(const std::string& str1, const std::string& str2)
 }
 
 } // namespace vcl
-
-#endif // VCL_BASE_STRING_H
