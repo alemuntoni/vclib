@@ -20,12 +20,14 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_EXCEPTIONS_H
-#define VCL_BASE_EXCEPTIONS_H
+module;
 
 #include <stdexcept>
 #include <string>
 
+export module vclib.base:exceptions;
+
+export
 namespace vcl {
 
 /**
@@ -55,5 +57,3 @@ public:
 };
 
 } // namespace vcl
-
-#endif // VCL_BASE_EXCEPTIONS_H

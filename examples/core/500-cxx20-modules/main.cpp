@@ -51,5 +51,7 @@ int main()
 
     std::cerr << "Address of: " << vcl::addressOfObj(val) << "; " << vcl::addressOfObj(ptr) << std::endl;
 
+    std::cerr << "Size of vector: " << vcl::asConst(vec).size() << std::endl;
+
     return 0;
 }

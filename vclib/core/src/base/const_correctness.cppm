@@ -20,12 +20,14 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_CONST_CORRECTNESS_H
-#define VCL_BASE_CONST_CORRECTNESS_H
+module;
 
 #include <memory>
 #include <type_traits>
 
+export module vclib.base:const_correctness;
+
+export
 namespace vcl {
 
 /**
@@ -131,5 +133,3 @@ template<typename T>
 void asConst(const T&&) = delete;
 
 } // namespace vcl
-
-#endif // VCL_BASE_CONST_CORRECTNESS_H
