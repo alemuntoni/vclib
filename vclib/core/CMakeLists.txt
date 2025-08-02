@@ -41,6 +41,12 @@ file(GLOB_RECURSE MODULES CONFIGURE_DEPENDS "src/*.cppm")
 add_library(${PROJECT_NAME})
 add_library(vclib::core ALIAS ${PROJECT_NAME})
 
+if (MSVC)
+    foreach(module_file IN LISTS MODULES)
+        set_source_files_properties(${module_file} PROPERTIES COMPILE_FLAGS "/interface /TP")
+    endforeach()
+endif()
+
 target_sources(${PROJECT_NAME}
     PUBLIC
         FILE_SET CXX_MODULES FILES
