@@ -20,12 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_LOGGER_NULL_LOGGER_H
-#define VCL_BASE_LOGGER_NULL_LOGGER_H
-
-#include "abstract_logger.h"
+module;
 
 #include <string>
+
+export module vclib.base:logger.null_logger;
+
+import :logger.abstract_logger;
 
 namespace vcl {
 
@@ -38,7 +39,7 @@ namespace vcl {
  *
  * @ingroup base
  */
-class NullLogger : public AbstractLogger
+export class NullLogger : public AbstractLogger
 {
 public:
     NullLogger() = default;
@@ -120,8 +121,6 @@ public:
  *
  * @ingroup base
  */
-inline NullLogger nullLogger;
+export inline NullLogger nullLogger;
 
 } // namespace vcl
-
-#endif // VCL_BASE_LOGGER_NULL_LOGGER_H

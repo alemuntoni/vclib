@@ -20,16 +20,19 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_LOGGER_CONSOLE_LOGGER_H
-#define VCL_BASE_LOGGER_CONSOLE_LOGGER_H
-
-#include "logger.h"
+module;
 
 #include <iomanip>
+#include <iostream>
+
+export module vclib.base:logger.console_logger;
+
+import :logger.logger;
+
 
 namespace vcl {
 
-class ConsoleLogger : public Logger<std::ostream>
+export class ConsoleLogger : public Logger<std::ostream>
 {
     std::ostream& mErrStream   = std::cerr;
     std::ostream& mWarnStream  = std::cout;
@@ -75,5 +78,3 @@ protected:
 };
 
 } // namespace vcl
-
-#endif // VCL_BASE_LOGGER_CONSOLE_LOGGER_H

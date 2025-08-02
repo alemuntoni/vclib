@@ -20,12 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_TIMER_H
-#define VCL_BASE_TIMER_H
+module;
 
 #include <chrono>
 #include <iostream>
 #include <string>
+
+export module vclib.base:timer;
 
 namespace vcl {
 
@@ -38,7 +39,7 @@ namespace vcl {
  * can be associated a caption, and the printed/returned values are expressed in
  * seconds.
  */
-class Timer
+export class Timer
 {
     std::string mCaption   = "Timer";
     bool        mIsStopped = false;
@@ -174,5 +175,3 @@ public:
 };
 
 } // namespace vcl
-
-#endif // VCL_BASE_TIMER_H

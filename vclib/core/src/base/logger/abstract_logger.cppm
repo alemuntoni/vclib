@@ -20,13 +20,15 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_LOGGER_ABSTRACT_LOGGER_H
-#define VCL_BASE_LOGGER_ABSTRACT_LOGGER_H
-
-#include <vclib/base/base.h>
-#include <vclib/base/pointers.h>
+module;
 
 #include <string>
+
+export module vclib.base:logger.abstract_logger;
+
+import :base;
+import :pointers;
+
 
 namespace vcl {
 
@@ -36,7 +38,7 @@ namespace vcl {
  *
  * @ingroup base
  */
-class AbstractLogger
+export class AbstractLogger
 {
 public:
     // note: these constants have the _LOG suffix to avoid conflicts with some
@@ -259,5 +261,3 @@ template<typename T>
 concept LoggerConcept = std::derived_from<RemoveRef<T>, AbstractLogger>;
 
 } // namespace vcl
-
-#endif // VCL_BASE_LOGGER_ABSTRACT_LOGGER_H

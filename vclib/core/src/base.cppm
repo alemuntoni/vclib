@@ -33,11 +33,15 @@ export import :hash;
 export import :inheritance;
 export import :iterators;
 
+// todo: aggregate
+export import :logger;
+
 export import :math;
 export import :min_max;
 
 export import :pointers;
 
 export import :templated_type_wrapper;
+export import :timer;
 export import :type_wrapper;
 export import :variadic_templates;

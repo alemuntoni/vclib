@@ -52,11 +52,8 @@ jobs:
           cmake -B build --preset=vclib-core-ci \
             -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-        elif [[ "${{ runner.os }}" == "Windows" ]]; then
-          cmake -B build --preset=vclib-core-ci
         else
-          cmake -B build --preset=vclib-core-ci \
-            -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -B build --preset=vclib-core-ci
         fi
         cmake --build build --parallel
     - name: Run Tests

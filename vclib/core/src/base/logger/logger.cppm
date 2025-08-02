@@ -20,21 +20,22 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_LOGGER_LOGGER_H
-#define VCL_BASE_LOGGER_LOGGER_H
-
-#include "abstract_logger.h"
-
-#include <vclib/base/timer.h>
+module;
 
 #include <cassert>
 #include <cmath>
 #include <mutex>
 #include <stack>
+#include <string>
+
+export module vclib.base:logger.logger;
+
+import :logger.abstract_logger;
+import :timer;
 
 namespace vcl {
 
-template<typename Stream>
+export template<typename Stream>
 class Logger : public AbstractLogger
 {
     struct ProgressStatus
@@ -362,5 +363,3 @@ private:
 };
 
 } // namespace vcl
-
-#endif // VCL_BASE_LOGGER_LOGGER_H

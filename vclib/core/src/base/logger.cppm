@@ -20,10 +20,9 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_LOGGER_H
-#define VCL_BASE_LOGGER_H
+export module vclib.base:logger;
 
-#include "logger/console_logger.h"
-#include "logger/null_logger.h"
-
-#endif // VCL_BASE_LOGGER_H
+export import :logger.abstract_logger;
+export import :logger.console_logger;
+export import :logger.null_logger;
+export import :logger.logger;
