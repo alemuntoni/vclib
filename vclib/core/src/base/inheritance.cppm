@@ -20,10 +20,11 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_INHERITANCE_H
-#define VCL_BASE_INHERITANCE_H
+module;
 
 #include <type_traits>
+
+export module vclib.base:inheritance;
 
 namespace vcl {
 
@@ -63,11 +64,9 @@ struct IsDerivedFromImplementation
 // https://stackoverflow.com/a/25846080/5851101
 // https://stackoverflow.com/questions/25845536#comment40451928_25846080
 // http://coliru.stacked-crooked.com/a/9feadc62e7594eb2
-template<typename derived, template<typename...> class base>
+export template<typename derived, template<typename...> class base>
 using IsDerivedFromTemplateSpecialization = std::invoke_result<
     detail::IsDerivedFromImplementation<base>,
     typename std::remove_cv<derived>::type*>::type;
 
 } // namespace vcl
-
-#endif // VCL_BASE_INHERITANCE_H

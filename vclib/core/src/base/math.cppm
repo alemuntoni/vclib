@@ -20,13 +20,17 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_MATH_H
-#define VCL_BASE_MATH_H
+module;
 
 #include <cassert>
 #include <cmath>
 #include <limits>
 
+export module vclib.base:math;
+
+import :base;
+
+export
 namespace vcl {
 
 /**
@@ -151,5 +155,3 @@ inline double lnOfFactorial(int n)
 }
 
 } // namespace vcl
-
-#endif // VCL_BASE_MATH_H

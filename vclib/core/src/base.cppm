@@ -30,6 +30,9 @@ export import :const_correctness;
 export import :exceptions;
 export import :filter_types;
 export import :hash;
+export import :inheritance;
+
+export import :math;
 
 export import :pointers;
 

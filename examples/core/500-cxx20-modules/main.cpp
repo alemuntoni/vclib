@@ -20,6 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
+#include <cmath>
 #include <iostream>
 #include <memory>
 #include <set>
@@ -73,6 +74,9 @@ int main()
     vcl::hashCombine(hash, 42, 3.14);
 
     std::cerr << "Hash value: " << hash << std::endl;
+
+    std::cerr << "Is 3.14 degenerate? " << vcl::isDegenerate(3.14) << std::endl;
+    std::cerr << "Is NaN degenerate? " << vcl::isDegenerate(std::nan("")) << std::endl;
 
     return 0;
 }
