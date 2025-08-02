@@ -20,11 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_MIN_MAX_H
-#define VCL_BASE_MIN_MAX_H
+module;
 
 #include <algorithm>
 
+export module vclib.base:min_max;
+
+export
 namespace vcl {
 
 /**
@@ -110,5 +112,3 @@ constexpr auto max(const Head& head0, const Head& head1, const Tail&... tail)
 }
 
 } // namespace vcl
-
-#endif // VCL_BASE_MIN_MAX_H

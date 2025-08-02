@@ -33,6 +33,7 @@ export import :hash;
 export import :inheritance;
 
 export import :math;
+export import :min_max;
 
 export import :pointers;
 

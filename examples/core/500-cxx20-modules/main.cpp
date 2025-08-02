@@ -78,5 +78,13 @@ int main()
     std::cerr << "Is 3.14 degenerate? " << vcl::isDegenerate(3.14) << std::endl;
     std::cerr << "Is NaN degenerate? " << vcl::isDegenerate(std::nan("")) << std::endl;
 
+    auto min = vcl::min(2, 3, 1, 5, 0, 4);
+
+    std::cerr << "Minimum value: " << min << std::endl;
+
+    auto max = vcl::max(2, 3, 1, 5, 0, 4);
+
+    std::cerr << "Maximum value: " << max << std::endl;
+
     return 0;
 }
