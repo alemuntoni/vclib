@@ -43,7 +43,7 @@ add_library(vclib::core ALIAS ${PROJECT_NAME})
 
 if (MSVC)
     foreach(module_file IN LISTS MODULES)
-        set_source_files_properties(${module_file} PROPERTIES COMPILE_FLAGS "/interface /TP")
+        set_source_files_properties(${module_file} PROPERTIES LANGUAGE CXX COMPILE_FLAGS "/interface")
     endforeach()
 endif()
 
