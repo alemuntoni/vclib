@@ -28,6 +28,7 @@ export module vclib.base:templated_type_wrapper;
 
 import :variadic_templates;
 
+export
 namespace vcl {
 
 template<template<typename...> typename... Args>

@@ -20,10 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_FILTER_TYPES_H
-#define VCL_BASE_FILTER_TYPES_H
+module;
 
-#include "type_wrapper.h"
+#include <type_traits>
+
+export module vclib.base:filter_types;
+
+import :type_wrapper;
 
 namespace vcl {
 
@@ -65,7 +68,7 @@ struct TypeWrapperConstructor<T, TypeWrapper<Args...>>
  *
  * @ingroup base
  */
-template<template<typename> typename, typename...>
+export template<template<typename> typename, typename...>
 struct FilterTypesByCondition
 {
     using type = TypeWrapper<>;
@@ -76,7 +79,7 @@ struct FilterTypesByCondition
  *
  * @ingroup base
  */
-template<template<typename> typename Pred, typename Head, typename... Tail>
+export template<template<typename> typename Pred, typename Head, typename... Tail>
 struct FilterTypesByCondition<Pred, Head, Tail...>
 {
     using type = std::conditional<
@@ -93,7 +96,7 @@ struct FilterTypesByCondition<Pred, Head, Tail...>
  * @ingroup base
  */
 // TypeWrapper specialization
-template<template<typename> typename Pred, typename... Tail>
+export template<template<typename> typename Pred, typename... Tail>
 struct FilterTypesByCondition<Pred, TypeWrapper<Tail...>>
 {
     using type = FilterTypesByCondition<Pred, Tail...>::type;
@@ -121,7 +124,7 @@ struct FilterTypesByCondition<Pred, TypeWrapper<Tail...>>
  *
  * @ingroup base
  */
-template<template<typename> typename Pred, typename... Args>
+export template<template<typename> typename Pred, typename... Args>
 struct OneTypeAtLeastSatisfiesCondition
 {
 private:
@@ -137,7 +140,7 @@ public:
  * @ingroup base
  */
 // TypeWrapper specialization
-template<template<typename> typename Pred, typename... Args>
+export template<template<typename> typename Pred, typename... Args>
 struct OneTypeAtLeastSatisfiesCondition<Pred, TypeWrapper<Args...>>
 {
     using type = OneTypeAtLeastSatisfiesCondition<Pred, Args...>::type;
@@ -157,7 +160,7 @@ struct OneTypeAtLeastSatisfiesCondition<Pred, TypeWrapper<Args...>>
  *
  * @ingroup base
  */
-template<template<typename> typename Pred, typename... Args>
+export template<template<typename> typename Pred, typename... Args>
 struct GetTypeByCondition
 {
 private:
@@ -173,12 +176,10 @@ public:
  * @ingroup base
  */
 // TypeWrapper specialization
-template<template<typename> typename Pred, typename... Args>
+export template<template<typename> typename Pred, typename... Args>
 struct GetTypeByCondition<Pred, TypeWrapper<Args...>>
 {
     using type = GetTypeByCondition<Pred, Args...>::type;
 };
 
 } // namespace vcl
-
-#endif // VCL_BASE_FILTER_TYPES_H
