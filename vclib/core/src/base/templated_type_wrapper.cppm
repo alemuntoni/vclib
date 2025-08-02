@@ -20,10 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_TEMPLATED_TYPE_WRAPPER_H
-#define VCL_BASE_TEMPLATED_TYPE_WRAPPER_H
+module;
 
-#include "variadic_templates.h"
+#include <tuple>
+
+export module vclib.base:templated_type_wrapper;
+
+import :variadic_templates;
 
 namespace vcl {
 
@@ -42,5 +45,3 @@ struct FirstType<TemplatedTypeWrapper<Args...>>
 };
 
 } // namespace vcl
-
-#endif // VCL_BASE_TEMPLATED_TYPE_WRAPPER_H
