@@ -20,11 +20,16 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_TYPE_WRAPPER_H
-#define VCL_BASE_TYPE_WRAPPER_H
+module;
 
-#include "variadic_templates.h"
+#include <tuple>
+#include <typeindex>
 
+export module vclib.base:type_wrapper;
+
+import :variadic_templates;
+
+export
 namespace vcl {
 
 /**
@@ -117,5 +122,3 @@ struct ForEachType<TypeWrapper<T...>> : public ForEachType<T...>
 };
 
 } // namespace vcl
-
-#endif // VCL_BASE_TYPE_WRAPPER_H

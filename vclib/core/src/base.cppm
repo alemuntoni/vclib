@@ -31,4 +31,5 @@ export import :exceptions;
 
 export import :pointers;
 
+export import :type_wrapper;
 export import :variadic_templates;
