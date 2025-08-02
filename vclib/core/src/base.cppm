@@ -29,3 +29,5 @@ export import :const_correctness;
 export import :exceptions;
 
 export import :pointers;
+
+export import :variadic_templates;

@@ -21,6 +21,7 @@
  ****************************************************************************/
 
 #include <iostream>
+#include <set>
 #include <vector>
 
 import vclib.base;
@@ -52,6 +53,15 @@ int main()
     std::cerr << "Address of: " << vcl::addressOfObj(val) << "; " << vcl::addressOfObj(ptr) << std::endl;
 
     std::cerr << "Size of vector: " << vcl::asConst(vec).size() << std::endl;
+
+    std::cerr << "Position of std::set<vcl::uint> in variadic templates: "
+              << vcl::indexInTypePack<
+                     std::set<vcl::uint>,
+                     int,
+                     float,
+                     std::set<vcl::uint>,
+                     double>()
+              << std::endl;
 
     return 0;
 }

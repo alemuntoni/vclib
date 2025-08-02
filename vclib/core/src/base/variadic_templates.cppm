@@ -20,14 +20,16 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_VARIADIC_TEMPLATES_H
-#define VCL_BASE_VARIADIC_TEMPLATES_H
-
-#include "base.h"
+module;
 
 #include <tuple>
 #include <typeindex>
 
+export module vclib.base:variadic_templates;
+
+import :base;
+
+export
 namespace vcl {
 
 /**
@@ -286,5 +288,3 @@ constexpr bool IsDerivedFromSpecializationOfV =
     IsDerivedFromSpecializationOf<T, Template>::value;
 
 } // namespace vcl
-
-#endif // VCL_BASE_VARIADIC_TEMPLATES_H
