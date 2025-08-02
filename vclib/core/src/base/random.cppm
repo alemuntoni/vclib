@@ -20,15 +20,18 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_RANDOM_H
-#define VCL_BASE_RANDOM_H
-
-#include <vclib/base/concepts/range.h>
+module;
 
 #include <algorithm>
 #include <optional>
 #include <random>
 
+export module vclib.base:random;
+
+import :base;
+import :concepts.range;
+
+export
 namespace vcl {
 
 /**
@@ -75,5 +78,3 @@ void shuffle(R&& range, std::optional<uint> seed = std::nullopt)
 }
 
 } // namespace vcl
-
-#endif // VCL_BASE_RANDOM_H

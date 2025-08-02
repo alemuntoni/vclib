@@ -86,5 +86,13 @@ int main()
 
     std::cerr << "Maximum value: " << max << std::endl;
 
+    vcl::shuffle(vec);
+
+    std::cerr << "Shuffled vector: " << std::endl;
+    for (const auto& val : vec) {
+        std::cerr << val << " ";
+    }
+    std::cerr << std::endl;
+
     return 0;
 }

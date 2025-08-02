@@ -41,6 +41,7 @@ export import :min_max;
 
 export import :pair;
 export import :pointers;
+export import :random;
 
 export import :templated_type_wrapper;
 export import :timer;
