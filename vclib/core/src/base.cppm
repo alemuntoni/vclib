@@ -29,6 +29,7 @@ export import :concepts;
 export import :const_correctness;
 export import :exceptions;
 export import :filter_types;
+export import :hash;
 
 export import :pointers;
 

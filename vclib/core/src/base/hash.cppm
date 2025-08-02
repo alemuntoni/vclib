@@ -20,10 +20,11 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_HASH_H
-#define VCL_BASE_HASH_H
+module;
 
 #include <functional>
+
+export module vclib.base:hash;
 
 namespace vcl {
 
@@ -38,7 +39,7 @@ namespace vcl {
  *
  * @ingroup base
  */
-template<typename T, typename... Rest>
+export template<typename T, typename... Rest>
 void hashCombine(std::size_t& seed, const T& v, const Rest&... rest)
 {
     seed ^= std::hash<T> {}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
@@ -46,5 +47,3 @@ void hashCombine(std::size_t& seed, const T& v, const Rest&... rest)
 }
 
 } // namespace vcl
-
-#endif // VCL_BASE_HASH_H

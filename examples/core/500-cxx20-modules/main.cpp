@@ -68,5 +68,11 @@ int main()
     std::cerr << "Is plain pointer a pointer: " << vcl::IsAnyPointer<int*> << std::endl;
     std::cerr << "Is int a pointer: " << vcl::IsAnyPointer<int> << std::endl;
 
+    std::size_t hash = 0;
+
+    vcl::hashCombine(hash, 42, 3.14);
+
+    std::cerr << "Hash value: " << hash << std::endl;
+
     return 0;
 }
