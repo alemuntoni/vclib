@@ -20,9 +20,6 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_ITERATORS_H
-#define VCL_BASE_ITERATORS_H
+export module vclib.base:iterators;
 
-#include "iterators/const_pointer_iterator.h"
-
-#endif // VCL_BASE_ITERATORS_H
+export import :iterators.const_pointer_iterator;

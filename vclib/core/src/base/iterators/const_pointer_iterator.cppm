@@ -20,13 +20,14 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_ITERATORS_CONST_POINTER_ITERATOR_H
-#define VCL_BASE_ITERATORS_CONST_POINTER_ITERATOR_H
-
-#include <vclib/base/concepts/pointers.h>
-#include <vclib/base/const_correctness.h>
+module;
 
 #include <iterator>
+
+export module vclib.base:iterators.const_pointer_iterator;
+
+import :concepts.pointers;
+import :const_correctness;
 
 namespace vcl {
 
@@ -51,7 +52,7 @@ namespace vcl {
  *
  * @tparam It The iterator type.
  */
-template<typename It>
+export template<typename It>
 requires (IsAnyPointer<typename std::iterator_traits<It>::value_type>)
 class ConstPointerIterator
 {
@@ -161,5 +162,3 @@ public:
 };
 
 } // namespace vcl
-
-#endif // VCL_BASE_ITERATORS_CONST_POINTER_ITERATOR_H

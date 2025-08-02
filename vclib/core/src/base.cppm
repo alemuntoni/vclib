@@ -31,6 +31,7 @@ export import :exceptions;
 export import :filter_types;
 export import :hash;
 export import :inheritance;
+export import :iterators;
 
 export import :math;
 export import :min_max;
