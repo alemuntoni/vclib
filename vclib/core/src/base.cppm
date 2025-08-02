@@ -25,6 +25,7 @@ export module vclib.base;
 export import :base;
 export import :compactness;
 export import :comparators;
+export import :concepts;
 export import :const_correctness;
 export import :exceptions;
 

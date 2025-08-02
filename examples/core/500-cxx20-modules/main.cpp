@@ -21,6 +21,7 @@
  ****************************************************************************/
 
 #include <iostream>
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -62,6 +63,10 @@ int main()
                      std::set<vcl::uint>,
                      double>()
               << std::endl;
+
+    std::cerr << "Is shared pointer a pointer: " << vcl::IsAnyPointer<std::shared_ptr<int>> << std::endl;
+    std::cerr << "Is plain pointer a pointer: " << vcl::IsAnyPointer<int*> << std::endl;
+    std::cerr << "Is int a pointer: " << vcl::IsAnyPointer<int> << std::endl;
 
     return 0;
 }

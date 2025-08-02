@@ -20,21 +20,64 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_CONCEPTS_H
-#define VCL_BASE_CONCEPTS_H
+module;
 
-#include "concepts/const_correctness.h"
-#include "concepts/iterators.h"
-#include "concepts/pointers.h"
-#include "concepts/polymorphism.h"
-#include "concepts/range.h"
-#include "concepts/types.h"
+#include <concepts>
+
+export module vclib.base:concepts.types;
+
+export
+namespace vcl {
 
 /**
- * @defgroup util_concepts Utility Concepts
+ * @brief Concept for types that can be used as indices.
  *
- * @brief List of utility concepts used in the library, that allows to check and
- * constrain iterators, pointers, const correctness management, ranges, etc.
+ * This concept is evaluated true if T is an integral type or an enum type.
+ *
+ * @ingroup util_concepts
  */
+template<typename T>
+concept IntegralOrEnum = std::integral<T> || std::is_enum_v<T>;
 
-#endif // VCL_BASE_CONCEPTS_H
+/**
+ * @brief Concept for types that can be used as indices, excluding bool.
+ *
+ * @ingroup util_concepts
+ */
+template<typename T>
+concept NonBoolIntegralOrEnum = IntegralOrEnum<T> && !std::same_as<T, bool>;
+
+/**
+ * @brief Concept that is evaluated true if T is a class.
+ *
+ * @ingroup util_concepts
+ */
+template<typename T>
+concept IsClass = std::is_class_v<T>;
+
+/**
+ * @brief Concept that is evaluated true if T is not a class.
+ *
+ * @ingroup util_concepts
+ */
+template<typename T>
+concept IsNotClass = !IsClass<T>;
+
+/**
+ * @brief Concept that is evaluated true if the templated type C is instantiable
+ * with type T, i.e., C<T> is a valid type.
+ *
+ * Example of usage:
+ * @code{.cpp}
+ * if constexpr(IsInstantiable<C, T>) {
+ *     C<T> instance;
+ *     // do something...
+ * }
+ * @endcode
+ *
+ * @ingroup util_concepts
+ */
+template<template<typename> typename C, typename T>
+concept IsInstantiable = requires { typename C<T>; };
+
+} // namespace vcl

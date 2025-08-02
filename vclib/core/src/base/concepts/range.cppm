@@ -20,11 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_CONCEPTS_RANGE_H
-#define VCL_BASE_CONCEPTS_RANGE_H
+module;
 
 #include <ranges>
 
+export module vclib.base:concepts.range;
+
+export
 namespace vcl {
 
 /**
@@ -114,5 +116,3 @@ concept OutputRange = Range<R> && std::ranges::output_range<R, T> &&
                       std::same_as<std::ranges::range_value_t<R>, T>;
 
 } // namespace vcl
-
-#endif // VCL_BASE_CONCEPTS_RANGE_H

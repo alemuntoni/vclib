@@ -20,13 +20,14 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_CONCEPTS_POINTERS_H
-#define VCL_BASE_CONCEPTS_POINTERS_H
-
-#include <vclib/base/concepts/const_correctness.h>
-#include <vclib/base/pointers.h>
+module;
 
 #include <memory>
+
+export module vclib.base:concepts.pointers;
+
+import :concepts.const_correctness;
+import :pointers;
 
 namespace vcl {
 
@@ -50,7 +51,7 @@ struct IsSharedPtr<std::shared_ptr<T>> : std::true_type
  *
  * @ingroup util_concepts
  */
-template<typename T>
+export template<typename T>
 concept IsPointer = std::is_pointer_v<RemoveRef<T>>;
 
 /**
@@ -58,7 +59,7 @@ concept IsPointer = std::is_pointer_v<RemoveRef<T>>;
  *
  * @ingroup util_concepts
  */
-template<typename T>
+export template<typename T>
 concept IsSharedPointer = detail::IsSharedPtr<T>::value;
 
 /**
@@ -67,7 +68,7 @@ concept IsSharedPointer = detail::IsSharedPtr<T>::value;
  *
  * @ingroup util_concepts
  */
-template<typename T>
+export template<typename T>
 concept IsAnyPointer = IsPointer<T> || IsSharedPointer<T>;
 
 /**
@@ -78,7 +79,7 @@ concept IsAnyPointer = IsPointer<T> || IsSharedPointer<T>;
  *
  * @private https://stackoverflow.com/a/37370281/5851101
  */
-template<typename T>
+export template<typename T>
 concept IsPointerToConst = IsPointer<T> && IsConst<T>;
 
 /**
@@ -87,7 +88,7 @@ concept IsPointerToConst = IsPointer<T> && IsConst<T>;
  *
  * @ingroup util_concepts
  */
-template<typename T>
+export template<typename T>
 concept IsSharedPointerToConst =
     IsSharedPointer<T> && IsConst<typename T::element_type>;
 
@@ -97,9 +98,7 @@ concept IsSharedPointerToConst =
  *
  * @ingroup util_concepts
  */
-template<typename T>
+export template<typename T>
 concept IsAnyPointerToConst = IsPointerToConst<T> || IsSharedPointerToConst<T>;
 
 } // namespace vcl
-
-#endif // VCL_BASE_CONCEPTS_POINTERS_H

@@ -20,58 +20,65 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BASE_CONCEPTS_SERIALIZATION_H
-#define VCL_BASE_CONCEPTS_SERIALIZATION_H
+module;
 
-#include "const_correctness.h"
+#include <iterator>
+#include <type_traits>
 
-#include <istream>
-#include <ostream>
+export module vclib.base:concepts.iterators;
 
+export
 namespace vcl {
 
 /**
- * @brief Concept that is evaluated true if T is an output streamable type.
- *
- * A type T is output streamable if it can be written to an output stream, i.e.,
- * it has an overloaded operator<<.
+ * @brief The IteratorConcept is satisfied if T is an input or output iterator.
  *
  * @ingroup util_concepts
  */
 template<typename T>
-concept OutputStreamable = requires (std::ostream& os, T&& value) {
-    { os << value } -> std::convertible_to<std::ostream&>;
-};
+concept IteratorConcept = std::input_or_output_iterator<T>;
 
 /**
- * @brief Concept that is evaluated true if T is an input streamable type.
- *
- * A type T is input streamable if it can be read from an input stream, i.e.,
- * it has an overloaded operator>>.
+ * @brief The InputIterator concept is satisfied if T is an input iterator
+ * that implements the `operator*` returning a value convertible to V.
  *
  * @ingroup util_concepts
  */
-template<typename T>
-concept InputStreamable = requires (std::istream& is, T&& value) {
-    { is >> value } -> std::convertible_to<std::istream&>;
-};
-
-/**
- * @brief Concept that is evaluated true if T is serializable.
- *
- * A type T is serializable if it can be written to an output stream and read
- * from an input stream, through the methods `serialize` and `deserialize`.
- *
- * @ingroup util_concepts
- */
-template<typename T>
-concept Serializable = requires (T&& obj, std::ostream& os, std::istream& is) {
-    { obj.serialize(os) } -> std::same_as<void>;
-    requires IsConst<T> || requires {
-        { obj.deserialize(is) } -> std::same_as<void>;
+template<typename T, typename V>
+concept InputIterator =
+    std::input_iterator<T> && std::indirectly_readable<T> && requires (T i) {
+        { *i } -> std::convertible_to<V>;
     };
-};
+
+/**
+ * @brief The OutputIterator concept is satisfied if T is an output iterator
+ * that implements the `operator*` returning a reference to V.
+ *
+ * @see https://en.cppreference.com/w/cpp/iterator/output_iterator
+ *
+ * @ingroup util_concepts
+ */
+template<typename T, typename V>
+concept OutputIterator = std::output_iterator<T, V>;
+
+/**
+ * @brief The IteratorOverClass concept is satisfied if T is an iterator having
+ * its `value_type` that is a class.
+ *
+ * @ingroup util_concepts
+ */
+template<typename T>
+concept IteratesOverClass =
+    IteratorConcept<T> && std::is_class_v<typename T::value_type>;
+
+/**
+ * @brief The IteratorOverPointer concept is satisfied if T is an iterator
+ * having its `value_type ` that is a pointer.
+ *
+ * @ingroup util_concepts
+ */
+template<typename T>
+concept IteratesOverPointer =
+    IteratorConcept<T> && std::is_pointer_v<typename T::value_type>;
 
 } // namespace vcl
-
-#endif // VCL_BASE_CONCEPTS_SERIALIZATION_H
