@@ -84,6 +84,25 @@ public:
     Point() { Base::setZero(); }
 
     /**
+     * @brief Constructor with two integer that is nececessary for compatibility
+     * with Eigen matrices. You should use this ONLY if the point has two
+     * dimensions.
+     *
+     * If the Point object has two dimensions, this constructor initializes
+     * the components of the Point object with the provided values.
+     * If the Point object has a different number of dimensions, it initializes
+     * the components to zero.
+     */
+    Point(int n1, int n2) : Base(N, 1) {
+        if constexpr(N == 2) {
+            set(n1, n2);
+        }
+        else {
+            Base::setZero();
+        }
+    }
+
+    /**
      * @brief Constructs a Point object from an Eigen matrix.
      *
      * The constructor initializes the components of the Point object from an
