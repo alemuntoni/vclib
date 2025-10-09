@@ -133,25 +133,15 @@ private:
         const std::vector<uint>&  vertColors,
         const std::vector<uint>&  lineColors);
 
-    void allocateVertexCoords(
-        const std::vector<float>& coords,
-        VertexBuffer&             coordsBuffer);
+    VertexBuffer allocateVertexCoords(const std::vector<float>& coords);
 
-    void allocateLineIndices(
-        const std::vector<uint>& lineIndices,
-        IndexBuffer&             indicesBuffer);
+    IndexBuffer allocateLineIndices(const std::vector<uint>& lineIndices);
 
-    void allocateVertexNormals(
-        const std::vector<float>& vertNormals,
-        VertexBuffer&             normalsBuffer);
+    VertexBuffer allocateVertexNormals(const std::vector<float>& vertNormals);
 
-    void allocateVertexColors(
-        const std::vector<uint>& vertColors,
-        VertexBuffer&            vertColorsBuffer);
+    VertexBuffer allocateVertexColors(const std::vector<uint>& vertColors);
 
-    void allocateLineColors(
-        const std::vector<uint>& lineColors,
-        VertexBuffer&            lineColorsBuffer);
+    VertexBuffer allocateLineColors(const std::vector<uint>& lineColors);
 
     void allocateVertexAndIndexBuffer(const uint pointsSize);
 
