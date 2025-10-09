@@ -81,12 +81,6 @@ void GPUGeneratedLines::swap(GPUGeneratedLines& other)
 
     swap(mCustomIndicesUH, other.mCustomIndicesUH);
 
-    swap(mVertexCoords, other.mVertexCoords);
-    swap(mVertexNormals, other.mVertexNormals);
-    swap(mVertexColors, other.mVertexColors);
-    swap(mLineColors, other.mLineColors);
-    swap(mLineIndices, other.mLineIndices);
-
     swap(mVertices, other.mVertices);
     swap(mIndices, other.mIndices);
 }
@@ -157,12 +151,6 @@ void GPUGeneratedLines::setPoints(
             lineColors);
     }
     else {
-        mVertexCoords.destroy();
-        mVertexColors.destroy();
-        mVertexNormals.destroy();
-        mLineColors.destroy();
-        mLineIndices.destroy();
-
         mVertices.destroy();
         mIndices.destroy();
     }
@@ -191,49 +179,51 @@ void GPUGeneratedLines::setPoints(
     assert(!setLineColors || vertColors.size() == lineColors.size() * 2);
 
     if (nPoints > 1) {
-        allocateVertexCoords(vertCoords);
+        VertexBuffer vertexCoordsBuffer;
+        IndexBuffer  lineIndicesBuffer;
+        VertexBuffer vertexNormalsBuffer;
+        VertexBuffer vertexColorsBuffer;
+        VertexBuffer lineColorsBuffer;
+
+
+        allocateVertexCoords(vertCoords, vertexCoordsBuffer);
 
         if (setLineIndices)
-            allocateLineIndices(lineIndices);
+            allocateLineIndices(lineIndices, lineIndicesBuffer);
         if (setNormals)
-            allocateVertexNormals(vertNormals);
+            allocateVertexNormals(vertNormals, vertexNormalsBuffer);
         if (setColors)
-            allocateVertexColors(vertColors);
+            allocateVertexColors(vertColors, vertexColorsBuffer);
         if (setLineColors)
-            allocateVertexLineColors(lineColors);
+            allocateLineColors(lineColors, lineColorsBuffer);
 
         allocateVertexAndIndexBuffer(nPoints);
         generateVertexAndIndexBuffer(
             nPoints,
-            mVertexCoords,
-            mLineIndices,
-            mVertexNormals,
-            mVertexColors,
-            mLineColors);
+            vertexCoordsBuffer,
+            lineIndicesBuffer,
+            vertexNormalsBuffer,
+            vertexColorsBuffer,
+            lineColorsBuffer);
     }
     else {
-        mVertexCoords.destroy();
-        mVertexColors.destroy();
-        mVertexNormals.destroy();
-        mLineColors.destroy();
-        mLineIndices.destroy();
-
         mVertices.destroy();
         mIndices.destroy();
     }
 }
 
 void GPUGeneratedLines::allocateVertexCoords(
-    const std::vector<float>& vertCoords)
+    const std::vector<float>& coords,
+    VertexBuffer&             coordsBuffer)
 {
     auto [buffer, releaseFn] =
-        linesGetAllocatedBufferAndReleaseFn<float>(vertCoords.size());
+        linesGetAllocatedBufferAndReleaseFn<float>(coords.size());
 
-    std::copy(vertCoords.begin(), vertCoords.end(), buffer);
+    std::copy(coords.begin(), coords.end(), buffer);
 
-    mVertexCoords.createForCompute(
+    coordsBuffer.createForCompute(
         buffer,
-        vertCoords.size() / 3,
+        coords.size() / 3,
         bgfx::Attrib::Position,
         3,
         PrimitiveType::FLOAT,
@@ -243,32 +233,34 @@ void GPUGeneratedLines::allocateVertexCoords(
 }
 
 void GPUGeneratedLines::allocateLineIndices(
-    const std::vector<uint>& lineIndices)
+    const std::vector<uint>& indices,
+    IndexBuffer&             indicesBuffer)
 {
     auto [buffer, releaseFn] =
-        linesGetAllocatedBufferAndReleaseFn<uint>(lineIndices.size());
+        linesGetAllocatedBufferAndReleaseFn<uint>(indices.size());
 
-    std::copy(lineIndices.begin(), lineIndices.end(), buffer);
+    std::copy(indices.begin(), indices.end(), buffer);
 
-    mLineIndices.createForCompute(
+    indicesBuffer.createForCompute(
         buffer,
-        lineIndices.size(),
+        indices.size(),
         PrimitiveType::UINT,
         bgfx::Access::Read,
         releaseFn);
 }
 
 void GPUGeneratedLines::allocateVertexNormals(
-    const std::vector<float>& vertNormals)
+    const std::vector<float>& normals,
+    VertexBuffer&             normalsBuffer)
 {
     auto [buffer, releaseFn] =
-        linesGetAllocatedBufferAndReleaseFn<float>(vertNormals.size());
+        linesGetAllocatedBufferAndReleaseFn<float>(normals.size());
 
-    std::copy(vertNormals.begin(), vertNormals.end(), buffer);
+    std::copy(normals.begin(), normals.end(), buffer);
 
-    mVertexNormals.createForCompute(
+    normalsBuffer.createForCompute(
         buffer,
-        vertNormals.size() / 3,
+        normals.size() / 3,
         bgfx::Attrib::Normal,
         3,
         PrimitiveType::FLOAT,
@@ -278,14 +270,15 @@ void GPUGeneratedLines::allocateVertexNormals(
 }
 
 void GPUGeneratedLines::allocateVertexColors(
-    const std::vector<uint>& vertColors)
+    const std::vector<uint>& vertColors,
+    VertexBuffer&            vertColorsBuffer)
 {
     auto [buffer, releaseFn] =
         linesGetAllocatedBufferAndReleaseFn<uint>(vertColors.size());
 
     std::copy(vertColors.begin(), vertColors.end(), buffer);
 
-    mVertexColors.createForCompute(
+    vertColorsBuffer.createForCompute(
         buffer,
         vertColors.size(),
         bgfx::Attrib::Color0,
@@ -296,15 +289,16 @@ void GPUGeneratedLines::allocateVertexColors(
         releaseFn);
 }
 
-void GPUGeneratedLines::allocateVertexLineColors(
-    const std::vector<uint>& lineColors)
+void GPUGeneratedLines::allocateLineColors(
+    const std::vector<uint>& lineColors,
+    VertexBuffer&            lineColorsBuffer)
 {
     auto [buffer, releaseFn] =
         linesGetAllocatedBufferAndReleaseFn<uint>(lineColors.size());
 
     std::copy(lineColors.begin(), lineColors.end(), buffer);
 
-    mLineColors.createForCompute(
+    lineColorsBuffer.createForCompute(
         buffer,
         lineColors.size(),
         bgfx::Attrib::Color1,

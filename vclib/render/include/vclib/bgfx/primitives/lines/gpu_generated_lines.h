@@ -47,12 +47,6 @@ class GPUGeneratedLines
     Uniform mCustomIndicesUH =
         Uniform("u_ActiveBuffers", bgfx::UniformType::Vec4);
 
-    VertexBuffer mVertexCoords;
-    VertexBuffer mVertexNormals;
-    VertexBuffer mVertexColors;
-    VertexBuffer mLineColors;
-    IndexBuffer  mLineIndices;
-
     VertexBuffer mVertices;
     IndexBuffer  mIndices;
 
@@ -139,15 +133,25 @@ private:
         const std::vector<uint>&  vertColors,
         const std::vector<uint>&  lineColors);
 
-    void allocateVertexCoords(const std::vector<float>& vertCoords);
+    void allocateVertexCoords(
+        const std::vector<float>& coords,
+        VertexBuffer&             coordsBuffer);
 
-    void allocateLineIndices(const std::vector<uint>& lineIndices);
+    void allocateLineIndices(
+        const std::vector<uint>& lineIndices,
+        IndexBuffer&             indicesBuffer);
 
-    void allocateVertexNormals(const std::vector<float>& vertNormals);
+    void allocateVertexNormals(
+        const std::vector<float>& vertNormals,
+        VertexBuffer&             normalsBuffer);
 
-    void allocateVertexColors(const std::vector<uint>& vertColors);
+    void allocateVertexColors(
+        const std::vector<uint>& vertColors,
+        VertexBuffer&            vertColorsBuffer);
 
-    void allocateVertexLineColors(const std::vector<uint>& lineColors);
+    void allocateLineColors(
+        const std::vector<uint>& lineColors,
+        VertexBuffer&            lineColorsBuffer);
 
     void allocateVertexAndIndexBuffer(const uint pointsSize);
 
