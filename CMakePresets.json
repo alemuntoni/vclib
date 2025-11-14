@@ -232,6 +232,43 @@
             "description": "Render with OpenGL render backend with build and test examples and tests"
         },
         {
+            "name": "vclib-render-webgpu-debug",
+            "inherits": [
+                "debug",
+                "build-render-module",
+                "build-external-module",
+                "render-examples-tests"
+            ],
+            "displayName": "VCLib::Render (WebGPU) - Debug",
+            "description": "Render with WebGPU render backend",
+            "cacheVariables": {
+                "VCLIB_RENDER_BACKEND": "webgpu"
+            }
+        },
+        {
+            "name": "vclib-render-webgpu-release",
+            "inherits": [
+                "release",
+                "build-render-module",
+                "build-external-module",
+                "render-examples-tests"
+            ],
+            "displayName": "VCLib::Render (WebGPU) - Release",
+            "description": "Render with WebGPU render backend",
+            "cacheVariables": {
+                "VCLIB_RENDER_BACKEND": "webgpu"
+            }
+        },
+        {
+            "name": "vclib-render-webgpu-ci",
+            "inherits": [
+                "vclib-render-webgpu-release",
+                "do-not-exclude-examples-and-tests"
+            ],
+            "displayName": "VCLib::Render (WebGPU) - CI",
+            "description": "Render with WebGPU render backend with build and test examples and tests"
+        },
+        {
             "name": "vclib-bindings-debug",
             "inherits": [
                 "debug",
