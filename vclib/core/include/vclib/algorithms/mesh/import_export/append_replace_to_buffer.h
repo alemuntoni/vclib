@@ -23,10 +23,10 @@
 #ifndef VCL_ALGORITHMS_MESH_IMPORT_EXPORT_APPEND_REPLACE_TO_BUFFER_H
 #define VCL_ALGORITHMS_MESH_IMPORT_EXPORT_APPEND_REPLACE_TO_BUFFER_H
 
-#include <vclib/mesh/requirements.h>
-#include <vclib/space/complex/tri_poly_index_bimap.h>
-#include <vclib/types.h>
-#include <vclib/views/mesh.h>
+#include "detail.h"
+
+#include <vclib/mesh.h>
+#include <vclib/space/complex.h>
 
 /**
  * @defgroup append_replace_to_buffer Append/Replace Mesh Data to Existing
@@ -61,14 +61,14 @@
 namespace vcl {
 
 /**
- * @brief Append the coordinates of the duplicated vertices to the given buffer.
+ * @brief Append the positions of the duplicated vertices to the given buffer.
  *
  * Given the list of vertices to duplicate, this function appends to the given
- * buffer the coordinates of the vertices listed in the input list.
+ * buffer the positions of the vertices listed in the input list.
  *
  * Typical usage of this function is after the @ref
  * countVerticesToDuplicateByWedgeTexCoords function and along with the @ref
- * vertexCoordsToBuffer function:
+ * vertexPositionsToBuffer function:
  *
  * @code{.cpp}
  *
@@ -80,8 +80,9 @@ namespace vcl {
  *     vertsToDuplicate, facesToReassign);
  *
  * std::vector<double> buffer((mesh.vertexNumber() + nV) * 3);
- * vertexCoordsToBuffer(mesh, buffer.data());
- * appendDuplicateVertexCoordsToBuffer(mesh, vertsToDuplicate, buffer.data());
+ * vertexPositionsToBuffer(mesh, buffer.data());
+ * appendDuplicateVertexPositionsToBuffer(mesh, vertsToDuplicate,
+ * buffer.data());
  * @endcode
  *
  * @note The buffer must be preallocated with the correct size (total number of
@@ -89,7 +90,7 @@ namespace vcl {
  *
  * @tparam MeshType: The type of the mesh.
  *
- * @param[in] mesh: The mesh from which take the coordinates.
+ * @param[in] mesh: The mesh from which take the positions.
  * @param[in] vertsToDuplicate: The list of vertices to duplicate: each element
  * is the index of a vertex in the mesh, that must be appended to the buffer.
  * @param[in/out] buffer: The buffer where to append the duplicated vertices.
@@ -98,30 +99,26 @@ namespace vcl {
  * @ingroup append_replace_to_buffer
  */
 template<MeshConcept MeshType>
-void appendDuplicateVertexCoordsToBuffer(
+void appendDuplicateVertexPositionsToBuffer(
     const MeshType&        mesh,
     const std::list<uint>& vertsToDuplicate,
     auto*                  buffer,
     MatrixStorageType      storage = MatrixStorageType::ROW_MAJOR)
 {
+    using namespace detail;
+
     // no vertices to duplicate, do nothing
     if (vertsToDuplicate.empty())
         return;
 
-    const uint VERT_NUM = mesh.vertexNumber() + vertsToDuplicate.size();
+    const uint ROW_NUM = mesh.vertexNumber() + vertsToDuplicate.size();
 
     for (uint i = mesh.vertexNumber(); const auto& v : vertsToDuplicate) {
-        const auto& coord = mesh.vertex(v).coord();
-        if (storage == MatrixStorageType::ROW_MAJOR) {
-            buffer[i * 3 + 0] = coord.x();
-            buffer[i * 3 + 1] = coord.y();
-            buffer[i * 3 + 2] = coord.z();
-        }
-        else {
-            buffer[0 * VERT_NUM + i] = coord.x();
-            buffer[1 * VERT_NUM + i] = coord.y();
-            buffer[2 * VERT_NUM + i] = coord.z();
-        }
+        const auto& pos = mesh.vertex(v).position();
+
+        at(buffer, i, 0, ROW_NUM, 3, storage) = pos.x();
+        at(buffer, i, 1, ROW_NUM, 3, storage) = pos.y();
+        at(buffer, i, 2, ROW_NUM, 3, storage) = pos.z();
 
         ++i;
     }
@@ -151,8 +148,8 @@ void appendDuplicateVertexCoordsToBuffer(
  * uint lfs = vcl::largestFaceSize(mesh);
  *
  * std::vector<uint> buffer(mesh.faceNumber() * lfs);
- * faceIndicesToBuffer(mesh, buffer.data(), lfs);
- * replaceFaceIndicesByVertexDuplicationToBuffer(mesh, vertsToDuplicate,
+ * faceVertexIndicesToBuffer(mesh, buffer.data(), lfs);
+ * replaceFaceVertexIndicesByVertexDuplicationToBuffer(mesh, vertsToDuplicate,
  *    faceToReassign, buffer.data(), lfs);
  * @endcode
  *
@@ -173,7 +170,7 @@ void appendDuplicateVertexCoordsToBuffer(
  * @ingroup append_replace_to_buffer
  */
 template<FaceMeshConcept MeshType>
-void replaceFaceIndicesByVertexDuplicationToBuffer(
+void replaceFaceVertexIndicesByVertexDuplicationToBuffer(
     const MeshType&                                    mesh,
     const std::list<uint>&                             vertsToDuplicate,
     const std::list<std::list<std::pair<uint, uint>>>& facesToReassign,
@@ -181,22 +178,22 @@ void replaceFaceIndicesByVertexDuplicationToBuffer(
     uint                                               largestFaceSize = 3,
     MatrixStorageType storage = MatrixStorageType::ROW_MAJOR)
 {
+    using namespace detail;
+
     // no vertices have been duplicated, do nothing
     if (vertsToDuplicate.empty())
         return;
 
     assert(vertsToDuplicate.size() == facesToReassign.size());
 
-    const uint FACE_NUM = mesh.faceNumber();
+    const uint ROW_NUM = mesh.faceNumber();
 
     uint vFirst = mesh.vertexNumber();
     uint vLast  = mesh.vertexNumber() + vertsToDuplicate.size();
     for (uint vi = vFirst; const auto& faces : facesToReassign) {
         for (const auto& f : faces) {
-            if (storage == MatrixStorageType::ROW_MAJOR)
-                buffer[f.first * largestFaceSize + f.second] = vi;
-            else
-                buffer[f.second * FACE_NUM + f.first] = vi;
+            at(buffer, f.first, f.second, ROW_NUM, largestFaceSize, storage) =
+                vi;
         }
         ++vi;
     }
@@ -229,8 +226,8 @@ void replaceFaceIndicesByVertexDuplicationToBuffer(
  * uint numTris = vcl::countTriangulatedTriangles(myMesh);
  *
  * std::vector<uint> buffer(mesh.faceNumber() * numTris);
- * triangulatedFaceIndicesToBuffer(mesh, buffer.data(), indexMap);
- * replaceTriangulatedFaceIndicesByVertexDuplicationToBuffer(mesh,
+ * triangulatedFaceVertexIndicesToBuffer(mesh, buffer.data(), indexMap);
+ * replaceTriangulatedFaceVertexIndicesByVertexDuplicationToBuffer(mesh,
  *    vertsToDuplicate, faceToReassign, indexMap, buffer.data());
  * @endcode
  *
@@ -250,7 +247,7 @@ void replaceFaceIndicesByVertexDuplicationToBuffer(
  * @ingroup append_replace_to_buffer
  */
 template<FaceMeshConcept MeshType>
-void replaceTriangulatedFaceIndicesByVertexDuplicationToBuffer(
+void replaceTriangulatedFaceVertexIndicesByVertexDuplicationToBuffer(
     const MeshType&                                    mesh,
     const std::list<uint>&                             vertsToDuplicate,
     const std::list<std::list<std::pair<uint, uint>>>& facesToReassign,
@@ -258,6 +255,8 @@ void replaceTriangulatedFaceIndicesByVertexDuplicationToBuffer(
     auto*                                              buffer,
     MatrixStorageType storage = MatrixStorageType::ROW_MAJOR)
 {
+    using namespace detail;
+
     // no vertices have been duplicated, do nothing
     if (vertsToDuplicate.empty())
         return;
@@ -267,7 +266,7 @@ void replaceTriangulatedFaceIndicesByVertexDuplicationToBuffer(
     uint vFirst = mesh.vertexNumber();
     uint vLast  = mesh.vertexNumber() + vertsToDuplicate.size();
 
-    const uint FACE_NUM = indexMap.triangleNumber();
+    const uint ROW_NUM = indexMap.triangleNumber();
 
     // the facesToReassign lists for each vertex contain pairs that in the
     // second element store the index of the vertex in the face. However, the
@@ -287,15 +286,9 @@ void replaceTriangulatedFaceIndicesByVertexDuplicationToBuffer(
             uint tEnd   = tBegin + indexMap.triangleNumber(f.first);
             for (uint t = tBegin; t < tEnd; ++t) { // look into the triangles
                 for (uint j = 0; j < 3; ++j) { // for each vertex of triangle
-                    if (storage == MatrixStorageType::ROW_MAJOR) {
-                        if (buffer[t * 3 + j] == vert) {
-                            buffer[t * 3 + j] = vi;
-                        }
-                    }
-                    else {
-                        if (buffer[j * FACE_NUM + t] == vert) {
-                            buffer[j * FACE_NUM + t] = vi;
-                        }
+                    auto& triVert = at(buffer, t, j, ROW_NUM, 3, storage);
+                    if (triVert == vert) {
+                        triVert = vi;
                     }
                 }
             }
@@ -401,26 +394,22 @@ void appendDuplicateVertexNormalsToBuffer(
     auto*                  buffer,
     MatrixStorageType      storage = MatrixStorageType::ROW_MAJOR)
 {
+    using namespace detail;
+
     // no vertices to duplicate, do nothing
     if (vertsToDuplicate.empty())
         return;
 
     requirePerVertexNormal(mesh);
 
-    const uint VERT_NUM = mesh.vertexNumber() + vertsToDuplicate.size();
+    const uint ROW_NUM = mesh.vertexNumber() + vertsToDuplicate.size();
 
     for (uint i = mesh.vertexNumber(); const auto& v : vertsToDuplicate) {
-        const auto& normal = mesh.vertex(v).normal();
-        if (storage == MatrixStorageType::ROW_MAJOR) {
-            buffer[i * 3 + 0] = normal.x();
-            buffer[i * 3 + 1] = normal.y();
-            buffer[i * 3 + 2] = normal.z();
-        }
-        else {
-            buffer[0 * VERT_NUM + i] = normal.x();
-            buffer[1 * VERT_NUM + i] = normal.y();
-            buffer[2 * VERT_NUM + i] = normal.z();
-        }
+        const auto& normal                    = mesh.vertex(v).normal();
+        at(buffer, i, 0, ROW_NUM, 3, storage) = normal.x();
+        at(buffer, i, 1, ROW_NUM, 3, storage) = normal.y();
+        at(buffer, i, 2, ROW_NUM, 3, storage) = normal.z();
+
         ++i;
     }
 }
@@ -471,29 +460,24 @@ void appendDuplicateVertexColorsToBuffer(
     Color::Representation  representation = Color::Representation::INT_0_255,
     MatrixStorageType      storage        = MatrixStorageType::ROW_MAJOR)
 {
+    using namespace detail;
+
     // no vertices to duplicate, do nothing
     if (vertsToDuplicate.empty())
         return;
 
     requirePerVertexColor(mesh);
 
-    const bool R_INT    = representation == Color::Representation::INT_0_255;
-    const uint VERT_NUM = mesh.vertexNumber() + vertsToDuplicate.size();
+    const bool R_INT   = representation == Color::Representation::INT_0_255;
+    const uint ROW_NUM = mesh.vertexNumber() + vertsToDuplicate.size();
 
     for (uint i = mesh.vertexNumber(); const auto& v : vertsToDuplicate) {
-        const auto& c = mesh.vertex(v).color();
-        if (storage == MatrixStorageType::ROW_MAJOR) {
-            buffer[i * 4 + 0] = R_INT ? c.red() : c.redF();
-            buffer[i * 4 + 1] = R_INT ? c.green() : c.greenF();
-            buffer[i * 4 + 2] = R_INT ? c.blue() : c.blueF();
-            buffer[i * 4 + 3] = R_INT ? c.alpha() : c.alphaF();
-        }
-        else {
-            buffer[0 * VERT_NUM + i] = R_INT ? c.red() : c.redF();
-            buffer[1 * VERT_NUM + i] = R_INT ? c.green() : c.greenF();
-            buffer[2 * VERT_NUM + i] = R_INT ? c.blue() : c.blueF();
-            buffer[3 * VERT_NUM + i] = R_INT ? c.alpha() : c.alphaF();
-        }
+        const auto& c                         = mesh.vertex(v).color();
+        at(buffer, i, 0, ROW_NUM, 4, storage) = R_INT ? c.red() : c.redF();
+        at(buffer, i, 1, ROW_NUM, 4, storage) = R_INT ? c.green() : c.greenF();
+        at(buffer, i, 2, ROW_NUM, 4, storage) = R_INT ? c.blue() : c.blueF();
+        at(buffer, i, 3, ROW_NUM, 4, storage) = R_INT ? c.alpha() : c.alphaF();
+
         ++i;
     }
 }
@@ -665,24 +649,21 @@ void appendDuplicateVertexTexCoordsToBuffer(
     auto*                  buffer,
     MatrixStorageType      storage = MatrixStorageType::ROW_MAJOR)
 {
+    using namespace detail;
+
     // no vertices to duplicate, do nothing
     if (vertsToDuplicate.empty())
         return;
 
     requirePerVertexTexCoord(mesh);
 
-    const uint VERT_NUM = mesh.vertexNumber() + vertsToDuplicate.size();
+    const uint ROW_NUM = mesh.vertexNumber() + vertsToDuplicate.size();
 
     for (uint i = mesh.vertexNumber(); const auto& v : vertsToDuplicate) {
-        const auto& t = mesh.vertex(v).texCoord();
-        if (storage == MatrixStorageType::ROW_MAJOR) {
-            buffer[i * 2 + 0] = t.u();
-            buffer[i * 2 + 1] = t.v();
-        }
-        else {
-            buffer[0 * VERT_NUM + i] = t.u();
-            buffer[1 * VERT_NUM + i] = t.v();
-        }
+        const auto& t                         = mesh.vertex(v).texCoord();
+        at(buffer, i, 0, ROW_NUM, 2, storage) = t.u();
+        at(buffer, i, 1, ROW_NUM, 2, storage) = t.v();
+
         ++i;
     }
 }

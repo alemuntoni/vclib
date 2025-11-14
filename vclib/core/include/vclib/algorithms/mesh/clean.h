@@ -23,14 +23,13 @@
 #ifndef VCL_ALGORITHMS_MESH_CLEAN_H
 #define VCL_ALGORITHMS_MESH_CLEAN_H
 
-#include <vclib/algorithms/core/polygon/ear_cut.h>
 #include <vclib/algorithms/mesh/sort.h>
 #include <vclib/algorithms/mesh/stat/topology.h>
-#include <vclib/mesh/requirements.h>
-#include <vclib/space/complex/mesh_pos.h>
 
-#include <set>
-#include <stack>
+#include <vclib/algorithms/core.h>
+#include <vclib/mesh.h>
+#include <vclib/space/complex.h>
+
 #include <vector>
 
 /**
@@ -39,6 +38,10 @@
  * @ingroup algorithms_mesh
  *
  * @brief List of Mesh Cleaning and repairing algorithms.
+ *
+ * This group contains algorithms for cleaning and repairing meshes, along with
+ * algorithms for checking the mesh topology that allow to identify issues
+ * in the mesh structure.
  *
  * You can access these algorithms by including `#include
  * <vclib/algorithms/clean.h>`
@@ -55,7 +58,9 @@ class VertPositionComparator
 public:
     inline bool operator()(const VertexPointer& a, const VertexPointer& b)
     {
-        return (a->coord() == b->coord()) ? (a < b) : (a->coord() < b->coord());
+        return (a->position() == b->position()) ?
+                   (a < b) :
+                   (a->position() < b->position());
     }
 };
 
@@ -128,102 +133,7 @@ private:
     SentinelType         s;
 };
 
-template<FaceMeshConcept MeshType>
-std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
-    requires HasPerFaceAdjacentFaces<MeshType>
-{
-    requirePerFaceAdjacentFaces(m);
-
-    using FaceType = MeshType::FaceType;
-
-    std::vector<bool> nonManifoldVertices(m.vertexContainerSize(), false);
-
-    std::vector<uint> TD(m.vertexContainerSize(), 0);
-    std::vector<bool> nonManifoldInc(m.vertexContainerSize(), false);
-    // First Loop, count how many faces are incident on a vertex and store it in
-    // TD, and flag how many vertices are incident on non manifold edges.
-    for (const FaceType& f : m.faces()) {
-        for (uint i = 0; i < f.vertexNumber(); ++i) {
-            TD[m.index(f.vertex(i))]++;
-            if (!isFaceManifoldOnEdge(f, i)) {
-                nonManifoldInc[m.index(f.vertex(i))]        = true;
-                nonManifoldInc[m.index(f.vertexMod(i + 1))] = true;
-            }
-        }
-    }
-
-    std::vector<bool> visited(m.vertexContainerSize(), false);
-    for (const FaceType& f : m.faces()) {
-        for (uint i = 0; i < f.vertexNumber(); ++i) {
-            if (!visited[m.index(f.vertex(i))]) {
-                visited[m.index(f.vertex(i))] = true;
-                MeshPos pos(&f, i);
-                uint    starSize = pos.numberOfAdjacentFacesToV();
-                if (starSize != TD[m.index(f.vertex(i))])
-                    nonManifoldVertices[m.index(f.vertex(i))] = true;
-            }
-        }
-    }
-
-    return nonManifoldVertices;
-}
-
-template<FaceMeshConcept MeshType>
-uint numberEdges(
-    const MeshType& m,
-    uint&           numBoundaryEdges,
-    uint&           numNonManifoldEdges)
-{
-    std::vector<ConstMeshEdgeUtil<MeshType>> edgeVec =
-        fillAndSortMeshEdgeUtilVector(m);
-
-    uint numEdges       = 0;
-    numBoundaryEdges    = 0;
-    numNonManifoldEdges = 0;
-
-    size_t f_on_cur_edge = 1;
-    for (size_t i = 0; i < edgeVec.size(); ++i) {
-        if (((i + 1) == edgeVec.size()) || !(edgeVec[i] == edgeVec[i + 1])) {
-            ++numEdges;
-            if (f_on_cur_edge == 1)
-                ++numBoundaryEdges;
-            if (f_on_cur_edge > 2)
-                ++numNonManifoldEdges;
-            f_on_cur_edge = 1;
-        }
-        else {
-            ++f_on_cur_edge;
-        }
-    }
-    return numEdges;
-}
-
 } // namespace detail
-
-/**
- * @brief Returns the number of non-deleted unreferenced vertices of the mesh.
- *
- * This function calculates the number of vertices that are not referenced by
- * any of the elements of the mesh, and which have not been marked as deleted.
- *
- * @tparam MeshType: the type of the input Mesh. It must satisfy the
- * MeshConcept.
- *
- * @param[in] m: The input mesh for which to calculate the number of
- * unreferenced vertices.
- * @return The number of non-deleted unreferenced vertices in the mesh.
- *
- * @ingroup clean
- */
-template<MeshConcept MeshType>
-uint numberUnreferencedVertices(const MeshType& m)
-{
-    uint nV = 0;
-    // store the number of unref vertices into nV
-    referencedVertices<std::vector<bool>>(m, nV);
-
-    return nV;
-}
 
 /**
  * @brief Marks as deleted all the non-deleted unreferenced vertices of the
@@ -273,7 +183,7 @@ uint removeUnreferencedVertices(MeshType& m)
         // update the vertex indices of the mesh, setting to null the indices of
         // the unreferenced vertices (it may happen on adjacent vertices of some
         // container).
-        m.updateVertexIndices(refVertIndices);
+        m.updateVertexReferences(refVertIndices);
     }
 
     return n;
@@ -285,8 +195,8 @@ uint removeUnreferencedVertices(MeshType& m)
  *
  * This function marks as deleted all vertices in the input mesh that have the
  * same spatial position as another vertex in the mesh. The comparison of vertex
- * positions is based on the `coord()` function of the vertex type, which must
- * return a 3D point representing the vertex coordinates.
+ * positions is based on the `position()` function of the vertex type, which
+ * must return a 3D point representing the vertex position.
  *
  * @tparam MeshType The type of the input Mesh. It must satisfy the MeshConcept.
  *
@@ -298,7 +208,7 @@ uint removeUnreferencedVertices(MeshType& m)
  * @ingroup clean
  */
 template<MeshConcept MeshType>
-uint removeDuplicatedVertices(MeshType& m)
+uint removeDuplicateVertices(MeshType& m)
 {
     using VertexType    = MeshType::VertexType;
     using VertexPointer = MeshType::VertexType*;
@@ -334,7 +244,7 @@ uint removeDuplicatedVertices(MeshType& m)
     // i-th.
     while (i < perm.size() - 1) {
         uint j = i + 1;
-        while (j < perm.size() && perm[i]->coord() == perm[j]->coord()) {
+        while (j < perm.size() && perm[i]->position() == perm[j]->position()) {
             // j will be deleted, so we map its pointer to the i-th vertex's
             // pointer.
             newVertexIndices[m.index(perm[j])] = m.index(perm[i]); // map j -> i
@@ -349,7 +259,7 @@ uint removeDuplicatedVertices(MeshType& m)
 
     // update the vertex pointers to point to the correct vertices, in every
     // container of the mesh
-    m.updateVertexIndices(newVertexIndices);
+    m.updateVertexReferences(newVertexIndices);
 
     // todo:
     // - add a flag that removes degenerate elements after
@@ -383,7 +293,7 @@ uint removeDuplicatedVertices(MeshType& m)
  * @ingroup clean
  */
 template<FaceMeshConcept MeshType>
-uint removeDuplicatedFaces(MeshType& m)
+uint removeDuplicateFaces(MeshType& m)
 {
     using VertexType = MeshType::VertexType;
     using FaceType   = MeshType::FaceType;
@@ -415,10 +325,10 @@ uint removeDuplicatedFaces(MeshType& m)
 }
 
 /**
- * @brief Removes all vertices that have coordinates with invalid floating point
+ * @brief Removes all vertices that have position with invalid floating point
  * values (NaN or inf).
  *
- * This function removes all vertices in the input mesh that have coordinates
+ * This function removes all vertices in the input mesh that have position
  * with invalid floating point values, such as NaN or inf. If the input mesh has
  * faces, and if the flag `deleteAlsoFaces` is set to true, all faces incident
  * on deleted vertices are also deleted.
@@ -438,7 +348,7 @@ uint removeDuplicatedFaces(MeshType& m)
  * @ingroup clean
  */
 template<MeshConcept MeshType>
-uint removeDegeneratedVertices(MeshType& m, bool deleteAlsoFaces)
+uint removeDegenerateVertices(MeshType& m, bool deleteAlsoFaces)
 {
     using VertexType = MeshType::VertexType;
 
@@ -447,7 +357,7 @@ uint removeDegeneratedVertices(MeshType& m, bool deleteAlsoFaces)
     // iterate over all vertices in the mesh, and mark any with invalid floating
     // point values as deleted.
     for (VertexType& v : m.vertices()) {
-        if (v.coord().isDegenerate()) {
+        if (v.position().isDegenerate()) {
             count_vd++;
             m.deleteVertex(&v);
         }
@@ -482,7 +392,7 @@ uint removeDegeneratedVertices(MeshType& m, bool deleteAlsoFaces)
  * degenerate, meaning that they have two or more vertex references that link
  * the same vertex. All degenerate faces are zero area faces, but not all zero
  * area faces are degenerate (for example, a face with three different vertex
- * references, but two of them have the same coordinates). Therefore, if you
+ * references, but two of them have the same position). Therefore, if you
  * also want to remove these kinds of faces, you should call
  * `removeDuplicatedVertices(m)` first. This function does not adjust topology.
  *
@@ -516,210 +426,6 @@ uint removeDegenerateFaces(MeshType& m)
         }
     }
     return count;
-}
-
-/**
- * @brief Counts the number of non-manifold vertices in the input mesh.
- *
- * This function counts the number of vertices in the input mesh that are
- * non-manifold, meaning that they are connected to more than two faces. A
- * non-manifold vertex is one that belongs to two or more different edges that
- * are not part of the same face.
- *
- * @tparam MeshType The type of the input Mesh. It must satisfy the
- * FaceMeshConcept.
- *
- * @param[in] m: The input mesh for which to count the number of non-manifold
- * vertices. This mesh will not be modified by the function.
- *
- * @return The number of non-manifold vertices in the input mesh.
- *
- * @ingroup clean
- */
-template<FaceMeshConcept MeshType>
-uint numberNonManifoldVertices(const MeshType& m)
-{
-    std::vector<bool> nonManifoldVertices =
-        detail::nonManifoldVerticesVectorBool(m);
-    return std::count(
-        nonManifoldVertices.begin(), nonManifoldVertices.end(), true);
-}
-
-/**
- * @brief Determines whether the input mesh is water tight.
- *
- * This function performs a simple test of water tightness on the input mesh,
- * checking that there are no boundary and no non-manifold edges, assuming that
- * the mesh is orientable. It could be debated whether a closed non-orientable
- * surface is water tight or not, but this function does not take orientability
- * into account.
- *
- * @tparam MeshType: The type of the input Mesh. It must satisfy the
- * FaceMeshConcept.
- *
- * @param[in] m The input mesh to check for water tightness.
- *
- * @return `true` if the input mesh is water tight (i.e., closed and manifold),
- * `false` otherwise.
- *
- * @ingroup clean
- */
-template<FaceMeshConcept MeshType>
-bool isWaterTight(const MeshType& m)
-{
-    uint numEdgeBorder, numNonManifoldEdges;
-    detail::numberEdges(m, numEdgeBorder, numNonManifoldEdges);
-    return numEdgeBorder == 0 && numNonManifoldEdges == 0;
-}
-
-/**
- * @brief Counts the number of holes in the input mesh.
- *
- * This function counts the number of holes in the input mesh, where a hole is
- * defined as a closed loop of border edges. The function uses a depth-first
- * search algorithm to traverse the mesh and find all the holes. The function
- * requires the input MeshType to have per-face adjacent faces, and uses the
- * `vcl::requirePerFaceAdjacentFaces` function to enforce this requirement.
- *
- * @tparam MeshType: The type of the input Mesh. It must satisfy the
- * FaceMeshConcept and have per-face adjacent faces.
- *
- * @param[in] m: The input mesh for which to count the number of holes.
- *
- * @return The number of holes in the input mesh.
- *
- * @ingroup clean
- */
-template<FaceMeshConcept MeshType>
-uint numberHoles(const MeshType& m) requires HasPerFaceAdjacentFaces<MeshType>
-{
-    requirePerFaceAdjacentFaces(m);
-
-    using VertexType = MeshType::VertexType;
-    using FaceType   = MeshType::FaceType;
-
-    uint loopNum = 0;
-
-    // create a vector of bools to keep track of visited faces.
-    std::vector<bool> visitedFaces(m.faceContainerSize(), false);
-
-    // Traverse the mesh using a depth-first search algorithm to find all the
-    // holes.
-    for (const FaceType& f : m.faces()) {
-        uint e = 0;
-        for (const VertexType* v : f.vertices()) {
-            if (!visitedFaces[m.index(f)] && f.adjFace(e) == nullptr) {
-                MeshPos<FaceType> startPos(&f, e);
-                MeshPos<FaceType> curPos = startPos;
-                do {
-                    curPos.nextEdgeOnBorderAdjacentToV();
-                    curPos.flipVertex();
-                    visitedFaces[m.index(curPos.face())] = true;
-                } while (curPos != startPos);
-                ++loopNum;
-            }
-            ++e;
-        }
-    }
-    return loopNum;
-}
-
-/**
- * @brief Computes the connected components of the input mesh based on its
- * topology.
- *
- * This function computes the connected components of the input mesh based on
- * its topology, and returns a vector of sets, where each set represents a
- * connected component and contains the face indices of the mesh that compose
- * it. The function uses a depth-first search algorithm to traverse the mesh and
- * find the connected components. The function requires the input MeshType to
- * have per-face adjacent faces, and uses the `vcl::requirePerFaceAdjacentFaces`
- * function to enforce this requirement.
- *
- * @tparam MeshType: The type of the input Mesh. It must satisfy the
- * FaceMeshConcept and have per-face adjacent faces.
- *
- * @param[in] m: The input mesh for which to compute the connected components.
- * @return A vector of sets representing the connected components of the input
- * mesh. Each set contains the face indices of the mesh that compose a connected
- * component.
- *
- * @ingroup clean
- */
-template<FaceMeshConcept MeshType>
-std::vector<std::set<uint>> connectedComponents(const MeshType& m)
-    requires HasPerFaceAdjacentFaces<MeshType>
-{
-    requirePerFaceAdjacentFaces(m);
-
-    using FaceType = MeshType::FaceType;
-
-    std::vector<std::set<uint>> cc;
-
-    // create a vector of bools to keep track of visited faces.
-    std::vector<bool> visitedFaces(m.faceContainerSize(), false);
-
-    // create a stack to hold the faces that need to be visited during the
-    // depth-first search.
-    std::stack<const FaceType*> sf;
-
-    // traverse the mesh using a depth-first search algorithm to find the
-    // connected components.
-    for (const FaceType& f : m.faces()) {
-        if (!visitedFaces[m.index(f)]) { // first time I see this face
-            visitedFaces[m.index(f)] = true;
-
-            // new connected component
-            cc.emplace_back();
-            std::set<uint>& ccf = cc[cc.size() - 1];
-            ccf.insert(m.index(f));
-
-            // while the stack is empty, visit the adjacent faces of the top
-            // face of the stack
-            sf.push(&f);
-            while (!sf.empty()) {
-                const FaceType* fpt = sf.top();
-                // remove the top face and add it to the connected component
-                sf.pop();
-                ccf.insert(m.index(fpt));
-
-                // add the adjacent faces of the current visited in the stack
-                for (uint j = 0; j < fpt->vertexNumber(); ++j) {
-                    const FaceType* adjf = fpt->adjFace(j);
-                    // if there is an adj face and it has not been visited
-                    if (adjf != nullptr && !visitedFaces[m.index(adjf)]) {
-                        sf.push(adjf);
-                        visitedFaces[m.index(adjf)] = true;
-                    }
-                }
-            }
-        }
-    }
-    return cc;
-}
-
-/**
- * @brief Computes the number of connected components of the input mesh based on
- * its topology.
- *
- * This function computes the number of connected components of the input mesh
- * based on its topology, and returns the result as an unsigned integer. The
- * function simply calls the `connectedComponents` function to compute the
- * connected components and then returns the size of the resulting vector.
- *
- * @tparam MeshType The type of the input Mesh. It must satisfy the
- * FaceMeshConcept and have per-face adjacent faces.
- *
- * @param[in] m: The input mesh for which to compute the number of connected
- * components.
- * @return The number of connected components of the input mesh.
- *
- * @ingroup clean
- */
-template<FaceMeshConcept MeshType>
-uint numberConnectedComponents(const MeshType& m)
-{
-    return connectedComponents(m).size();
 }
 
 } // namespace vcl

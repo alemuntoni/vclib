@@ -20,9 +20,9 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <vclib/load_save.h>
+#include <vclib/io.h>
 #include <vclib/meshes.h>
-#include <vclib/space/complex/kd_tree.h>
+#include <vclib/space.h>
 
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -33,7 +33,7 @@ std::vector<unsigned int> getKNearestNeighbors(
     unsigned int     k,
     std::string      mesh = "bone.ply")
 {
-    MeshType m = vcl::loadPly<MeshType>(VCLIB_EXAMPLE_MESHES_PATH "/" + mesh);
+    MeshType m = vcl::loadMesh<MeshType>(VCLIB_EXAMPLE_MESHES_PATH "/" + mesh);
 
     vcl::KDTree tree(m);
 
@@ -48,7 +48,7 @@ TEMPLATE_TEST_CASE(
 {
     using TriMesh = TestType;
 
-    using PointType = TriMesh::VertexType::CoordType;
+    using PointType = TriMesh::VertexType::PositionType;
 
     const PointType p(0.5, 0.5, 0.5);
 

@@ -20,12 +20,13 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
+#include <vclib/bindings/core/algorithms.h>
+#include <vclib/bindings/core/base.h>
 #include <vclib/bindings/core/io.h>
-#include <vclib/bindings/core/load_save.h>
 #include <vclib/bindings/core/meshes.h>
 #include <vclib/bindings/core/space.h>
 
-#include <vclib/types.h>
+#include <vclib/base.h>
 
 #include <pybind11/pybind11.h>
 
@@ -37,16 +38,16 @@ PYBIND11_MODULE(core, m)
     // import the bindings
     using namespace vcl::bind;
 
-    m.attr("UINT_NULL") = pybind11::int_(vcl::UINT_NULL);
-
     // initialize the bindings
-    initIO(m);
+    initBase(m);
 
     initSpace(m);
 
     initMeshes(m);
 
-    initLoadSave(m);
+    initAlgorithms(m);
+
+    initIO(m);
 }
 
 } // namespace vcl::bind

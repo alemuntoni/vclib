@@ -23,12 +23,11 @@
 #ifndef VCL_RENDER_DRAWABLE_MESH_MESH_RENDER_DATA_H
 #define VCL_RENDER_DRAWABLE_MESH_MESH_RENDER_DATA_H
 
-#include <vclib/algorithms/mesh/import_export/append_replace_to_buffer.h>
-#include <vclib/algorithms/mesh/import_export/export_buffer.h>
-#include <vclib/algorithms/mesh/stat/topology.h>
-#include <vclib/mesh/requirements.h>
 #include <vclib/render/drawable/mesh/mesh_render_info.h>
-#include <vclib/space/complex/tri_poly_index_bimap.h>
+
+#include <vclib/algorithms/mesh.h>
+#include <vclib/mesh.h>
+#include <vclib/space/complex.h>
 
 namespace vcl {
 
@@ -54,18 +53,18 @@ namespace vcl {
  *
  * An example of implementation in a derived class is the following (assuming
  * that `Base` is this class, and `MeshType` is the mesh type that will be used
- * to render the mesh). Here we first fill the vertex coordinates to a
+ * to render the mesh). Here we first fill the vertex positions to a
  * std::vector:
  *
  * @code{.cpp}
- * void setVertexCoordsBuffer(const MeshType& mesh)
+ * void setVertexPositionsBuffer(const MeshType& mesh)
  * {
  *     // get the number of vertices (with eventual duplication)
  *     uint nv = Base::numVerts();
  *
- *     std::vector<float> vertexCoords(nv * 3);
- *     // fill the vertex coordinates
- *     Base::fillVertexCoords(mesh, vertexCoords.data());
+ *     std::vector<float> vertexPositions(nv * 3);
+ *     // fill the vertex positions
+ *     Base::fillVertexPositions(mesh, vertexPositions.data());
  *
  *     // create the gpu vertex buffer using the desired rendering backend,
  *     // (be sure to first delete the previous buffer if it exists) and send
@@ -79,6 +78,7 @@ namespace vcl {
 template<typename MeshRenderDerived>
 class MeshRenderData
 {
+private:
     using MRI = MeshRenderInfo;
 
     // Auxiliary data that can be used by the derived class to properly allocate
@@ -115,6 +115,17 @@ class MeshRenderData
     // at construction time). It may differ from the value passed to the update
     // function, since the user may want to update only a subset of the buffers
     MRI::BuffersBitSet mBuffersToFill = MRI::BUFFERS_ALL;
+
+protected:
+    struct TriangleMaterialChunk
+    {
+        uint startIndex      = 0; // start index in the triangle index buffer
+        uint indexCount      = 0; // num indices in the triangle index buffer
+        uint vertMaterialId  = 0; // material id associated to the vertices
+        uint wedgeMaterialId = 0; // material id associated to the wedges
+    };
+
+    std::vector<TriangleMaterialChunk> mMaterialChunks;
 
 public:
     /**
@@ -169,6 +180,7 @@ protected:
         swap(mFacesToReassign, other.mFacesToReassign);
         swap(mIndexMap, other.mIndexMap);
         swap(mBuffersToFill, other.mBuffersToFill);
+        swap(mMaterialChunks, other.mMaterialChunks);
     }
 
     /**
@@ -176,7 +188,7 @@ protected:
      * mesh.
      *
      * The number of vertices must be used to compute the size of the buffers
-     * that will store the vertex data (coordinates, normals, colors, etc).
+     * that will store the vertex data (positions, normals, colors, etc).
      *
      * It can be used along with the functions `fillVertex*` provided by this
      * class. A common workflow is the following:
@@ -184,13 +196,13 @@ protected:
      * @code{.cpp}
      * uint nv = numVerts();
      * // assuming that the buffer is a vector of floats
-     * std::vector<float> vertexCoords(nv * 3);
-     * fillVertexCoords(mesh, vertexCoords.data());
+     * std::vector<float> vertexPositions(nv * 3);
+     * fillVertexPositions(mesh, vertexPositions.data());
      * @endcode
      *
      * @note The returned values may be different from the number of vertices
      * in the input mesh. This is because the mesh may have duplicated vertices
-     * (e.g., when the mesh has wedge texture coordinates).
+     * (e.g., when the mesh has wedge texture positions).
      *
      * @note Always check the required buffer size before filling the buffers
      * on the `fill*` functions documentation.
@@ -284,17 +296,32 @@ protected:
 
     /**
      * @brief Given the mesh and a pointer to a buffer, fills the buffer with
-     * the vertex coordinates of the mesh.
+     * the vertex positions of the mesh.
      *
      * The buffer must be preallocated with the correct size: `numVerts() * 3`.
      *
      * @param[in] mesh: the input mesh
      * @param[out] buffer: the buffer to fill
      */
-    void fillVertexCoords(const MeshConcept auto& mesh, auto* buffer)
+    void fillVertexPositions(const MeshConcept auto& mesh, auto* buffer)
     {
-        vertexCoordsToBuffer(mesh, buffer);
-        appendDuplicateVertexCoordsToBuffer(mesh, mVertsToDuplicate, buffer);
+        vertexPositionsToBuffer(mesh, buffer);
+        appendDuplicateVertexPositionsToBuffer(mesh, mVertsToDuplicate, buffer);
+    }
+
+    /**
+     * @brief Given the mesh and a pointer to a buffer, fills the buffer with
+     * the vertex quad indices of the mesh (6 indices per vertex, 2 triangles
+     * per quad).
+     *
+     * The buffer must be preallocated with the correct size: `numVerts() * 6`.
+     *
+     * @param[in] mesh: the input mesh
+     * @param[out] buffer: the buffer to fill
+     */
+    void fillVertexQuadIndices(const MeshConcept auto& mesh, auto* buffer)
+    {
+        vertexQuadIndicesToBuffer(mesh, buffer);
     }
 
     /**
@@ -377,10 +404,55 @@ protected:
      */
     void fillTriangleIndices(const FaceMeshConcept auto& mesh, auto* buffer)
     {
-        triangulatedFaceIndicesToBuffer(
+        using MeshType = std::decay_t<decltype(mesh)>;
+        using FaceType = MeshType::FaceType;
+
+        // comparator of faces
+        // ordering first by per-vertex texcoord index (if available),
+        // then by per-face wedge texcoord index (if available)
+        auto faceComp = [&](const FaceType& f1, const FaceType& f2) {
+            if constexpr (HasPerVertexTexCoord<MeshType>) {
+                if (isPerVertexTexCoordAvailable(mesh)) {
+                    uint id1 = f1.vertex(0)->texCoord().index();
+                    uint id2 = f2.vertex(0)->texCoord().index();
+                    if (id1 != id2) { // do not return true if equal
+                        return id1 < id2;
+                    }
+                }
+            }
+            if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
+                if (isPerFaceWedgeTexCoordsAvailable(mesh)) {
+                    uint id1 = f1.textureIndex();
+                    uint id2 = f2.textureIndex();
+                    if (id1 != id2) { // do not return true if equal
+                        return id1 < id2;
+                    }
+                }
+            }
+
+            // if both per-vertex and per-face texcoords are equal, sort by
+            // face index to have a stable sorting
+            return f1.index() < f2.index();
+        };
+
+        // get the list of face indices sorted by material ID and
+        // using the face comparator defined above
+        std::vector<uint> faceIndicesSortedByMaterialID =
+            sortFaceIndicesByFunction(mesh, faceComp, true);
+
+        triangulatedFaceVertexIndicesToBuffer(
             mesh, buffer, mIndexMap, MatrixStorageType::ROW_MAJOR, mNumTris);
-        replaceTriangulatedFaceIndicesByVertexDuplicationToBuffer(
+        replaceTriangulatedFaceVertexIndicesByVertexDuplicationToBuffer(
             mesh, mVertsToDuplicate, mFacesToReassign, mIndexMap, buffer);
+
+        // permute the triangulated face vertex indices according to the face
+        // sorting by material ID (the function also edits the index map from
+        // polygonal faces (which still refers to the mesh ones) to the
+        // triangulated faces (which refers to the sorted triangles))
+        permuteTriangulatedFaceVertexIndices(
+            buffer, mIndexMap, faceIndicesSortedByMaterialID);
+
+        fillChuncks(mesh);
     }
 
     /**
@@ -461,7 +533,7 @@ protected:
      */
     void fillEdgeIndices(const EdgeMeshConcept auto& mesh, auto* buffer)
     {
-        edgeIndicesToBuffer(mesh, buffer);
+        edgeVertexIndicesToBuffer(mesh, buffer);
     }
 
     /**
@@ -507,18 +579,18 @@ protected:
      */
     void fillWireframeIndices(const FaceMeshConcept auto& mesh, auto* buffer)
     {
-        wireframeIndicesToBuffer(mesh, buffer);
+        wireframeVertexIndicesToBuffer(mesh, buffer);
     }
 
     // functions that must be may implemented by the derived classes to set
     // the buffers:
 
     /**
-     * @brief Function that sets the content of vertex coordinates buffer and
+     * @brief Function that sets the content of vertex positions buffer and
      * sends the data to the GPU.
      *
      * The function should allocate and fill a cpu buffer to store the vertex
-     * coordinates using the `numVerts() * 3` and `fillVertexCoords()`
+     * positions using the `numVerts() * 3` and `fillVertexPositions()`
      * functions, and then send the data to the GPU using the rendering backend.
      *
      * See the @ref MeshRenderData class documentation for an example of
@@ -526,7 +598,7 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setVertexCoordsBuffer(const MeshConcept auto&) {}
+    void setVertexPositionsBuffer(const MeshConcept auto&) {}
 
     /**
      * @brief Function that sets the content of vertex normals buffer and sends
@@ -856,8 +928,8 @@ private:
         using enum MRI::Buffers;
 
         if (btu[toUnderlying(VERTICES)]) {
-            // vertex buffer (coordinates)
-            derived().setVertexCoordsBuffer(mesh);
+            // vertex buffer (positions)
+            derived().setVertexPositionsBuffer(mesh);
         }
 
         if constexpr (vcl::HasPerVertexNormal<MeshType>) {
@@ -1013,6 +1085,113 @@ private:
                 derived().setTextureUnits(mesh);
             }
         }
+    }
+
+    static void permuteTriangulatedFaceVertexIndices(
+        auto*                    buffer,
+        TriPolyIndexBiMap&       indexMap,
+        const std::vector<uint>& newFaceIndices)
+    {
+        // newFaceIndices tells for each face, which is its new position
+        // we need the inverse mapping: for each new position, which is the old
+        // face index
+        std::vector<uint> oldFaceIndices(newFaceIndices.size());
+        for (uint i = 0; i < newFaceIndices.size(); ++i) {
+            oldFaceIndices[newFaceIndices[i]] = static_cast<uint>(i);
+        }
+
+        // temporary copy of the buffer
+        std::vector<uint> bufferCopy(indexMap.triangleNumber() * 3);
+
+        // temporary bimbap
+        TriPolyIndexBiMap indexMapCopy;
+        indexMapCopy.reserve(
+            indexMap.triangleNumber(), indexMap.polygonNumber());
+
+        uint copiedTriangles = 0;
+
+        for (uint i = 0; i < oldFaceIndices.size(); ++i) {
+            // need to place the k triangles associated to the i-th face
+            // of oldFaceIndices
+            uint polyIndex = oldFaceIndices[i];
+            uint firstTri  = indexMap.triangleBegin(polyIndex);
+            uint nTris     = indexMap.triangleNumber(polyIndex);
+
+            std::copy(
+                buffer + firstTri * 3,
+                buffer + (firstTri + nTris) * 3,
+                bufferCopy.data() + copiedTriangles * 3);
+
+            for (uint t = copiedTriangles; t < copiedTriangles + nTris; ++t) {
+                indexMapCopy.insert(t, polyIndex);
+            }
+
+            copiedTriangles += nTris;
+        }
+
+        // copy back
+        std::copy(
+            bufferCopy.begin(),
+            bufferCopy.begin() + copiedTriangles * 3,
+            buffer);
+        indexMap = std::move(indexMapCopy);
+    }
+
+    void fillChuncks(const FaceMeshConcept auto& mesh)
+    {
+        using MeshType = std::decay_t<decltype(mesh)>;
+
+        mMaterialChunks.clear();
+
+        uint first = 0;
+        uint n     = 0;
+
+        uint currentVertMatID  = UINT_NULL;
+        uint currentWedgeMatID = UINT_NULL;
+
+        for (uint i = 0; i < mIndexMap.triangleNumber(); ++i) {
+            uint fIndex = mIndexMap.polygon(i);
+
+            if constexpr (HasPerVertexTexCoord<MeshType>) {
+                if (isPerVertexTexCoordAvailable(mesh)) {
+                    uint mId = mesh.face(fIndex).vertex(0)->texCoord().index();
+                    if (mId != currentVertMatID && n != 0) {
+                        if (currentVertMatID != UINT_NULL) {
+                            mMaterialChunks.push_back(
+                                {first,
+                                 n,
+                                 currentVertMatID,
+                                 currentWedgeMatID});
+                            first += n;
+                            n = 0;
+                        }
+                        currentVertMatID = mId;
+                    }
+                }
+            }
+            if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
+                if (isPerFaceWedgeTexCoordsAvailable(mesh)) {
+                    uint mId = mesh.face(fIndex).textureIndex();
+                    if (mId != currentWedgeMatID && n != 0) {
+                        if (currentWedgeMatID != UINT_NULL) {
+                            mMaterialChunks.push_back(
+                                {first,
+                                 n,
+                                 currentVertMatID,
+                                 currentWedgeMatID});
+                            first += n;
+                            n = 0;
+                        }
+                        currentWedgeMatID = mId;
+                    }
+                }
+            }
+
+            n++;
+        }
+
+        mMaterialChunks.push_back(
+            {first, n, currentVertMatID, currentWedgeMatID});
     }
 };
 

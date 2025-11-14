@@ -35,7 +35,7 @@ target_compile_definitions(vclib-tests-examples-common INTERFACE
 
 function(_vclib_add_test_example name)
     set(options TEST HEADER_ONLY)
-    set(oneValueArgs VCLIB_MODULE VCLIB_CORE_EXAMPLE)
+    set(oneValueArgs VCLIB_MODULE VCLIB_CORE_EXAMPLE VCLIB_CORE_TEST)
     set(multiValueArgs SOURCES)
 
     cmake_parse_arguments(ARG
@@ -51,8 +51,18 @@ function(_vclib_add_test_example name)
         set(TARGET_NAME "vclib-${ARG_VCLIB_MODULE}-example-${name}")
     endif()
 
+    if (${VCLIB_EXCLUDE_EXAMPLES_AND_TESTS_TARGETS})
+        set(TO_EXCLUDE TRUE)
+    else()
+        set(TO_EXCLUDE FALSE)
+    endif()
+
     add_executable(${TARGET_NAME} ${ARG_SOURCES})
     target_link_libraries(${TARGET_NAME} PRIVATE vclib-tests-examples-common)
+
+    if (${TO_EXCLUDE})
+        set_target_properties(${TARGET_NAME} PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    endif()
 
     # if ARG_VCLIB_MODULE is "render"
     if (ARG_VCLIB_MODULE STREQUAL "render")
@@ -63,6 +73,12 @@ function(_vclib_add_test_example name)
         set(VCLIB_INCLUDE_EXAMPLES_DIR ${VCLIB_EXAMPLES_DIR}/core/${ARG_VCLIB_CORE_EXAMPLE})
         target_include_directories(${TARGET_NAME} PUBLIC
                 ${VCLIB_INCLUDE_EXAMPLES_DIR})
+    endif()
+
+    if (ARG_VCLIB_CORE_TEST)
+        set(VCLIB_INCLUDE_TESTS_DIR ${VCLIB_TESTS_DIR}/core/${ARG_VCLIB_CORE_TEST})
+        target_include_directories(${TARGET_NAME} PUBLIC
+                ${VCLIB_INCLUDE_TESTS_DIR})
     endif()
 
     if (NOT ${ARG_HEADER_ONLY})
@@ -91,8 +107,10 @@ function(_vclib_add_test_example name)
 
     if (${ARG_TEST})
         set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "tests")
-        enable_testing()
-        add_test(NAME ${name} COMMAND ${TARGET_NAME})
+        if (NOT ${TO_EXCLUDE})
+            enable_testing()
+            add_test(NAME ${name} COMMAND ${TARGET_NAME})
+        endif()
     else()
         set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "examples")
     endif()
@@ -123,6 +141,8 @@ endfunction()
 #     [VCLIB_MODULE core] # optional - to specify the module of the test
 #                           (default is core)
 #     [VCLIB_CORE_EXAMPLE 000-mesh-basic] # optional - to specify the example of
+#                                     the core module from which reuse some code
+#     [VCLIB_CORE_TEST 000-mesh-basic] # optional - to specify the test of
 #                                     the core module from which reuse some code
 #     SOURCES main.cpp # sources of the test
 # )

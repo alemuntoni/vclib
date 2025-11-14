@@ -26,7 +26,7 @@
 #include "imgui_helpers.h"
 
 #include <vclib/render/drawable/drawable_mesh.h>
-#include <vclib/render/drawers/viewer_drawer.h>
+#include <vclib/render/drawers/trackball_viewer_drawer.h>
 
 #include <imgui.h>
 
@@ -37,10 +37,12 @@
 namespace vcl::imgui {
 
 template<typename DerivedRenderApp>
-class MeshViewerDrawerImgui : public vcl::ViewerDrawer<DerivedRenderApp>
+class MeshViewerDrawerImgui :
+        public vcl::TrackBallViewerDrawer<DerivedRenderApp>
 {
-    using Base = vcl::ViewerDrawer<DerivedRenderApp>;
+    using Base = vcl::TrackBallViewerDrawer<DerivedRenderApp>;
 
+    // selected mesh index
     int mMeshIndex = 0;
 
 public:
@@ -78,6 +80,25 @@ public:
         }
 
         ImGui::End();
+    }
+
+    void onMousePress(
+        MouseButton::Enum   button,
+        double              x,
+        double              y,
+        const KeyModifiers& modifiers) override
+    {
+        if (button == MouseButton::RIGHT) {
+            this->readIdRequest(x, y, [&](uint id) {
+                if (id == UINT_NULL)
+                    return;
+
+                mMeshIndex = id;
+                std::cout << "Selected  ID: " << id << std::endl;
+            });
+        }
+
+        Base::onMousePress(button, x, y, modifiers);
     }
 
 private:
@@ -156,25 +177,25 @@ private:
         // shape
         ImGui::Text("Shape:");
         ImGui::SameLine();
-        ImGui::BeginDisabled(true);
         ImGui::RadioButton(
             "Circle",
             [&] {
-                return false;
+                return settings.isPoints(SHAPE_CIRCLE);
             },
             [&](bool v) {
+                if (v)
+                    settings.setPoints(SHAPE_CIRCLE);
             });
-        ImGui::EndDisabled();
         ImGui::SameLine();
-        ImGui::BeginDisabled(false);
         ImGui::RadioButton(
             "Pixel",
             [&] {
-                return true;
+                return settings.isPoints(SHAPE_PIXEL);
             },
             [&](bool v) {
+                if (v)
+                    settings.setPoints(SHAPE_PIXEL);
             });
-        ImGui::EndDisabled();
 
         // shading
         ImGui::Text("Shading:");
@@ -276,7 +297,7 @@ private:
                 settings.setPointsWidth(v);
             },
             1.0f,
-            10.0f);
+            32.0f);
 
         ImGui::EndDisabled();
     }
@@ -524,6 +545,22 @@ private:
             ImGuiColorEditFlags_NoInputs);
         ImGui::EndDisabled();
 
+        // wireframe size
+        ImGui::Text("Size:");
+        // set the width of the window minus the width of the label
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(-10);
+        ImGui::SliderFloat(
+            "##WireframeSize",
+            [&] {
+                return settings.wireframeWidth();
+            },
+            [&](float v) {
+                settings.setWireframeWidth(v);
+            },
+            1.0f,
+            32.0f);
+
         ImGui::EndDisabled();
     }
 
@@ -551,6 +588,7 @@ private:
              settings.isEdges(SHADING_NONE)) == 1);
         ImGui::Text("Shading:");
         ImGui::SameLine();
+        ImGui::BeginDisabled(!settings.canEdges(SHADING_SMOOTH));
         ImGui::RadioButton(
             "Smooth",
             [&] {
@@ -560,7 +598,9 @@ private:
                 if (v)
                     settings.setEdges(SHADING_SMOOTH);
             });
+        ImGui::EndDisabled();
         ImGui::SameLine();
+        ImGui::BeginDisabled(!settings.canEdges(SHADING_FLAT));
         ImGui::RadioButton(
             "Flat",
             [&] {
@@ -570,6 +610,9 @@ private:
                 if (v)
                     settings.setEdges(SHADING_FLAT);
             });
+        ImGui::EndDisabled();
+        ImGui::SameLine();
+        ImGui::BeginDisabled(!settings.canEdges(SHADING_NONE));
         ImGui::RadioButton(
             "None",
             [&] {
@@ -579,6 +622,7 @@ private:
                 if (vis)
                     settings.setEdges(SHADING_NONE);
             });
+        ImGui::EndDisabled();
 
         // color
         ImGui::Text("Color:");
@@ -630,20 +674,38 @@ private:
                 if (selected)
                     ImGui::SetItemDefaultFocus();
             }
-            // color picker
-            ImGui::SameLine();
-            ImGui::BeginDisabled(!settings.isEdges(COLOR_USER));
-            ImGui::ColorEdit4(
-                "##EdgeUserColor",
-                [&] {
-                    return settings.edgesUserColor();
-                },
-                [&](vcl::Color c) {
-                    settings.setEdgesUserColor(c);
-                },
-                ImGuiColorEditFlags_NoInputs);
             ImGui::EndCombo();
         }
+        // user color picker
+        ImGui::SameLine();
+        ImGui::BeginDisabled(!settings.isEdges(COLOR_USER));
+        ImGui::ColorEdit4(
+            "##EdgeUserColor",
+            [&] {
+                return settings.edgesUserColor();
+            },
+            [&](vcl::Color c) {
+                settings.setEdgesUserColor(c);
+            },
+            ImGuiColorEditFlags_NoInputs);
+        ImGui::EndDisabled();
+
+        // edge size
+        ImGui::Text("Size:");
+        // set the width of the window minus the width of the label
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(-10);
+        ImGui::SliderFloat(
+            "##EdgeSize",
+            [&] {
+                return settings.edgesWidth();
+            },
+            [&](float v) {
+                settings.setEdgesWidth(v);
+            },
+            1.0f,
+            32.0f);
+
         ImGui::EndDisabled();
     }
 

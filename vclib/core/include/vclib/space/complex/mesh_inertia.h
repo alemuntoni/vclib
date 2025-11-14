@@ -23,9 +23,9 @@
 #ifndef VCL_SPACE_COMPLEX_MESH_INERTIA_H
 #define VCL_SPACE_COMPLEX_MESH_INERTIA_H
 
-#include <vclib/algorithms/core/polygon.h>
-#include <vclib/mesh/requirements.h>
-#include <vclib/space/core/point.h>
+#include <vclib/algorithms/core.h>
+#include <vclib/mesh.h>
+#include <vclib/space/core.h>
 
 #include <Eigen/Eigenvalues>
 
@@ -56,7 +56,7 @@ class MeshInertia
 {
     using VertexType = MeshType::VertexType;
     using FaceType   = MeshType::FaceType;
-    using ScalarType = VertexType::CoordType::ScalarType;
+    using ScalarType = VertexType::PositionType::ScalarType;
 
     enum { X = 0, Y = 1, Z = 2 };
 
@@ -199,7 +199,7 @@ private:
 
         projectionIntegrals(f);
 
-        w  = -f.vertex(0)->coord().dot(n);
+        w  = -f.vertex(0)->position().dot(n);
         k1 = 1 / n[mC];
         k2 = k1 * k1;
         k3 = k2 * k1;
@@ -248,10 +248,10 @@ private:
             0.0;
 
         for (uint i = 0; i < f.vertexNumber(); i++) {
-            a0   = f.vertex(i)->coord()[mA];
-            b0   = f.vertex(i)->coord()[mB];
-            a1   = f.vertexMod(i + 1)->coord()[mA];
-            b1   = f.vertexMod(i + 1)->coord()[mB];
+            a0   = f.vertex(i)->position()[mA];
+            b0   = f.vertex(i)->position()[mB];
+            a1   = f.vertexMod(i + 1)->position()[mA];
+            b1   = f.vertexMod(i + 1)->position()[mB];
             da   = a1 - a0;
             db   = b1 - b0;
             a0_2 = a0 * a0;

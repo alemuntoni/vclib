@@ -76,14 +76,474 @@ void defComparisonOperators(pybind11::class_<Class>& c)
     c.def(py::self >= py::self);
 }
 
-void defForAllMeshTypes(auto& pymod, auto&& function)
+template<typename Class>
+void defArithmeticOperators(pybind11::class_<Class>& c)
 {
-    function.template operator()<vcl::PointCloud>(pymod);
-    function.template operator()<vcl::EdgeMesh>(pymod);
-    function.template operator()<vcl::PolyMesh>(pymod);
-    function.template operator()<vcl::PolyEdgeMesh>(pymod);
-    function.template operator()<vcl::TriMesh>(pymod);
-    function.template operator()<vcl::TriEdgeMesh>(pymod);
+    namespace py = pybind11;
+
+    c.def( // -a
+        "__neg__",
+        [](Class& a) -> Class& {
+            a = -a;
+            return a;
+        },
+        py::is_operator());
+
+    c.def( // a+b
+        "__add__",
+        [](const Class& a, const Class& b) -> Class {
+            return a + b;
+        },
+        py::is_operator());
+
+    c.def( // a+b
+        "__add__",
+        [](const Class& a, double b) -> Class {
+            return a + b;
+        },
+        py::is_operator());
+
+    c.def( // a-b
+        "__sub__",
+        [](const Class& a, const Class& b) -> Class {
+            return a - b;
+        },
+        py::is_operator());
+
+    c.def( // a-b
+        "__sub__",
+        [](const Class& a, double b) -> Class {
+            return a - b;
+        },
+        py::is_operator());
+
+    c.def( // a*b
+        "__mul__",
+        [](const Class& a, double b) -> Class {
+            return a * b;
+        },
+        py::is_operator());
+
+    c.def( // a*b
+        "__mul__",
+        [](double a, const Class& b) -> Class {
+            return a * b;
+        },
+        py::is_operator());
+
+    c.def( // a/b
+        "__truediv__",
+        [](const Class& a, double b) -> Class {
+            return a / b;
+        },
+        py::is_operator());
+
+    c.def( // a+=b
+        "__iadd__",
+        [](Class& a, const Class& b) -> Class& {
+            a += b;
+            return a;
+        },
+        py::is_operator());
+
+    c.def( // a+=b
+        "__iadd__",
+        [](Class& a, double b) -> Class& {
+            a += b;
+            return a;
+        },
+        py::is_operator());
+
+    c.def( // a-=b
+        "__isub__",
+        [](Class& a, const Class& b) -> Class& {
+            a -= b;
+            return a;
+        },
+        py::is_operator());
+
+    c.def( // a-=b
+        "__isub__",
+        [](Class& a, double b) -> Class& {
+            a -= b;
+            return a;
+        },
+        py::is_operator());
+
+    c.def( // a*=b
+        "__imul__",
+        [](Class& a, double b) -> Class& {
+            a *= b;
+            return a;
+        },
+        py::is_operator());
+
+    c.def( // a/=b
+        "__itruediv__",
+        [](Class& a, double b) -> Class& {
+            a /= b;
+            return a;
+        },
+        py::is_operator());
+}
+
+template<uint R, uint C>
+Eigen::Matrix<double, R, C, Eigen::RowMajor> pyBufferToEigen(
+    const pybind11::buffer& b)
+{
+    auto info = b.request();
+    if constexpr (R == 1 || C == 1) {
+        constexpr uint DIM = (R == 1) ? C : R;
+        if (info.ndim != 1 || info.shape[0] != DIM) {
+            throw std::invalid_argument(
+                "Buffer must have shape (" + std::to_string(DIM) + ")");
+        }
+    }
+    else {
+        if (info.ndim != 2 || info.shape[0] != R || info.shape[1] != C) {
+            throw std::invalid_argument(
+                "Buffer must have shape (" + std::to_string(R) + ", " +
+                std::to_string(C) + ")");
+        }
+    }
+
+    if (info.format == pybind11::format_descriptor<int>::format()) {
+        Eigen::Map<Eigen::Matrix<int, R, C, Eigen::RowMajor>> map(
+            static_cast<int*>(info.ptr));
+        return map.template cast<double>();
+    }
+    else if (info.format == pybind11::format_descriptor<long>::format()) {
+        Eigen::Map<Eigen::Matrix<long, R, C, Eigen::RowMajor>> map(
+            static_cast<long*>(info.ptr));
+        return map.template cast<double>();
+    }
+    else if (info.format == pybind11::format_descriptor<float>::format()) {
+        Eigen::Map<Eigen::Matrix<float, R, C, Eigen::RowMajor>> map(
+            static_cast<float*>(info.ptr));
+        return map.template cast<double>();
+    }
+    else if (info.format == pybind11::format_descriptor<double>::format()) {
+        return Eigen::Map<Eigen::Matrix<double, R, C, Eigen::RowMajor>>(
+            static_cast<double*>(info.ptr));
+    }
+    else {
+        throw std::invalid_argument(
+            "Buffer type not supported (supported types are: int32, int64, "
+            "float32, float64)");
+    }
+
+    return Eigen::Matrix<double, R, C, Eigen::RowMajor>();
+}
+
+/**
+ * @brief calls a function for all mesh types, if the function is callable for
+ * the specific mesh type. The function takes as a first argument a
+ * pybind11::module_ object.
+ *
+ * The function should be defined in the following way:
+ *
+ * @code{.cpp}
+ * pybind11::module_ m;
+ *
+ * auto fun = []<MeshConcept MeshType>(
+ *                pybind11::module_& m, MeshType = MeshType()) {
+ *
+ *      // add the function that uses MeshType to the module object
+ * };
+ *
+ * defForAllMeshTypes(m, fun);
+ * @endcode
+ *
+ * The second MeshType argument is there to allow the compiler to deduce the
+ * type of the mesh. It must not be used in the lambda body.
+ * You can decide for which type of mesh the function should be defined by
+ * using the MeshConcept concepts (e.g. if you want to define the function for
+ * all mesh types that are FaceMeshConcept, you can use FaceMeshConcept as
+ * template argument).
+ *
+ * @note If the function is defined in a different way, the compiler won't
+ * give any error. The function will just not be defined for the specific mesh
+ * type.
+ *
+ * @param pymod
+ * @param function
+ */
+void defForAllMeshTypes(pybind11::module_& pymod, auto&& function)
+{
+    using FType = decltype(function);
+
+    if constexpr (std::invocable<FType, pybind11::module&, vcl::PointCloud>) {
+        function.template operator()<vcl::PointCloud>(pymod);
+    }
+    if constexpr (std::invocable<FType, pybind11::module&, vcl::EdgeMesh>) {
+        function.template operator()<vcl::EdgeMesh>(pymod);
+    }
+    if constexpr (std::invocable<FType, pybind11::module&, vcl::PolyMesh>) {
+        function.template operator()<vcl::PolyMesh>(pymod);
+    }
+    if constexpr (std::invocable<FType, pybind11::module&, vcl::PolyEdgeMesh>) {
+        function.template operator()<vcl::PolyEdgeMesh>(pymod);
+    }
+    if constexpr (std::invocable<FType, pybind11::module&, vcl::TriMesh>) {
+        function.template operator()<vcl::TriMesh>(pymod);
+    }
+    if constexpr (std::invocable<FType, pybind11::module&, vcl::TriEdgeMesh>) {
+        function.template operator()<vcl::TriEdgeMesh>(pymod);
+    }
+}
+
+/**
+ * @brief calls a function for all mesh types, if the function is callable for
+ * the specific mesh type. The function takes as a first argument a
+ * pybind11::class_ object.
+ *
+ * The function should be defined in the following way:
+ *
+ * @code{.cpp}
+ * pybind11::class_<MyClass> c;
+ *
+ * auto fun = []<MeshConcept MeshType>(
+ *                pybind11::class_<MyClass>& c, MeshType = MeshType()) {
+ *
+ *      // add the function that uses MeshType to the class_ object
+ * };
+ *
+ * defForAllMeshTypes(c, fun);
+ * @endcode
+ *
+ * The second MeshType argument is there to allow the compiler to deduce the
+ * type of the mesh. It must not be used in the lambda body.
+ * You can decide for which type of mesh the function should be defined by
+ * using the MeshConcept concepts (e.g. if you want to define the function for
+ * all mesh types that are FaceMeshConcept, you can use FaceMeshConcept as
+ * template argument).
+ *
+ * @note If the function is defined in a different way, the compiler won't
+ * give any error. The function will just not be defined for the specific mesh
+ * type.
+ *
+ * @param pyclass
+ * @param function
+ */
+template<typename C>
+void defForAllMeshTypes(pybind11::class_<C>& pyclass, auto&& function)
+{
+    using FType = decltype(function);
+
+    if constexpr (std::
+                      invocable<FType, pybind11::class_<C>&, vcl::PointCloud>) {
+        function.template operator()<vcl::PointCloud>(pyclass);
+    }
+    if constexpr (std::invocable<FType, pybind11::class_<C>&, vcl::EdgeMesh>) {
+        function.template operator()<vcl::EdgeMesh>(pyclass);
+    }
+    if constexpr (std::invocable<FType, pybind11::class_<C>&, vcl::PolyMesh>) {
+        function.template operator()<vcl::PolyMesh>(pyclass);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::class_<C>&,
+                      vcl::PolyEdgeMesh>) {
+        function.template operator()<vcl::PolyEdgeMesh>(pyclass);
+    }
+    if constexpr (std::invocable<FType, pybind11::class_<C>&, vcl::TriMesh>) {
+        function.template operator()<vcl::TriMesh>(pyclass);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::class_<C>&,
+                      vcl::TriEdgeMesh>) {
+        function.template operator()<vcl::TriEdgeMesh>(pyclass);
+    }
+}
+
+/**
+ * @brief calls a function for all Vertex types, if the function is callable for
+ * the specific Vertex type. The function takes as a first argument a
+ * pybind11::module_ object.
+ *
+ * The function should be defined in the following way:
+ *
+ * @code{.cpp}
+ * pybind11::module_ m;
+ *
+ * auto fun = []<VertexConcept VertexType>(
+ *                pybind11::module_& m, VertexType = VertexType()) {
+ *
+ *      // add the function that uses VertexType to the module object
+ * };
+ *
+ * defForAllVertexTypes(m, fun);
+ * @endcode
+ *
+ * The second VertexType argument is there to allow the compiler to deduce the
+ * type of the Vertex. It must not be used in the lambda body.
+ * You can decide for which type of mesh the function should be defined by
+ * constraining the VertexConcept concepts.
+ *
+ * @note If the function is defined in a different way, the compiler won't
+ * give any error. The function will just not be defined for the specific mesh
+ * type.
+ *
+ * @param pymod
+ * @param function
+ */
+void defForAllVertexTypes(pybind11::module_& pymod, auto&& function)
+{
+    using FType = decltype(function);
+
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::PointCloud::VertexType>) {
+        function.template operator()<vcl::PointCloud::VertexType>(pymod);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::EdgeMesh::VertexType>) {
+        function.template operator()<vcl::EdgeMesh::VertexType>(pymod);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::PolyMesh::VertexType>) {
+        function.template operator()<vcl::PolyMesh::VertexType>(pymod);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::PolyEdgeMesh::VertexType>) {
+        function.template operator()<vcl::PolyEdgeMesh::VertexType>(pymod);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::TriMesh::VertexType>) {
+        function.template operator()<vcl::TriMesh::VertexType>(pymod);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::TriEdgeMesh::VertexType>) {
+        function.template operator()<vcl::TriEdgeMesh::VertexType>(pymod);
+    }
+}
+
+/**
+ * @brief calls a function for all Face types, if the function is callable for
+ * the specific Face type. The function takes as a first argument a
+ * pybind11::module_ object.
+ *
+ * The function should be defined in the following way:
+ *
+ * @code{.cpp}
+ * pybind11::module_ m;
+ *
+ * auto fun = []<FaceConcept FaceType>(
+ *                pybind11::module_& m, FaceType = FaceType()) {
+ *
+ *      // add the function that uses FaceType to the module object
+ * };
+ *
+ * defForAllFaceTypes(m, fun);
+ * @endcode
+ *
+ * The second FaceType argument is there to allow the compiler to deduce the
+ * type of the Face. It must not be used in the lambda body.
+ * You can decide for which type of mesh the function should be defined by
+ * constraining the FaceConcept concepts.
+ *
+ * @note If the function is defined in a different way, the compiler won't
+ * give any error. The function will just not be defined for the specific mesh
+ * type.
+ *
+ * @param pymod
+ * @param function
+ */
+void defForAllFaceTypes(pybind11::module_& pymod, auto&& function)
+{
+    using FType = decltype(function);
+
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::PolyMesh::FaceType>) {
+        function.template operator()<vcl::PolyMesh::FaceType>(pymod);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::PolyEdgeMesh::FaceType>) {
+        function.template operator()<vcl::PolyEdgeMesh::FaceType>(pymod);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::TriMesh::FaceType>) {
+        function.template operator()<vcl::TriMesh::FaceType>(pymod);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::TriEdgeMesh::FaceType>) {
+        function.template operator()<vcl::TriEdgeMesh::FaceType>(pymod);
+    }
+}
+
+/**
+ * @brief calls a function for all Edge types, if the function is callable for
+ * the specific Edge type. The function takes as a first argument a
+ * pybind11::module_ object.
+ *
+ * The function should be defined in the following way:
+ *
+ * @code{.cpp}
+ * pybind11::module_ m;
+ *
+ * auto fun = []<EdgeConcept EdgeType>(
+ *                pybind11::module_& m, EdgeType = EdgeType()) {
+ *
+ *      // add the function that uses EdgeType to the module object
+ * };
+ *
+ * defForAllEdgeTypes(m, fun);
+ * @endcode
+ *
+ * The second EdgeType argument is there to allow the compiler to deduce the
+ * type of the Edge. It must not be used in the lambda body.
+ * You can decide for which type of mesh the function should be defined by
+ * constraining the EdgeConcept concepts.
+ *
+ * @note If the function is defined in a different way, the compiler won't
+ * give any error. The function will just not be defined for the specific mesh
+ * type.
+ *
+ * @param pymod
+ * @param function
+ */
+void defForAllEdgeTypes(pybind11::module_& pymod, auto&& function)
+{
+    using FType = decltype(function);
+
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::EdgeMesh::EdgeType>) {
+        function.template operator()<vcl::EdgeMesh::EdgeType>(pymod);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::PolyEdgeMesh::EdgeType>) {
+        function.template operator()<vcl::PolyEdgeMesh::EdgeType>(pymod);
+    }
+    if constexpr (std::invocable<
+                      FType,
+                      pybind11::module&,
+                      vcl::TriEdgeMesh::EdgeType>) {
+        function.template operator()<vcl::TriEdgeMesh::EdgeType>(pymod);
+    }
 }
 
 } // namespace vcl::bind

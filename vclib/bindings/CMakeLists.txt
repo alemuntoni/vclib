@@ -39,21 +39,19 @@ if (VCLIB_BUILD_MODULE_EXTERNAL)
 #    list(APPEND PYTHON_MODULES external)
 endif()
 
-if (VCLIB_BUILD_MODULE_PROCESSING)
-    list(APPEND PYTHON_MODULES processing)
-endif()
-
 if (VCLIB_BUILD_MODULE_RENDER)
 #    list(APPEND PYTHON_MODULES render)
 endif()
 
-# create __init__.py inside VCLIB_MODULE_BINARY_DIR
-file(WRITE "${VCLIB_MODULE_BINARY_DIR}/__init__.py" "")
+# copy the __init__.py
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/assets/__init__.py"
+    DESTINATION ${VCLIB_MODULE_BINARY_DIR})
 
 # for each module
 foreach(MODULE ${PYTHON_MODULES})
     file(GLOB_RECURSE MODULE_HEADERS CONFIGURE_DEPENDS "include/vclib/bindings/${MODULE}/*.h")
     file(GLOB_RECURSE MODULE_SOURCES CONFIGURE_DEPENDS "src/vclib/bindings/${MODULE}/*.cpp")
+    list(APPEND MODULE_HEADERS "include/vclib/bindings/utils.h")
     list(APPEND MODULE_SOURCES "src/vclib/bindings/${MODULE}.cpp")
 
     pybind11_add_module(${MODULE} ${MODULE_HEADERS} ${MODULE_SOURCES})
@@ -68,5 +66,27 @@ foreach(MODULE ${PYTHON_MODULES})
     # in the ${VCLIB_MODULE_BINARY_DIR}/__init__.py, append a line with:
     # from .${MODULE} import *
     file(APPEND "${VCLIB_MODULE_BINARY_DIR}/__init__.py" "from .${MODULE} import *\n")
+
+    # Install
+    install(TARGETS ${MODULE}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python${VCLIB_PYTHON_VERSION}/site-packages/vclib
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+    # RPath for qt
+    if (TARGET vclib-3rd-qt)
+        if (APPLE)
+            set_target_properties(${MODULE} PROPERTIES
+                INSTALL_RPATH "@loader_path/../PyQt6/Qt6/lib")
+        elseif(LINUX)
+            set_target_properties(${MODULE} PROPERTIES
+                INSTALL_RPATH "$ORIGIN/../PyQt6/Qt6/lib")
+        endif()
+    endif()
 endforeach()
+
+# Install
+install(FILES "${VCLIB_MODULE_BINARY_DIR}/__init__.py"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/python${VCLIB_PYTHON_VERSION}/site-packages/vclib)
+
 

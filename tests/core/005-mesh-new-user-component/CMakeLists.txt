@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 3.24)
 
-set(TEST_NAME 005-mesh-new-user-component)
+get_filename_component(TEST_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(vclib-test-${TEST_NAME})
 
 set(SOURCES
@@ -31,5 +31,5 @@ set(SOURCES
 vclib_add_test(
     ${TEST_NAME}
     SOURCES ${SOURCES}
-    VCLIB_CORE_EXAMPLE 010-mesh-new-user-component
+    VCLIB_CORE_EXAMPLE 023-mesh-custom-user-component
     ${HEADER_ONLY_OPTION})

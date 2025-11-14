@@ -23,8 +23,7 @@
 #ifndef VCL_SPACE_COMPLEX_MESH_POS_H
 #define VCL_SPACE_COMPLEX_MESH_POS_H
 
-#include <vclib/mesh/components/adjacent_faces.h>
-#include <vclib/mesh/elements/face.h>
+#include <vclib/mesh.h>
 
 namespace vcl {
 
@@ -187,7 +186,22 @@ public:
     {
         const FaceType* nf = mFace->adjFace(mEdge);
         if (nf != nullptr) {
-            mEdge = nf->indexOfAdjFace(mFace);
+            short oldEdge = mEdge;
+            mEdge         = nf->indexOfAdjFace(mFace);
+            if (mEdge < 0) {
+                // non-manifold edge. I need to find the edge that has the
+                // current vertex
+                const auto* v0 = mFace->vertex(oldEdge);
+                const auto* v1 = mFace->vertexMod(oldEdge + 1);
+                mEdge          = nf->indexOfEdge(v0, v1);
+                // if this assert fails, it means that the edge was not found.
+                // you probably need to update adjacency information of the mesh
+                assert(mEdge >= 0 && mEdge < nf->vertexNumber());
+                if (mEdge < 0) {
+                    *this = MeshPos<FaceType>(); // reset to null
+                    return false;
+                }
+            }
             mFace = nf;
             return true;
         }

@@ -22,8 +22,8 @@
 
 #include <vclib/bgfx/context.h>
 
+#include <vclib/base/base.h>
 #include <vclib/bgfx/system/native_window_handle.h>
-#include <vclib/types/base.h>
 
 #include <iostream>
 
@@ -133,6 +133,11 @@ bool Context::supportsReadback() const
     return (capabilites().supported &
             (BGFX_CAPS_TEXTURE_BLIT | BGFX_CAPS_TEXTURE_READ_BACK)) ==
            (BGFX_CAPS_TEXTURE_BLIT | BGFX_CAPS_TEXTURE_READ_BACK);
+}
+
+bool Context::supportsCompute() const
+{
+    return (capabilites().supported & BGFX_CAPS_COMPUTE) == BGFX_CAPS_COMPUTE;
 }
 
 bgfx::ViewId Context::requestViewId()
@@ -341,12 +346,13 @@ Context::Context(void* windowHandle, void* displayHandle)
         vcl::closeWindow(mWindowHandle, mDisplayHandle);
     }
 
+    // insert view ids in the stack
     uint mv = bgfx::getCaps()->limits.maxViews;
 
+    // the view id is a 0-based index, so we start from maxViews - 1
     while (mv != 0) {
-        mViewStack.push((bgfx::ViewId) mv--);
+        mViewStack.push((bgfx::ViewId) --mv);
     }
-    mViewStack.push((bgfx::ViewId) 0);
 
     // font manager must be created after bgfx::init
     mFontManager    = new FontManager();

@@ -22,7 +22,7 @@
 
 #include <vclib/bgfx/programs/load_program.h>
 
-#include <vclib/exceptions/io.h>
+#include <vclib/io.h>
 
 #include <bx/bx.h>
 #include <bx/file.h>
@@ -138,6 +138,11 @@ bgfx::ProgramHandle createProgram(
     bgfx::ShaderHandle fsHandle)
 {
     return bgfx::createProgram(vsHandle, fsHandle, true);
+}
+
+bgfx::ProgramHandle createProgram(bgfx::ShaderHandle csHandle)
+{
+    return bgfx::createProgram(csHandle, true);
 }
 
 } // namespace vcl

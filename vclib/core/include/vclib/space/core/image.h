@@ -23,10 +23,10 @@
 #ifndef VCL_SPACE_CORE_IMAGE_H
 #define VCL_SPACE_CORE_IMAGE_H
 
-#include <vclib/io/image.h>
-#include <vclib/io/serialization.h>
-#include <vclib/space/core/array.h>
-#include <vclib/space/core/color.h>
+#include "array.h"
+#include "color.h"
+
+#include <vclib/base.h>
 
 #include <string>
 
@@ -42,17 +42,10 @@ namespace vcl {
  */
 class Image
 {
-    Array2<uint32_t> mImg;
+    Array2<uint> mImg;
 
 public:
     Image() {}
-
-    /**
-     * @brief Load an image from a file.
-     *
-     * @param[in] filename: the name of the file.
-     */
-    Image(const std::string& filename) { load(filename); }
 
     /**
      * @brief Construct an Image from a raw buffer, which is assumed to be in
@@ -96,6 +89,10 @@ public:
         }
     }
 
+    Image(const Array2<uint>& img) : mImg(img) {}
+
+    Image(Array2<uint>&& img) : mImg(std::move(img)) {}
+
     bool isNull() const { return mImg.empty(); }
 
     int height() const { return mImg.rows(); }
@@ -112,33 +109,6 @@ public:
     const unsigned char* data() const
     {
         return reinterpret_cast<const unsigned char*>(mImg.data());
-    }
-
-    bool load(const std::string& filename)
-    {
-        int w, h;
-        // we first load the data, then we copy it into our array2d, and then we
-        // free it.
-        std::shared_ptr<unsigned char> tmp = loadImageData(filename, w, h);
-        if (tmp) {
-            std::size_t size = w * h * 4;
-
-            mImg.resize(w, h);
-            std::copy(
-                tmp.get(),
-                tmp.get() + size,
-                reinterpret_cast<unsigned char*>(mImg.data()));
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    void save(const std::string& filename, uint quality = 90) const
-    {
-        auto* data = reinterpret_cast<const unsigned char*>(mImg.data());
-        saveImageData(filename, mImg.cols(), mImg.rows(), data, quality);
     }
 
     void mirror(bool horizontal = false, bool vertical = true)
@@ -161,6 +131,21 @@ public:
 
     void deserialize(std::istream& is) { mImg.deserialize(is); }
 };
+
+/* Concepts */
+
+/**
+ * @brief A concept representing an Image.
+ *
+ * The concept is satisfied when `T` is a class that instantiates or derives
+ * from an Image class.
+ *
+ * @tparam T: The type to be tested for conformity to the ImageConcept.
+ *
+ * @ingroup space_core
+ */
+template<typename T>
+concept ImageConcept = std::derived_from<std::remove_cvref_t<T>, Image>;
 
 } // namespace vcl
 

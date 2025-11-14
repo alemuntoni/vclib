@@ -20,6 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
+#include <vclib/qt/gui/screen_shot_dialog.h>
 #include <vclib/qt/mesh_viewer.h>
 
 #include "ui_mesh_viewer.h"
@@ -27,6 +28,39 @@
 #include <vclib/render/drawable/drawable_mesh.h>
 
 namespace vcl::qt {
+
+bool KeyFilter::eventFilter(QObject* watched, QEvent* event)
+{
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        // Ignore only the Ctrl + S shortcut override, you can customize check
+        // for your needs
+        if (keyEvent->modifiers().testFlag(Qt::ControlModifier) &&
+            keyEvent->key() == 'S') {
+            qDebug() << "Ignoring " << keyEvent->modifiers() << " + "
+                     << (char) keyEvent->key() << " for " << watched;
+            event->ignore();
+            return true;
+        }
+    }
+
+    return QObject::eventFilter(watched, event);
+}
+
+/**
+ * @brief Returns the MeshViewerRenderApp used by this MeshViewer.
+ *
+ * @return MeshViewerRenderApp
+ */
+MeshViewerRenderApp& MeshViewer::viewer() const
+{
+    return *static_cast<vcl::qt::MeshViewerRenderApp*>(mUI->viewer);
+}
+
+DrawableObjectVectorTree& MeshViewer::drawableObjectVectorTree() const
+{
+    return *mUI->drawVectorTree;
+}
 
 /**
  * @brief MeshViewer constructor.
@@ -54,7 +88,10 @@ MeshViewer::MeshViewer(QWidget* parent) :
 
     // give the vector pointer to the contained widgets
     mUI->viewer->setDrawableObjectVector(mDrawableObjectVector);
-    mUI->drawVectorFrame->setDrawableObjectVector(mListedDrawableObjects);
+    mUI->drawVectorTree->setDrawableObjectVector(mListedDrawableObjects);
+
+    // install the key filter
+    mUI->viewer->installEventFilter(new KeyFilter(this));
 
     // each time that the RenderSettingsFrame updates its settings, we call the
     // renderSettingsUpdated() member function
@@ -64,25 +101,23 @@ MeshViewer::MeshViewer(QWidget* parent) :
         this,
         SLOT(renderSettingsUpdated()));
 
-    // each time that the drawVectorFrame changes the visibility of an object,
+    // each time that the drawVectorTree changes the visibility of an object,
     // we update the current settings of the RenderSettingsFrame, and we update
     // the glArea
     connect(
-        mUI->drawVectorFrame,
+        mUI->drawVectorTree,
         SIGNAL(drawableObjectVisibilityChanged()),
         this,
         SLOT(visibilityDrawableObjectChanged()));
 
-    // each time that the selected object is changed in the drawVectorFrame, we
+    // each time that the selected object is changed in the drawVectorTree, we
     // update the RenderSettingsFrame, updating its settings to the object
     // render settings
     connect(
-        mUI->drawVectorFrame,
+        mUI->drawVectorTree,
         SIGNAL(drawableObjectSelectionChanged(uint)),
         this,
         SLOT(selectedDrawableObjectChanged(uint)));
-
-    mUI->viewer->setFocus();
 }
 
 MeshViewer::~MeshViewer()
@@ -101,10 +136,10 @@ void MeshViewer::setDrawableObjectVector(
     mDrawableObjectVector->set(0, v);
     mListedDrawableObjects = v;
 
-    // order here is important: drawVectorFrame must have the drawVector before
+    // order here is important: drawVectorTree must have the drawVector before
     // the renderSettingsFrame!
     mUI->viewer->setDrawableObjectVector(mDrawableObjectVector);
-    mUI->drawVectorFrame->setDrawableObjectVector(mListedDrawableObjects);
+    mUI->drawVectorTree->setDrawableObjectVector(mListedDrawableObjects);
 
     updateGUI();
 }
@@ -116,7 +151,7 @@ void MeshViewer::setUnlistedDrawableObjectVector(
 
 uint MeshViewer::selectedDrawableObject() const
 {
-    return mUI->drawVectorFrame->selectedDrawableObject();
+    return mUI->drawVectorTree->selectedDrawableObject();
 }
 
 TextEditLogger& MeshViewer::logger()
@@ -125,27 +160,57 @@ TextEditLogger& MeshViewer::logger()
 }
 
 void MeshViewer::setDrawVectorIconFunction(
-    const DrawableObjectVectorFrame::IconFunction& f)
+    const DrawableObjectVectorTree::IconFunction& f)
 {
-    mUI->drawVectorFrame->setIconFunction(f);
+    mUI->drawVectorTree->setIconFunction(f);
+}
+
+Camera<float> MeshViewer::camera() const
+{
+    return mUI->viewer->camera();
+}
+
+void MeshViewer::setCamera(const Camera<float>& c)
+{
+    mUI->viewer->setCamera(c);
+}
+
+void MeshViewer::keyPressEvent(QKeyEvent* event)
+{
+    // show screenshot dialog on CTRL + S
+    if (event->key() == Qt::Key_S && event->modifiers() & Qt::ControlModifier) {
+        vcl::qt::ScreenShotDialog dialog(this);
+        if (dialog.exec() && dialog.selectedFiles().size() > 0) {
+            mUI->viewer->screenshot(
+                dialog.selectedFiles()[0].toStdString(),
+                dialog.screenMultiplierValue());
+        }
+    }
+    else {
+        event->ignore();
+        QWidget::keyPressEvent(event);
+    }
 }
 
 /**
  * @brief Slot called when the user changed the visibility of an object in the
- * DrawableObjectVectorFrame
+ * DrawableObjectVectorTree
  */
 void MeshViewer::visibilityDrawableObjectChanged()
 {
     // get the selected drawable object
-    uint i = mUI->drawVectorFrame->selectedDrawableObject();
-    auto m = std::dynamic_pointer_cast<AbstractDrawableMesh>(
-        mListedDrawableObjects->at(i));
-    // if it is a AbstractDrawableMesh, we must be sure that its render
-    // settings are updated accordingly.
-    if (m) {
-        mUI->renderSettingsFrame->setMeshRenderSettings(m->renderSettings());
+    uint i = mUI->drawVectorTree->selectedDrawableObject();
+    if (i != UINT_NULL) {
+        auto m = std::dynamic_pointer_cast<AbstractDrawableMesh>(
+            mListedDrawableObjects->at(i));
+        // if it is a AbstractDrawableMesh, we must be sure that its render
+        // settings are updated accordingly.
+        if (m) {
+            mUI->renderSettingsFrame->setMeshRenderSettings(
+                m->renderSettings());
+        }
+        mUI->viewer->update();
     }
-    mUI->viewer->update();
 }
 
 /**
@@ -183,8 +248,8 @@ void MeshViewer::selectedDrawableObjectChanged(uint i)
 void MeshViewer::renderSettingsUpdated()
 {
     // The user changed the RenderSettings of the ith object.
-    uint i = mUI->drawVectorFrame->selectedDrawableObject();
-    if (mListedDrawableObjects->size() > 0) {
+    uint i = mUI->drawVectorTree->selectedDrawableObject();
+    if (i != UINT_NULL && mListedDrawableObjects->size() > 0) {
         // The selected object must always be a AbstractDrawableMesh, because
         // the RenderSettingsFrame (which called this member function) is
         // visible only when the selected Object is a AbstractDrawableMesh
@@ -203,11 +268,17 @@ void MeshViewer::fitScene()
     mUI->viewer->update();
 }
 
+void MeshViewer::fitView()
+{
+    mUI->viewer->fitView();
+    mUI->viewer->update();
+}
+
 void MeshViewer::updateGUI()
 {
-    mUI->drawVectorFrame->update();
+    mUI->drawVectorTree->update();
 
-    uint selected = mUI->drawVectorFrame->selectedDrawableObject();
+    uint selected = mUI->drawVectorTree->selectedDrawableObject();
 
     if (selected != UINT_NULL) {
         auto m = std::dynamic_pointer_cast<AbstractDrawableMesh>(

@@ -25,8 +25,7 @@
 
 #include "image.h"
 
-#include <vclib/io/file_info.h>
-#include <vclib/io/serialization.h>
+#include <vclib/base.h>
 
 namespace vcl {
 
@@ -43,7 +42,7 @@ public:
      *
      * @param[in] path: the path of the texture file.
      */
-    Texture(const std::string& path) : mPath(path) { mImg.load(path); }
+    Texture(const std::string& path) : mPath(path) {}
 
     /**
      * @brief Creates a Texture object, with the given image and its path.
@@ -106,6 +105,21 @@ public:
         mImg.deserialize(is);
     }
 };
+
+/* Concepts */
+
+/**
+ * @brief A concept representing a Texture.
+ *
+ * The concept is satisfied when `T` is a class that instantiates or derives
+ * from a Texture class.
+ *
+ * @tparam T: The type to be tested for conformity to the TextureConcept.
+ *
+ * @ingroup space_core
+ */
+template<typename T>
+concept TextureConcept = std::derived_from<std::remove_cvref_t<T>, Texture>;
 
 } // namespace vcl
 

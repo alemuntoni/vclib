@@ -22,14 +22,17 @@
 
 cmake_minimum_required(VERSION 3.24)
 
-set(TEST_NAME 000-static-asserts)
+get_filename_component(TEST_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(vclib-test-${TEST_NAME})
 
 set(HEADERS
-    drawable_object.h
+    camera.h
     canvas.h
+    directional_light.h
+    drawable_object.h
     drawers.h
     render_app.h
+    view_projection.h
     window_manager.h
 )
 

@@ -83,8 +83,6 @@ class DrawableMeshOpenGL2 : public AbstractDrawableMesh, public MeshType
 {
     using MRI = MeshRenderInfo;
 
-    Box3d mBoundingBox;
-
     MeshRenderVectors<MeshType> mMRD;
 
     std::vector<uint> mTextID;
@@ -108,44 +106,11 @@ public:
 
     ~DrawableMeshOpenGL2() = default;
 
-    void updateBuffers(
-        MRI::BuffersBitSet buffersToUpdate = MRI::BUFFERS_ALL) override
-    {
-        if constexpr (HasName<MeshType>) {
-            AbstractDrawableMesh::name() = MeshType::name();
-        }
-
-        bool bbToInitialize = !vcl::HasBoundingBox<MeshType>;
-        if constexpr (vcl::HasBoundingBox<MeshType>) {
-            if (this->MeshType::boundingBox().isNull()) {
-                bbToInitialize = true;
-            }
-            else {
-                mBoundingBox =
-                    this->MeshType::boundingBox().template cast<double>();
-            }
-        }
-
-        if (bbToInitialize) {
-            mBoundingBox = vcl::boundingBox(*this);
-        }
-
-        unbindTextures();
-        mMRD.update(*this, buffersToUpdate);
-        mMRS.setRenderCapabilityFrom(*this);
-        bindTextures();
-    }
-
-    std::string& name() override { return MeshType::name(); }
-
-    const std::string& name() const override { return MeshType::name(); }
-
     void swap(DrawableMeshOpenGL2& other)
     {
         using std::swap;
         AbstractDrawableMesh::swap(other);
         MeshType::swap(other);
-        swap(mBoundingBox, other.mBoundingBox);
         swap(mMRD, other.mMRD);
         swap(mTextID, other.mTextID);
     }
@@ -155,11 +120,70 @@ public:
         a.swap(b);
     }
 
+    using AbstractDrawableMesh::boundingBox;
+
+    // AbstractDrawableMesh implementation
+
+    void updateBuffers(
+        MRI::BuffersBitSet buffersToUpdate = MRI::BUFFERS_ALL) override
+    {
+        if constexpr (HasName<MeshType>) {
+            AbstractDrawableMesh::name() = MeshType::name();
+        }
+
+        AbstractDrawableMesh::computeBoundingBox(static_cast<MeshType>(*this));
+
+        unbindTextures();
+        mMRD.update(*this, buffersToUpdate);
+        mMRS.setRenderCapabilityFrom(*this);
+        bindTextures();
+    }
+
+    uint vertexNumber() const override { return MeshType::vertexNumber(); }
+
+    uint faceNumber() const override
+    {
+        if constexpr (HasFaces<MeshType>)
+            return MeshType::faceNumber();
+        else
+            return 0;
+    }
+
+    uint edgeNumber() const override
+    {
+        if constexpr (HasEdges<MeshType>)
+            return MeshType::edgeNumber();
+        else
+            return 0;
+    }
+
+    vcl::Matrix44d transformMatrix() const override
+    {
+        if constexpr (HasTransformMatrix<MeshType>) {
+            return MeshType::transformMatrix().template cast<double>();
+        }
+        else {
+            return vcl::Matrix44d::Identity();
+        }
+    }
+
+    std::vector<std::string> textures() const override
+    {
+        std::vector<std::string> txs;
+        if constexpr (HasTexturePaths<MeshType>) {
+            txs.reserve(MeshType::textureNumber());
+            for (const auto& tpath : MeshType::texturePaths()) {
+                txs.push_back(tpath);
+            }
+        }
+        return txs;
+    }
+
     // DrawableObject implementation
 
     void init() override { bindTextures(); }
 
-    void draw(uint) const override
+    void draw(const DrawObjectSettings& settings = {}) const override
     {
         if (mMRS.isVisible()) {
             if (mMRS.isWireframe(MRI::Wireframe::VISIBLE)) {
@@ -231,8 +255,6 @@ public:
         }
     }
 
-    Box3d boundingBox() const override { return mBoundingBox; }
-
     std::shared_ptr<DrawableObject> clone() const& override
     {
         return std::make_shared<DrawableMeshOpenGL2>(*this);
@@ -243,13 +265,17 @@ public:
         return std::make_shared<DrawableMeshOpenGL2>(std::move(*this));
     }
 
+    std::string& name() override { return MeshType::name(); }
+
+    const std::string& name() const override { return MeshType::name(); }
+
 private:
     void renderPass() const
     {
         uint nv = mMRD.vertexNumber();
         uint nt = mMRD.triangleNumber();
 
-        const float*    coords          = mMRD.vertexBufferData();
+        const float*    positions       = mMRD.vertexBufferData();
         const uint32_t* triangles       = mMRD.triangleBufferData();
         const float*    vertexNormals   = mMRD.vertexNormalBufferData();
         const uint32_t* vertexColors    = mMRD.vertexColorBufferData();
@@ -260,7 +286,7 @@ private:
 
         if (mMRS.isPoints(MRI::Points::VISIBLE)) {
             glEnableClientState(GL_VERTEX_ARRAY);
-            glVertexPointer(3, GL_FLOAT, 0, coords);
+            glVertexPointer(3, GL_FLOAT, 0, positions);
 
             if (mMRS.isPoints(MRI::Points::COLOR_VERTEX)) {
                 glEnableClientState(GL_COLOR_ARRAY);
@@ -298,22 +324,22 @@ private:
                         glBegin(GL_TRIANGLES);
                         glColor4ubv((GLubyte*) &(triangleColors[tid]));
                         glNormal3fv(&(vertexNormals[vid0_ptr]));
-                        glVertex3fv(&(coords[vid0_ptr]));
+                        glVertex3fv(&(positions[vid0_ptr]));
                         glNormal3fv(&(vertexNormals[vid1_ptr]));
-                        glVertex3fv(&(coords[vid1_ptr]));
+                        glVertex3fv(&(positions[vid1_ptr]));
                         glNormal3fv(&(vertexNormals[vid2_ptr]));
-                        glVertex3fv(&(coords[vid2_ptr]));
+                        glVertex3fv(&(positions[vid2_ptr]));
                         glEnd();
                     }
                     else {
                         glBegin(GL_TRIANGLES);
                         glColor4ubv((GLubyte*) &(triangleColors[tid]));
                         glNormal3fv(&(triangleNormals[tid_ptr]));
-                        glVertex3fv(&(coords[vid0_ptr]));
+                        glVertex3fv(&(positions[vid0_ptr]));
                         glNormal3fv(&(triangleNormals[tid_ptr]));
-                        glVertex3fv(&(coords[vid1_ptr]));
+                        glVertex3fv(&(positions[vid1_ptr]));
                         glNormal3fv(&(triangleNormals[tid_ptr]));
-                        glVertex3fv(&(coords[vid2_ptr]));
+                        glVertex3fv(&(positions[vid2_ptr]));
                         glEnd();
                     }
                 }
@@ -321,7 +347,7 @@ private:
             else if (mMRS.isSurface(MRI::Surface::COLOR_VERTEX)) {
                 if (mMRS.isSurface(MRI::Surface::SHADING_SMOOTH)) {
                     glEnableClientState(GL_VERTEX_ARRAY);
-                    glVertexPointer(3, GL_FLOAT, 0, coords);
+                    glVertexPointer(3, GL_FLOAT, 0, positions);
 
                     glEnableClientState(GL_NORMAL_ARRAY);
                     glNormalPointer(GL_FLOAT, 0, vertexNormals);
@@ -351,13 +377,13 @@ private:
                         glBegin(GL_TRIANGLES);
                         glColor4ubv((GLubyte*) &(vertexColors[vid0]));
                         glNormal3fv(&(triangleNormals[tid_ptr]));
-                        glVertex3fv(&(coords[vid0_ptr]));
+                        glVertex3fv(&(positions[vid0_ptr]));
                         glColor4ubv((GLubyte*) &(vertexColors[vid1]));
                         glNormal3fv(&(triangleNormals[tid_ptr]));
-                        glVertex3fv(&(coords[vid1_ptr]));
+                        glVertex3fv(&(positions[vid1_ptr]));
                         glColor4ubv((GLubyte*) &(vertexColors[vid2]));
                         glNormal3fv(&(triangleNormals[tid_ptr]));
-                        glVertex3fv(&(coords[vid2_ptr]));
+                        glVertex3fv(&(positions[vid2_ptr]));
                         glEnd();
                     }
                 }
@@ -367,7 +393,7 @@ private:
                 mMRS.isSurface(MRI::Surface::COLOR_USER)) {
                 if (mMRS.isSurface(MRI::Surface::SHADING_SMOOTH)) {
                     glEnableClientState(GL_VERTEX_ARRAY);
-                    glVertexPointer(3, GL_FLOAT, 0, coords);
+                    glVertexPointer(3, GL_FLOAT, 0, positions);
 
                     glEnableClientState(GL_NORMAL_ARRAY);
                     glNormalPointer(GL_FLOAT, 0, vertexNormals);
@@ -405,11 +431,11 @@ private:
 
                         glBegin(GL_TRIANGLES);
                         glNormal3fv(&(triangleNormals[tid_ptr]));
-                        glVertex3fv(&(coords[vid0_ptr]));
+                        glVertex3fv(&(positions[vid0_ptr]));
                         glNormal3fv(&(triangleNormals[tid_ptr]));
-                        glVertex3fv(&(coords[vid1_ptr]));
+                        glVertex3fv(&(positions[vid1_ptr]));
                         glNormal3fv(&(triangleNormals[tid_ptr]));
-                        glVertex3fv(&(coords[vid2_ptr]));
+                        glVertex3fv(&(positions[vid2_ptr]));
                         glEnd();
                     }
                 }
@@ -434,17 +460,17 @@ private:
                         vertTexCoords[vid0 * 2 + 0],
                         vertTexCoords[vid0 * 2 + 1]);
                     glNormal3fv(&(vertexNormals[vid0_ptr]));
-                    glVertex3fv(&(coords[vid0_ptr]));
+                    glVertex3fv(&(positions[vid0_ptr]));
                     glTexCoord2f(
                         vertTexCoords[vid1 * 2 + 0],
                         vertTexCoords[vid1 * 2 + 1]);
                     glNormal3fv(&(vertexNormals[vid1_ptr]));
-                    glVertex3fv(&(coords[vid1_ptr]));
+                    glVertex3fv(&(positions[vid1_ptr]));
                     glTexCoord2f(
                         vertTexCoords[vid2 * 2 + 0],
                         vertTexCoords[vid2 * 2 + 1]);
                     glNormal3fv(&(vertexNormals[vid2_ptr]));
-                    glVertex3fv(&(coords[vid2_ptr]));
+                    glVertex3fv(&(positions[vid2_ptr]));
                     glEnd();
                     glBindTexture(GL_TEXTURE_2D, 0);
                 }
@@ -468,17 +494,17 @@ private:
                         wedgTexCoords[vid0 * 2 + 0],
                         wedgTexCoords[vid0 * 2 + 1]);
                     glNormal3fv(&(vertexNormals[vid0_ptr]));
-                    glVertex3fv(&(coords[vid0_ptr]));
+                    glVertex3fv(&(positions[vid0_ptr]));
                     glTexCoord2f(
                         wedgTexCoords[vid1 * 2 + 0],
                         wedgTexCoords[vid1 * 2 + 1]);
                     glNormal3fv(&(vertexNormals[vid1_ptr]));
-                    glVertex3fv(&(coords[vid1_ptr]));
+                    glVertex3fv(&(positions[vid1_ptr]));
                     glTexCoord2f(
                         wedgTexCoords[vid2 * 2 + 0],
                         wedgTexCoords[vid2 * 2 + 1]);
                     glNormal3fv(&(vertexNormals[vid2_ptr]));
-                    glVertex3fv(&(coords[vid2_ptr]));
+                    glVertex3fv(&(positions[vid2_ptr]));
                     glEnd();
                     glBindTexture(GL_TEXTURE_2D, 0);
                 }
@@ -487,7 +513,7 @@ private:
 
         if (mMRS.isWireframe(MRI::Wireframe::VISIBLE)) {
             glEnableClientState(GL_VERTEX_ARRAY);
-            glVertexPointer(3, GL_FLOAT, 0, coords);
+            glVertexPointer(3, GL_FLOAT, 0, positions);
 
             glLineWidth(mMRS.wireframeWidth());
 

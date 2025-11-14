@@ -25,10 +25,11 @@
 
 #include "file_info.h"
 #include "file_type.h"
-#include "serialization/serialize.h"
 
-#include <vclib/concepts/mesh/elements/element.h>
-#include <vclib/types.h>
+#include <vclib/io/exceptions.h>
+
+#include <vclib/base.h>
+#include <vclib/mesh.h>
 
 #include <filesystem>
 #include <fstream>

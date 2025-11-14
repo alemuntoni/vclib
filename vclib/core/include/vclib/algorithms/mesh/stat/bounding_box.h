@@ -23,8 +23,8 @@
 #ifndef VCL_ALGORITHMS_MESH_STAT_BOUNDING_BOX_H
 #define VCL_ALGORITHMS_MESH_STAT_BOUNDING_BOX_H
 
-#include <vclib/mesh/requirements.h>
-#include <vclib/space/core/box.h>
+#include <vclib/mesh.h>
+#include <vclib/space/core.h>
 
 namespace vcl {
 
@@ -45,10 +45,10 @@ template<MeshConcept MeshType>
 auto boundingBox(const MeshType& m)
 {
     using VertexType = MeshType::VertexType;
-    Box<typename VertexType::CoordType> b;
+    Box<typename VertexType::PositionType> b;
 
     for (const VertexType& v : m.vertices()) {
-        b.add(v.coord());
+        b.add(v.position());
     }
 
     return b;

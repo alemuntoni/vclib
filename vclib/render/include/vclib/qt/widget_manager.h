@@ -80,6 +80,7 @@ public:
         setAttribute(Qt::WA_DontCreateNativeAncestors);
         setAttribute(Qt::WA_NativeWindow);
 #endif
+        setFocusPolicy(Qt::StrongFocus);
     }
 
     explicit WidgetManager(
@@ -141,9 +142,11 @@ protected:
     // current pixel ratio
     // values > 0 are used to detect changes in pixel ratio
     double mCurrentPixelRatio = -1.0;
+#endif
 
     bool event(QEvent* event) override
     {
+#ifdef Q_OS_MACOS
         if (event->type() == QEvent::DevicePixelRatioChange) {
             // save current ratio
             mCurrentPixelRatio = pixelRatio();
@@ -165,10 +168,16 @@ protected:
                 app->sendEvent(this, &resizeEvent);
             }
         }
-
-        return QWidget::event(event);
-    }
 #endif
+        // if widgets' window is blocked or deactivated, reset mofiifers
+        if (event->type() == QEvent::WindowBlocked ||
+            event->type() == QEvent::WindowDeactivate) {
+            DerivedRenderApp::WM::setModifiers(
+                derived(), {KeyModifier::NO_MODIFIER});
+        }
+
+        return Base::event(event);
+    }
 
 #ifdef VCLIB_RENDER_BACKEND_OPENGL2
     void resizeGL(int w, int h) override

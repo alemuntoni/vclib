@@ -23,18 +23,12 @@
 #ifndef VCL_ALGORITHMS_MESH_CONVEX_HULL_H
 #define VCL_ALGORITHMS_MESH_CONVEX_HULL_H
 
-#include <vclib/algorithms/core/bounding_box.h>
-#include <vclib/algorithms/core/box/box3.h>
-#include <vclib/algorithms/core/visibility.h>
 #include <vclib/algorithms/mesh/create/tetrahedron.h>
 #include <vclib/algorithms/mesh/update/topology.h>
-#include <vclib/concepts/mesh.h>
-#include <vclib/mesh/requirements.h>
-#include <vclib/misc/logger.h>
-#include <vclib/misc/parallel.h>
-#include <vclib/misc/shuffle.h>
-#include <vclib/space/complex/graph/bipartite_graph.h>
-#include <vclib/space/complex/mesh_pos.h>
+
+#include <vclib/algorithms/core.h>
+#include <vclib/mesh.h>
+#include <vclib/space/complex.h>
 
 namespace vcl {
 
@@ -78,7 +72,7 @@ void firstTetOptimization(R&& points)
     });
 
     // swap the first points with the closest points to the box corners
-    for (uint i = 0; i < 6; ++i) {
+    for (uint i = 0; i < 6 && i < points.size(); ++i) {
         std::iter_swap(std::ranges::begin(points) + i, distances[i].second);
     }
 }
@@ -89,32 +83,54 @@ void firstTetOptimization(R&& points)
  *
  * @tparam R
  * @param points
- * @param deterministic
+ * @param[in] seed: optional value of seed, to get deterministic results. If not
+ * provided, a random seed is used.
  */
 template<Range R>
-void shufflePoints(R&& points, bool deterministic = false)
+void shufflePoints(R&& points, std::optional<uint> seed = std::nullopt)
     requires Point3Concept<std::ranges::range_value_t<R>>
 {
-    shuffle(points, deterministic);
+    shuffle(points, seed);
 
     firstTetOptimization(points);
 
     auto itP0 = std::ranges::begin(points);
+    auto itP  = std::next(itP0);
+
+    // make sure that the first two points are not coincident
+    while (itP != std::ranges::end(points) && *itP0 == *itP) {
+        itP = std::next(itP);
+    }
+    if (itP == std::ranges::end(points)) {
+        throw std::runtime_error("All points are coincident.");
+    }
     auto itP1 = std::next(itP0);
+    std::iter_swap(itP, itP1);
+
+    itP = std::next(itP);
+
+    // make sure that the first three points are not collinear
+    while (itP != std::ranges::end(points) &&
+           arePointsCollinear(*itP0, *itP1, *itP)) {
+        itP = std::next(itP);
+    }
+    if (itP == std::ranges::end(points)) {
+        throw std::runtime_error("All points are collinear.");
+    }
     auto itP2 = std::next(itP1);
-    auto itP3 = std::next(itP2);
-    auto itP  = std::next(itP2);
+    std::iter_swap(itP, itP2);
+
+    itP = std::next(itP);
 
     auto rEnd = std::ranges::end(points);
 
     while (itP != rEnd && arePointsCoplanar(*itP0, *itP1, *itP2, *itP)) {
         itP = std::next(itP);
     }
-
     if (itP == rEnd) {
         throw std::runtime_error("All points are coplanar.");
     }
-
+    auto itP3 = std::next(itP2);
     std::iter_swap(itP, itP3);
 }
 
@@ -150,7 +166,7 @@ auto initConflictGraph(const MeshType& mesh, R&& points)
     requires Point3Concept<std::ranges::range_value_t<R>>
 {
     using PointType  = std::ranges::range_value_t<R>;
-    using MPointType = MeshType::VertexType::CoordType;
+    using MPointType = MeshType::VertexType::PositionType;
     using FaceType   = MeshType::FaceType;
     using GraphType  = BipartiteGraph<PointType, uint>;
 
@@ -328,18 +344,18 @@ std::vector<uint> addNewFaces(
             firstFace = f;
         }
 
-        convexHull.face(f).setAdjFace(0, lastFace);
+        convexHull.face(f).setAdjFace(0u, lastFace);
         if (lastFace != UINT_NULL)
-            convexHull.face(lastFace).setAdjFace(2, f);
+            convexHull.face(lastFace).setAdjFace(2u, f);
 
-        convexHull.face(f).setAdjFace(1, faceIndex);
+        convexHull.face(f).setAdjFace(1u, faceIndex);
         convexHull.face(faceIndex).setAdjFace(edgeIndex, f);
 
         lastFace = f;
     }
 
-    convexHull.face(firstFace).setAdjFace(0, lastFace);
-    convexHull.face(lastFace).setAdjFace(2, firstFace);
+    convexHull.face(firstFace).setAdjFace(0u, lastFace);
+    convexHull.face(lastFace).setAdjFace(2u, firstFace);
 
     return newFaces;
 }
@@ -373,7 +389,8 @@ void updateNewConflicts(
  *
  * @tparam PointType: The type of the points.
  * @param[in] points: The set of points.
- * @param[in] deterministic: If true, the shuffle will be deterministic.
+ * @param[in] seed: optional value of seed, to get deterministic results. If not
+ * provided, a random seed is used.
  * @param[in] log: The logger.
  * @return The convex hull of the points.
  *
@@ -381,9 +398,9 @@ void updateNewConflicts(
  */
 template<FaceMeshConcept MeshType, Range R, LoggerConcept LogType = NullLogger>
 MeshType convexHull(
-    const R& points,
-    bool     deterministic = false,
-    LogType& log           = nullLogger)
+    const R&            points,
+    std::optional<uint> seed = std::nullopt,
+    LogType&            log  = nullLogger)
     requires Point3Concept<std::ranges::range_value_t<R>>
 {
     using PointType  = std::ranges::range_value_t<R>;
@@ -399,7 +416,7 @@ MeshType convexHull(
     std::vector<PointType> pointsCopy(
         std::ranges::begin(points), std::ranges::end(points));
 
-    detail::shufflePoints(pointsCopy, deterministic);
+    detail::shufflePoints(pointsCopy, seed);
 
     log.log(0, "Making first tetrahedron...");
 
@@ -481,7 +498,7 @@ template<FaceMeshConcept MeshType, Range R, LoggerConcept LogType = NullLogger>
 MeshType convexHull(const R& points, LogType& log)
     requires Point3Concept<std::ranges::range_value_t<R>>
 {
-    return convexHull<MeshType>(points, false, log);
+    return convexHull<MeshType>(points, std::nullopt, log);
 }
 
 } // namespace vcl

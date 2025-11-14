@@ -23,7 +23,7 @@
 #ifndef VCL_ALGORITHMS_MESH_CREATE_HEXAHEDRON_H
 #define VCL_ALGORITHMS_MESH_CREATE_HEXAHEDRON_H
 
-#include <vclib/mesh/requirements.h>
+#include <vclib/mesh.h>
 
 namespace vcl {
 
@@ -76,10 +76,10 @@ void fillHexahedronQuads(MeshType& m)
 template<FaceMeshConcept MeshType>
 MeshType createHexahedron()
 {
-    using CoordType = MeshType::Vertex::CoordType;
+    using PositionType = MeshType::Vertex::PositionType;
 
     return createHexahedron<MeshType>(
-        CoordType(-1, -1, -1), CoordType(1, 1, 1));
+        PositionType(-1, -1, -1), PositionType(1, 1, 1));
 }
 
 /**
@@ -94,21 +94,21 @@ MeshType createHexahedron()
  *
  * @ingroup create
  */
-template<FaceMeshConcept MeshType, Point3Concept CoordType>
-MeshType createHexahedron(const CoordType& min, const CoordType& max)
+template<FaceMeshConcept MeshType, Point3Concept PositionType>
+MeshType createHexahedron(const PositionType& min, const PositionType& max)
 {
     MeshType m;
 
     // fill vertices...
     m.addVertices(
-        CoordType(min(0), min(1), min(2)),
-        CoordType(max(0), min(1), min(2)),
-        CoordType(min(0), max(1), min(2)),
-        CoordType(max(0), max(1), min(2)),
-        CoordType(min(0), min(1), max(2)),
-        CoordType(max(0), min(1), max(2)),
-        CoordType(min(0), max(1), max(2)),
-        CoordType(max(0), max(1), max(2)));
+        PositionType(min(0), min(1), min(2)),
+        PositionType(max(0), min(1), min(2)),
+        PositionType(min(0), max(1), min(2)),
+        PositionType(max(0), max(1), min(2)),
+        PositionType(min(0), min(1), max(2)),
+        PositionType(max(0), min(1), max(2)),
+        PositionType(min(0), max(1), max(2)),
+        PositionType(max(0), max(1), max(2)));
 
     // fill faces
     if constexpr (HasTriangles<MeshType>) {
@@ -128,14 +128,17 @@ MeshType createHexahedron(const CoordType& min, const CoordType& max)
  * triangulated. If the mesh is composed of quads or polygons, a mesh containing
  * 6 quads will be returned.
  *
+ * @param[in] min: The minimum extreme of the Cube.
+ * @param[in] edgeLength: The length of the edges of the Cube.
+ *
  * @return A Mesh containing a ``[min, min+edgeLength]`` Cube.
  *
  * @ingroup create
  */
-template<FaceMeshConcept MeshType, Point3Concept CoordType>
-MeshType createCube(const CoordType& min, double edgeLength)
+template<FaceMeshConcept MeshType, Point3Concept PositionType>
+MeshType createCube(const PositionType& min, double edgeLength)
 {
-    return createHexahedron<MeshType>(min, CoordType(min + edgeLength));
+    return createHexahedron<MeshType>(min, PositionType(min + edgeLength));
 }
 
 /**
@@ -153,8 +156,8 @@ MeshType createCube(const CoordType& min, double edgeLength)
 template<FaceMeshConcept MeshType>
 MeshType createCube()
 {
-    using CoordType = MeshType::Vertex::CoordType;
-    return createCube<MeshType>(CoordType(-0.5, -0.5, -0.5), 1);
+    using PositionType = MeshType::Vertex::PositionType;
+    return createCube<MeshType>(PositionType(-0.5, -0.5, -0.5), 1);
 }
 
 } // namespace vcl

@@ -24,10 +24,9 @@
 #define VCL_ALGORITHMS_MESH_UPDATE_COLOR_H
 
 #include <vclib/algorithms/mesh/stat.h>
-#include <vclib/math/perlin_noise.h>
-#include <vclib/mesh/requirements.h>
-#include <vclib/space/core/color.h>
-#include <vclib/views/mesh.h>
+
+#include <vclib/mesh.h>
+#include <vclib/space/core.h>
 
 #include <set>
 
@@ -41,21 +40,44 @@ struct ColorAvgInfo
     uint         cnt = 0;
 };
 
-template<uint ELEM_ID, FaceMeshConcept MeshType>
+template<uint ELEM_ID, MeshConcept MeshType>
 void setPerElemColorFromVertexColor(MeshType& m)
 {
     requirePerVertexColor(m);
+    requirePerElementComponent<ELEM_ID, CompId::VERTEX_REFERENCES>(m);
     requirePerElementComponent<ELEM_ID, CompId::COLOR>(m);
 
-    using VertexType = MeshType::VertexType;
-
-    for (auto& f : m.template elements<ELEM_ID>()) {
+    for (auto& e : m.template elements<ELEM_ID>()) {
         Point4<uint> avg(0, 0, 0, 0);
-        for (const VertexType* v : f.vertices()) {
+        for (const auto* v : e.vertices()) {
             avg += v->color().template cast<uint>();
         }
-        avg /= f.vertexNumber();
-        f.color() = avg.cast<uint8_t>();
+        avg /= e.vertexNumber();
+        e.color() = avg.template cast<uint8_t>();
+    }
+}
+
+template<uint ELEM_ID, MeshConcept MeshType>
+void setPerVertexColorFromElemColor(MeshType& m)
+{
+    requirePerVertexColor(m);
+    requirePerElementComponent<ELEM_ID, CompId::VERTEX_REFERENCES>(m);
+    requirePerElementComponent<ELEM_ID, CompId::COLOR>(m);
+
+    std::vector<ColorAvgInfo> avgColors(m.vertexContainerSize());
+
+    for (const auto& e : m.template elements<ELEM_ID>()) {
+        for (const auto* v : e.vertices()) {
+            avgColors[v->index()].c += e.color().template cast<uint>();
+            avgColors[v->index()].cnt++;
+        }
+    }
+
+    for (auto& v : m.vertices()) {
+        if (avgColors[v.index()].cnt > 0) {
+            avgColors[v.index()].c /= avgColors[v.index()].cnt;
+            v.color() = avgColors[v.index()].c.template cast<uint8_t>();
+        }
     }
 }
 
@@ -163,23 +185,6 @@ void setPerEdgeColor(
 }
 
 /**
- * @brief Sets the color component of a mesh.
- *
- * @tparam MeshType: type of the input mesh. It must satisfy the HasColor
- * concept.
- *
- * @param[in,out] m: the mesh on which set the color.
- * @param[in] c: the color to set to the mesh.
- *
- * @ingroup update
- */
-template<HasColor MeshType>
-void setMeshColor(MeshType& m, Color c = Color::White)
-{
-    m.color() = c;
-}
-
-/**
  * @brief Sets the vertex colors from its incident face colors, computing a
  * plain average of the face colors.
  *
@@ -198,24 +203,7 @@ void setMeshColor(MeshType& m, Color c = Color::White)
 template<FaceMeshConcept MeshType>
 void setPerVertexColorFromFaceColor(MeshType& m)
 {
-    requirePerVertexColor(m);
-    requirePerFaceColor(m);
-
-    using VertexType = MeshType::VertexType;
-    using FaceType   = MeshType::FaceType;
-
-    std::vector<detail::ColorAvgInfo> csi(m.vertexContainerSize());
-
-    for (const FaceType& f : m.faces()) {
-        for (const VertexType* v : f.vertices()) {
-            csi[m.index(v)].c += v->color();
-            csi[m.index(v)].cnt++;
-        }
-    }
-
-    for (VertexType& v : m.vertices()) {
-        v.color() = csi[m.index(v)].c / csi[m.index(v)].cnt;
-    }
+    detail::setPerVertexColorFromElemColor<ElemId::FACE>(m);
 }
 
 /**
@@ -402,24 +390,24 @@ void setPerVertexColorFromFaceBorderFlag(
     for (FaceType& f : m.faces()) {
         for (uint i = 0; i < f.vertexNumber(); ++i) {
             if (f.edgeOnBorder(i)) {
-                if (f.vertex(i).color() == baseColor)
-                    f.vertex(i).color() = borderColor;
-                if (f.vertex(i).color() == internalColor)
-                    f.vertex(i).color() = mixColor;
-                if (f.vertexMod(i + 1).color() == baseColor)
-                    f.vertexMod(i + 1).color() = borderColor;
-                if (f.vertexMod(i + 1).color() == internalColor)
-                    f.vertexMod(i + 1).color() = mixColor;
+                if (f.vertex(i)->color() == baseColor)
+                    f.vertex(i)->color() = borderColor;
+                if (f.vertex(i)->color() == internalColor)
+                    f.vertex(i)->color() = mixColor;
+                if (f.vertexMod(i + 1)->color() == baseColor)
+                    f.vertexMod(i + 1)->color() = borderColor;
+                if (f.vertexMod(i + 1)->color() == internalColor)
+                    f.vertexMod(i + 1)->color() = mixColor;
             }
             else {
-                if (f.vertex(i).color() == baseColor)
-                    f.vertex(i).color() = internalColor;
-                if (f.vertex(i).color() == borderColor)
-                    f.vertex(i).color() = mixColor;
-                if (f.vertexMod(i + 1).color() == baseColor)
-                    f.vertexMod(i + 1).color() = internalColor;
-                if (f.vertexMod(i + 1).color() == borderColor)
-                    f.vertexMod(i + 1).color() = mixColor;
+                if (f.vertex(i)->color() == baseColor)
+                    f.vertex(i)->color() = internalColor;
+                if (f.vertex(i)->color() == borderColor)
+                    f.vertex(i)->color() = mixColor;
+                if (f.vertexMod(i + 1)->color() == baseColor)
+                    f.vertexMod(i + 1)->color() = internalColor;
+                if (f.vertexMod(i + 1)->color() == borderColor)
+                    f.vertexMod(i + 1)->color() = mixColor;
             }
         }
     }
@@ -534,7 +522,7 @@ void setPerFaceColorScattering(
                 for (uint i = 0; i < f.vertexNumber(); ++i) {
                     if (f.edgeFaux(i)) {
                         assert(f.adjFace(i) != nullptr);
-                        f.adjFace(i)->color = f.color();
+                        f.adjFace(i)->color() = f.color();
                     }
                 }
             }
@@ -544,7 +532,7 @@ void setPerFaceColorScattering(
 
 /**
  * @brief Set the vertex color according to a perlin noise computed on the
- * vertex coordinates.
+ * vertex positions.
  *
  * To make things weirder each color band can have its own offset and frequency.
  * Period is expressed in absolute terms.
@@ -563,12 +551,12 @@ void setPerFaceColorScattering(
  *
  * @ingroup update
  */
-template<MeshConcept MeshType, PointConcept PointType>
+template<MeshConcept MeshType, Point3Concept PointType>
 void setPerVertexColorPerlinNoise(
-    MeshType& m,
-    PointType period,
-    PointType offset     = PointType(0, 0, 0),
-    bool      onSelected = false)
+    MeshType&        m,
+    const PointType& period,
+    const PointType& offset     = PointType(0, 0, 0),
+    bool             onSelected = false)
 {
     requirePerVertexColor(m);
 
@@ -578,9 +566,9 @@ void setPerVertexColorPerlinNoise(
 
     for (VertexType& v : m.vertices()) {
         if (!onSelected || v.selected()) {
-            p[0]      = (v.coord() / period[0]) + offset;
-            p[1]      = (v.coord() / period[1]) + offset;
-            p[2]      = (v.coord() / period[2]) + offset;
+            p[0]      = (v.position() / period[0]) + offset;
+            p[1]      = (v.position() / period[1]) + offset;
+            p[2]      = (v.position() / period[2]) + offset;
             v.color() = Color(
                 127 + 128.0 * perlinNoise(p[0][0], p[0][1], p[0][2]),
                 127 + 128.0 * perlinNoise(p[1][0], p[1][1], p[1][2]),
@@ -608,14 +596,14 @@ void setPerVertexColorPerlinNoise(
  *
  * @ingroup update
  */
-template<MeshConcept MeshType, PointConcept PointType>
+template<MeshConcept MeshType, Point3Concept PointType>
 void setPerVertexPerlinColor(
-    MeshType& m,
-    double    period,
-    PointType offset     = PointType(0, 0, 0),
-    Color     color1     = Color::Black,
-    Color     color2     = Color::White,
-    bool      onSelected = false)
+    MeshType&        m,
+    double           period,
+    const PointType& offset     = PointType(0, 0, 0),
+    const Color&     color1     = Color::Black,
+    const Color&     color2     = Color::White,
+    bool             onSelected = false)
 {
     requirePerVertexColor(m);
 
@@ -623,7 +611,7 @@ void setPerVertexPerlinColor(
 
     for (VertexType& v : m.vertices()) {
         if (!onSelected || v.selected()) {
-            PointType p = v.coord() / period + offset;
+            PointType p = v.position() / period + offset;
 
             double factor = (perlinNoise(p[0], p[1], p[2]) + 1.0) / 2.0;
 

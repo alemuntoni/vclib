@@ -21,7 +21,7 @@
  ****************************************************************************/
 
 #include <vclib/algorithms.h>
-#include <vclib/load_save.h>
+#include <vclib/io.h>
 #include <vclib/meshes.h>
 
 #include <catch2/catch_template_test_macros.hpp>
@@ -38,7 +38,7 @@ TEMPLATE_TEST_CASE(
     using TriMesh = TestType;
 
     TriMesh tm =
-        vcl::loadPly<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_tri.ply");
+        vcl::loadMesh<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_tri.ply");
 
     THEN("The mesh has 8 vertices, 12 triangles")
     {

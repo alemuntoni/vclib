@@ -25,9 +25,7 @@
 
 #include "projection.h"
 
-#include <vclib/concepts/mesh.h>
-#include <vclib/space/core/polygon.h>
-#include <vclib/views/mesh.h>
+#include <vclib/space/core.h>
 
 #if __has_include(<mapbox/earcut.hpp>)
 #include <mapbox/earcut.hpp>
@@ -83,7 +81,7 @@ namespace vcl {
  * iterator used to represent the vertices of the polygon satisfies the
  * Point2Concept requirement, which means that it must have a value_type
  * that is a Point2 object with a ScalarType member representing the scalar
- * type used to represent the coordinates of the point. If the polygon is
+ * type used to represent the position of the point. If the polygon is
  * not simple or has holes, the function throws a std::logic_error.
  *
  * @ingroup core_polygon
@@ -137,7 +135,7 @@ std::vector<uint> earCut(Iterator begin, Iterator end)
  * iterator used to represent the vertices of the polygon satisfies the
  * Point3Concept requirement, which means that it must have a value_type
  * that is a Point3 object with a ScalarType member representing the scalar
- * type used to represent the coordinates of the point. If the polygon is
+ * type used to represent the position of the point. If the polygon is
  * not simple or has holes, the function throws a std::logic_error.
  *
  * @ingroup core_polygon
@@ -167,33 +165,6 @@ template<Range R>
 std::vector<uint> earCut(R&& range)
 {
     return earCut(std::ranges::begin(range), std::ranges::end(range));
-}
-
-/**
- * @brief Computes the earcut algorithm of a 3D *planar* polygonal face, that
- * returns a triangulation of the polygon.
- *
- * Returns a list of indices in which each index is the index of a point of the
- * 3D input polygon, organized in triplets, each one of these is a triangle of
- * the resulting triangulation.
- *
- * This algorithm first computes the normal of the given polygon, then projects
- * it in a 2D plane and executes the classic 2D EarCut algorithm.
- *
- * @tparam Face: the type of the face that satisfies the FaceConcept.
- *
- * @param[in] polygon: A (polygonal) face of a vcl::Mesh.
- *
- * @return A vector of indices, representing the triplets of the triangulation
- * of the polygon.
- *
- * @ingroup core_polygon
- */
-template<FaceConcept Face>
-std::vector<uint> earCut(const Face& polygon)
-{
-    using CoordType = Face::VertexType::CoordType;
-    return earCut(polygon.vertices() | views::coords);
 }
 
 } // namespace vcl

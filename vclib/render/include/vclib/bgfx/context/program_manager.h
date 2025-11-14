@@ -23,10 +23,10 @@
 #ifndef VCL_BGFX_CONTEXT_PROGRAM_MANAGER_H
 #define VCL_BGFX_CONTEXT_PROGRAM_MANAGER_H
 
-#include <vclib/bgfx/programs/embedded_compute_programs.h>
+#include <vclib/base.h>
+#include <vclib/bgfx/programs/embedded_c_programs.h>
 #include <vclib/bgfx/programs/embedded_vf_programs.h>
 #include <vclib/bgfx/programs/load_program.h>
-#include <vclib/types.h>
 
 #include <array>
 
@@ -75,6 +75,7 @@ public:
                     VertFragLoader<PROGRAM>::vertexShader(mRenderType)),
                 vcl::loadShader(
                     VertFragLoader<PROGRAM>::fragmentShader(mRenderType)));
+            assert(bgfx::isValid(mVFPrograms[p]));
         }
         return mVFPrograms[p];
     }
@@ -84,7 +85,8 @@ public:
     {
         uint p = toUnderlying(PROGRAM);
         if (!bgfx::isValid(mCPrograms[p])) {
-            // TODO - use ComputeLoader
+            mCPrograms[p] = vcl::createProgram(vcl::loadShader(
+                ComputeLoader<PROGRAM>::computeShader(mRenderType)));
         }
         return mCPrograms[p];
     }

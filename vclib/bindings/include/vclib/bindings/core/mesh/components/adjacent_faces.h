@@ -25,7 +25,7 @@
 
 #include <vclib/bindings/utils.h>
 
-#include <vclib/concepts/mesh.h>
+#include <vclib/mesh.h>
 
 #include <pybind11/pybind11.h>
 
@@ -45,7 +45,7 @@ void initAdjacentFaces(pybind11::class_<ElementType>& c)
     static const int  N    = ElementType::ADJ_FACE_NUMBER;
     static const bool TTVN = CompType::TIED_TO_VERTEX_NUMBER;
 
-    c.def("adj_face_number", &ElementType::adjFacesNumber);
+    c.def("adj_faces_number", &ElementType::adjFacesNumber);
 
     c.def(
         "adj_face",

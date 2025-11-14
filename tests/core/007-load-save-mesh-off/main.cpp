@@ -20,9 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <vclib/algorithms/mesh/create.h>
-#include <vclib/algorithms/mesh/update.h>
-#include <vclib/load_save.h>
+#include <vclib/algorithms.h>
+#include <vclib/io.h>
 #include <vclib/meshes.h>
 
 #include <catch2/catch_template_test_macros.hpp>
@@ -103,11 +102,15 @@ TEMPLATE_TEST_CASE(
     using TriMesh  = typename TestType::first_type;
     using PolyMesh = typename TestType::second_type;
 
+    vcl::LoadSettings settings;
+
+    vcl::MeshInfo loadedInfo;
+
     SECTION("TriMesh - PolyCube")
     {
         TriMesh tm;
         auto    ss = offPolyCube();
-        vcl::loadOff(tm, ss);
+        vcl::loadOff(tm, ss, loadedInfo);
         REQUIRE(tm.vertexNumber() == 8);
         REQUIRE(tm.faceNumber() == 12);
     }
@@ -116,7 +119,7 @@ TEMPLATE_TEST_CASE(
     {
         TriMesh tm;
         auto    ss = offTriCube();
-        vcl::loadOff(tm, ss);
+        vcl::loadOff(tm, ss, loadedInfo);
         REQUIRE(tm.vertexNumber() == 8);
         REQUIRE(tm.faceNumber() == 12);
     }
@@ -125,7 +128,7 @@ TEMPLATE_TEST_CASE(
     {
         PolyMesh pm;
         auto     ss = offPolyCube();
-        vcl::loadOff(pm, ss);
+        vcl::loadOff(pm, ss, loadedInfo);
         REQUIRE(pm.vertexNumber() == 8);
         REQUIRE(pm.faceNumber() == 6);
     }
@@ -134,7 +137,7 @@ TEMPLATE_TEST_CASE(
     {
         PolyMesh pm;
         auto     ss = offTriCube();
-        vcl::loadOff(pm, ss);
+        vcl::loadOff(pm, ss, loadedInfo);
         REQUIRE(pm.vertexNumber() == 8);
         REQUIRE(pm.faceNumber() == 12);
     }
@@ -157,7 +160,7 @@ TEMPLATE_TEST_CASE(
 
         std::ostringstream oss;
         vcl::MeshInfo      i(tm);
-        i.setVertexNormals(false);
+        i.setPerVertexNormal(false);
         vcl::SaveSettings settings;
         settings.info = i;
         vcl::saveOff(tm, oss, settings);

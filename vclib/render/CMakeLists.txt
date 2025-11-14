@@ -39,13 +39,6 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/vclib/render/*.cpp")
 
 file(GLOB_RECURSE ASSETS CONFIGURE_DEPENDS "assets/*")
 
-# remove all files in ${CMAKE_CURRENT_BINARY_DIR}/include/vclib
-file(GLOB_RECURSE VCLIB_RENDER_GEN_HEADERS CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_BINARY_DIR}/include/vclib/*")
-foreach(FILE ${VCLIB_RENDER_GEN_HEADERS})
-    file(REMOVE ${FILE})
-endforeach()
-
 # if render engine is bgfx - include sources that use bgfx
 if (VCLIB_RENDER_BACKEND STREQUAL "bgfx")
     file(GLOB_RECURSE HEADERS_BGFX CONFIGURE_DEPENDS
@@ -144,22 +137,15 @@ if (TARGET vclib-3rd-qt)
     endif()
 endif()
 
-# vclib-render target
-if (WIN32)
-    # on windows vclib-render must be static - needed for bgfx
-    # TODO - try to make it work also on windows with SHARED...
-    set(VLIB_RENDER_LIB_TYPE STATIC)
-else()
-    set(VLIB_RENDER_LIB_TYPE SHARED)
-endif()
-
-add_library(${PROJECT_NAME} ${VLIB_RENDER_LIB_TYPE}
+add_library(${PROJECT_NAME}
     ${HEADERS} ${SOURCES} ${SHADERS} ${FORMS})
 add_library(vclib::render ALIAS ${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${VCLIB_RENDER_INCLUDE_DIR})
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}/include)
+
+target_compile_definitions(${PROJECT_NAME} INTERFACE VCLIB_RENDER_MODULE)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VCLIB_RENDER_INCLUDE_DIR ${VCLIB_RENDER_INCLUDE_DIR})
@@ -169,6 +155,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
 
 if (VCLIB_RENDER_BACKEND STREQUAL "bgfx")
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/bgfx_config.cmake)
+
     target_compile_definitions(${PROJECT_NAME} PUBLIC VCLIB_RENDER_BACKEND_BGFX)
 
     build_bgfx_shaders_to_headers(${SHADERS})
@@ -191,3 +179,20 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ${VCLIB_RENDER_3RDPARTY_LIBRARIES} vclib::core)
+
+# Install
+install(DIRECTORY ${VCLIB_RENDER_INCLUDE_DIR}/vclib
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/vclib
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/)
+
+install(TARGETS ${PROJECT_NAME}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+if (VCLIB_RENDER_BACKEND STREQUAL "bgfx")
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/bgfx_config.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/vclib)
+endif()

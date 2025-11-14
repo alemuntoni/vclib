@@ -23,8 +23,7 @@
 #ifndef VCL_MESHES_EDGE_MESH_H
 #define VCL_MESHES_EDGE_MESH_H
 
-#include <vclib/mesh/mesh.h>
-#include <vclib/mesh/requirements.h>
+#include <vclib/mesh.h>
 
 namespace vcl {
 
@@ -45,7 +44,7 @@ class Edge;
  * @brief The Vertex type used by the EdgeMeshT class.
  *
  * @extends vert::BitFlags
- * @extends vert::Coordinate3
+ * @extends vert::Position3
  * @extends vert::Normal3
  * @extends vert::OptionalColor
  * @extends vert::OptionalQuality
@@ -66,7 +65,7 @@ class Vertex :
         public vcl::Vertex<
             EdgeMeshT<Scalar, I>,
             vert::BitFlags,
-            vert::Coordinate3<Scalar>,
+            vert::Position3<Scalar>,
             vert::Normal3<Scalar>,
             vert::OptionalColor<Vertex<Scalar, I>>,
             vert::OptionalQuality<Scalar, Vertex<Scalar, I>>,
@@ -76,6 +75,8 @@ class Vertex :
             vert::OptionalMark<Vertex<Scalar, I>>,
             vert::CustomComponents<Vertex<Scalar, I>>>
 {
+public:
+    friend void swap(Vertex& a, Vertex& b) { a.swap(b); }
 };
 
 /**
@@ -109,6 +110,8 @@ class Edge :
             edge::OptionalMark<Edge<Scalar, I>>,
             edge::CustomComponents<Edge<Scalar, I>>>
 {
+public:
+    friend void swap(Edge& a, Edge& b) { a.swap(b); }
 };
 
 } // namespace vcl::edgemesh

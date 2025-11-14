@@ -1,5 +1,12 @@
 {
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.intelliSenseEngine": "default",
+    "C_Cpp.configurationWarnings": "enabled",
+    "C_Cpp.autoAddFileAssociations": false,
+    "C_Cpp.intelliSenseEngineFallback": "enabled",
+    "cmake.buildDirectory": "${workspaceFolder}/out/build/${variant:buildType}",
+    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+    "cmake.generator": "Ninja",
     "cSpell.words": [
         "AABB",
         "betwo",

@@ -21,7 +21,7 @@
  ****************************************************************************/
 
 #include <vclib/algorithms.h>
-#include <vclib/load_save.h>
+#include <vclib/io.h>
 #include <vclib/meshes.h>
 
 #include <catch2/catch_template_test_macros.hpp>
@@ -38,7 +38,7 @@ TEMPLATE_TEST_CASE(
     using TriMesh = TestType;
 
     TriMesh tm =
-        vcl::loadPly<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_tri.ply");
+        vcl::loadMesh<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_tri.ply");
 
     THEN("The mesh has 8 vertices, 12 triangles")
     {
@@ -301,7 +301,7 @@ TEMPLATE_TEST_CASE(
     using TriMesh = TestType;
 
     TriMesh pm =
-        vcl::loadPly<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_tri.ply");
+        vcl::loadMesh<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_tri.ply");
 
     THEN("The mesh has 8 vertices, 12 triangles")
     {
@@ -566,7 +566,7 @@ TEMPLATE_TEST_CASE(
     using PolyMesh = TestType;
 
     PolyMesh pm =
-        vcl::loadPly<PolyMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_poly.ply");
+        vcl::loadMesh<PolyMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_poly.ply");
 
     THEN("The mesh has 8 vertices, 6 faces")
     {
@@ -759,7 +759,7 @@ TEMPLATE_TEST_CASE(
     using TriMesh = TestType;
 
     TriMesh tm1 =
-        vcl::loadPly<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.ply");
+        vcl::loadMesh<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.ply");
 
     THEN("Test the number of vertices to duplicate")
     {
@@ -767,7 +767,7 @@ TEMPLATE_TEST_CASE(
     }
 
     TriMesh tm2 =
-        vcl::loadPly<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_textured.ply");
+        vcl::loadMesh<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_textured.ply");
 
     THEN("Test the number of vertices to duplicate")
     {
@@ -788,5 +788,119 @@ TEMPLATE_TEST_CASE(
         REQUIRE(vertWedgeMap.size() == tm2.vertexNumber());
         REQUIRE(vertsToDuplicate.size() == nV);
         REQUIRE(facesToReassign.size() == nV);
+    }
+}
+
+TEMPLATE_TEST_CASE(
+    "TriEdgeMesh Topology",
+    "",
+    vcl::TriEdgeMesh,
+    vcl::TriEdgeMeshf,
+    vcl::TriEdgeMeshIndexed,
+    vcl::TriEdgeMeshIndexedf)
+{
+    using TriEdgeMesh = TestType;
+
+    TriEdgeMesh tm =
+        vcl::loadMesh<TriEdgeMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_tri.ply");
+
+    tm.addEdge(6u, 7u);
+    tm.addEdge(5u, 7u);
+    tm.addEdge(5u, 4u);
+    tm.addEdge(4u, 6u);
+
+    THEN("The mesh has 8 vertices, 12 triangles and 4 edges")
+    {
+        REQUIRE(tm.vertexNumber() == 8);
+        REQUIRE(tm.faceNumber() == 12);
+        REQUIRE(tm.edgeNumber() == 4);
+    }
+
+    THEN("Test Per Vertex Adjacent Edges")
+    {
+        tm.enablePerVertexAdjacentEdges();
+        vcl::updatePerVertexAdjacentEdges(tm);
+
+        REQUIRE(tm.vertex(0).adjEdgesNumber() == 0);
+        REQUIRE(tm.vertex(1).adjEdgesNumber() == 0);
+        REQUIRE(tm.vertex(2).adjEdgesNumber() == 0);
+        REQUIRE(tm.vertex(3).adjEdgesNumber() == 0);
+        REQUIRE(tm.vertex(4).adjEdgesNumber() == 2);
+        REQUIRE(tm.vertex(4).adjEdge(0) == &tm.edge(2));
+        REQUIRE(tm.vertex(4).adjEdge(1) == &tm.edge(3));
+        REQUIRE(tm.vertex(5).adjEdgesNumber() == 2);
+        REQUIRE(tm.vertex(5).adjEdge(0) == &tm.edge(1));
+        REQUIRE(tm.vertex(5).adjEdge(1) == &tm.edge(2));
+        REQUIRE(tm.vertex(6).adjEdgesNumber() == 2);
+        REQUIRE(tm.vertex(6).adjEdge(0) == &tm.edge(0));
+        REQUIRE(tm.vertex(6).adjEdge(1) == &tm.edge(3));
+        REQUIRE(tm.vertex(7).adjEdgesNumber() == 2);
+        REQUIRE(tm.vertex(7).adjEdge(0) == &tm.edge(0));
+        REQUIRE(tm.vertex(7).adjEdge(1) == &tm.edge(1));
+    }
+
+    THEN("Test Per Face Adjacent Edges")
+    {
+        tm.enablePerFaceAdjacentEdges();
+        vcl::updatePerFaceAdjacentEdges(tm);
+
+        REQUIRE(tm.face(0).adjEdgesNumber() == 0);
+        REQUIRE(tm.face(1).adjEdgesNumber() == 0);
+        REQUIRE(tm.face(2).adjEdgesNumber() == 0);
+        REQUIRE(tm.face(3).adjEdgesNumber() == 1);
+        REQUIRE(tm.face(3).adjEdge(0) == &tm.edge(3));
+        REQUIRE(tm.face(4).adjEdgesNumber() == 0);
+        REQUIRE(tm.face(5).adjEdgesNumber() == 1);
+        REQUIRE(tm.face(5).adjEdge(0) == &tm.edge(2));
+        REQUIRE(tm.face(6).adjEdgesNumber() == 2);
+        REQUIRE(tm.face(6).adjEdge(0) == &tm.edge(0));
+        REQUIRE(tm.face(6).adjEdge(1) == &tm.edge(1));
+        REQUIRE(tm.face(7).adjEdgesNumber() == 2);
+        REQUIRE(tm.face(7).adjEdge(0) == &tm.edge(2));
+        REQUIRE(tm.face(7).adjEdge(1) == &tm.edge(3));
+        REQUIRE(tm.face(8).adjEdgesNumber() == 1);
+        REQUIRE(tm.face(8).adjEdge(0) == &tm.edge(0));
+        REQUIRE(tm.face(9).adjEdgesNumber() == 0);
+        REQUIRE(tm.face(10).adjEdgesNumber() == 1);
+        REQUIRE(tm.face(10).adjEdge(0) == &tm.edge(1));
+        REQUIRE(tm.face(11).adjEdgesNumber() == 0);
+    }
+
+    THEN("Test Per Edge Adjacent Faces")
+    {
+        tm.enablePerEdgeAdjacentFaces();
+        vcl::updatePerEdgeAdjacentFaces(tm);
+
+        REQUIRE(tm.edge(0).adjFacesNumber() == 2);
+        REQUIRE(tm.edge(0).containsAdjFace(&tm.face(6)));
+        REQUIRE(tm.edge(0).containsAdjFace(&tm.face(8)));
+        REQUIRE(tm.edge(1).adjFacesNumber() == 2);
+        REQUIRE(tm.edge(1).containsAdjFace(&tm.face(6)));
+        REQUIRE(tm.edge(1).containsAdjFace(&tm.face(10)));
+        REQUIRE(tm.edge(2).adjFacesNumber() == 2);
+        REQUIRE(tm.edge(2).containsAdjFace(&tm.face(5)));
+        REQUIRE(tm.edge(2).containsAdjFace(&tm.face(7)));
+        REQUIRE(tm.edge(3).adjFacesNumber() == 2);
+        REQUIRE(tm.edge(3).containsAdjFace(&tm.face(3)));
+        REQUIRE(tm.edge(3).containsAdjFace(&tm.face(7)));
+    }
+
+    THEN("Test Per Edge Adjacent Edges")
+    {
+        tm.enablePerEdgeAdjacentEdges();
+        vcl::updatePerEdgeAdjacentEdges(tm);
+
+        REQUIRE(tm.edge(0).adjEdgesNumber() == 2);
+        REQUIRE(tm.edge(0).containsAdjEdge(&tm.edge(3)));
+        REQUIRE(tm.edge(0).containsAdjEdge(&tm.edge(1)));
+        REQUIRE(tm.edge(1).adjEdgesNumber() == 2);
+        REQUIRE(tm.edge(1).containsAdjEdge(&tm.edge(2)));
+        REQUIRE(tm.edge(1).containsAdjEdge(&tm.edge(0)));
+        REQUIRE(tm.edge(2).adjEdgesNumber() == 2);
+        REQUIRE(tm.edge(2).containsAdjEdge(&tm.edge(1)));
+        REQUIRE(tm.edge(2).containsAdjEdge(&tm.edge(3)));
+        REQUIRE(tm.edge(3).adjEdgesNumber() == 2);
+        REQUIRE(tm.edge(3).containsAdjEdge(&tm.edge(0)));
+        REQUIRE(tm.edge(3).containsAdjEdge(&tm.edge(2)));
     }
 }

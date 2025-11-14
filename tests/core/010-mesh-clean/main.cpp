@@ -21,7 +21,7 @@
  ****************************************************************************/
 
 #include <vclib/algorithms.h>
-#include <vclib/load_save.h>
+#include <vclib/io.h>
 #include <vclib/meshes.h>
 
 #include <catch2/catch_template_test_macros.hpp>
@@ -30,9 +30,9 @@
 template<vcl::FaceMeshConcept MeshType>
 void populateTriMesh(MeshType& tm)
 {
-    using Point = MeshType::VertexType::CoordType;
+    using Point = MeshType::VertexType::PositionType;
 
-    // note: p3 and p4 have same coords
+    // note: p3 and p4 have same position
     const Point p0(0, 0, 0);
     const Point p1(1, 0, 0);
     const Point p2(0, 1, 0);
@@ -48,7 +48,7 @@ void populateTriMesh(MeshType& tm)
     tm.addFace(1, 2, 0); // dup of 0
     tm.addFace(3, 1, 0);
     tm.addFace(1, 3, 0); // dup of 3
-    tm.addFace(1, 4, 0); // not dup of 3 (different coordinates)
+    tm.addFace(1, 4, 0); // not dup of 3 (different position)
     tm.addFace(2, 1, 0); // dup of 0
     tm.addFace(0, 1, 2); // dup of 0
     tm.addFace(5, 3, 4);
@@ -57,9 +57,9 @@ void populateTriMesh(MeshType& tm)
 template<vcl::FaceMeshConcept MeshType>
 void populatePolyMesh(MeshType& pm)
 {
-    using Point = MeshType::VertexType::CoordType;
+    using Point = MeshType::VertexType::PositionType;
 
-    // note: p3 and p4 have same coords
+    // note: p3 and p4 have same position
     const Point p0(0, 0, 0);
     const Point p1(1, 0, 0);
     const Point p2(0, 1, 0);
@@ -70,7 +70,7 @@ void populatePolyMesh(MeshType& pm)
 
     pm.addFace(0, 1, 2);
     pm.addFace(0, 1, 2, 3);
-    pm.addFace(0, 1, 2, 4); // not dup of 1 (different coordinates)
+    pm.addFace(0, 1, 2, 4); // not dup of 1 (different position)
     pm.addFace(0, 2, 1, 3); // dup of 1
     pm.addFace(4, 1, 2, 0); // dup of 2
     pm.addFace(0, 2, 1);    // dup of 0
@@ -79,7 +79,7 @@ void populatePolyMesh(MeshType& pm)
 template<vcl::EdgeMeshConcept MeshType>
 void populateEdgeMesh(MeshType& m)
 {
-    using Point = MeshType::VertexType::CoordType;
+    using Point = MeshType::VertexType::PositionType;
 
     const Point p0(0, 0, 0);
     const Point p1(1, 0, 0);
@@ -121,7 +121,7 @@ TEMPLATE_TEST_CASE(
         REQUIRE(tm.vertexNumber() == 7);
         REQUIRE(tm.faceNumber() == 9);
 
-        unsigned int nr = vcl::removeDuplicatedFaces(tm);
+        unsigned int nr = vcl::removeDuplicateFaces(tm);
         REQUIRE(nr == 5);
         REQUIRE(tm.vertexNumber() == 7);
         REQUIRE(tm.faceNumber() == 4);
@@ -136,7 +136,7 @@ TEMPLATE_TEST_CASE(
         REQUIRE(pm.vertexNumber() == 7);
         REQUIRE(pm.faceNumber() == 9);
 
-        unsigned int nr = vcl::removeDuplicatedFaces(pm);
+        unsigned int nr = vcl::removeDuplicateFaces(pm);
         REQUIRE(nr == 5);
         REQUIRE(pm.vertexNumber() == 7);
         REQUIRE(pm.faceNumber() == 4);
@@ -151,7 +151,7 @@ TEMPLATE_TEST_CASE(
         REQUIRE(pm.vertexNumber() == 5);
         REQUIRE(pm.faceNumber() == 6);
 
-        unsigned int nr = vcl::removeDuplicatedFaces(pm);
+        unsigned int nr = vcl::removeDuplicateFaces(pm);
 
         REQUIRE(nr == 3);
         REQUIRE(pm.vertexNumber() == 5);
@@ -171,7 +171,8 @@ TEMPLATE_TEST_CASE(
 
     SECTION("A TriMesh that is not watertight")
     {
-        TriMesh t = vcl::load<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/brain.ply");
+        TriMesh t =
+            vcl::loadMesh<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/brain.ply");
 
         REQUIRE(t.vertexNumber() == 18844);
         REQUIRE(t.faceNumber() == 36752);
@@ -182,7 +183,7 @@ TEMPLATE_TEST_CASE(
     SECTION("A TriMesh that is watertight")
     {
         vcl::TriMesh t =
-            vcl::load<vcl::TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/bone.ply");
+            vcl::loadMesh<vcl::TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/bone.ply");
 
         REQUIRE(t.vertexNumber() == 1872);
         REQUIRE(t.faceNumber() == 3022);
@@ -207,7 +208,7 @@ TEMPLATE_TEST_CASE(
 
     REQUIRE(tm.face(5).vertex(1) == &tm.vertex(4));
 
-    unsigned int nv = vcl::removeDuplicatedVertices(tm);
+    unsigned int nv = vcl::removeDuplicateVertices(tm);
 
     REQUIRE(nv == 1);
 
@@ -252,9 +253,9 @@ TEMPLATE_TEST_CASE(
 {
     using TriMesh = TestType;
 
-    TriMesh t = vcl::load<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/brain.ply");
+    TriMesh t = vcl::loadMesh<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/brain.ply");
 
-    unsigned int nv = vcl::removeDuplicatedVertices(t);
+    unsigned int nv = vcl::removeDuplicateVertices(t);
 
     SECTION("Test number duplicated vertices")
     {

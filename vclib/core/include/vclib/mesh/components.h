@@ -29,12 +29,12 @@
 #include "components/bit_flags.h"
 #include "components/bounding_box.h"
 #include "components/color.h"
-#include "components/coordinate.h"
 #include "components/custom_components.h"
 #include "components/mark.h"
 #include "components/name.h"
 #include "components/normal.h"
 #include "components/polygon_bit_flags.h"
+#include "components/position.h"
 #include "components/principal_curvature.h"
 #include "components/quality.h"
 #include "components/tex_coord.h"
@@ -45,5 +45,14 @@
 #include "components/vertex_references.h"
 #include "components/wedge_colors.h"
 #include "components/wedge_tex_coords.h"
+
+/**
+ * @defgroup components_concepts Components Concepts
+ * @ingroup mesh_concepts
+ * @ingroup components
+ *
+ * @brief List of concepts for types related to the Component classes of the
+ * library.
+ */
 
 #endif // VCL_MESH_COMPONENTS_H

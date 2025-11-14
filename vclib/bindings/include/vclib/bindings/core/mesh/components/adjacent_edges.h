@@ -25,7 +25,7 @@
 
 #include <vclib/bindings/utils.h>
 
-#include <vclib/concepts/mesh.h>
+#include <vclib/mesh.h>
 
 #include <pybind11/pybind11.h>
 
@@ -45,7 +45,7 @@ void initAdjacentEdges(pybind11::class_<ElementType>& c)
     static const int  N    = ElementType::ADJ_EDGE_NUMBER;
     static const bool TTVN = CompType::TIED_TO_VERTEX_NUMBER;
 
-    c.def("adj_edge_number", &ElementType::adjEdgesNumber);
+    c.def("adj_edges_number", &ElementType::adjEdgesNumber);
 
     c.def(
         "adj_edge",

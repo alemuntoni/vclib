@@ -22,7 +22,7 @@
 
 #include <vclib/bgfx/drawable/drawable_directional_light.h>
 
-#include <vclib/math/transform.h>
+#include <vclib/algorithms/core.h>
 #include <vclib/render/viewer/matrix.h>
 
 namespace vcl {
@@ -63,7 +63,7 @@ DrawableDirectionalLight::DrawableDirectionalLight(
     const DrawableDirectionalLight& other) :
         DrawableObject(other), mVisible(other.mVisible),
         mTransform(other.mTransform), mVertices(other.mVertices),
-        mColor(other.mColor), mUniform(other.mUniform), mProgram(other.mProgram)
+        mColor(other.mColor), mUniform(other.mUniform)
 {
     createVertexBuffer();
 }
@@ -92,9 +92,8 @@ void DrawableDirectionalLight::swap(DrawableDirectionalLight& other)
     mVertices.swap(other.mVertices);
     swap(mColor, other.mColor);
     swap(mUniform, other.mUniform);
-    swap(mProgram, other.mProgram);
     swap(mTransform, other.mTransform);
-    swap(mVertexCoordBuffer, other.mVertexCoordBuffer);
+    swap(mVertexPosBuffer, other.mVertexPosBuffer);
 }
 
 void DrawableDirectionalLight::updateRotation(const Matrix44f& rot)
@@ -108,23 +107,25 @@ void DrawableDirectionalLight::setLinesColor(const Color& c)
     mUniform.setColor(mColor);
 }
 
-void DrawableDirectionalLight::draw(uint viewId) const
+void DrawableDirectionalLight::draw(const DrawObjectSettings& settings) const
 {
+    using enum VertFragProgram;
+
+    ProgramManager& pm = Context::instance().programManager();
+
     if (isVisible()) {
-        if (bgfx::isValid(mProgram)) {
-            bgfx::setState(
-                0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A |
-                BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LEQUAL |
-                BGFX_STATE_PT_LINES);
+        bgfx::setState(
+            0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
+            BGFX_STATE_DEPTH_TEST_LEQUAL | BGFX_STATE_PT_LINES);
 
-            bgfx::setTransform(mTransform.data());
+        bgfx::setTransform(mTransform.data());
 
-            mUniform.bind();
+        mUniform.bind();
 
-            mVertexCoordBuffer.bind(0);
+        mVertexPosBuffer.bind(0);
 
-            bgfx::submit(viewId, mProgram);
-        }
+        bgfx::submit(
+            settings.viewId, pm.getProgram<DRAWABLE_DIRECTIONAL_LIGHT>());
     }
 }
 
@@ -145,7 +146,7 @@ std::shared_ptr<DrawableObject> DrawableDirectionalLight::clone() &&
 
 void DrawableDirectionalLight::createVertexBuffer()
 {
-    mVertexCoordBuffer.create(
+    mVertexPosBuffer.create(
         mVertices.data(),
         mVertices.size() / 3,
         bgfx::Attrib::Position,

@@ -1,8 +1,6 @@
 # VCLib-Render ToDo list
 
 - General
-  - [ ] qt headers and sources should be moved into vclib/processing/qt inside this module,
-    and should be included only if vclib-processing target is available
   - [X] Manage polygonal meshes by DrawableMesh
   - [X] Fix build failure when the build directory is in the same directory as the source
   - [X] Add the possibility to check if BGFX is available in the system
@@ -60,6 +58,14 @@
   - [X] fix BGFX LEAK: IndexBufferHandle 1 (max: 4096) on shutdown (SOLVED MISTERIOUSLY)
   - [X] change DesktopTrackball & ViewerI API to enable direct access to the Trackball functionalities + possible major class restructuring (REFACTORING IN PROGRESS)
   - [ ] update documentation of Canvas & co.
-  - [ ] implement screenshot custom size (split rendering into multiple tiles)
+  - [ ] Eventually implement screenshot custom size (split rendering into multiple tiles)
+  - [X] screenshot with size multiplier (bgfx only)
   - [X] move MeshViewerImguiDrawer into library
-  - [ ] move example 07 mesh-viewer-imgui in example 02
+  - [X] move example 07 mesh-viewer-imgui in example 02
+  - [ ] examples using qt and imgui freeze on macos when set fullscreen
+  - [ ] completely rethink trackball event handling
+  - [ ] on DrawableMesh, manage right click event (draw id) for wireframe and edges
+  - [ ] add shading per-line on Lines and their implementations
+  - [X] add wireframe and edge size for imgui interface
+  - [X] add possibility to set and get camera from the trackball (and viewer)
+  - [ ] implement and test orthographic camera set and get from the trackball

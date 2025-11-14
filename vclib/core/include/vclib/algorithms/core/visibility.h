@@ -23,12 +23,35 @@
 #ifndef VCL_ALGORITHMS_CORE_VISIBILITY_H
 #define VCL_ALGORITHMS_CORE_VISIBILITY_H
 
-#include <vclib/concepts/space/plane.h>
-#include <vclib/concepts/space/point.h>
-#include <vclib/concepts/space/triangle.h>
-#include <vclib/space/core/triangle_wrapper.h>
+#include <vclib/space/core.h>
 
 namespace vcl {
+
+/**
+ * @brief Compute the determinant of the half-space defined by the triangle
+ * (p1, p2, p3) and the point p.
+ *
+ * The triangle is defined by the points p1, p2, and p3, ordered in a
+ * counter-clockwise manner.
+ *
+ * @tparam PointType: The type of the points.
+ * @param[in] p0: The first point of the triangle.
+ * @param[in] p1: The second point of the triangle.
+ * @param[in] p2: The third point of the triangle.
+ * @param[in] p: The point to test.
+ * @return The determinant of the half-space.
+ *
+ * @ingroup algorithms_core
+ */
+template<Point3Concept PointType>
+auto halfSpaceDeterminant(
+    const PointType& p0,
+    const PointType& p1,
+    const PointType& p2,
+    const PointType& p)
+{
+    return (p1 - p0).cross(p2 - p0).dot(p - p0);
+}
 
 /**
  * @brief Compute the determinant of the half-space defined by the triangle
@@ -46,84 +69,51 @@ namespace vcl {
 template<Triangle3Concept TriangleType, Point3Concept PointType>
 auto halfSpaceDeterminant(const TriangleType& triangle, const PointType& point)
 {
-    return (triangle.point(1) - triangle.point(0))
-        .cross(triangle.point(2) - triangle.point(0))
-        .dot(point - triangle.point(0));
-}
-
-/**
- * @brief Compute the determinant of the half-space defined by the triangle
- * and the point.
- *
- * @tparam FaceType: The type of the face that defines the half-space.
- * @tparam PointType: The type of the point to test.
- *
- * @param[in] face: The face that defines the half-space.
- * @param[in] point: The point to test.
- * @return The determinant of the half-space.
- *
- * @ingroup algorithms_core
- */
-template<FaceConcept FaceType, Point3Concept PointType>
-auto halfSpaceDeterminant(const FaceType& face, const PointType& point)
-{
-    // TODO: don't just check the first three vertices: first check if the face
-    // is a triangle, then:
-    // - if it is a triangle, keep the current implementation
-    // - if it is a polygon, use its normal to compute the determinant
     return halfSpaceDeterminant(
-        face.vertex(0)->coord(),
-        face.vertex(1)->coord(),
-        face.vertex(2)->coord(),
-        point);
+        triangle.point(0), triangle.point(1), triangle.point(2), point);
 }
 
 /**
- * @brief Compute the determinant of the half-space defined by the triangle
- * (p1, p2, p3) and the point p.
- *
- * The triangle is defined by the points p1, p2, and p3, ordered in a
- * counter-clockwise manner.
+ * @brief Checks if 3 points are collinear.
  *
  * @tparam PointType: The type of the points.
- * @param[in] p1: The first point of the triangle.
- * @param[in] p2: The second point of the triangle.
- * @param[in] p3: The third point of the triangle.
- * @param[in] p: The point to test.
- * @return The determinant of the half-space.
+ * @param[in] p0: First point to test.
+ * @param[in] p1: Second point to test.
+ * @param[in] p2: Third point to test.
+ * @return True if the points are collinear, false otherwise.
  *
  * @ingroup algorithms_core
  */
 template<Point3Concept PointType>
-auto halfSpaceDeterminant(
+bool arePointsCollinear(
+    const PointType& p0,
     const PointType& p1,
-    const PointType& p2,
-    const PointType& p3,
-    const PointType& p)
+    const PointType& p2)
 {
-    return halfSpaceDeterminant(TriangleWrapper(p1, p2, p3), p);
+    PointType c = (p1 - p0).cross(p2 - p0);
+    return c.squaredNorm() == 0;
 }
 
 /**
  * @brief Checks if 4 points are coplanar.
  *
  * @tparam PointType: The type of the points.
- * @param[in] p1: First point to test.
- * @param[in] p2: Second point to test.
- * @param[in] p3: Third point to test.
- * @param[in] p4: Fourth point to test.
+ * @param[in] p0: First point to test.
+ * @param[in] p1: Second point to test.
+ * @param[in] p2: Third point to test.
+ * @param[in] p3: Fourth point to test.
  * @return True if the points are coplanar, false otherwise.
  *
  * @ingroup algorithms_core
  */
 template<Point3Concept PointType>
 bool arePointsCoplanar(
+    const PointType& p0,
     const PointType& p1,
     const PointType& p2,
-    const PointType& p3,
-    const PointType& p4)
+    const PointType& p3)
 {
-    return halfSpaceDeterminant(p1, p2, p3, p4) == 0;
+    return halfSpaceDeterminant(p0, p1, p2, p3) == 0;
 }
 
 /**
@@ -151,9 +141,9 @@ bool trianglePointVisibility(
  * in the half-space defined by the triangle.
  *
  * @tparam PointType: The type of the points.
- * @param[in] p1: The first point of the triangle.
- * @param[in] p2: The second point of the triangle.
- * @param[in] p3: The third point of the triangle.
+ * @param[in] p0: The first point of the triangle.
+ * @param[in] p1: The second point of the triangle.
+ * @param[in] p2: The third point of the triangle.
  * @param[in] p: The point to test.
  * @return true if the point is visible from the triangle, false otherwise.
  *
@@ -161,30 +151,12 @@ bool trianglePointVisibility(
  */
 template<Point3Concept PointType>
 auto trianglePointVisibility(
+    const PointType& p0,
     const PointType& p1,
     const PointType& p2,
-    const PointType& p3,
     const PointType& p)
 {
-    return halfSpaceDeterminant(p1, p2, p3, p) > 0;
-}
-
-/**
- * @brief Checks if a point is visible from a face, i.e., if the point is in the
- * half-space defined by the face.
- *
- * @tparam FaceType: The type of the face.
- * @tparam PointType: The type of the point.
- * @param[in] face: The input face.
- * @param[in] point: The point to test.
- * @return true if the point is visible from the face, false otherwise.
- *
- * @ingroup algorithms_core
- */
-template<FaceConcept FaceType, Point3Concept PointType>
-bool facePointVisibility(const FaceType& face, const PointType& point)
-{
-    return halfSpaceDeterminant(face, point) > 0;
+    return halfSpaceDeterminant(p0, p1, p2, p) > 0;
 }
 
 } // namespace vcl

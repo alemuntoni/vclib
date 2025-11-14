@@ -45,16 +45,9 @@ class DrawableDirectionalLight : public DrawableObject
     std::vector<float> mVertices; // vertices of the drawn lines
     vcl::Color         mColor = vcl::Color::Yellow; // color of the lines
 
-    VertexBuffer mVertexCoordBuffer;
+    VertexBuffer mVertexPosBuffer;
 
     DrawableDirectionalLightUniforms mUniform;
-
-    // TODO: can we be sure that this is called after the context initialization
-    // triggered by a window?
-    bgfx::ProgramHandle mProgram =
-        Context::instance()
-            .programManager()
-            .getProgram<VertFragProgram::DRAWABLE_DIRECTIONAL_LIGHT>();
 
 public:
     DrawableDirectionalLight();
@@ -82,7 +75,7 @@ public:
 
     // DrawableObject interface
 
-    void draw(uint viewId) const override;
+    void draw(const DrawObjectSettings& settings) const override;
 
     Box3d boundingBox() const override;
 

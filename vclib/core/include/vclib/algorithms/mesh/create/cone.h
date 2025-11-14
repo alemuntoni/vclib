@@ -23,8 +23,7 @@
 #ifndef VCL_ALGORITHMS_MESH_CREATE_CONE_H
 #define VCL_ALGORITHMS_MESH_CREATE_CONE_H
 
-#include <vclib/math/base.h>
-#include <vclib/mesh/requirements.h>
+#include <vclib/mesh.h>
 
 namespace vcl {
 
@@ -35,8 +34,8 @@ MeshType createCone(
     auto       height,
     const uint subdivisions = 36)
 {
-    using CoordType  = MeshType::VertexType::CoordType;
-    using ScalarType = CoordType::ScalarType;
+    using PositionType = MeshType::VertexType::PositionType;
+    using ScalarType   = PositionType::ScalarType;
 
     uint vn, fn;
     if (radiusBottom == 0 || radiusTop == 0) {
@@ -53,8 +52,8 @@ MeshType createCone(
     mesh.reserveVertices(vn);
     mesh.reserveFaces(fn);
 
-    mesh.addVertex(CoordType(0, -height / 2.0, 0));
-    mesh.addVertex(CoordType(0, height / 2.0, 0));
+    mesh.addVertex(PositionType(0, -height / 2.0, 0));
+    mesh.addVertex(PositionType(0, height / 2.0, 0));
 
     uint b1 = 2;
     uint b2 = 2;
@@ -62,7 +61,7 @@ MeshType createCone(
     if (radiusBottom != 0) {
         for (uint i = 0; i < subdivisions; ++i) {
             ScalarType a = toRad(i * 360.0 / subdivisions);
-            mesh.addVertex(CoordType(
+            mesh.addVertex(PositionType(
                 radiusBottom * std::cos(a),
                 -height / 2.0,
                 radiusBottom * std::sin(a)));
@@ -74,7 +73,7 @@ MeshType createCone(
     if (radiusTop != 0) {
         for (uint i = 0; i < subdivisions; ++i) {
             ScalarType a = toRad(i * 360.0 / subdivisions);
-            mesh.addVertex(CoordType(
+            mesh.addVertex(PositionType(
                 radiusTop * std::cos(a),
                 height / 2.0,
                 radiusTop * std::sin(a)));

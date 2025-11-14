@@ -26,7 +26,7 @@
 #include <vclib/render/config.h>
 
 #ifdef VCLIB_RENDER_BACKEND_BGFX
-#include <vclib/bgfx/drawers/viewer_drawer.h>
+#include <vclib/bgfx/drawers/viewer_drawer_bgfx.h>
 #endif
 
 #ifdef VCLIB_RENDER_BACKEND_WEBGPU
@@ -34,14 +34,14 @@
 #endif
 
 #ifdef VCLIB_RENDER_BACKEND_OPENGL2
-#include <vclib/opengl2/drawers/viewer_drawer.h>
+#include <vclib/opengl2/drawers/viewer_drawer_opengl2.h>
 #endif
 
 namespace vcl {
 
 #ifdef VCLIB_RENDER_BACKEND_BGFX
-template<typename DerivedRenderApp>
-using ViewerDrawer = ViewerDrawerBGFX<DerivedRenderApp>;
+template<typename ViewProjEventDrawer>
+using ViewerDrawer = ViewerDrawerBGFX<ViewProjEventDrawer>;
 #endif
 
 #ifdef VCLIB_RENDER_BACKEND_WEBGPU
@@ -50,8 +50,8 @@ using ViewerDrawer = ViewerDrawerWebGPU<DerivedRenderApp>;
 #endif
 
 #ifdef VCLIB_RENDER_BACKEND_OPENGL2
-template<typename DerivedRenderApp>
-using ViewerDrawer = ViewerDrawerOpenGL2<DerivedRenderApp>;
+template<typename ViewProjEventDrawer>
+using ViewerDrawer = ViewerDrawerOpenGL2<ViewProjEventDrawer>;
 #endif
 
 } // namespace vcl

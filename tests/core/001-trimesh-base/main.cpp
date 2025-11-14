@@ -35,7 +35,7 @@ TEMPLATE_TEST_CASE(
 {
     using TriMesh = TestType;
 
-    using TriMeshPoint = TriMesh::VertexType::CoordType;
+    using TriMeshPoint = TriMesh::VertexType::PositionType;
     TriMesh m;
 
     THEN("The size for each container start at 0")
@@ -91,13 +91,13 @@ TEMPLATE_TEST_CASE(
 
         REQUIRE(m.vertexNumber() == 1);
         REQUIRE(m.faceNumber() == 0);
-        REQUIRE(m.vertex(0).coord() == TriMeshPoint(0, 0, 0));
+        REQUIRE(m.vertex(0).position() == TriMeshPoint(0, 0, 0));
         REQUIRE(&m.vertex(vi0) == &m.vertex(0));
 
         unsigned int vi1 = m.addVertex();
 
         REQUIRE(m.vertexNumber() == 2);
-        REQUIRE(m.vertex(1).coord() == TriMeshPoint(0, 0, 0));
+        REQUIRE(m.vertex(1).position() == TriMeshPoint(0, 0, 0));
         REQUIRE(&m.vertex(vi0) == &m.vertex(0));
         REQUIRE(&m.vertex(vi1) == &m.vertex(1));
 
@@ -235,7 +235,7 @@ TEMPLATE_TEST_CASE(
     using TriMesh = TestType;
 
     TriMesh m;
-    using PointT = TriMesh::VertexType::CoordType;
+    using PointT = TriMesh::VertexType::PositionType;
 
     m.addVertices(
         PointT(-0.5, -0.5, 0.5),
@@ -289,5 +289,42 @@ TEMPLATE_TEST_CASE(
         REQUIRE(m.face(3).indexOfEdge(&m.vertex(4), &m.vertex(5)) == 1);
         REQUIRE(m.face(3).indexOfEdge(4, 3) == 2);
         REQUIRE(m.face(3).indexOfEdge(3, 4) == 2);
+    }
+
+    WHEN("Enable per Vertex Colors")
+    {
+        m.enablePerVertexColor();
+
+        REQUIRE(m.isPerVertexColorEnabled() == true);
+
+        // colors are initialized to black
+        for (auto& v : m.vertices()) {
+            REQUIRE(v.color() == vcl::Color::Black);
+        }
+
+        // set the color of the first vertex to red
+        m.vertex(0).color() = vcl::Color::Red;
+
+        // set the color of the second vertex to green
+        m.vertex(1).color() = vcl::Color::Green;
+
+        REQUIRE(m.vertex(0).color() == vcl::Color::Red);
+        REQUIRE(m.vertex(1).color() == vcl::Color::Green);
+
+        // save coordinate of the first two vertices
+        PointT p0 = m.vertex(0).position();
+        PointT p1 = m.vertex(1).position();
+
+        // swap vertices
+        using std::swap;
+        swap(m.vertex(0), m.vertex(1));
+
+        // check that positions are swapped
+        REQUIRE(m.vertex(0).position() == p1);
+        REQUIRE(m.vertex(1).position() == p0);
+
+        // check that colors are swapped too
+        REQUIRE(m.vertex(0).color() == vcl::Color::Green);
+        REQUIRE(m.vertex(1).color() == vcl::Color::Red);
     }
 }

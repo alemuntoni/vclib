@@ -56,11 +56,6 @@ class DrawableAxis : public DrawableObject
 
     MeshRenderBuffers<vcl::TriMesh> mArrowBuffers[2]; // 0: cylinder, 1: cone
 
-    bgfx::ProgramHandle mProgram =
-        Context::instance()
-            .programManager()
-            .getProgram<VertFragProgram::DRAWABLE_AXIS>();
-
     mutable DrawableAxisUniforms mUniforms;
 
 public:
@@ -105,7 +100,7 @@ public:
 
     // DrawableObject interface
 
-    void draw(uint viewId) const override;
+    void draw(const DrawObjectSettings& settings) const override;
 
     Box3d boundingBox() const override { return Box3d(); }
 

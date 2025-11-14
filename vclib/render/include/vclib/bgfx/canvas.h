@@ -23,6 +23,7 @@
 #ifndef VCL_BGFX_CANVAS_H
 #define VCL_BGFX_CANVAS_H
 
+#include <vclib/base.h>
 #include <vclib/bgfx/context.h>
 #include <vclib/bgfx/read_framebuffer_request.h>
 #include <vclib/bgfx/system/native_window_handle.h>
@@ -30,7 +31,6 @@
 #include <vclib/render/concepts/render_app.h>
 #include <vclib/render/input.h>
 #include <vclib/render/read_buffer_types.h>
-#include <vclib/types.h>
 
 #include <optional>
 
@@ -38,34 +38,8 @@ namespace vcl {
 
 /**
  * @brief The Canvas class describes a canvas on which bgfx can draw.
- *
- * Its usage requires to have a window object that can be used to initialize
- * the canvas. The window object is not managed by the Canvas class, and can be
- * managed by any of the windowing systems or libraries that allow to retrieve
- * the native window handle (e.g. Qt, GLFW...).
- *
- * You can create your custom bgfx canvas class by inheriting from this class
- * and passing to the constructor the native window handle and the window size.
- * Alternatively to the constructor, you can also use the init() method to
- * initialize the canvas (if the required parameters are not available at
- * construction time).
- *
- * This class does not provide a render loop, that must be implemented in one of
- * the derived classes. The render loop must call the frame() member function at
- * the end of each frame, after all the bgfx rendering commands have been
- * issued.
- *
- * The bgfx rendering code should be implemented in the virtual member function
- * draw(uint viewId), that must be reimplemented in the derived classes. This
- * method is called by the frame() method (that must be called in the render
- * loop), and its argument is the bgfx view ID.
- *
- * The class provides two important member functions:
- * - frame(): this function must be called by the derived classes at the end of
- * each frame, after all the bgfx rendering commands have been issued;
- * - onResize(width, height): this function must be called by the derived
- * classes whenever the window is resized.
  */
+// TODO: write documentation here
 template<typename DerivedRenderApp>
 class CanvasBGFX
 {
@@ -141,6 +115,18 @@ public:
             mViewId,
             BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL,
             color.rgba());
+    }
+
+    /**
+     * @brief Request a screenshot of the canvas.
+     *     The screenshot will be saved asynchronously.
+     * @param filename The filename where the screenshot will be saved.
+     * @param multiplier The multiplier applied to the canvas image.
+     * @return true if the screenshot is requested, false otherwise.
+     */
+    bool screenshot(const std::string& filename, uint multiplier = 1)
+    {
+        return onScreenshot(filename, multiplier);
     }
 
     /**
@@ -243,17 +229,14 @@ public:
 
     /**
      * @brief Automatically called by the DerivedRenderApp when a drawer asks
-     * for a screenshot.
+     * for a screenshot. Also called by the public member function screenshot().
      *
      * @param filename
-     * @param width
-     * @param height
-     * @return
+     * @param multiplier multiplier applied to the canvas image.
+     * @return true if the screenshot is requested, false otherwise.
+     * @note this function is asynchronous, the screenshot will be saved later.
      */
-    bool onScreenshot(
-        const std::string& filename,
-        uint               width  = 0,
-        uint               height = 0)
+    bool onScreenshot(const std::string& filename, uint multiplier = 1)
     {
         if (!Context::instance().supportsReadback() // feature unsupported
             || mReadRequest != std::nullopt) {      // read already requested
@@ -261,9 +244,7 @@ public:
         }
 
         // get size
-        auto size = mSize;
-        if (width != 0 && height != 0)
-            size = {width, height};
+        auto size = mSize * multiplier;
 
         // color data callback
         CallbackReadBuffer callback = [=](const ReadData& data) {
@@ -272,6 +253,7 @@ public:
             const auto& d = std::get<ReadFramebufferRequest::ByteData>(data);
 
             // save rgb image data into file using stb depending on file
+            // TODO: maybe useful to save it asynchronously
             try {
                 vcl::saveImageData(filename, size.x(), size.y(), d.data());
             }
@@ -281,6 +263,31 @@ public:
         };
 
         mReadRequest.emplace(size, callback, mDefaultClearColor);
+        return true;
+    }
+
+    /**
+     * @brief Automatically called by the DerivedRenderApp when a drawer asks
+     * to read the ID at a specific point.
+     *
+     * @param point The point where the ID must be read.
+     * @param callback The callback function that will be called when the ID is
+     * read.
+     * @return true id the red Id request is successfully submitted, false
+     * otherwise.
+     */
+    [[nodiscard]] bool onReadId(
+        const Point2i&     point,
+        CallbackReadBuffer callback = nullptr)
+    {
+        if (!Context::instance().supportsReadback() // feature unsupported
+            || mReadRequest != std::nullopt         // read already requested
+            || point.x() < 0 || point.y() < 0       // point out of bounds
+            || point.x() >= mSize.x() || point.y() >= mSize.y()) {
+            return false;
+        }
+
+        mReadRequest.emplace(point, mSize, true, callback);
         return true;
     }
 
@@ -298,7 +305,16 @@ private:
         // render changing the view
         auto tmpId = mViewId;
         mViewId    = mReadRequest->viewId();
-        DerivedRenderApp::CNV::drawContent(derived());
+        switch (mReadRequest->type()) {
+        case ReadFramebufferRequest::Type::COLOR:
+        case ReadFramebufferRequest::Type::DEPTH:
+            DerivedRenderApp::CNV::drawContent(derived());
+            break;
+        case ReadFramebufferRequest::Type::ID:
+            DerivedRenderApp::CNV::drawId(derived());
+            break;
+        default: assert(false && "unsupported readback type"); break;
+        }
         mViewId = tmpId;
     }
 

@@ -23,8 +23,8 @@
 #ifndef VCL_SPACE_COMPLEX_KD_TREE_H
 #define VCL_SPACE_COMPLEX_KD_TREE_H
 
-#include <vclib/concepts/mesh.h>
-#include <vclib/space/core/box.h>
+#include <vclib/mesh.h>
+#include <vclib/space/core.h>
 
 #include <numeric>
 #include <queue>
@@ -118,7 +118,7 @@ public:
         uint            maxDepth      = 64,
         bool            balanced      = false)
         requires (std::is_same_v<
-                     typename MeshType::VertexType::CoordType,
+                     typename MeshType::VertexType::PositionType,
                      PointType>)
             :
             mPoints(m.vertexNumber()), mIndices(m.vertexNumber()),
@@ -128,7 +128,7 @@ public:
 
         uint i = 0;
         for (const VertexType& v : m.vertices()) {
-            mPoints[i]  = v.coord();
+            mPoints[i]  = v.position();
             mIndices[i] = m.index(v);
             i++;
         }
@@ -559,19 +559,20 @@ private:
 /* Deduction guides */
 
 template<MeshConcept MeshType>
-KDTree(const MeshType& m) -> KDTree<typename MeshType::VertexType::CoordType>;
+KDTree(const MeshType& m)
+    -> KDTree<typename MeshType::VertexType::PositionType>;
 
 template<MeshConcept MeshType>
 KDTree(const MeshType& m, uint pointsPerCell)
-    -> KDTree<typename MeshType::VertexType::CoordType>;
+    -> KDTree<typename MeshType::VertexType::PositionType>;
 
 template<MeshConcept MeshType>
 KDTree(const MeshType& m, uint pointsPerCell, uint maxDepth)
-    -> KDTree<typename MeshType::VertexType::CoordType>;
+    -> KDTree<typename MeshType::VertexType::PositionType>;
 
 template<MeshConcept MeshType>
 KDTree(const MeshType& m, uint pointsPerCell, uint maxDepth, bool balanced)
-    -> KDTree<typename MeshType::VertexType::CoordType>;
+    -> KDTree<typename MeshType::VertexType::PositionType>;
 
 } // namespace vcl
 

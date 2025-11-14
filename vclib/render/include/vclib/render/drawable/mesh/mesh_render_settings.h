@@ -25,9 +25,8 @@
 
 #include "mesh_render_info.h"
 
-#include <vclib/mesh/requirements.h>
-#include <vclib/space/core/bit_set.h>
-#include <vclib/space/core/color.h>
+#include <vclib/mesh.h>
+#include <vclib/space/core.h>
 
 namespace vcl {
 
@@ -621,6 +620,7 @@ public:
             setPointsCapability(MRI::Points::VISIBLE);
             setPointsCapability(MRI::Points::SHAPE_PIXEL);
             setPointsCapability(MRI::Points::SHAPE_CIRCLE);
+            setPointsCapability(MRI::Points::SHAPE_SPHERE);
             setPointsCapability(MRI::Points::SHADING_NONE);
             setPointsCapability(MRI::Points::COLOR_USER);
 
@@ -793,6 +793,7 @@ private:
             if (!canSurface(MRI::Surface::VISIBLE))
                 setPoints(VISIBLE, true);
             setPoints(SHADING_NONE);
+            setPoints(SHAPE_PIXEL);
             if (canPoints(SHADING_VERT)) {
                 setPoints(SHADING_VERT);
             }

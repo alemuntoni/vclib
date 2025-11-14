@@ -23,10 +23,8 @@
 #ifndef VCL_ALGORITHMS_MESH_CREATE_DODECAHEDRON_H
 #define VCL_ALGORITHMS_MESH_CREATE_DODECAHEDRON_H
 
-#include <vclib/algorithms/core/polygon.h>
-#include <vclib/mesh/requirements.h>
-#include <vclib/mesh/tmp_meshes.h>
-#include <vclib/misc/logger.h>
+#include <vclib/algorithms/core.h>
+#include <vclib/mesh.h>
 
 namespace vcl {
 
@@ -42,9 +40,9 @@ namespace vcl {
 template<PolygonMeshConcept MeshType, LoggerConcept LogType = NullLogger>
 MeshType createDodecahedron(LogType& log = nullLogger)
 {
-    using VertexType = MeshType::VertexType;
-    using CoordType  = VertexType::CoordType;
-    using ScalarType = CoordType::ScalarType;
+    using VertexType   = MeshType::VertexType;
+    using PositionType = VertexType::PositionType;
+    using ScalarType   = PositionType::ScalarType;
 
     MeshType mesh;
 
@@ -57,26 +55,26 @@ MeshType createDodecahedron(LogType& log = nullLogger)
     log.log(0, "Adding vertices to PolyMesh...");
 
     mesh.addVertices(
-        CoordType(-s1, -s1, s1),
-        CoordType(s2, s3, s0),
-        CoordType(s2, -s3, s0),
-        CoordType(-s2, s3, s0),
-        CoordType(-s2, -s3, s0),
-        CoordType(s0, s2, s3),
-        CoordType(s0, s2, -s3),
-        CoordType(s3, s0, -s2),
-        CoordType(-s3, s0, -s2),
-        CoordType(s0, -s2, -s3),
-        CoordType(s0, -s2, s3),
-        CoordType(s3, s0, s2),
-        CoordType(-s3, s0, s2),
-        CoordType(s1, s1, -s1),
-        CoordType(s1, s1, s1),
-        CoordType(-s1, s1, -s1),
-        CoordType(-s1, s1, s1),
-        CoordType(s1, -s1, -s1),
-        CoordType(s1, -s1, s1),
-        CoordType(-s1, -s1, -s1));
+        PositionType(-s1, -s1, s1),
+        PositionType(s2, s3, s0),
+        PositionType(s2, -s3, s0),
+        PositionType(-s2, s3, s0),
+        PositionType(-s2, -s3, s0),
+        PositionType(s0, s2, s3),
+        PositionType(s0, s2, -s3),
+        PositionType(s3, s0, -s2),
+        PositionType(-s3, s0, -s2),
+        PositionType(s0, -s2, -s3),
+        PositionType(s0, -s2, s3),
+        PositionType(s3, s0, s2),
+        PositionType(-s3, s0, s2),
+        PositionType(s1, s1, -s1),
+        PositionType(s1, s1, s1),
+        PositionType(-s1, s1, -s1),
+        PositionType(-s1, s1, s1),
+        PositionType(s1, -s1, -s1),
+        PositionType(s1, -s1, s1),
+        PositionType(-s1, -s1, -s1));
 
     log.log(50, "Vertices added to PolyMesh.");
     log.log(50, "Adding faces to PolyMesh...");
@@ -124,10 +122,10 @@ MeshType createDodecahedron(LogType& log = nullLogger)
     log.log(75, "Copying vertices into TriMesh...");
 
     MeshType mesh;
-    using ST = MeshType::VertexType::CoordType::ScalarType;
+    using ST = MeshType::VertexType::PositionType::ScalarType;
     mesh.reserveVertices(pmesh.vertexNumber());
     for (const auto& v : pmesh.vertices()) {
-        mesh.addVertex(v.coord().cast<ST>());
+        mesh.addVertex(v.position().cast<ST>());
     }
 
     log.log(80, "Vertices copied into TriMesh.");

@@ -25,9 +25,6 @@
 
 #include "point.h"
 
-#include <vclib/concepts/space/plane.h>
-#include <vclib/exceptions/misc.h>
-
 namespace vcl {
 
 /**
@@ -45,7 +42,6 @@ namespace vcl {
  *
  * @ingroup space_core
  */
-// TODO: Make Plane Serializable and add tests.
 template<typename Scalar, bool NORM = true>
 class Plane
 {
@@ -55,6 +51,8 @@ class Plane
 public:
     using ScalarType = Scalar;
     using PointType  = Point3<Scalar>;
+
+    static constexpr bool NORMED = NORM;
 
     /**
      * @brief Empty constructor. The plane is uninitialized.
@@ -151,6 +149,26 @@ public:
         return mirr;
     }
 
+    /**
+     * @brief Serializes the plane to the given output stream.
+     * @param[in] os: The output stream.
+     */
+    void serialize(std::ostream& os) const
+    {
+        mDir.serialize(os);
+        vcl::serialize(os, mOffset);
+    }
+
+    /**
+     * @brief Deserializes the plane from the given input stream.
+     * @param[in] is: The input stream.
+     */
+    void deserialize(std::istream& is)
+    {
+        mDir.deserialize(is);
+        vcl::deserialize(is, mOffset);
+    }
+
     bool operator==(const Plane& p) const
     {
         return mOffset == p.mOffset && mDir == p.mDir;
@@ -163,6 +181,23 @@ public:
 
 using Planef = Plane<float>;
 using Planed = Plane<double>;
+
+/* Concepts */
+
+/**
+ * @brief A concept representing a Plane.
+ *
+ * The concept is satisfied when `T` is a class that instantiates or derives
+ * from a Plane class having any scalar type.
+ *
+ * @tparam T: The type to be tested for conformity to the PlaneConcept.
+ *
+ * @ingroup space_core
+ */
+template<typename T>
+concept PlaneConcept = std::derived_from< // same type or derived type
+    std::remove_cvref_t<T>,
+    Plane<typename RemoveRef<T>::ScalarType, RemoveRef<T>::NORMED>>;
 
 } // namespace vcl
 

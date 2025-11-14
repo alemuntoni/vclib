@@ -23,14 +23,15 @@
 #ifndef VCL_MESH_CONTAINERS_VERTEX_CONTAINER_H
 #define VCL_MESH_CONTAINERS_VERTEX_CONTAINER_H
 
-#include "element_container.h"
+#include "base/element_container.h"
 
 #include <vclib/mesh/elements/vertex.h>
 #include <vclib/mesh/elements/vertex_components.h>
 
 #include <typeindex>
 
-namespace vcl::mesh {
+namespace vcl {
+namespace mesh {
 
 /**
  * @brief The Vertex Container class, will be used when the template argument
@@ -134,20 +135,20 @@ public:
     uint addVertex() { return Base::addElement(); }
 
     /**
-     * @brief Add a new vertex with the given coordinate into the vertex
+     * @brief Add a new vertex with the given position into the vertex
      * container, returning the id of the added vertex.
      *
      * If the call of this function will cause a reallocation of the Vertex
      * container, the function will automatically take care of updating all the
      * Vertex pointers contained in the Mesh.
      *
-     * @param p: coordinate of the new vertex.
+     * @param p: position of the new vertex.
      * @return the id of the new vertex.
      */
-    uint addVertex(const typename T::CoordType& p)
+    uint addVertex(const typename T::PositionType& p)
     {
-        uint vid            = addVertex();
-        vertex(vid).coord() = p; // set the coordinate to the vertex
+        uint vid               = addVertex();
+        vertex(vid).position() = p; // set the position to the vertex
         return vid;
     }
 
@@ -168,29 +169,29 @@ public:
     uint addVertices(uint n) { return Base::addElements(n); }
 
     /**
-     * @brief Add an arbitrary number of vertices with the given coordinates,
+     * @brief Add an arbitrary number of vertices with the given positions,
      * returning the id of the first added vertex.
      *
      * You can call this member function like:
      *
      * @code{.cpp}
-     * CoordType p0, p1, p2, p3;
-     * // init coords...
+     * PositionType p0, p1, p2, p3;
+     * // init positions...
      * m.addVertices(p0, p1, p2, p3);
      * @endcode
      *
-     * The number of accepted Coordtype arguments is variable.
+     * The number of accepted PositionType arguments is variable.
      *
      * If the call of this function will cause a reallocation of the Vertex
      * container, the function will automatically take care of updating all the
      * Vertex pointers contained in the Mesh.
      *
-     * @param p: first vertex coordinate
-     * @param v: list of other vertex coordinates
+     * @param p: first vertex position
+     * @param v: list of other vertex positions
      * @return the id of the first added vertex.
      */
     template<typename... VC>
-    uint addVertices(const typename T::CoordType& p, const VC&... v)
+    uint addVertices(const typename T::PositionType& p, const VC&... v)
     {
         uint vid = vertexContainerSize();
         // reserve the new number of vertices
@@ -203,18 +204,18 @@ public:
     }
 
     /**
-     * @brief Add an arbitrary number of vertices with the coordinates contained
+     * @brief Add an arbitrary number of vertices with the positions contained
      * in the given range, returning the id of the first added vertex.
      *
      * If the call of this function will cause a reallocation of the Vertex
      * container, the function will automatically take care of updating all the
      * Vertex pointers contained in the Mesh.
      *
-     * @param range: the range of coordinates of the vertices to add.
+     * @param range: the range of positions of the vertices to add.
      * @return the id of the first added vertex.
      */
     template<vcl::Range R>
-    uint addVertices(R&& range) requires RangeOf<R, typename T::CoordType>
+    uint addVertices(R&& range) requires RangeOf<R, typename T::PositionType>
     {
         uint vid = vertexContainerSize();
         reserveVertices(vid + std::ranges::size(range));
@@ -387,9 +388,9 @@ public:
      * (setting `nullptr` to the pointers), the value of the vector must be
      * UINT_NULL.
      */
-    void updateVertexIndices(const std::vector<uint>& newIndices)
+    void updateVertexReferences(const std::vector<uint>& newIndices)
     {
-        Base::updateElementIndices(newIndices);
+        Base::updateElementReferences(newIndices);
     }
 
     /**
@@ -465,6 +466,35 @@ public:
     }
 
     /**
+     * @brief Returns a view object that allows to iterate over the Vertices
+     * of the container in the given range:
+     *
+     * @code{.cpp}
+     * for (Vertex& e : m.vertices(3, 10)){
+     *     // iterate over the Vertices from index 3 to 10
+     *     // do something with e
+     * }
+     * @endcode
+     *
+     * @note Unlike the vertices() function, this member function does not
+     * automatically jump deleted vertices, but it iterates over the
+     * vertices in the given range, regardless of whether they are deleted or
+     * not.
+     *
+     * @param[in] begin: the index of the first vertex to be included in the
+     * range. It must be less or equal to vertexContainerSize() and less or
+     * equal to the end index.
+     * @param[in] end: the index of the last vertex to be included in the
+     * range.
+     * @return An object having begin() and end() function, allowing to iterate
+     * over the given range of the container.
+     */
+    auto vertices(uint begin, uint end = UINT_NULL)
+    {
+        return Base::elements(begin, end);
+    }
+
+    /**
      * @brief Returns a small utility object that allows to iterate over the
      * vertices of the containers, providing two member functions begin() and
      * end().
@@ -490,6 +520,35 @@ public:
     auto vertices(bool jumpDeleted = true) const
     {
         return Base::elements(jumpDeleted);
+    }
+
+    /**
+     * @brief Returns a view object that allows to iterate over the Vertices
+     * of the container in the given range:
+     *
+     * @code{.cpp}
+     * for (const Vertex& e : m.vertices(3, 10)){
+     *     // iterate over the Vertices from index 3 to 10
+     *     // do something with e
+     * }
+     * @endcode
+     *
+     * @note Unlike the vertices() function, this member function does not
+     * automatically jump deleted vertices, but it iterates over the
+     * vertices in the given range, regardless of whether they are deleted or
+     * not.
+     *
+     * @param[in] begin: the index of the first vertex to be included in the
+     * range. It must be less or equal to vertexContainerSize() and less or
+     * equal to the end index.
+     * @param[in] end: the index of the last vertex to be included in the
+     * range.
+     * @return An object having begin() and end() function, allowing to iterate
+     * over the given range of the container.
+     */
+    auto vertices(uint begin, uint end = UINT_NULL) const
+    {
+        return Base::elements(begin, end);
     }
 
     /**
@@ -1113,8 +1172,100 @@ public:
     {
         return Base::template customComponentVectorHandle<K>(name);
     }
+
+    /**
+     * @brief Serializes in the given output stream all the custom components of
+     * the Vertex Element of type K.
+     *
+     * @note This function is available only if the Vertex Element has the
+     * CustomComponents Component.
+     *
+     * @param[in] os: the output stream where the custom components will be
+     * serialized.
+     */
+    template<typename K>
+    void serializePerVertexCustomComponentsOfType(std::ostream& os) const
+        requires vert::HasCustomComponents<T>
+    {
+        Base::template serializePerElementCustomComponentsOfType<K>(os);
+    }
+
+    /**
+     * @brief Deserializes in the given input stream all the custom components
+     * of the Vertex Element of type K.
+     *
+     * @note This function is available only if the Vertex Element has the
+     * CustomComponents Component.
+     *
+     * @param[in] is: the input stream where the custom components will be
+     * deserialized.
+     */
+    template<typename K>
+    void deserializePerVertexCustomComponentsOfType(std::istream& is)
+        requires vert::HasCustomComponents<T>
+    {
+        Base::template deserializePerElementCustomComponentsOfType<K>(is);
+    }
 };
 
-} // namespace vcl::mesh
+/* Concepts */
+
+/**
+ * @brief A concept that checks whether a class has (inherits from) a
+ * VertexContainer class.
+ *
+ * The concept is satisfied when `T` is a class that instantiates or derives
+ * from a VertexContainer class having any Vertex element type.
+ *
+ * @tparam T: The type to be tested for conformity to the HasVertexContainer.
+ *
+ * @ingroup containers
+ * @ingroup containers_concepts
+ */
+template<typename T>
+concept HasVertexContainer = std::derived_from< // same type or derived type
+    std::remove_cvref_t<T>,
+    VertexContainer<typename RemoveRef<T>::VertexType>>;
+
+} // namespace mesh
+
+/**
+ * @brief HasVertices concepts is satisfied when at least one of its types is
+ * (or inherits from) a @ref vcl::mesh::VertexContainer. It can be used both to
+ * check if a Mesh has vertices, or if in a list of types there is a
+ * VertexContainer.
+ *
+ * In the following example, a MyMesh type can be instantiated only if one of
+ * its template Args is a VertexContainer:
+ * @code{.cpp}
+ * template <typename... Args> requires HasVertices<Args...>
+ * class MyMesh {
+ *     // ...
+ * };
+ *
+ * // ...
+ *
+ * MyMesh<vcl::VertexContainer<MyVertex>> m1; // ok
+ * MyMesh<vcl::FaceContainer<MyFace>> m2; // not ok
+ * MyMesh<vcl::VertexContainer<MyVertex>, vcl::FaceContainer<MyFace>> m3; // ok
+ * @endcode
+ *
+ * To check if a type has (inherits from) VertexContainer:
+ * @code{.cpp}
+ * if constexpr (vcl::HasVertices<MyMeshType>) {
+ *     // ...
+ * }
+ * @endcode
+ *
+ * @note This concept does not check if a Mesh is a valid Mesh. To do that, use
+ * the MeshConcept.
+ *
+ * @ingroup containers
+ * @ingroup containers_concepts
+ */
+template<typename... Args>
+concept HasVertices = (mesh::HasVertexContainer<Args> || ...);
+
+} // namespace vcl
 
 #endif // VCL_MESH_CONTAINERS_VERTEX_CONTAINER_H

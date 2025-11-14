@@ -23,12 +23,11 @@
 #ifndef VCL_MESH_COMPONENTS_TEXTURE_IMAGES_H
 #define VCL_MESH_COMPONENTS_TEXTURE_IMAGES_H
 
-#include "bases/component.h"
+#include "base/component.h"
+#include "concepts/textures.h"
 
-#include <vclib/concepts/mesh/components/texture_images.h>
-#include <vclib/concepts/mesh/components/texture_paths.h>
-#include <vclib/space/core/texture.h>
-#include <vclib/types/view.h>
+#include <vclib/base.h>
+#include <vclib/space/core.h>
 
 #include <string>
 #include <vector>
@@ -186,6 +185,23 @@ public:
      * @brief Returns a reference to the mesh base path.
      */
     std::string& meshBasePath() { return Base::data().meshPath; }
+
+    /**
+     * @brief Returns the index of the texture with the given path, or UINT_NULL
+     * if the texture is not found.
+     *
+     * @param[in] path: the path of the texture to search for.
+     */
+    uint indexOfTexturePath(const std::string& path) const
+    {
+        auto it =
+            std::find(Base::data().pathBegin(), Base::data().pathEnd(), path);
+        if (it != Base::data().pathEnd()) {
+            return static_cast<uint>(
+                std::distance(Base::data().pathBegin(), it));
+        }
+        return UINT_NULL;
+    }
 
     /**
      * @brief Clears the vector of textures.

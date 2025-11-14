@@ -23,8 +23,7 @@
 #ifndef VCL_MESHES_POINT_CLOUD_H
 #define VCL_MESHES_POINT_CLOUD_H
 
-#include <vclib/mesh/mesh.h>
-#include <vclib/mesh/requirements.h>
+#include <vclib/mesh.h>
 
 namespace vcl {
 
@@ -42,10 +41,11 @@ class Vertex;
  * @brief The Vertex type used by the PointCloudT class.
  *
  * @extends vert::BitFlags
- * @extends vert::Coordinate3
+ * @extends vert::Position3
  * @extends vert::Normal3
  * @extends vert::OptionalColor
  * @extends vert::OptionalQuality
+ * @extends vert::OptionalAdjacentVertexPointers
  * @extends vert::OptionalTexCoord
  * @extends vert::OptionalMark
  * @extends vert::CustomComponents
@@ -59,14 +59,17 @@ class Vertex :
         public vcl::Vertex<
             PointCloudT<Scalar>,
             vert::BitFlags,
-            vert::Coordinate3<Scalar>,
+            vert::Position3<Scalar>,
             vert::Normal3<Scalar>,
             vert::OptionalColor<Vertex<Scalar>>,
             vert::OptionalQuality<Scalar, Vertex<Scalar>>,
+            vert::OptionalAdjacentVertexPointers<Vertex<Scalar>>,
             vert::OptionalTexCoord<Scalar, Vertex<Scalar>>,
             vert::OptionalMark<Vertex<Scalar>>,
             vert::CustomComponents<Vertex<Scalar>>>
 {
+public:
+    friend void swap(Vertex& a, Vertex& b) { a.swap(b); }
 };
 
 } // namespace vcl::pointcloud

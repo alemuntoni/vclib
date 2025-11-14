@@ -23,7 +23,7 @@
 #ifndef VCL_ALGORITHMS_MESH_TYPE_NAME_H
 #define VCL_ALGORITHMS_MESH_TYPE_NAME_H
 
-#include <vclib/concepts/mesh.h>
+#include <vclib/mesh.h>
 
 namespace vcl {
 
@@ -36,7 +36,7 @@ namespace vcl {
 template<MeshConcept MeshType>
 constexpr std::string meshTypeName()
 {
-    using ScalarType = MeshType::VertexType::CoordType::ScalarType;
+    using ScalarType = MeshType::VertexType::PositionType::ScalarType;
 
     std::string name;
 

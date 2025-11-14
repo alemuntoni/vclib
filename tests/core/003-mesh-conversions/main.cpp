@@ -20,7 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <vclib/load_save.h>
+#include <vclib/io.h>
 #include <vclib/meshes.h>
 
 #include <catch2/catch_template_test_macros.hpp>
@@ -43,7 +43,7 @@ TEMPLATE_TEST_CASE(
     using PolyMesh = typename TestType::second_type;
 
     TriMesh tm =
-        vcl::loadPly<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.ply");
+        vcl::loadMesh<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/TextureDouble.ply");
 
     tm.template addCustomComponent<int>("cust_comp", 4);
     tm.template addPerVertexCustomComponent<float>("v_comp");
@@ -83,10 +83,10 @@ TEMPLATE_TEST_CASE(
         REQUIRE(pm.faceNumber() == 3);
     }
 
-    THEN("The imported vetices have same coordinates")
+    THEN("The imported vetices have same positions")
     {
         for (const auto& tv : tm.vertices()) {
-            REQUIRE(pm.vertex(tv.index()).coord() == tv.coord());
+            REQUIRE(pm.vertex(tv.index()).position() == tv.position());
         }
     }
 
@@ -99,7 +99,7 @@ TEMPLATE_TEST_CASE(
             unsigned int i = 0;
             for (const auto* pv : pf.vertices()) {
                 REQUIRE(pv->index() == tf.vertexIndex(i));
-                REQUIRE(pv->coord() == tf.vertex(i)->coord());
+                REQUIRE(pv->position() == tf.vertex(i)->position());
                 ++i;
             }
 
@@ -139,7 +139,7 @@ TEMPLATE_TEST_CASE(
     using TriMesh = TestType;
 
     TriMesh tm =
-        vcl::loadPly<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_poly.ply");
+        vcl::loadMesh<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_poly.ply");
 
     THEN("The loaded TriMesh has 8 vertices and 12 faces")
     {
@@ -160,7 +160,7 @@ TEMPLATE_TEST_CASE(
     using PolyMesh = typename TestType::second_type;
 
     PolyMesh pm =
-        vcl::loadPly<PolyMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_poly.ply");
+        vcl::loadMesh<PolyMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_poly.ply");
 
     THEN("The loaded PolyMesh has 8 vertices and 6 faces")
     {
@@ -179,7 +179,7 @@ TEMPLATE_TEST_CASE(
             REQUIRE(tm.vertexNumber() == pm.vertexNumber());
 
             for (unsigned int i = 0; i < tm.vertexNumber(); ++i) {
-                REQUIRE(tm.vertex(i).coord() == pm.vertex(i).coord());
+                REQUIRE(tm.vertex(i).position() == pm.vertex(i).position());
             }
         }
 

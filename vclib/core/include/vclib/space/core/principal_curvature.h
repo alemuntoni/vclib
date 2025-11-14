@@ -131,6 +131,10 @@ public:
      */
     Scalar& minValue() { return mK2; }
 
+    /**
+     * @brief Serializes the principal curvature to the given output stream.
+     * @param[in] os: The output stream.
+     */
     void serialize(std::ostream& os) const
     {
         mDir1.serialize(os);
@@ -139,6 +143,10 @@ public:
         vcl::serialize(os, mK2);
     }
 
+    /**
+     * @brief Deserializes the principal curvature from the given input stream.
+     * @param[in] is: The input stream.
+     */
     void deserialize(std::istream& is)
     {
         mDir1.deserialize(is);
@@ -159,6 +167,25 @@ using PrincipalCurvaturef = PrincipalCurvature<float>;
  * @brief Alias for a PrincipalCurvature object with double precision.
  */
 using PrincipalCurvatured = PrincipalCurvature<double>;
+
+/* Concepts */
+
+/**
+ * @brief A concept representing a PrincipalCurvature.
+ *
+ * The concept is satisfied when `T` is a class that instantiates or derives
+ * from a PrincipalCurvature class of any scalar type.
+ *
+ * @tparam T: The type to be tested for conformity to the
+ * PrincipalCurvatureConcept.
+ *
+ * @ingroup space_core
+ */
+template<typename T>
+concept PrincipalCurvatureConcept =
+    std::derived_from< // same type or derived type
+        std::remove_cvref_t<T>,
+        PrincipalCurvature<typename RemoveRef<T>::ScalarType>>;
 
 } // namespace vcl
 

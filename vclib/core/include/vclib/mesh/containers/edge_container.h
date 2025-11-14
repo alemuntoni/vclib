@@ -23,13 +23,13 @@
 #ifndef VCL_MESH_CONTAINERS_EDGE_CONTAINER_H
 #define VCL_MESH_CONTAINERS_EDGE_CONTAINER_H
 
-#include "element_container.h"
+#include "base/element_container.h"
 
-#include <vclib/mesh/containers/custom_component_vector_handle.h>
 #include <vclib/mesh/elements/edge.h>
 #include <vclib/mesh/elements/edge_components.h>
 
-namespace vcl::mesh {
+namespace vcl {
+namespace mesh {
 
 /**
  * @brief The EdgeContainer class represents a container of Edge
@@ -355,9 +355,9 @@ public:
      * (setting `nullptr` to the pointers), the value of the vector must be
      * UINT_NULL.
      */
-    void updateEdgeIndices(const std::vector<uint>& newIndices)
+    void updateEdgeReferences(const std::vector<uint>& newIndices)
     {
-        Base::updateElementIndices(newIndices);
+        Base::updateElementReferences(newIndices);
     }
 
     /**
@@ -430,6 +430,35 @@ public:
     auto edges(bool jumpDeleted = true) { return Base::elements(jumpDeleted); }
 
     /**
+     * @brief Returns a view object that allows to iterate over the Edges
+     * of the container in the given range:
+     *
+     * @code{.cpp}
+     * for (Edge& e : m.edges(3, 10)){
+     *     // iterate over the Edges from index 3 to 10
+     *     // do something with e
+     * }
+     * @endcode
+     *
+     * @note Unlike the edges() function, this member function does not
+     * automatically jump deleted edges, but it iterates over the
+     * edges in the given range, regardless of whether they are deleted or
+     * not.
+     *
+     * @param[in] begin: the index of the first edge to be included in the
+     * range. It must be less or equal to edgeContainerSize() and less or
+     * equal to the end index.
+     * @param[in] end: the index of the last edge to be included in the
+     * range.
+     * @return An object having begin() and end() function, allowing to iterate
+     * over the given range of the container.
+     */
+    auto edges(uint begin, uint end = UINT_NULL)
+    {
+        return Base::elements(begin, end);
+    }
+
+    /**
      * @brief Returns a small view object that allows to iterate over the
      * Edges of the containers, providing two member functions begin()
      * and end().
@@ -455,6 +484,35 @@ public:
     auto edges(bool jumpDeleted = true) const
     {
         return Base::elements(jumpDeleted);
+    }
+
+    /**
+     * @brief Returns a view object that allows to iterate over the Edges
+     * of the container in the given range:
+     *
+     * @code{.cpp}
+     * for (const Edge& e : m.edges(3, 10)){
+     *     // iterate over the Edges from index 3 to 10
+     *     // do something with e
+     * }
+     * @endcode
+     *
+     * @note Unlike the edges() function, this member function does not
+     * automatically jump deleted edges, but it iterates over the
+     * edges in the given range, regardless of whether they are deleted or
+     * not.
+     *
+     * @param[in] begin: the index of the first edge to be included in the
+     * range. It must be less or equal to edgeContainerSize() and less or
+     * equal to the end index.
+     * @param[in] end: the index of the last edge to be included in the
+     * range.
+     * @return An object having begin() and end() function, allowing to iterate
+     * over the given range of the container.
+     */
+    auto edges(uint begin, uint end = UINT_NULL) const
+    {
+        return Base::elements(begin, end);
     }
 
     /**
@@ -912,8 +970,99 @@ public:
     {
         return Base::template customComponentVectorHandle<K>(name);
     }
+
+    /**
+     * @brief Serializes in the given output stream all the custom components of
+     * the Edge Element of type K.
+     *
+     * @note This function is available only if the Edge Element has the
+     * CustomComponents Component.
+     *
+     * @param[in] os: the output stream where the custom components will be
+     * serialized.
+     */
+    template<typename K>
+    void serializePerEdgeCustomComponentsOfType(std::ostream& os) const
+        requires edge::HasCustomComponents<T>
+    {
+        Base::template serializePerElementCustomComponentsOfType<K>(os);
+    }
+
+    /**
+     * @brief Deserializes in the given input stream all the custom components
+     * of the Edge Element of type K.
+     *
+     * @note This function is available only if the Edge Element has the
+     * CustomComponents Component.
+     *
+     * @param[in] is: the input stream where the custom components will be
+     * deserialized.
+     */
+    template<typename K>
+    void deserializePerEdgeCustomComponentsOfType(std::istream& is)
+        requires edge::HasCustomComponents<T>
+    {
+        Base::template deserializePerElementCustomComponentsOfType<K>(is);
+    }
 };
 
-} // namespace vcl::mesh
+/* Concepts */
+
+/**
+ * @brief A concept that checks whether a class has (inherits from) an
+ * EdgeContainer class.
+ *
+ * The concept is satisfied when `T` is a class that instantiates or derives
+ * from a EdgeContainer class having any Edge element type.
+ *
+ * @tparam T: The type to be tested for conformity to the HasEdgeContainer.
+ *
+ * @ingroup containers
+ * @ingroup containers_concepts
+ */
+template<typename T>
+concept HasEdgeContainer = std::derived_from< // same type or derived type
+    std::remove_cvref_t<T>,
+    EdgeContainer<typename RemoveRef<T>::EdgeType>>;
+
+} // namespace mesh
+
+/**
+ * @brief HasEdges concepts is satisfied when at least one of its
+ * template types is (or inherits from) a @ref vcl::mesh::EdgeContainer. It can
+ * be used both to check if a Mesh has edges, or if in a list of types there is
+ * a EdgeContainer.
+ *
+ * In the following example, a MyMesh type can be instantiated only if one of
+ * its template Args is a EdgeContainer:
+ * @code{.cpp}
+ * template <typename... Args> requires HasEdges<Args...>
+ * class MyMesh {
+ *     // ...
+ * };
+ *
+ * // ...
+ *
+ * MyMesh<vcl::VertexContainer<MyVertex>> m1; // not ok
+ * MyMesh<vcl::EdgeContainer<MyEdge>> m2; // ok
+ * MyMesh<vcl::VertexContainer<MyVertex>, vcl::EdgeContainer<MyEdge>> m3; // ok
+ * @endcode
+ *
+ * To check if a type has (inherits from) EdgeContainer:
+ * @code{.cpp}
+ * if constexpr (vcl::HasEdges<MyMeshType>) {
+ *     // ...
+ * }
+ * @endcode
+ *
+ * @note This concept does not check if a Mesh is a valid EdgeMesh.
+ * To do that, use the @ref vcl::EdgeMeshConcept.
+ *
+ * @ingroup containers_concepts
+ */
+template<typename... Args>
+concept HasEdges = (mesh::HasEdgeContainer<Args> || ...);
+
+} // namespace vcl
 
 #endif // VCL_MESH_CONTAINERS_EDGE_CONTAINER_H

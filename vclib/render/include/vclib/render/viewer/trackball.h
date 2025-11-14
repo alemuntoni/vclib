@@ -33,9 +33,10 @@
 namespace vcl {
 
 /**
- * @brief The TrackBall class implements a trackball camera.
+ * @brief The TrackBall class implements a trackball (a camera combined with
+ * model transformation).
  *
- * The trackball class stores a camera and provides a set motions that allow the
+ * The trackball class stores a view and provides a set motions that allow the
  * user to manipulate it.
  *
  * There are two main types of motions:
@@ -83,6 +84,8 @@ private:
 
     static constexpr Scalar DEFAULT_FOV_DEG = 54.0;
 
+    // the camera used by the trackball (in front of the model centered in
+    // the origin)
     Camera<Scalar> mCamera;
 
     // Similarity holding the manipulator transformation.
@@ -94,6 +97,7 @@ private:
 
     Quaternion<Scalar> mDirectionalLightTransform;
 
+    // screen size in 'pixels' (or generic units for high-DPI screens)
     Point2<Scalar> mScreenSize = {-1, -1};
 
     // trackball radius in camera space
@@ -138,6 +142,116 @@ public:
         reset();
         mTransform.scale(scale);
         mTransform.translate(-center);
+    }
+
+    /**
+     *  @brief return the camera containing the current view point of
+     *  the trackball.
+     *
+     *  @return the camera matching the current view of the trackball
+     */
+    Camera<Scalar> camera() const
+    {
+        Camera<Scalar> cam = mCamera;
+
+        // TODO: implement orthographic camera
+        if (cam.projectionMode() ==
+            Camera<Scalar>::ProjectionMode::PERSPECTIVE) {
+            // compute the camera properties from the trackball
+            // camera and model transformation
+
+            const Affine3<Scalar> modelToCamera = mTransform.inverse();
+
+            Point3<Scalar> y = modelToCamera.linear().col(1);
+            Point3<Scalar> z = modelToCamera.linear().col(2);
+
+            cam.up()     = y.normalized();
+            cam.eye()    = modelToCamera * cam.eye();
+            cam.center() = cam.eye() - z.normalized();
+        }
+
+        return cam;
+    }
+
+    /**
+     * @brief Set the camera of the trackball.
+     *
+     * The function sets the trackball to match the provided camera.
+     * The function does not change the aspect ratio of the trackball camera,
+     * as it may be different from the provided camera.
+     *
+     * @param[in] cam: The camera to set.
+     */
+    void setCamera(const Camera<Scalar>& cam)
+    {
+        // TODO: implement orthographic camera
+        this->reset();
+        mCamera.projectionMode() = cam.projectionMode();
+        if (mCamera.projectionMode() ==
+            Camera<Scalar>::ProjectionMode::PERSPECTIVE) {
+            mCamera.setFieldOfViewAdaptingEyeDistance(cam.fieldOfView());
+        }
+        const Point3<Scalar> camTrackballTransl =
+            mCamera.eye() - mCamera.center();
+        // no aspect ratio, it maybe different
+        mCamera.nearPlane() = cam.nearPlane();
+        mCamera.farPlane()  = cam.farPlane();
+        // generate a transformation that will place the model
+        // in front of the camera as if view from the the provided camera
+        const Point3<Scalar> y = cam.up();
+        const Point3<Scalar> z = (cam.eye() - cam.center()).normalized();
+        const Point3<Scalar> x = y.cross(z).normalized();
+
+        // set the transformation of the trackball such that the frame of the
+        // model is aligned with the inverse of the computed camera frame
+        mTransform.linear().col(0) = x;
+        mTransform.linear().col(1) = y;
+        mTransform.linear().col(2) = z;
+
+        // set the translation of the transformation such that the center
+        // of the camera is mapped to the origin
+        mTransform.pretranslate(cam.eye());
+
+        // invert the transformation
+        mTransform = mTransform.inverse();
+
+        // correct the translation to account for the position of the
+        // trackball camera (mCamera)
+        mTransform.pretranslate(camTrackballTransl);
+    }
+
+    /**
+     * @brief Adapt the current view to a given center.
+     * The function adapts the trackball transformation in order to manipulate
+     * the scene with a pivot point close to the given center.
+     * This is done without affecting the current view.
+     *
+     * @param[in] center: The center of the scene.
+     * @note This function does nothing if the provided center is behind the
+     * camera.
+     */
+    void adaptCurrentViewToCenter(const Point3<Scalar>& center)
+    {
+        if (mCamera.projectionMode() ==
+            Camera<Scalar>::ProjectionMode::PERSPECTIVE) {
+            Point3<Scalar> transformedCenter = mTransform * center;
+            Point3<Scalar> toCenter    = transformedCenter - mCamera.eye();
+            Point3<Scalar> eyeToCenter = (mCamera.center() - mCamera.eye());
+            Scalar         scaleRatio =
+                toCenter.dot(eyeToCenter.normalized()) / eyeToCenter.norm();
+            if (scaleRatio < 0)
+                return; // center is behind the camera
+
+            std::cout << "adapting view to center "
+                      << transformedCenter.transpose()
+                      << " scaleRatio: " << scaleRatio << std::endl
+                      << " eyeToCenter: " << eyeToCenter.transpose()
+                      << std::endl
+                      << " toCenter: " << toCenter.transpose() << std::endl;
+            mTransform.pretranslate(eyeToCenter);
+            mTransform.prescale(1.0 / scaleRatio);
+            mTransform.pretranslate(-eyeToCenter);
+        }
     }
 
     void resetDirectionalLight()
@@ -200,12 +314,12 @@ public:
         mCamera.setFieldOfViewAdaptingEyeDistance(fov);
     }
 
-    Camera<Scalar>::ProjectionMode::Enum projectionMode() const
+    Camera<Scalar>::ProjectionMode projectionMode() const
     {
         return mCamera.projectionMode();
     }
 
-    void setProjectionMode(Camera<Scalar>::ProjectionMode::Enum mode)
+    void setProjectionMode(Camera<Scalar>::ProjectionMode mode)
     {
         mCamera.projectionMode() = mode;
         mCamera.setFieldOfViewAdaptingEyeDistance(mCamera.fieldOfView());
@@ -236,14 +350,21 @@ public:
             mDirectionalLightTransform * Point3<Scalar>(0, 0, 1));
     }
 
-    const vcl::Camera<Scalar>& camera() const { return mCamera; }
+    void setLightDirection(const Point3<Scalar>& direction)
+    {
+        mDirectionalLightTransform = Quaternion<Scalar>::FromTwoVectors(
+            Point3<Scalar>(0, 0, 1), direction);
+    }
 
     Matrix44<Scalar> viewMatrix() const
     {
         return mCamera.viewMatrix() * mTransform.matrix();
     }
 
-    Matrix44<Scalar> projectionMatrix() const { return mCamera.projMatrix(); }
+    Matrix44<Scalar> projectionMatrix() const
+    {
+        return mCamera.projectionMatrix();
+    }
 
     Matrix44<Scalar> gizmoMatrix() const
     {

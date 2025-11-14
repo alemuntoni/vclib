@@ -20,8 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#include <vclib/algorithms/core/polygon.h>
-#include <vclib/algorithms/mesh/create.h>
+#include <vclib/algorithms.h>
 #include <vclib/meshes.h>
 #include <vclib/vcg/export.h>
 #include <vclib/vcg/import.h>
@@ -124,7 +123,7 @@ TEMPLATE_TEST_CASE(
         for (const auto& v : tm.vertices()) {
             REQUIRE(
                 v.template customComponent<vcl::Point3f>("perVertex") ==
-                v.coord().template cast<float>());
+                v.position().template cast<float>());
         }
     }
 

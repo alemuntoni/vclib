@@ -24,12 +24,9 @@
 #define VCL_ALGORITHMS_MESH_DISTANCE_H
 
 #include <vclib/algorithms/mesh/point_sampling.h>
-#include <vclib/math/histogram.h>
-#include <vclib/mesh/requirements.h>
-#include <vclib/misc/logger.h>
-#include <vclib/misc/parallel.h>
-#include <vclib/space/complex/grid.h>
-#include <vclib/views/pointers.h>
+
+#include <vclib/mesh.h>
+#include <vclib/space/complex.h>
 
 namespace vcl {
 
@@ -51,8 +48,8 @@ enum HausdorffSamplingMethod {
 namespace detail {
 
 template<
-    MeshConcept    MeshType,
-    SamplerConcept SamplerType,
+    MeshConcept         MeshType,
+    PointSamplerConcept SamplerType,
     typename GridType,
     LoggerConcept LogType>
 HausdorffDistResult hausdorffDist(
@@ -117,9 +114,9 @@ HausdorffDistResult hausdorffDist(
 }
 
 template<
-    MeshConcept    MeshType,
-    SamplerConcept SamplerType,
-    LoggerConcept  LogType>
+    MeshConcept         MeshType,
+    PointSamplerConcept SamplerType,
+    LoggerConcept       LogType>
 HausdorffDistResult samplerMeshHausdorff(
     const MeshType&    m,
     const SamplerType& s,
@@ -143,9 +140,9 @@ HausdorffDistResult samplerMeshHausdorff(
 }
 
 template<
-    FaceMeshConcept MeshType,
-    SamplerConcept  SamplerType,
-    LoggerConcept   LogType>
+    FaceMeshConcept     MeshType,
+    PointSamplerConcept SamplerType,
+    LoggerConcept       LogType>
 HausdorffDistResult samplerMeshHausdorff(
     const MeshType&    m,
     const SamplerType& s,
@@ -153,7 +150,7 @@ HausdorffDistResult samplerMeshHausdorff(
 {
     using VertexType = MeshType::VertexType;
     using FaceType   = MeshType::FaceType;
-    using ScalarType = VertexType::CoordType::ScalarType;
+    using ScalarType = VertexType::PositionType::ScalarType;
 
     std::string meshName = "first mesh";
     if constexpr (HasName<MeshType>) {
@@ -184,19 +181,19 @@ HausdorffDistResult samplerMeshHausdorff(
 }
 
 template<
-    uint           METHOD,
-    MeshConcept    MeshType1,
-    MeshConcept    MeshType2,
-    SamplerConcept SamplerType,
-    LoggerConcept  LogType>
+    uint                METHOD,
+    MeshConcept         MeshType1,
+    MeshConcept         MeshType2,
+    PointSamplerConcept SamplerType,
+    LoggerConcept       LogType>
 HausdorffDistResult hausdorffDistance(
-    const MeshType1&   m1,
-    const MeshType2&   m2,
-    uint               nSamples,
-    bool               deterministic,
-    SamplerType&       sampler,
-    std::vector<uint>& birth,
-    LogType&           log)
+    const MeshType1&    m1,
+    const MeshType2&    m2,
+    uint                nSamples,
+    std::optional<uint> seed,
+    SamplerType&        sampler,
+    std::vector<uint>&  birth,
+    LogType&            log)
 {
     std::string meshName1 = "first mesh";
     std::string meshName2 = "second mesh";
@@ -213,15 +210,13 @@ HausdorffDistResult hausdorffDistance(
             " samples...");
 
     if constexpr (METHOD == HAUSDORFF_VERTEX_UNIFORM) {
-        sampler = vertexUniformPointSampling<SamplerType>(
-            m2, nSamples, birth, false, deterministic);
+        sampler = vertexUniformPointSampling(m2, nSamples, birth, false, seed);
     }
     else if constexpr (METHOD == HAUSDORFF_EDGE_UNIFORM) {
         // todo
     }
     else {
-        sampler = montecarloPointSampling<SamplerType>(
-            m2, nSamples, birth, deterministic);
+        sampler = montecarloPointSampling(m2, nSamples, birth, seed);
     }
 
     log.log(5, meshName2 + " sampled.");
@@ -244,10 +239,10 @@ template<
 HausdorffDistResult hausdorffDistance(
     const MeshType1&        m1,
     const MeshType2&        m2,
-    LogType&                log           = nullLogger,
-    HausdorffSamplingMethod sampMethod    = HAUSDORFF_VERTEX_UNIFORM,
-    uint                    nSamples      = 0,
-    bool                    deterministic = false)
+    LogType&                log        = nullLogger,
+    HausdorffSamplingMethod sampMethod = HAUSDORFF_VERTEX_UNIFORM,
+    uint                    nSamples   = 0,
+    std::optional<uint>     seed       = std::nullopt)
 {
     if (nSamples == 0)
         nSamples = m2.vertexNumber();
@@ -256,10 +251,10 @@ HausdorffDistResult hausdorffDistance(
 
     switch (sampMethod) {
     case HAUSDORFF_VERTEX_UNIFORM: {
-        ConstVertexSampler<typename MeshType2::VertexType> sampler;
+        PointSampler<typename MeshType2::VertexType::PositionType> sampler;
 
         return detail::hausdorffDistance<HAUSDORFF_VERTEX_UNIFORM>(
-            m1, m2, nSamples, deterministic, sampler, birth, log);
+            m1, m2, nSamples, seed, sampler, birth, log);
     }
 
     case HAUSDORFF_EDGE_UNIFORM: {
@@ -267,10 +262,17 @@ HausdorffDistResult hausdorffDistance(
         return HausdorffDistResult();
     }
     case HAUSDORFF_MONTECARLO: {
-        PointSampler<typename MeshType2::VertexType::CoordType> sampler;
+        if constexpr (FaceMeshConcept<MeshType2>) {
+            PointSampler<typename MeshType2::VertexType::PositionType> sampler;
 
-        return detail::hausdorffDistance<HAUSDORFF_MONTECARLO>(
-            m1, m2, nSamples, deterministic, sampler, birth, log);
+            return detail::hausdorffDistance<HAUSDORFF_MONTECARLO>(
+                m1, m2, nSamples, seed, sampler, birth, log);
+        }
+        else {
+            throw std::runtime_error(
+                "Monte Carlo sampling requires a FaceMeshConcept for the "
+                "second mesh.");
+        }
     }
     default: assert(0); return HausdorffDistResult();
     }

@@ -31,16 +31,30 @@ void DrawableObjectVector::init()
     }
 }
 
-void DrawableObjectVector::draw(uint viewId) const
+void DrawableObjectVector::draw(const DrawObjectSettings& settings) const
 {
     if (isVisible()) {
         for (const auto& p : *this) {
             if (p->isVisible())
-                p->draw(viewId);
+                p->draw(settings);
         }
     }
 }
 
+void DrawableObjectVector::drawId(const DrawObjectSettings& settings) const
+{
+    if (isVisible()) {
+        for (size_t idx = 0; idx < Base::size(); idx++) {
+            const auto& p = Base::at(idx);
+
+            if (p->isVisible())
+                p->drawId(DrawObjectSettings(
+                    settings.viewId, settings.objectId + uint(idx)));
+        }
+    }
+}
+
+// TODO: distinguish the box of the visible objects VS the box of all objects
 Box3d DrawableObjectVector::boundingBox() const
 {
     Box3d bb;
@@ -54,6 +68,14 @@ Box3d DrawableObjectVector::boundingBox() const
         }
     }
     return bb;
+}
+
+Point3d DrawableObjectVector::center() const
+{
+    Box3d bb = boundingBox();
+    if (bb.isNull())
+        return Point3d(0, 0, 0);
+    return bb.center();
 }
 
 std::shared_ptr<DrawableObject> DrawableObjectVector::clone() const&

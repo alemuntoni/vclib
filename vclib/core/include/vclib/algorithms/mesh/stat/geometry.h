@@ -26,8 +26,9 @@
 #include "barycenter.h"
 
 #include <vclib/algorithms/mesh/face_topology.h>
-#include <vclib/space/complex/mesh_inertia.h>
-#include <vclib/space/core/matrix.h>
+
+#include <vclib/space/complex.h>
+#include <vclib/space/core.h>
 
 namespace vcl {
 
@@ -66,7 +67,11 @@ double surfaceArea(const MeshType& m)
 
 /**
  * @brief Computes the border length of the given Mesh, that is the sum of the
- * length of the edges that are on border in the given mesh.
+ * length of the face edges that are on border in the given mesh.
+ *
+ * The function checks whether a face edge is on border by checking if the
+ * adjacent face is nullptr, therefore the mesh must have the adjacent faces
+ * computed.
  *
  * @param[in] m: mesh on which compute the border length.
  * @return The border length of the given mesh.
@@ -76,11 +81,14 @@ double borderLength(const MeshType& m)
 {
     using FaceType = MeshType::FaceType;
 
+    requirePerFaceAdjacentFaces(m);
+
     double l = 0;
     for (const FaceType& f : m.faces()) {
         for (uint i = 0; i < f.vertexNumber(); ++i) {
             if (f.adjFace(i) == nullptr) {
-                l += f.vertex(i)->coord().dist(f.vertexMod(i + 1)->coord());
+                l += f.vertex(i)->position().dist(
+                    f.vertexMod(i + 1)->position());
             }
         }
     }
@@ -100,19 +108,20 @@ double borderLength(const MeshType& m)
 template<MeshConcept MeshType>
 auto covarianceMatrixOfPointCloud(const MeshType& m)
 {
-    using VertexType = MeshType::VertexType;
-    using ScalarType = VertexType::CoordType::ScalarType;
+    using VertexType   = MeshType::VertexType;
+    using PositionType = VertexType::PositionType;
+    using ScalarType   = PositionType::ScalarType;
 
-    auto bar = barycenter(m);
+    PositionType bar = barycenter(m);
 
     Matrix33<ScalarType> mm;
     mm.setZero();
     // compute covariance matrix
     for (const VertexType& v : m.vertices()) {
-        auto e = v.coord() - bar;
-        m += e.outerProduct(e);
+        PositionType e = v.position() - bar;
+        mm += e.outerProduct(e);
     }
-    return m;
+    return mm;
 }
 
 /**
@@ -126,12 +135,12 @@ auto covarianceMatrixOfPointCloud(const MeshType& m)
 template<FaceMeshConcept MeshType>
 auto covarianceMatrixOfMesh(const MeshType& m)
 {
-    using VertexType = MeshType::VertexType;
-    using FaceType   = MeshType::FaceType;
-    using CoordType  = VertexType::CoordType;
-    using ScalarType = CoordType::ScalarType;
+    using VertexType   = MeshType::VertexType;
+    using FaceType     = MeshType::FaceType;
+    using PositionType = VertexType::PositionType;
+    using ScalarType   = PositionType::ScalarType;
 
-    CoordType            bar = shellBarycenter(m);
+    PositionType         bar = shellBarycenter(m);
     Matrix33<ScalarType> C;
     C.setZero();
     Matrix33<ScalarType> C0;
@@ -146,14 +155,14 @@ auto covarianceMatrixOfMesh(const MeshType& m)
     Matrix33<ScalarType> DC;
 
     for (const FaceType& f : m.faces()) {
-        const CoordType& p0 = f.vertex(0)->coord();
-        const CoordType& p1 = f.vertex(1)->coord();
-        const CoordType& p2 = f.vertex(2)->coord();
-        CoordType        n  = (p1 - p0).cross(p2 - p0);
-        double           da = n.norm();
+        const PositionType& p0 = f.vertex(0)->position();
+        const PositionType& p1 = f.vertex(1)->position();
+        const PositionType& p2 = f.vertex(2)->position();
+        PositionType        n  = (p1 - p0).cross(p2 - p0);
+        double              da = n.norm();
         n /= da * da;
 
-        CoordType tmpp = p1 - p0;
+        PositionType tmpp = p1 - p0;
         for (uint j = 0; j < 3; j++)
             A(j, 0) = tmpp(j);
         tmpp = p2 - p0;
@@ -195,29 +204,28 @@ auto covarianceMatrixOfMesh(const MeshType& m)
  * @param invert
  * @return
  */
-template<MeshConcept MeshType, typename ScalarType>
+template<typename ScalarType, MeshConcept MeshType>
 std::vector<ScalarType> vertexRadiusFromWeights(
-    const MeshType&                m,
-    const std::vector<ScalarType>& weights,
-    double                         diskRadius,
-    double                         radiusVariance,
-    bool                           invert = false)
+    const MeshType& m,
+    Range auto&&    weights,
+    double          diskRadius,
+    double          radiusVariance,
+    bool            invert = false)
 {
     using VertexType = MeshType::VertexType;
 
-    std::vector<ScalarType> radius(m.vertexContainerSize());
-    auto minmax = std::minmax_element(weights.begin(), weights.end());
+    assert(std::ranges::size(weights) == m.vertexNumber());
 
-    float minRad   = diskRadius;
-    float maxRad   = diskRadius * radiusVariance;
-    float deltaQ   = *minmax.second - *minmax.first;
-    float deltaRad = maxRad - minRad;
-    for (const VertexType& v : m.vertices()) {
-        ScalarType w = weights[m.index(v)];
-        radius[m.index(v)] =
-            minRad +
-            deltaRad *
-                ((invert ? *minmax.second - w : w - *minmax.first) / deltaQ);
+    std::vector<ScalarType> radius(m.vertexContainerSize());
+    const auto [min, max] = std::ranges::minmax_element(weights);
+
+    double minRad   = diskRadius;
+    double maxRad   = diskRadius * radiusVariance;
+    double deltaQ   = *max - *min;
+    double deltaRad = maxRad - minRad;
+    for (const auto& [v, w] : std::views::zip(m.vertices(), weights)) {
+        double num         = invert ? (*max - w) : (w - *min);
+        radius[m.index(v)] = minRad + deltaRad * (num / deltaQ);
     }
 
     return radius;

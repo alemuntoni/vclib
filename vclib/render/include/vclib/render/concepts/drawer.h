@@ -23,12 +23,13 @@
 #ifndef VCL_RENDER_CONCEPTS_DRAWER_H
 #define VCL_RENDER_CONCEPTS_DRAWER_H
 
-#include <vclib/concepts.h>
+#include <vclib/base.h>
 
 namespace vcl {
 
 template<typename T>
 concept DrawerConcept = requires (T&& obj) {
+    // constructors
     RemoveRef<T>();
     RemoveRef<T>(uint(), uint());
 
@@ -37,6 +38,7 @@ concept DrawerConcept = requires (T&& obj) {
         { obj.onInit(uint()) } -> std::same_as<void>;
         { obj.onResize(uint(), uint()) } -> std::same_as<void>;
         { obj.onDraw(uint()) } -> std::same_as<void>;
+        { obj.onDrawId(uint()) } -> std::same_as<void>;
         { obj.onDrawContent(uint()) } -> std::same_as<void>;
         { obj.onPostDraw() } -> std::same_as<void>;
     };

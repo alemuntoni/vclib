@@ -21,7 +21,7 @@
  ****************************************************************************/
 
 #include <vclib/algorithms.h>
-#include <vclib/load_save.h>
+#include <vclib/io.h>
 #include <vclib/meshes.h>
 
 #include <catch2/catch_template_test_macros.hpp>
@@ -41,7 +41,7 @@ TEMPLATE_TEST_CASE(
     using VNScalar    = typename VNormalType::ScalarType;
 
     TriMesh tm =
-        vcl::loadPly<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_tri.ply");
+        vcl::loadMesh<TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/cube_tri.ply");
 
     THEN("The mesh normals are not updated - all zero")
     {
@@ -84,14 +84,22 @@ TEMPLATE_TEST_CASE(
         const VNScalar b = 1 / 3.0;
         const VNScalar c = 2 / 3.0;
 
-        REQUIRE(tm.vertex(0).normal() == VNormalType(-a, -a, -a));
-        REQUIRE(tm.vertex(1).normal() == VNormalType(b, -c, -c));
-        REQUIRE(tm.vertex(2).normal() == VNormalType(-c, b, -c));
-        REQUIRE(tm.vertex(3).normal() == VNormalType(c, c, -b));
-        REQUIRE(tm.vertex(4).normal() == VNormalType(-c, -c, b));
-        REQUIRE(tm.vertex(5).normal() == VNormalType(c, -b, c));
-        REQUIRE(tm.vertex(6).normal() == VNormalType(-b, c, c));
-        REQUIRE(tm.vertex(7).normal() == VNormalType(a, a, a));
+        REQUIRE(
+            vcl::epsilonEquals(tm.vertex(0).normal(), VNormalType(-a, -a, -a)));
+        REQUIRE(
+            vcl::epsilonEquals(tm.vertex(1).normal(), VNormalType(b, -c, -c)));
+        REQUIRE(
+            vcl::epsilonEquals(tm.vertex(2).normal(), VNormalType(-c, b, -c)));
+        REQUIRE(
+            vcl::epsilonEquals(tm.vertex(3).normal(), VNormalType(c, c, -b)));
+        REQUIRE(
+            vcl::epsilonEquals(tm.vertex(4).normal(), VNormalType(-c, -c, b)));
+        REQUIRE(
+            vcl::epsilonEquals(tm.vertex(5).normal(), VNormalType(c, -b, c)));
+        REQUIRE(
+            vcl::epsilonEquals(tm.vertex(6).normal(), VNormalType(-b, c, c)));
+        REQUIRE(
+            vcl::epsilonEquals(tm.vertex(7).normal(), VNormalType(a, a, a)));
 
         for (const auto& f : tm.faces()) {
             REQUIRE(f.normal() == FNormalType(0, 0, 0));

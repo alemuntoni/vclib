@@ -23,42 +23,34 @@
 #ifndef VCL_ALGORITHMS_MESH_UPDATE_CURVATURE_H
 #define VCL_ALGORITHMS_MESH_UPDATE_CURVATURE_H
 
-#include <vclib/algorithms/core/polygon.h>
-#include <vclib/algorithms/core/stat.h>
 #include <vclib/algorithms/mesh/intersection.h>
 #include <vclib/algorithms/mesh/point_sampling.h>
 #include <vclib/algorithms/mesh/stat.h>
 #include <vclib/algorithms/mesh/update/normal.h>
-#include <vclib/math/transform.h>
-#include <vclib/mesh/requirements.h>
-#include <vclib/misc/logger.h>
-#include <vclib/misc/parallel.h>
-#include <vclib/space/complex/grid.h>
-#include <vclib/space/complex/mesh_pos.h>
-#include <vclib/space/core/principal_curvature.h>
-#include <vclib/views/pointers.h>
+
+#include <vclib/algorithms/core.h>
+#include <vclib/mesh.h>
+#include <vclib/space/complex.h>
+#include <vclib/space/core.h>
 
 #include <mutex>
 
 namespace vcl {
 
-typedef enum {
-    VCL_PRINCIPAL_CURVATURE_TAUBIN95,
-    VCL_PRINCIPAL_CURVATURE_PCA
-} VCLibPrincipalCurvatureAlgorithm;
+enum class PrincipalCurvatureAlgorithm { TAUBIN95, PCA };
 
 template<FaceMeshConcept MeshType, LoggerConcept LogType = NullLogger>
-void updatePrincipalCurvatureTaubin95(MeshType& m, LogType& log)
+void updatePrincipalCurvatureTaubin95(MeshType& m, LogType& log = nullLogger)
 {
     requirePerVertexPrincipalCurvature(m);
     requirePerVertexAdjacentFaces(m);
     requirePerFaceAdjacentFaces(m);
 
-    using VertexType = MeshType::VertexType;
-    using CoordType  = VertexType::CoordType;
-    using NormalType = VertexType::NormalType;
-    using ScalarType = CoordType::ScalarType;
-    using FaceType   = MeshType::FaceType;
+    using VertexType   = MeshType::VertexType;
+    using PositionType = VertexType::PositionType;
+    using NormalType   = VertexType::NormalType;
+    using ScalarType   = PositionType::ScalarType;
+    using FaceType     = MeshType::FaceType;
 
     // Auxiliary data structure
     struct AdjVertex
@@ -130,18 +122,18 @@ void updatePrincipalCurvatureTaubin95(MeshType& m, LogType& log)
         Matrix33<ScalarType> tempMatrix;
         Matrix33<ScalarType> M = Matrix33<ScalarType>::Zero();
         for (size_t i = 0; i < vertices.size(); ++i) {
-            CoordType edge = (v.coord() - vertices[i].vert->coord());
-            float     curvature =
+            PositionType edge = (v.position() - vertices[i].vert->position());
+            float        curvature =
                 (2.0f * (v.normal().dot(edge))) / edge.squaredNorm();
-            CoordType t = Tp * edge;
+            PositionType t = Tp * edge;
             t.normalize();
             tempMatrix = t.outerProduct(t);
             M += tempMatrix * weights[i] * curvature;
         }
 
         // compute vector W for the Householder matrix
-        CoordType w;
-        CoordType e1(1.0f, 0.0f, 0.0f);
+        PositionType w;
+        PositionType e1(1.0f, 0.0f, 0.0f);
         if ((e1 - v.normal()).squaredNorm() > (e1 + v.normal()).squaredNorm())
             w = e1 - v.normal();
         else
@@ -250,16 +242,16 @@ void updatePrincipalCurvatureTaubin95(MeshType& m, LogType& log)
  */
 template<FaceMeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void updatePrincipalCurvaturePCA(
-    MeshType&                                            m,
-    typename MeshType::VertexType::CoordType::ScalarType radius,
+    MeshType&                                               m,
+    typename MeshType::VertexType::PositionType::ScalarType radius,
     bool     montecarloSampling = true,
     LogType& log                = nullLogger)
 {
-    using VertexType = MeshType::VertexType;
-    using CoordType  = VertexType::CoordType;
-    using ScalarType = CoordType::ScalarType;
-    using NormalType = VertexType::NormalType;
-    using FaceType   = MeshType::FaceType;
+    using VertexType   = MeshType::VertexType;
+    using PositionType = VertexType::PositionType;
+    using ScalarType   = PositionType::ScalarType;
+    using NormalType   = VertexType::NormalType;
+    using FaceType     = MeshType::FaceType;
 
     using VGrid         = StaticGrid3<VertexType*, ScalarType>;
     using VGridIterator = VGrid::ConstIterator;
@@ -284,37 +276,37 @@ void updatePrincipalCurvaturePCA(
     parallelFor(m.vertices(), [&](VertexType& v) {
         // for (VertexType& v : m.vertices()) {
         Matrix33<ScalarType> A, eigenvectors;
-        CoordType            bp, eigenvalues;
+        PositionType         bp, eigenvalues;
         if (montecarloSampling) {
-            Sphere                     s(v.coord(), radius);
+            Sphere                     s(v.position(), radius);
             std::vector<VGridIterator> vec = pGrid.valuesInSphere(s);
-            std::vector<CoordType>     points;
+            std::vector<PositionType>  points;
             points.reserve(vec.size());
             for (const auto& it : vec) {
-                points.push_back(it->second->coord());
+                points.push_back(it->second->position());
             }
             A = covarianceMatrixOfPointCloud(points);
             A *= area * area / 1000;
         }
         else {
-            Sphere<ScalarType> sph(v.coord(), radius);
+            Sphere<ScalarType> sph(v.position(), radius);
             MeshType           tmpMesh = intersection(m, sph);
 
             A = covarianceMatrixOfMesh(tmpMesh);
         }
 
         Eigen::SelfAdjointEigenSolver<Eigen::Matrix<ScalarType, 3, 3>> eig(A);
-        eigenvalues  = CoordType(eig.eigenvalues());
+        eigenvalues  = PositionType(eig.eigenvalues());
         eigenvectors = eig.eigenvectors(); // eigenvector are stored as columns.
         // get the estimate of curvatures from eigenvalues and eigenvectors
         // find the 2 most tangent eigenvectors (by finding the one closest to
         // the normal)
         uint       best  = 0;
         ScalarType bestv = std::abs(
-            v.normal().dot(CoordType(eigenvectors.col(0).normalized())));
+            v.normal().dot(PositionType(eigenvectors.col(0).normalized())));
         for (uint i = 1; i < 3; ++i) {
             ScalarType prod = std::abs(
-                v.normal().dot(CoordType(eigenvectors.col(i).normalized())));
+                v.normal().dot(PositionType(eigenvectors.col(i).normalized())));
             if (prod > bestv) {
                 bestv = prod;
                 best  = i;
@@ -330,7 +322,7 @@ void updatePrincipalCurvaturePCA(
         angle = acos(v.principalCurvature().maxDir().dot(v.normal()));
 
         rot = rotationMatrix<Matrix33<ScalarType>>(
-            CoordType(v.principalCurvature().maxDir().cross(v.normal())),
+            PositionType(v.principalCurvature().maxDir().cross(v.normal())),
             -(M_PI * 0.5 - angle));
 
         v.principalCurvature().maxDir() = rot * v.principalCurvature().maxDir();
@@ -338,7 +330,7 @@ void updatePrincipalCurvaturePCA(
         angle = acos(v.principalCurvature().minDir().dot(v.normal()));
 
         rot = rotationMatrix<Matrix33<ScalarType>>(
-            CoordType(v.principalCurvature().minDir().cross(v.normal())),
+            PositionType(v.principalCurvature().minDir().cross(v.normal())),
             -(M_PI * 0.5 - angle));
 
         v.principalCurvature().minDir() = rot * v.principalCurvature().minDir();
@@ -384,18 +376,17 @@ void updatePrincipalCurvature(MeshType& m, LogType& log = nullLogger)
 
 template<FaceMeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void updatePrincipalCurvature(
-    MeshType&                        m,
-    VCLibPrincipalCurvatureAlgorithm alg = VCL_PRINCIPAL_CURVATURE_TAUBIN95,
-    LogType&                         log = nullLogger)
+    MeshType&                   m,
+    PrincipalCurvatureAlgorithm alg = PrincipalCurvatureAlgorithm::TAUBIN95,
+    LogType&                    log = nullLogger)
 {
+    using enum PrincipalCurvatureAlgorithm;
     requirePerVertexPrincipalCurvature(m);
 
     double radius;
     switch (alg) {
-    case VCL_PRINCIPAL_CURVATURE_TAUBIN95:
-        updatePrincipalCurvatureTaubin95(m, log);
-        break;
-    case VCL_PRINCIPAL_CURVATURE_PCA:
+    case TAUBIN95: updatePrincipalCurvatureTaubin95(m, log); break;
+    case PCA:
         radius = boundingBox(m).diagonal() * 0.1;
         updatePrincipalCurvaturePCA(m, radius, true, log);
     }
