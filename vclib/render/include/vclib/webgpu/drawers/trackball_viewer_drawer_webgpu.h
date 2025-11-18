@@ -20,40 +20,26 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_RENDER_DRAWERS_TRACKBALL_VIEWER_DRAWER_H
-#define VCL_RENDER_DRAWERS_TRACKBALL_VIEWER_DRAWER_H
+#ifndef VCL_WEBGPU_DRAWERS_TRACKBALL_VIEWER_DRAWER_WENGPU_H
+#define VCL_WEBGPU_DRAWERS_TRACKBALL_VIEWER_DRAWER_WENGPU_H
 
-#include <vclib/render/config.h>
+#include "viewer_drawer_webgpu.h"
 
-#ifdef VCLIB_RENDER_BACKEND_BGFX
-#include <vclib/bgfx/drawers/trackball_viewer_drawer_bgfx.h>
-#endif
-
-#ifdef VCLIB_RENDER_BACKEND_OPENGL2
-#include <vclib/opengl2/drawers/trackball_viewer_drawer_opengl2.h>
-#endif
-
-#ifdef VCLIB_RENDER_BACKEND_WEBGPU
-#include <vclib/webgpu/drawers/trackball_viewer_drawer_webgpu.h>
-#endif
+#include <vclib/render/drawers/trackball_event_drawer.h>
 
 namespace vcl {
 
-#ifdef VCLIB_RENDER_BACKEND_BGFX
 template<typename DerivedRenderApp>
-using TrackBallViewerDrawer = TrackBallViewerDrawerBGFX<DerivedRenderApp>;
-#endif
+class TrackBallViewerDrawerWebGPU :
+        public ViewerDrawerWebGPU<TrackBallEventDrawer<DerivedRenderApp>>
+{
+    using ParentViewer =
+        ViewerDrawerWebGPU<TrackBallEventDrawer<DerivedRenderApp>>;
 
-#ifdef VCLIB_RENDER_BACKEND_OPENGL2
-template<typename DerivedRenderApp>
-using TrackBallViewerDrawer = TrackBallViewerDrawerOpenGL2<DerivedRenderApp>;
-#endif
-
-#ifdef VCLIB_RENDER_BACKEND_WEBGPU
-template<typename DerivedRenderApp>
-using TrackBallViewerDrawer = TrackBallViewerDrawerWebGPU<DerivedRenderApp>;
-#endif
+public:
+    using ParentViewer::ParentViewer;
+};
 
 } // namespace vcl
 
-#endif // VCL_RENDER_DRAWERS_TRACKBALL_VIEWER_DRAWER_H
+#endif // VCL_WEBGPU_DRAWERS_TRACKBALL_VIEWER_DRAWER_WENGPU_H

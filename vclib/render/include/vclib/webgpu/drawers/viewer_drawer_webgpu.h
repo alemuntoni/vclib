@@ -31,7 +31,6 @@ template<typename DerivedRenderApp>
 class ViewerDrawerWebGPU : public AbstractViewerDrawer<DerivedRenderApp>
 {
     using ParentViewer = AbstractViewerDrawer<DerivedRenderApp>;
-    using DTB          = ParentViewer::DTB;
 
 public:
     ViewerDrawerWebGPU(uint width = 1024, uint height = 768) :
@@ -46,7 +45,7 @@ public:
 
     void onResize(uint width, uint height) override
     {
-        DTB::resizeViewer(width, height);
+        // todo
     }
 
     void onDraw(uint viewId) override { onDrawContent(viewId); }
@@ -57,16 +56,6 @@ public:
     }
 
     void onPostDraw() override
-    {
-        // todo
-    }
-
-    void toggleAxisVisibility() override
-    {
-        // todo
-    }
-
-    void toggleTrackBallVisibility() override
     {
         // todo
     }

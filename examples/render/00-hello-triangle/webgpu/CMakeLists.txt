@@ -21,11 +21,17 @@
 #****************************************************************************/
 
 cmake_minimum_required(VERSION 3.24)
+project(vclib-render-example-00-hello-triangle-webgpu-glfw)
 
-if (VCLIB_RENDER_BACKEND STREQUAL "bgfx")
-    add_subdirectory(bgfx)
-elseif (VCLIB_RENDER_BACKEND STREQUAL "webgpu")
-    add_subdirectory(webgpu)
-elseif (VCLIB_RENDER_BACKEND STREQUAL "opengl2")
-    add_subdirectory(opengl2)
-endif()
+# GLFW example
+add_executable(
+    vclib-render-example-00-hello-triangle-webgpu-glfw
+    glfw/main.cpp)
+
+target_link_libraries(
+    vclib-render-example-00-hello-triangle-webgpu-glfw
+    PRIVATE vclib-render vclib-3rd-glfw)
+
+set_target_properties(
+    vclib-render-example-00-hello-triangle-webgpu-glfw
+    PROPERTIES FOLDER "examples/render/00-hello-triangle/webgpu")

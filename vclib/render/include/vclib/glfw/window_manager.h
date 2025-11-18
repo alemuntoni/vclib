@@ -120,6 +120,12 @@ public:
 #if defined(__APPLE__)
         glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
 #endif
+#elif defined(VCLIB_RENDER_BACKEND_WEBGPU)
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+#if defined(__APPLE__)
+        glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
+#endif
 #elif defined(VCLIB_RENDER_BACKEND_OPENGL2)
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -230,7 +236,10 @@ public:
     void* displayId() const
     {
         void* ndt = nullptr;
-#ifdef __linux__
+#if defined(VCLIB_RENDER_BACKEND_WEBGPU)
+        // For WebGPU, we return the GLFW window pointer itself
+        ndt = (void*)mWindow;
+#elif defined(__linux__)
 #ifdef VCLIB_RENDER_WITH_WAYLAND
         ndt = (void*) (uintptr_t) glfwGetWaylandDisplay();
 #else
@@ -242,6 +251,8 @@ public:
 
 protected:
     void* windowPtr() { return reinterpret_cast<void*>(mWindow); }
+
+    GLFWwindow* glfwWindow() { return mWindow; }
 
     // callbacks
     virtual void glfwFramebufferSizeCallback(GLFWwindow*, int width, int height)

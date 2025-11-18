@@ -20,40 +20,22 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_RENDER_DRAWERS_TRACKBALL_VIEWER_DRAWER_H
-#define VCL_RENDER_DRAWERS_TRACKBALL_VIEWER_DRAWER_H
+#include "../hello_triangle_drawer.h"
 
-#include <vclib/render/config.h>
+// may include qt - must be included before glfw...
+#include <vclib/render/canvas.h>
 
-#ifdef VCLIB_RENDER_BACKEND_BGFX
-#include <vclib/bgfx/drawers/trackball_viewer_drawer_bgfx.h>
-#endif
+#include <vclib/glfw/window_manager.h>
+#include <vclib/render/render_app.h>
 
-#ifdef VCLIB_RENDER_BACKEND_OPENGL2
-#include <vclib/opengl2/drawers/trackball_viewer_drawer_opengl2.h>
-#endif
+int main(int argc, char** argv)
+{
+    using WindowGLFW = vcl::
+        RenderApp<vcl::glfw::WindowManager, vcl::Canvas, HelloTriangleDrawer>;
 
-#ifdef VCLIB_RENDER_BACKEND_WEBGPU
-#include <vclib/webgpu/drawers/trackball_viewer_drawer_webgpu.h>
-#endif
+    WindowGLFW tw("Hello Triangle WebGPU with GLFW");
 
-namespace vcl {
+    tw.show();
 
-#ifdef VCLIB_RENDER_BACKEND_BGFX
-template<typename DerivedRenderApp>
-using TrackBallViewerDrawer = TrackBallViewerDrawerBGFX<DerivedRenderApp>;
-#endif
-
-#ifdef VCLIB_RENDER_BACKEND_OPENGL2
-template<typename DerivedRenderApp>
-using TrackBallViewerDrawer = TrackBallViewerDrawerOpenGL2<DerivedRenderApp>;
-#endif
-
-#ifdef VCLIB_RENDER_BACKEND_WEBGPU
-template<typename DerivedRenderApp>
-using TrackBallViewerDrawer = TrackBallViewerDrawerWebGPU<DerivedRenderApp>;
-#endif
-
-} // namespace vcl
-
-#endif // VCL_RENDER_DRAWERS_TRACKBALL_VIEWER_DRAWER_H
+    return 0;
+}
