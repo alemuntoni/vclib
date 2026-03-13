@@ -49,7 +49,27 @@ public:
 
         QIcon        icf(":/icons/select_face.png");
         QPushButton* selectFacesButton = Base::addButton(icf);
-        selectVerticesButton->setToolTip("Select Faces");
+        selectFacesButton->setToolTip("Select Faces");
+
+        auto onSelectVerticesButtonClicked = [&](bool checked) {
+            mSelectionEditor->setActive(checked);
+        };
+
+        auto onSelectFacesButtonClicked = [&](bool checked) {
+            mSelectionEditor->setActive(checked);
+        };
+
+        connect(
+            selectVerticesButton,
+            &QPushButton::clicked,
+            this,
+            onSelectVerticesButtonClicked);
+
+        connect(
+            selectFacesButton,
+            &QPushButton::clicked,
+            this,
+            onSelectFacesButtonClicked);
     }
 
 private slots:
