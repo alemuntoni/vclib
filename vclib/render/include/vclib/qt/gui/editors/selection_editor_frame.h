@@ -24,6 +24,7 @@
 #define VCL_QT_GUI_EDITORS_SELECTION_EDITOR_FRAME_H
 
 #include "generic_editor_frame.h"
+#include "settings/selection_editor_settings_frame.h"
 
 #include <vclib/render/editors/selection_editor.h>
 
@@ -43,6 +44,11 @@ public:
     {
         mSelectionEditor = ptr;
 
+        auto& settings = mSelectionEditor->settings();
+
+        assert(settings.customSettings.at("selectVertices").has_value());
+        assert(settings.customSettings.at("selectFaces").has_value());
+
         QIcon        icv(":/icons/select_vertex.png");
         QPushButton* selectVerticesButton = Base::addButton(icv);
         selectVerticesButton->setToolTip("Select Vertices");
@@ -52,11 +58,17 @@ public:
         selectFacesButton->setToolTip("Select Faces");
 
         auto onSelectVerticesButtonClicked = [&](bool checked) {
-            mSelectionEditor->setActive(checked);
+            bool selFaces =
+                std::any_cast<bool>(settings.customSettings["selectFaces"]);
+            mSelectionEditor->setActive(checked || selFaces);
+            settings.customSettings["selectVertices"] = checked;
         };
 
         auto onSelectFacesButtonClicked = [&](bool checked) {
-            mSelectionEditor->setActive(checked);
+            bool selVertices =
+                std::any_cast<bool>(settings.customSettings["selectVertices"]);
+            mSelectionEditor->setActive(checked || selVertices);
+            settings.customSettings["selectFaces"] = checked;
         };
 
         connect(
@@ -70,10 +82,15 @@ public:
             &QPushButton::clicked,
             this,
             onSelectFacesButtonClicked);
+
+        SelectionEditorSettingsFrame* sf =
+            Base::setSettingsFrame<SelectionEditorSettingsFrame>(settings);
+
+        connect(sf, SIGNAL(settingsUpdated()), this, SLOT(refreshSettings()));
     }
 
 private slots:
-
+    // probably not needed here (no drawing to update when settings change)
     void refreshSettings() override
     {
         if (mSelectionEditor) {

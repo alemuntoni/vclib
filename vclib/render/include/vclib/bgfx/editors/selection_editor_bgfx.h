@@ -35,8 +35,10 @@ class SelectionEditorBGFX : public Editor<ViewerDrawer>
 public:
     SelectionEditorBGFX()
     {
-        // init settings here...
-        // Base::settings().customSettings["foo"] = ...;
+        Base::settings().customSettings["selectVertices"] = false;
+        Base::settings().customSettings["selectFaces"] = false;
+        Base::settings().customSettings["onlyVisible"] = false;
+        // init other settings here...
     }
 
     void draw(uint viewId) const override
