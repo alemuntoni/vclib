@@ -20,64 +20,48 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BGFX_EDITORS_SELECTION_EDITOR_BGFX_H
-#define VCL_BGFX_EDITORS_SELECTION_EDITOR_BGFX_H
+#ifndef VCL_QT_GUI_EDITORS_SELECTION_EDITOR_FRAME_H
+#define VCL_QT_GUI_EDITORS_SELECTION_EDITOR_FRAME_H
 
-#include <vclib/render/editors/editor.h>
+#include "generic_editor_frame.h"
 
-namespace vcl {
+#include <vclib/render/editors/selection_editor.h>
 
-template<typename ViewerDrawer>
-class SelectionEditorBGFX : public Editor<ViewerDrawer>
+namespace vcl::qt {
+
+template<typename ViewerType>
+class SelectionEditorFrame : public GenericEditorFrame
 {
-    using Base = Editor<ViewerDrawer>;
+    using Base = GenericEditorFrame;
+
+    std::shared_ptr<vcl::SelectionEditor<ViewerType>> mSelectionEditor;
 
 public:
-    SelectionEditorBGFX()
+    explicit SelectionEditorFrame(
+        std::shared_ptr<vcl::SelectionEditor<ViewerType>> ptr,
+        QWidget* parent = nullptr) : GenericEditorFrame(parent)
     {
-        // init settings here...
-        // Base::settings().customSettings["foo"] = ...;
+        mSelectionEditor = ptr;
+
+        QIcon        icv(":/icons/select_vertex.png");
+        QPushButton* selectVerticesButton = Base::addButton(icv);
+        selectVerticesButton->setToolTip("Select Vertices");
+
+        QIcon        icf(":/icons/select_face.png");
+        QPushButton* selectFacesButton = Base::addButton(icf);
+        selectVerticesButton->setToolTip("Select Faces");
     }
 
-    void draw(uint viewId) const override
-    {
-        // ...
-    }
+private slots:
 
-    bool onKeyPress(Key::Enum key, const KeyModifiers& modifiers) override
+    void refreshSettings() override
     {
-        return false;
-    }
-
-    bool onKeyRelease(Key::Enum key, const KeyModifiers& modifiers) override
-    {
-        return false;
-    }
-
-    bool onMouseMove(double x, double y, const KeyModifiers& modifiers) override
-    {
-        return false;
-    }
-
-    bool onMousePress(
-        vcl::MouseButton::Enum   button,
-        double                   x,
-        double                   y,
-        const vcl::KeyModifiers& modifiers) override
-    {
-        return false;
-    }
-
-    bool onMouseRelease(
-        MouseButton::Enum   button,
-        double              x,
-        double              y,
-        const KeyModifiers& modifiers) override
-    {
-        return false;
+        if (mSelectionEditor) {
+            mSelectionEditor->refreshSettings();
+        }
     }
 };
 
-} // namespace vcl
+} // namespace vcl::qt
 
-#endif // VCL_BGFX_EDITORS_SELECTION_EDITOR_BGFX_H
+#endif // VCL_QT_GUI_EDITORS_SELECTION_EDITOR_FRAME_H

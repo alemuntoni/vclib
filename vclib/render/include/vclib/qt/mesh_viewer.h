@@ -30,6 +30,7 @@
 #include <vclib/render/drawable/drawable_object_vector.h>
 #include <vclib/render/editors/bounding_box_editor.h>
 #include <vclib/render/editors/mesh_selector_editor.h>
+#include <vclib/render/editors/selection_editor.h>
 #include <vclib/render/settings/pbr_viewer_settings.h>
 
 #include <QWidget>
@@ -62,6 +63,8 @@ class MeshViewer : public QWidget
         mMeshSelectorEditor;
     std::shared_ptr<vcl::BoundingBoxEditor<MeshViewerRenderApp::ViewerType>>
         mBoundingBoxEditor;
+    std::shared_ptr<vcl::SelectionEditor<MeshViewerRenderApp::ViewerType>>
+        mSelectionEditor;
 
 protected:
     MeshViewerRenderApp& viewer() const;

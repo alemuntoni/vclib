@@ -25,6 +25,7 @@
 #include <vclib/render/concepts/pbr_viewer.h>
 #include <vclib/render/drawable/drawable_mesh.h>
 #include <vclib/qt/gui/editors/bounding_box_editor_frame.h>
+#include <vclib/qt/gui/editors/selection_editor_frame.h>
 #include <vclib/qt/gui/screen_shot_dialog.h>
 
 #include "ui_mesh_viewer.h"
@@ -95,6 +96,11 @@ MeshViewer::MeshViewer(QWidget* parent) :
     BoundingBoxEditorFrame<ViewerType>* bboxEditor =
         new BoundingBoxEditorFrame<ViewerType>(mBoundingBoxEditor);
     mUI->toolBar->addWidget(bboxEditor);
+
+    mSelectionEditor = viewer().pushEditor<vcl::SelectionEditor>();
+    SelectionEditorFrame<ViewerType>* selectionEditor =
+        new SelectionEditorFrame<ViewerType>(mSelectionEditor);
+    mUI->toolBar->addWidget(selectionEditor);
 
     // install the key filter
     mUI->viewer->installEventFilter(new KeyFilter(this));
