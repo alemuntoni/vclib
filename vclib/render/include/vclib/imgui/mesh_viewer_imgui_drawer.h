@@ -30,6 +30,7 @@
 #include <vclib/render/drawers/trackball_viewer_drawer.h>
 #include <vclib/render/editors/mesh_selector_editor.h>
 #include <vclib/render/editors/bounding_box_editor.h>
+#include <vclib/render/editors/selection_editor.h>
 #include <vclib/render/settings/pbr_viewer_settings.h>
 
 #include <imgui.h>
@@ -49,6 +50,8 @@ class MeshViewerDrawerImgui :
         mMeshSelectorEditor;
     std::shared_ptr<vcl::BoundingBoxEditor<typename Base::ViewerType>>
         mBoundingBoxEditor;
+    std::shared_ptr<vcl::SelectionEditor<typename Base::ViewerType>>
+        mSelectionEditor;
 
 public:
     MeshViewerDrawerImgui(uint width = 1024, uint height = 768) :
@@ -61,6 +64,9 @@ public:
 
         mBoundingBoxEditor =
             Base::template pushEditor<vcl::BoundingBoxEditor>();
+
+        mSelectionEditor =
+            Base::template pushEditor<vcl::SelectionEditor>();
     }
 
     virtual void onDraw(vcl::uint viewId) override
@@ -204,17 +210,18 @@ private:
         ImVec2 toolbarPos = ImVec2(
             viewport->WorkPos.x + 10.0f, viewport->WorkPos.y + 10.0f);
 
-        ImGui::SetNextWindowPos(toolbarPos, ImGuiCond_Always);
+        ImGui::SetNextWindowPos(toolbarPos, ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowBgAlpha(0.85f);
 
         ImGuiWindowFlags flags =
-            ImGuiWindowFlags_NoDecoration      |
+            ImGuiWindowFlags_NoScrollbar       |
+            ImGuiWindowFlags_NoScrollWithMouse |
             ImGuiWindowFlags_AlwaysAutoResize  |
             ImGuiWindowFlags_NoSavedSettings   |
             ImGuiWindowFlags_NoFocusOnAppearing|
             ImGuiWindowFlags_NoNav;
 
-        if (ImGui::Begin("##EditorsToolbar", nullptr, flags)) {
+        if (ImGui::Begin("Editors", nullptr, flags)) {
             // bounding box editor toggle
             bool bbActive =
                 mBoundingBoxEditor && mBoundingBoxEditor->isActive();
@@ -239,8 +246,95 @@ private:
                 drawBoundingBoxSettings();
                 ImGui::EndPopup();
             }
+
+            ImGui::SameLine(0, 6);
+            // TODO: still no way to add vertical separator using imgui
+            // https://github.com/ocornut/imgui/issues/8321
+            // ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+            ImGui::SameLine(0, 6);
+
+            // selection editor toggles
+            auto& selSettings = mSelectionEditor->settings();
+
+            bool vSel = std::any_cast<bool>(
+                selSettings.customSettings["selectVertices"]);
+            bool fSel =
+                std::any_cast<bool>(selSettings.customSettings["selectFaces"]);
+
+            if (ImGui::Button(vSel ? "[V Sel]" : " V Sel ")) {
+                vSel = !vSel;
+                selSettings.customSettings["selectVertices"] = vSel;
+                mSelectionEditor->setActive(vSel || fSel);
+                mSelectionEditor->refreshSettings();
+            }
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+                ImGui::SetTooltip("Vertex Selection");
+
+            ImGui::SameLine(0, 2);
+            if (ImGui::Button(fSel ? "[F Sel]" : " F Sel ")) {
+                fSel = !fSel;
+                selSettings.customSettings["selectFaces"] = fSel;
+                mSelectionEditor->setActive(vSel || fSel);
+                mSelectionEditor->refreshSettings();
+            }
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+                ImGui::SetTooltip("Face Selection");
+
+            // small settings popup button
+            ImGui::SameLine(0, 2);
+            if (ImGui::Button("v##SelSettings")) {
+                ImGui::OpenPopup("##SelSettingsPopup");
+            }
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+                ImGui::SetTooltip("Selection Settings");
+
+            if (ImGui::BeginPopup("##SelSettingsPopup")) {
+                drawSelectionSettings();
+                ImGui::EndPopup();
+            }
         }
         ImGui::End();
+    }
+
+    void drawSelectionSettings()
+    {
+        if (!mSelectionEditor)
+            return;
+
+        EditorSettings& sts = mSelectionEditor->settings();
+
+        // Edit mode
+        static const char* editModeNames[] = {
+            "None", "Selected Object", "Visible Objects", "All Objects"};
+        int currentMode = toUnderlying(sts.editMode);
+        ImGui::Text("Apply to:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(130);
+        if (ImGui::BeginCombo("##SelEditMode", editModeNames[currentMode])) {
+            for (int n = 0; n < IM_ARRAYSIZE(editModeNames); n++) {
+                bool selected = (n == currentMode);
+                if (ImGui::Selectable(editModeNames[n], selected)) {
+                    sts.editMode =
+                        static_cast<EditorSettings::EditMode>(n);
+                    mSelectionEditor->refreshSettings();
+                }
+                if (selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        // Only visible checkbox
+        assert(sts.customSettings["onlyVisible"].has_value());
+        bool onlyVisible =
+            std::any_cast<bool>(sts.customSettings["onlyVisible"]);
+        ImGui::Checkbox(
+            "Only Visible",
+            [&] { return onlyVisible; },
+            [&](bool v) {
+                sts.customSettings["onlyVisible"] = v;
+                mSelectionEditor->refreshSettings();
+            });
     }
 
     void drawBoundingBoxSettings()
