@@ -29,6 +29,7 @@
 #include <vclib/bgfx/context.h>
 #include <vclib/bgfx/drawable/drawable_environment.h>
 #include <vclib/bgfx/drawable/mesh/mesh_render_buffers.h>
+#include <vclib/bgfx/drawable/uniforms/cross_section_uniforms.h>
 #include <vclib/bgfx/drawable/uniforms/mesh_render_settings_uniforms.h>
 
 #include <bgfx/bgfx.h>
@@ -215,6 +216,16 @@ public:
 
         DrawableMeshUniforms::setColor(*this);
         MeshRenderSettingsUniforms::set(mMRS);
+
+        if (AbstractDrawableMesh::mCrossSectionEnabled) {
+            CrossSectionUniforms::set(
+                AbstractDrawableMesh::mCrossSectionMin,
+                AbstractDrawableMesh::mCrossSectionMax);
+        }
+        else {
+            CrossSectionUniforms::set();
+        }
+        CrossSectionUniforms::bind();
 
         if (mMRS.isSurface(MRI::Surface::VISIBLE)) {
             const PBRViewerSettings&   pbrSettings = settings.pbrSettings;

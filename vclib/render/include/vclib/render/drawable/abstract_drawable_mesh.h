@@ -46,6 +46,11 @@ protected:
 
     Box3d mBoundingBox;
 
+    bool mCrossSectionEnabled = false;
+
+    Point3f mCrossSectionMin = Point3f::min();
+    Point3f mCrossSectionMax = Point3f::max();
+
 public:
     using MatIt = std::vector<Material>::const_iterator;
 
@@ -59,6 +64,23 @@ public:
     }
 
     const MeshRenderSettings& renderSettings() const { return mMRS; }
+
+    bool isCrossSectionEnabled() const { return mCrossSectionEnabled; }
+
+    void setCrossSectionEnabled(bool enabled)
+    {
+        mCrossSectionEnabled = enabled;
+    }
+
+    void setCrossSectionMin(const Point3f& minPoint)
+    {
+        mCrossSectionMin = minPoint;
+    }
+
+    void setCrossSectionMax(const Point3f& maxPoint)
+    {
+        mCrossSectionMax = maxPoint;
+    }
 
     virtual void updateBuffers(
         MeshRenderInfo::BuffersBitSet buffersToUpdate =
@@ -96,6 +118,9 @@ protected:
         vcl::DrawableObject::swap(other);
         swap(mMRS, other.mMRS);
         swap(mBoundingBox, other.mBoundingBox);
+        swap(mCrossSectionEnabled, other.mCrossSectionEnabled);
+        swap(mCrossSectionMin, other.mCrossSectionMin);
+        swap(mCrossSectionMax, other.mCrossSectionMax);
     }
 
     // if the mesh does not have a bounding box, or if it has it but it is
