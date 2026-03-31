@@ -39,6 +39,10 @@ namespace vcl {
  */
 class AbstractDrawableMesh : public vcl::DrawableObject
 {
+public:
+    enum class CrossSectionType { NONE, PER_VERTEX, PER_FRAGMENT };
+
+private:
     inline static const Image EMPTY_IMAGE;
 
 protected:
@@ -46,7 +50,7 @@ protected:
 
     Box3d mBoundingBox;
 
-    bool mCrossSectionEnabled = false;
+    CrossSectionType mCrossSectionType = CrossSectionType::NONE;
 
     Point3f mCrossSectionMin = Point3f::min();
     Point3f mCrossSectionMax = Point3f::max();
@@ -65,11 +69,14 @@ public:
 
     const MeshRenderSettings& renderSettings() const { return mMRS; }
 
-    bool isCrossSectionEnabled() const { return mCrossSectionEnabled; }
-
-    void setCrossSectionEnabled(bool enabled)
+    bool isCrossSectionEnabled() const
     {
-        mCrossSectionEnabled = enabled;
+        return mCrossSectionType != CrossSectionType::NONE;
+    }
+
+    void setCrossSectionType(CrossSectionType type)
+    {
+        mCrossSectionType = type;
     }
 
     void setCrossSectionMin(const Point3f& minPoint)
@@ -118,7 +125,7 @@ protected:
         vcl::DrawableObject::swap(other);
         swap(mMRS, other.mMRS);
         swap(mBoundingBox, other.mBoundingBox);
-        swap(mCrossSectionEnabled, other.mCrossSectionEnabled);
+        swap(mCrossSectionType, other.mCrossSectionType);
         swap(mCrossSectionMin, other.mCrossSectionMin);
         swap(mCrossSectionMax, other.mCrossSectionMax);
     }

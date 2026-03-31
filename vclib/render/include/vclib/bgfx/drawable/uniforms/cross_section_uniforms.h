@@ -53,11 +53,13 @@ public:
 
     static void set(
         const Point3f& minPoint = Point3f::min(),
-        const Point3f& maxPoint = Point3f::max())
+        const Point3f& maxPoint = Point3f::max(),
+        bool perFragment = false)
     {
         sCrossSectionMinData[0] = minPoint.x();
         sCrossSectionMinData[1] = minPoint.y();
         sCrossSectionMinData[2] = minPoint.z();
+        sCrossSectionMinData[3] = float(perFragment);
 
         sCrossSectionMaxData[0] = maxPoint.x();
         sCrossSectionMaxData[1] = maxPoint.y();

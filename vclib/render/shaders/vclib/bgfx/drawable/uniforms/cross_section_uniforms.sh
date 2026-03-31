@@ -26,6 +26,8 @@
 uniform vec4 u_crossSectionMinData;
 uniform vec4 u_crossSectionMaxData;
 
+#define u_crossSectionPerFragment bool(u_crossSectionMinData.w != 0.0)
+
 #define u_crossSectionMinX u_crossSectionMinData.x
 #define u_crossSectionMinY u_crossSectionMinData.y
 #define u_crossSectionMinZ u_crossSectionMinData.z
