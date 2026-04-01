@@ -217,12 +217,12 @@ public:
         DrawableMeshUniforms::setColor(*this);
         MeshRenderSettingsUniforms::set(mMRS);
 
-        if (AbstractDrawableMesh::isCrossSectionEnabled()) {
-            using enum AbstractDrawableMesh::CrossSectionType;
+        if (AbstractDrawableMesh::mCSS.isEnabled()) {
+            using enum CrossSectionSettings::CrossSectionType;
             CrossSectionUniforms::set(
-                AbstractDrawableMesh::mCrossSectionMin,
-                AbstractDrawableMesh::mCrossSectionMax,
-                AbstractDrawableMesh::mCrossSectionType == PER_FRAGMENT);
+                AbstractDrawableMesh::mCSS.lower(),
+                AbstractDrawableMesh::mCSS.upper(),
+                AbstractDrawableMesh::mCSS.type() == PER_FRAGMENT);
         }
         else {
             CrossSectionUniforms::set();

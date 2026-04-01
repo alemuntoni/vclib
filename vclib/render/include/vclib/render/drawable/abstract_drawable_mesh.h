@@ -24,6 +24,7 @@
 #define VCL_RENDER_DRAWABLE_ABSTRACT_DRAWABLE_MESH_H
 
 #include "drawable_object.h"
+#include "mesh/cross_section_settings.h"
 #include "mesh/mesh_render_settings.h"
 
 #include <vclib/space/core/matrix.h>
@@ -47,13 +48,9 @@ private:
 
 protected:
     MeshRenderSettings mMRS;
+    CrossSectionSettings mCSS;
 
     Box3d mBoundingBox;
-
-    CrossSectionType mCrossSectionType = CrossSectionType::NONE;
-
-    Point3f mCrossSectionMin = Point3f::min();
-    Point3f mCrossSectionMax = Point3f::max();
 
 public:
     using MatIt = std::vector<Material>::const_iterator;
@@ -63,30 +60,17 @@ public:
     AbstractDrawableMesh(const AbstractDrawableMesh& other) = default;
 
     template<MeshConcept MeshType>
-    AbstractDrawableMesh(const MeshType& m) : mMRS(m)
+    AbstractDrawableMesh(const MeshType& m) : mMRS(m), mCSS(m)
     {
     }
 
     const MeshRenderSettings& renderSettings() const { return mMRS; }
 
-    bool isCrossSectionEnabled() const
-    {
-        return mCrossSectionType != CrossSectionType::NONE;
-    }
+    const CrossSectionSettings& crossSectionSettings() const { return mCSS; }
 
-    void setCrossSectionType(CrossSectionType type)
+    void setCrossSectionSettings(const CrossSectionSettings& css)
     {
-        mCrossSectionType = type;
-    }
-
-    void setCrossSectionMin(const Point3f& minPoint)
-    {
-        mCrossSectionMin = minPoint;
-    }
-
-    void setCrossSectionMax(const Point3f& maxPoint)
-    {
-        mCrossSectionMax = maxPoint;
+        mCSS = css;
     }
 
     virtual void updateBuffers(
@@ -124,10 +108,8 @@ protected:
         using std::swap;
         vcl::DrawableObject::swap(other);
         swap(mMRS, other.mMRS);
+        swap(mCSS, other.mCSS);
         swap(mBoundingBox, other.mBoundingBox);
-        swap(mCrossSectionType, other.mCrossSectionType);
-        swap(mCrossSectionMin, other.mCrossSectionMin);
-        swap(mCrossSectionMax, other.mCrossSectionMax);
     }
 
     // if the mesh does not have a bounding box, or if it has it but it is

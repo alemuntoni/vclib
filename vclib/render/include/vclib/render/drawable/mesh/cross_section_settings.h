@@ -1,0 +1,101 @@
+/*****************************************************************************
+ * VCLib                                                                     *
+ * Visual Computing Library                                                  *
+ *                                                                           *
+ * Copyright(C) 2021-2026                                                    *
+ * Visual Computing Lab                                                      *
+ * ISTI - Italian National Research Council                                  *
+ *                                                                           *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This program is free software; you can redistribute it and/or modify      *
+ * it under the terms of the Mozilla Public License Version 2.0 as published *
+ * by the Mozilla Foundation; either version 2 of the License, or            *
+ * (at your option) any later version.                                       *
+ *                                                                           *
+ * This program is distributed in the hope that it will be useful,           *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              *
+ * Mozilla Public License Version 2.0                                        *
+ * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
+ ****************************************************************************/
+
+#ifndef VCL_RENDER_DRAWABLE_MESH_CROSS_SECTION_SETTINGS_H
+#define VCL_RENDER_DRAWABLE_MESH_CROSS_SECTION_SETTINGS_H
+
+#include <vclib/algorithms/mesh.h>
+#include <vclib/mesh.h>
+#include <vclib/space/core.h>
+
+namespace vcl {
+
+class CrossSectionSettings
+{
+public:
+    enum class CrossSectionType { NONE, PER_VERTEX, PER_FRAGMENT };
+
+private:
+    CrossSectionType mType = CrossSectionType::NONE;
+
+    Box3f mBBox = Box3f(Point3f::min(), Point3f::max());
+
+    Point3f mLower = Point3f::min();
+    Point3f mUpper = Point3f::max();
+
+public:
+    CrossSectionSettings() = default;
+
+    template<MeshConcept MeshType>
+    CrossSectionSettings(const MeshType& m)
+    {
+        mBBox = vcl::boundingBox(m).template cast<float>();
+        if constexpr (HasTransformMatrix<MeshType>) {
+            Matrix44f transform = m.transformMatrix().template cast<float>();
+            mBBox               = transformBox(mBBox, transform);
+        }
+        mLower = mBBox.min();
+        mUpper = mBBox.max();
+    }
+
+    bool isEnabled() const { return mType != CrossSectionType::NONE; }
+
+    CrossSectionType& type() { return mType; }
+
+    CrossSectionType type() const { return mType; }
+
+    const Box3f& boundingBox() const { return mBBox; }
+
+    const Point3f& lower() const { return mLower; }
+
+    const Point3f& upper() const { return mUpper; }
+
+    void setBoundingBox(const Box3f& bbox)
+    {
+        mBBox = bbox;
+
+        if (mLower < bbox.min()) {
+            mLower = bbox.min();
+        }
+        if (mUpper > bbox.max()) {
+            mUpper = bbox.max();
+        }
+    }
+
+    void setLower(const Point3f& lower)
+    {
+        if (mBBox.isInside(lower)) {
+            mLower = lower;
+        }
+    }
+
+    void setUpper(const Point3f& upper)
+    {
+        if (mBBox.isInside(upper)) {
+            mUpper = upper;
+        }
+    }
+};
+
+} // namespace vcl
+
+#endif // VCL_RENDER_DRAWABLE_MESH_CROSS_SECTION_SETTINGS_H
