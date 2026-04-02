@@ -54,7 +54,7 @@
          <bool>true</bool>
         </property>
         <attribute name="buttonGroup">
-         <string notr="true">crossSectionTypeButton</string>
+         <string notr="true">crossSectionTypeButtonGroup</string>
         </attribute>
        </widget>
       </item>
@@ -64,7 +64,7 @@
          <string>Per Fragment</string>
         </property>
         <attribute name="buttonGroup">
-         <string notr="true">crossSectionTypeButton</string>
+         <string notr="true">crossSectionTypeButtonGroup</string>
         </attribute>
        </widget>
       </item>
@@ -76,6 +76,6 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="crossSectionTypeButton"/>
+  <buttongroup name="crossSectionTypeButtonGroup"/>
  </buttongroups>
 </ui>

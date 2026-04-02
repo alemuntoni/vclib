@@ -62,6 +62,12 @@ MeshRenderSettingsFrame::MeshRenderSettingsFrame(QWidget* parent) :
             this,
             SIGNAL(meshRenderSettingsUpdated()));
     }
+
+    connect(
+        mUI->crossSectionFrame,
+        SIGNAL(crossSectionSettingsUpdated()),
+        this,
+        SIGNAL(meshRenderSettingsUpdated()));
 }
 
 MeshRenderSettingsFrame::~MeshRenderSettingsFrame()

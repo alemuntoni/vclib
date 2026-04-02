@@ -33,6 +33,24 @@ CrossSectionSettingsFrame::CrossSectionSettingsFrame(
 {
     mUI->setupUi(this);
     updateFrameFromSettings();
+
+    connect(
+        mUI->crosSectionEnabledCheckBox,
+        SIGNAL(checkStateChanged(Qt::CheckState)),
+        this,
+        SLOT(onCrossSectionEnabledChanged(Qt::CheckState)));
+
+    connect(
+        mUI->perVertexRadioButton,
+        SIGNAL(toggled(bool)),
+        this,
+        SLOT(onPerVertexToggled(bool)));
+
+    connect(
+        mUI->perFragmentRadioButton,
+        SIGNAL(toggled(bool)),
+        this,
+        SLOT(onPerFragmentToggled(bool)));
 }
 
 CrossSectionSettingsFrame::CrossSectionSettingsFrame(QWidget* parent) :
@@ -60,6 +78,57 @@ void CrossSectionSettingsFrame::setCrossSectionSettings(
 
 void CrossSectionSettingsFrame::updateFrameFromSettings()
 {
+    using enum CrossSectionSettings::CrossSectionType;
+
+    // radio buttons
+    if (mCSS.type() == PER_VERTEX)
+        mUI->perVertexRadioButton->setChecked(true);
+    else if (mCSS.type() == PER_FRAGMENT)
+        mUI->perFragmentRadioButton->setChecked(true);
+
+    // checkbox, last thing to do
+    if (mCSS.type() == NONE)
+        mUI->crosSectionEnabledCheckBox->setCheckState(
+            Qt::CheckState::Unchecked);
+    else
+        mUI->crosSectionEnabledCheckBox->setCheckState(Qt::CheckState::Checked);
+}
+
+void CrossSectionSettingsFrame::onCrossSectionEnabledChanged(
+    Qt::CheckState arg1)
+{
+    using enum CrossSectionSettings::CrossSectionType;
+
+    if (arg1 != Qt::CheckState::Checked) {
+        mCSS.type() = NONE;
+    }
+    else {
+        if (mUI->perVertexRadioButton->isChecked())
+            mCSS.type() = PER_VERTEX;
+        else
+            mCSS.type() = PER_FRAGMENT;
+    }
+
+    mUI->controlsFrame->setEnabled(arg1 == Qt::CheckState::Checked);
+    emit crossSectionSettingsUpdated();
+}
+
+void CrossSectionSettingsFrame::onPerVertexToggled(bool checked)
+{
+    using enum CrossSectionSettings::CrossSectionType;
+    if (checked) {
+        mCSS.type() = PER_VERTEX;
+        emit crossSectionSettingsUpdated();
+    }
+}
+
+void CrossSectionSettingsFrame::onPerFragmentToggled(bool checked)
+{
+    using enum CrossSectionSettings::CrossSectionType;
+    if (checked) {
+        mCSS.type() = PER_FRAGMENT;
+        emit crossSectionSettingsUpdated();
+    }
 }
 
 } // namespace vcl::qt

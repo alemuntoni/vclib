@@ -59,6 +59,11 @@ signals:
 
 private:
     void updateFrameFromSettings();
+
+private slots:
+    void onCrossSectionEnabledChanged(Qt::CheckState arg1);
+    void onPerVertexToggled(bool checked);
+    void onPerFragmentToggled(bool checked);
 };
 
 } // namespace vcl::qt

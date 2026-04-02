@@ -35,7 +35,6 @@
      <property name="frameShadow">
       <enum>QFrame::Shadow::Plain</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2"/>
     </widget>
    </item>
   </layout>
