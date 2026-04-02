@@ -23,8 +23,10 @@
 #ifndef VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_CROSS_SECTION_SETTINGS_FRAME_H
 #define VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_CROSS_SECTION_SETTINGS_FRAME_H
 
+#include <vclib/qt/gui/float_range_slider.h>
 #include <vclib/render/drawable/mesh/cross_section_settings.h>
 
+#include <QDoubleSpinBox>
 #include <QFrame>
 
 namespace vcl::qt {
@@ -59,6 +61,14 @@ signals:
 
 private:
     void updateFrameFromSettings();
+    void updateSlider(
+        FloatRangeSlider* slider,
+        QDoubleSpinBox*   minSpinBox,
+        QDoubleSpinBox*   maxSpinBox,
+        float min,
+        float max,
+        float lower,
+        float upper);
 
 private slots:
     void onCrossSectionEnabledChanged(Qt::CheckState arg1);
@@ -66,6 +76,8 @@ private slots:
     void onPerFragmentToggled(bool checked);
     void onXFloatRangeSliderLowerValueChanged(float value);
     void onXFloatRangeSliderUpperValueChanged(float value);
+    void onXMinSpinBoxValueChanged(double value);
+    void onXMaxSpinBoxValueChanged(double value);
 };
 
 } // namespace vcl::qt

@@ -63,6 +63,18 @@ CrossSectionSettingsFrame::CrossSectionSettingsFrame(
         SIGNAL(upperValueChanged(float)),
         this,
         SLOT(onXFloatRangeSliderUpperValueChanged(float)));
+
+    connect(
+        mUI->xMinSpinBox,
+        SIGNAL(valueChanged(double)),
+        this,
+        SLOT(onXMinSpinBoxValueChanged(double)));
+
+    connect(
+        mUI->xMaxSpinBox,
+        SIGNAL(valueChanged(double)),
+        this,
+        SLOT(onXMaxSpinBoxValueChanged(double)));
 }
 
 CrossSectionSettingsFrame::CrossSectionSettingsFrame(QWidget* parent) :
@@ -98,16 +110,18 @@ void CrossSectionSettingsFrame::updateFrameFromSettings()
     else if (mCSS.type() == PER_FRAGMENT)
         mUI->perFragmentRadioButton->setChecked(true);
 
-    mUI->xFloatRangeSlider->blockSignals(true);
     auto bb = mCSS.boundingBox();
-    mUI->xFloatRangeSlider->setRange(bb.min().x(), bb.max().x());
-
     auto l = mCSS.lower();
     auto u = mCSS.upper();
 
-    mUI->xFloatRangeSlider->setLowerValue(l.x());
-    mUI->xFloatRangeSlider->setUpperValue(u.x());
-    mUI->xFloatRangeSlider->blockSignals(false);
+    updateSlider(
+        mUI->xFloatRangeSlider,
+        mUI->xMinSpinBox,
+        mUI->xMaxSpinBox,
+        bb.min().x(),
+        bb.max().x(),
+        l.x(),
+        u.x());
 
     // checkbox, last thing to do
     if (mCSS.type() == NONE)
@@ -115,6 +129,40 @@ void CrossSectionSettingsFrame::updateFrameFromSettings()
             Qt::CheckState::Unchecked);
     else
         mUI->crosSectionEnabledCheckBox->setCheckState(Qt::CheckState::Checked);
+}
+
+void CrossSectionSettingsFrame::updateSlider(
+    FloatRangeSlider* slider,
+    QDoubleSpinBox*   minSpinBox,
+    QDoubleSpinBox*   maxSpinBox,
+    float             min,
+    float             max,
+    float             lower,
+    float             upper)
+{
+    slider->blockSignals(true);
+
+    slider->setRange(min, max);
+    slider->setLowerValue(lower);
+    slider->setUpperValue(upper);
+
+    slider->blockSignals(false);
+
+    minSpinBox->blockSignals(true);
+
+    minSpinBox->setMinimum(min);
+    minSpinBox->setMaximum(upper);
+    minSpinBox->setValue(lower);
+
+    minSpinBox->blockSignals(false);
+
+    maxSpinBox->blockSignals(true);
+
+    maxSpinBox->setMinimum(lower);
+    maxSpinBox->setMaximum(max);
+    maxSpinBox->setValue(upper);
+
+    maxSpinBox->blockSignals(false);
 }
 
 void CrossSectionSettingsFrame::onCrossSectionEnabledChanged(
@@ -160,6 +208,12 @@ void CrossSectionSettingsFrame::onXFloatRangeSliderLowerValueChanged(
     auto l = mCSS.lower();
     l.x() = value;
     mCSS.setLower(l);
+
+    mUI->xMinSpinBox->blockSignals(true);
+    mUI->xMinSpinBox->setValue(value);
+    mUI->xMinSpinBox->blockSignals(false);
+    mUI->xMaxSpinBox->setMinimum(value);
+
     emit crossSectionSettingsUpdated();
 }
 
@@ -169,7 +223,23 @@ void CrossSectionSettingsFrame::onXFloatRangeSliderUpperValueChanged(
     auto u = mCSS.upper();
     u.x() = value;
     mCSS.setUpper(u);
+
+    mUI->xMaxSpinBox->blockSignals(true);
+    mUI->xMaxSpinBox->setValue(value);
+    mUI->xMaxSpinBox->blockSignals(false);
+    mUI->xMinSpinBox->setMaximum(value);
+
     emit crossSectionSettingsUpdated();
+}
+
+void CrossSectionSettingsFrame::onXMinSpinBoxValueChanged(double value)
+{
+    mUI->xFloatRangeSlider->setLowerValue(static_cast<float>(value));
+}
+
+void CrossSectionSettingsFrame::onXMaxSpinBoxValueChanged(double value)
+{
+    mUI->xFloatRangeSlider->setUpperValue(static_cast<float>(value));
 }
 
 } // namespace vcl::qt
