@@ -32,6 +32,19 @@ CrossSectionSettingsFrame::CrossSectionSettingsFrame(
         QFrame(parent), mUI(new Ui::CrossSectionSettingsFrame), mCSS(css)
 {
     mUI->setupUi(this);
+
+    mFloatSliders[X] = mUI->xFloatRangeSlider;
+    mFloatSliders[Y] = mUI->yFloatRangeSlider;
+    mFloatSliders[Z] = mUI->zFloatRangeSlider;
+
+    mMinSpinBoxes[X] = mUI->xMinSpinBox;
+    mMinSpinBoxes[Y] = mUI->yMinSpinBox;
+    mMinSpinBoxes[Z] = mUI->zMinSpinBox;
+
+    mMaxSpinBoxes[X] = mUI->xMaxSpinBox;
+    mMaxSpinBoxes[Y] = mUI->yMaxSpinBox;
+    mMaxSpinBoxes[Z] = mUI->zMaxSpinBox;
+
     updateFrameFromSettings();
 
     connect(
@@ -52,29 +65,37 @@ CrossSectionSettingsFrame::CrossSectionSettingsFrame(
         this,
         SLOT(onPerFragmentToggled(bool)));
 
-    connect(
-        mUI->xFloatRangeSlider,
-        SIGNAL(lowerValueChanged(float)),
-        this,
-        SLOT(onXFloatRangeSliderLowerValueChanged(float)));
+    for (uint i = X; i < AXIS_COUNT; ++i) {
+        connect(
+            mFloatSliders[i],
+            &FloatRangeSlider::lowerValueChanged,
+            [this, i](float value) {
+                onFloatRangeSliderLowerValueChanged(
+                    static_cast<Axis>(i), value);
+            });
 
-    connect(
-        mUI->xFloatRangeSlider,
-        SIGNAL(upperValueChanged(float)),
-        this,
-        SLOT(onXFloatRangeSliderUpperValueChanged(float)));
+        connect(
+            mFloatSliders[i],
+            &FloatRangeSlider::upperValueChanged,
+            [this, i](float value) {
+                onFloatRangeSliderUpperValueChanged(
+                    static_cast<Axis>(i), value);
+            });
 
-    connect(
-        mUI->xMinSpinBox,
-        SIGNAL(valueChanged(double)),
-        this,
-        SLOT(onXMinSpinBoxValueChanged(double)));
+        connect(
+            mMinSpinBoxes[i],
+            &QDoubleSpinBox::valueChanged,
+            [this, i](double value) {
+                onMinSpinBoxValueChanged(static_cast<Axis>(i), value);
+            });
 
-    connect(
-        mUI->xMaxSpinBox,
-        SIGNAL(valueChanged(double)),
-        this,
-        SLOT(onXMaxSpinBoxValueChanged(double)));
+        connect(
+            mMaxSpinBoxes[i],
+            &QDoubleSpinBox::valueChanged,
+            [this, i](double value) {
+                onMaxSpinBoxValueChanged(static_cast<Axis>(i), value);
+            });
+    }
 }
 
 CrossSectionSettingsFrame::CrossSectionSettingsFrame(QWidget* parent) :
@@ -114,14 +135,16 @@ void CrossSectionSettingsFrame::updateFrameFromSettings()
     auto l = mCSS.lower();
     auto u = mCSS.upper();
 
-    updateSlider(
-        mUI->xFloatRangeSlider,
-        mUI->xMinSpinBox,
-        mUI->xMaxSpinBox,
-        bb.min().x(),
-        bb.max().x(),
-        l.x(),
-        u.x());
+    for (uint i = X; i < AXIS_COUNT; ++i) {
+        updateSlider(
+            mFloatSliders[i],
+            mMinSpinBoxes[i],
+            mMaxSpinBoxes[i],
+            bb.min()[i],
+            bb.max()[i],
+            l[i],
+            u[i]);
+    }
 
     // checkbox, last thing to do
     if (mCSS.type() == NONE)
@@ -202,44 +225,44 @@ void CrossSectionSettingsFrame::onPerFragmentToggled(bool checked)
     }
 }
 
-void CrossSectionSettingsFrame::onXFloatRangeSliderLowerValueChanged(
-    float value)
+void CrossSectionSettingsFrame::onFloatRangeSliderLowerValueChanged(
+    Axis axis, float value)
 {
     auto l = mCSS.lower();
-    l.x() = value;
+    l[axis] = value;
     mCSS.setLower(l);
 
-    mUI->xMinSpinBox->blockSignals(true);
-    mUI->xMinSpinBox->setValue(value);
-    mUI->xMinSpinBox->blockSignals(false);
-    mUI->xMaxSpinBox->setMinimum(value);
+    mMinSpinBoxes[axis]->blockSignals(true);
+    mMinSpinBoxes[axis]->setValue(value);
+    mMinSpinBoxes[axis]->blockSignals(false);
+    mMaxSpinBoxes[axis]->setMinimum(value);
 
     emit crossSectionSettingsUpdated();
 }
 
-void CrossSectionSettingsFrame::onXFloatRangeSliderUpperValueChanged(
-    float value)
+void CrossSectionSettingsFrame::onFloatRangeSliderUpperValueChanged(
+    Axis axis, float value)
 {
     auto u = mCSS.upper();
-    u.x() = value;
+    u[axis] = value;
     mCSS.setUpper(u);
 
-    mUI->xMaxSpinBox->blockSignals(true);
-    mUI->xMaxSpinBox->setValue(value);
-    mUI->xMaxSpinBox->blockSignals(false);
-    mUI->xMinSpinBox->setMaximum(value);
+    mMaxSpinBoxes[axis]->blockSignals(true);
+    mMaxSpinBoxes[axis]->setValue(value);
+    mMaxSpinBoxes[axis]->blockSignals(false);
+    mMinSpinBoxes[axis]->setMaximum(value);
 
     emit crossSectionSettingsUpdated();
 }
 
-void CrossSectionSettingsFrame::onXMinSpinBoxValueChanged(double value)
+void CrossSectionSettingsFrame::onMinSpinBoxValueChanged(Axis axis, double value)
 {
-    mUI->xFloatRangeSlider->setLowerValue(static_cast<float>(value));
+    mFloatSliders[axis]->setLowerValue(static_cast<float>(value));
 }
 
-void CrossSectionSettingsFrame::onXMaxSpinBoxValueChanged(double value)
+void CrossSectionSettingsFrame::onMaxSpinBoxValueChanged(Axis axis, double value)
 {
-    mUI->xFloatRangeSlider->setUpperValue(static_cast<float>(value));
+    mFloatSliders[axis]->setUpperValue(static_cast<float>(value));
 }
 
 } // namespace vcl::qt

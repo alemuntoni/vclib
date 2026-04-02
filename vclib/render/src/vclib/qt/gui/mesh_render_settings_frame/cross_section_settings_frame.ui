@@ -89,6 +89,19 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
+         <item row="0" column="1" colspan="2">
+          <widget class="vcl::qt::FloatRangeSlider" name="xFloatRangeSlider" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QDoubleSpinBox" name="zMinSpinBox"/>
+         </item>
          <item row="1" column="1">
           <widget class="QDoubleSpinBox" name="xMinSpinBox">
            <property name="sizePolicy">
@@ -102,7 +115,10 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="3" column="1">
+          <widget class="QDoubleSpinBox" name="yMinSpinBox"/>
+         </item>
+         <item row="2" column="0" rowspan="2">
           <widget class="QLabel" name="yLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -112,32 +128,6 @@
            </property>
            <property name="text">
             <string>Y:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="zLabel">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Z:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" rowspan="2">
-          <widget class="QLabel" name="xLabel">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>X:</string>
            </property>
           </widget>
          </item>
@@ -154,15 +144,43 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1" colspan="2">
-          <widget class="vcl::qt::FloatRangeSlider" name="xFloatRangeSlider" native="true">
+         <item row="2" column="1" colspan="2">
+          <widget class="vcl::qt::FloatRangeSlider" name="yFloatRangeSlider" native="true"/>
+         </item>
+         <item row="0" column="0" rowspan="2">
+          <widget class="QLabel" name="xLabel">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="text">
+            <string>X:</string>
+           </property>
           </widget>
+         </item>
+         <item row="4" column="0" rowspan="2">
+          <widget class="QLabel" name="zLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Z:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1" colspan="2">
+          <widget class="vcl::qt::FloatRangeSlider" name="zFloatRangeSlider" native="true"/>
+         </item>
+         <item row="3" column="2">
+          <widget class="QDoubleSpinBox" name="yMaxSpinBox"/>
+         </item>
+         <item row="5" column="2">
+          <widget class="QDoubleSpinBox" name="zMaxSpinBox"/>
          </item>
         </layout>
        </widget>

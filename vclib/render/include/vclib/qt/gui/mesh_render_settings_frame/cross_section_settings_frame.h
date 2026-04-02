@@ -39,7 +39,13 @@ class CrossSectionSettingsFrame : public QFrame
 {
     Q_OBJECT
 
+    enum Axis {X= 0, Y, Z, AXIS_COUNT};
+
     Ui::CrossSectionSettingsFrame* mUI;
+
+    std::array<FloatRangeSlider*, AXIS_COUNT> mFloatSliders;
+    std::array<QDoubleSpinBox*, AXIS_COUNT>   mMinSpinBoxes;
+    std::array<QDoubleSpinBox*, AXIS_COUNT>   mMaxSpinBoxes;
 
     CrossSectionSettings mCSS;
 
@@ -74,10 +80,11 @@ private slots:
     void onCrossSectionEnabledChanged(Qt::CheckState arg1);
     void onPerVertexToggled(bool checked);
     void onPerFragmentToggled(bool checked);
-    void onXFloatRangeSliderLowerValueChanged(float value);
-    void onXFloatRangeSliderUpperValueChanged(float value);
-    void onXMinSpinBoxValueChanged(double value);
-    void onXMaxSpinBoxValueChanged(double value);
+
+    void onFloatRangeSliderLowerValueChanged(Axis axis, float value);
+    void onFloatRangeSliderUpperValueChanged(Axis axis, float value);
+    void onMinSpinBoxValueChanged(Axis axis, double value);
+    void onMaxSpinBoxValueChanged(Axis axis, double value);
 };
 
 } // namespace vcl::qt
