@@ -94,7 +94,7 @@ public slots:
 
     void selectedDrawableObjectChanged(uint i);
 
-    void renderSettingsUpdated();
+    void meshRenderSettingsUpdated();
 
     void fitScene();
 

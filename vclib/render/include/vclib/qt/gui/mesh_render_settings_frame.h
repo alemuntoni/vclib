@@ -57,7 +57,7 @@ public:
         bool                      changeCurrentTab = false);
 
 signals:
-    void settingsUpdated();
+    void meshRenderSettingsUpdated();
 
 private:
     enum { POINTS_FRAME = 0, SURFACE_FRAME, WIREFRAME_FRAME, EDGES_FRAME };

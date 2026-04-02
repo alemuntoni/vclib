@@ -57,7 +57,10 @@ MeshRenderSettingsFrame::MeshRenderSettingsFrame(QWidget* parent) :
 
     for (auto* frame : frames) {
         connect(
-            frame, SIGNAL(settingsUpdated()), this, SIGNAL(settingsUpdated()));
+            frame,
+            SIGNAL(meshRenderSettingsUpdated()),
+            this,
+            SIGNAL(meshRenderSettingsUpdated()));
     }
 }
 

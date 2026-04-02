@@ -88,12 +88,12 @@ MeshViewer::MeshViewer(QWidget* parent) :
     mUI->viewerRenderSettingsFrame->setViewer(mUI->viewer);
 
     // each time that the RenderSettingsFrame updates its settings, we call the
-    // renderSettingsUpdated() member function
+    // meshRenderSettingsUpdated() member function
     connect(
         mUI->meshRenderSettingsFrame,
-        SIGNAL(settingsUpdated()),
+        SIGNAL(meshRenderSettingsUpdated()),
         this,
-        SLOT(renderSettingsUpdated()));
+        SLOT(meshRenderSettingsUpdated()));
 
     // each time that the drawVectorTree changes the visibility of an object,
     // we update the current settings of the RenderSettingsFrame, and we update
@@ -248,13 +248,13 @@ void MeshViewer::selectedDrawableObjectChanged(uint i)
 
 /**
  * @brief Slot called every time that the MeshRenderSettingsFrame emits
- * 'settingsUpdated()', that is when the user changes render settings of a
- * GeneriDrawableMesh.
+ * 'meshRenderSettingsUpdated()', that is when the user changes render settings
+ * of a GeneriDrawableMesh.
  *
  * We need to get the selected GeneriDrawableMesh first, and then update the
  * settings to it.
  */
-void MeshViewer::renderSettingsUpdated()
+void MeshViewer::meshRenderSettingsUpdated()
 {
     // The user changed the RenderSettings of the ith object.
     uint i = mUI->drawVectorTree->selectedDrawableObject();
