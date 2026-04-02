@@ -20,56 +20,47 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_H
-#define VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_H
-
-#include "mesh_render_settings_frame/generic_mesh_render_settings_frame.h"
+#ifndef VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_CROSS_SECTION_SETTINGS_FRAME_H
+#define VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_CROSS_SECTION_SETTINGS_FRAME_H
 
 #include <vclib/render/drawable/mesh/cross_section_settings.h>
-#include <vclib/render/drawable/mesh/mesh_render_settings.h>
 
 #include <QFrame>
-
-class QPushButton;
 
 namespace vcl::qt {
 
 namespace Ui {
-class MeshRenderSettingsFrame;
+class CrossSectionSettingsFrame;
 } // namespace Ui
 
-class MeshRenderSettingsFrame : public QFrame
+class CrossSectionSettingsFrame : public QFrame
 {
     Q_OBJECT
 
-    Ui::MeshRenderSettingsFrame* mUI;
-    MeshRenderSettings           mMRS;
+    Ui::CrossSectionSettingsFrame* mUI;
 
-    std::vector<GenericMeshRenderSettingsFrame*> frames;
+    CrossSectionSettings mCSS;
 
 public:
-    explicit MeshRenderSettingsFrame(QWidget* parent = nullptr);
-    ~MeshRenderSettingsFrame();
+    explicit CrossSectionSettingsFrame(
+        const CrossSectionSettings css,
+        QWidget*                   parent = nullptr);
 
-    const MeshRenderSettings& meshRenderSettings() const;
+    explicit CrossSectionSettingsFrame(QWidget* parent = nullptr);
 
-    const CrossSectionSettings& crossSectionSettings() const;
+    ~CrossSectionSettingsFrame();
 
-    void setMeshRenderSettings(
-        const MeshRenderSettings& settings,
-        bool                      changeCurrentTab = false);
+     const CrossSectionSettings& crossSectionSettings() const;
 
-    void setCrossSectionSettings(const CrossSectionSettings& settings);
+     void setCrossSectionSettings(const CrossSectionSettings& settings);
 
 signals:
-    void meshRenderSettingsUpdated();
+    void crossSectionSettingsUpdated();
 
 private:
-    enum { POINTS_FRAME = 0, SURFACE_FRAME, WIREFRAME_FRAME, EDGES_FRAME };
-
-    void updateGuiFromSettings(bool changeCurrentTab);
+    void updateFrameFromSettings();
 };
 
 } // namespace vcl::qt
 
-#endif // VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_H
+#endif // VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_CROSS_SECTION_SETTINGS_FRAME_H

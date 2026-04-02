@@ -20,56 +20,46 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_H
-#define VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_H
+#include <vclib/qt/gui/mesh_render_settings_frame/cross_section_settings_frame.h>
 
-#include "mesh_render_settings_frame/generic_mesh_render_settings_frame.h"
-
-#include <vclib/render/drawable/mesh/cross_section_settings.h>
-#include <vclib/render/drawable/mesh/mesh_render_settings.h>
-
-#include <QFrame>
-
-class QPushButton;
+#include "ui_cross_section_settings_frame.h"
 
 namespace vcl::qt {
 
-namespace Ui {
-class MeshRenderSettingsFrame;
-} // namespace Ui
-
-class MeshRenderSettingsFrame : public QFrame
+CrossSectionSettingsFrame::CrossSectionSettingsFrame(
+    const CrossSectionSettings css,
+    QWidget*                   parent) :
+        QFrame(parent), mUI(new Ui::CrossSectionSettingsFrame), mCSS(css)
 {
-    Q_OBJECT
+    mUI->setupUi(this);
+    updateFrameFromSettings();
+}
 
-    Ui::MeshRenderSettingsFrame* mUI;
-    MeshRenderSettings           mMRS;
+CrossSectionSettingsFrame::CrossSectionSettingsFrame(QWidget* parent) :
+        CrossSectionSettingsFrame(CrossSectionSettings(), parent)
+{
+}
 
-    std::vector<GenericMeshRenderSettingsFrame*> frames;
+CrossSectionSettingsFrame::~CrossSectionSettingsFrame()
+{
+    delete mUI;
+}
 
-public:
-    explicit MeshRenderSettingsFrame(QWidget* parent = nullptr);
-    ~MeshRenderSettingsFrame();
+const CrossSectionSettings& CrossSectionSettingsFrame::crossSectionSettings()
+    const
+{
+    return mCSS;
+}
 
-    const MeshRenderSettings& meshRenderSettings() const;
+void CrossSectionSettingsFrame::setCrossSectionSettings(
+    const CrossSectionSettings& settings)
+{
+    mCSS = settings;
+    updateFrameFromSettings();
+}
 
-    const CrossSectionSettings& crossSectionSettings() const;
-
-    void setMeshRenderSettings(
-        const MeshRenderSettings& settings,
-        bool                      changeCurrentTab = false);
-
-    void setCrossSectionSettings(const CrossSectionSettings& settings);
-
-signals:
-    void meshRenderSettingsUpdated();
-
-private:
-    enum { POINTS_FRAME = 0, SURFACE_FRAME, WIREFRAME_FRAME, EDGES_FRAME };
-
-    void updateGuiFromSettings(bool changeCurrentTab);
-};
+void CrossSectionSettingsFrame::updateFrameFromSettings()
+{
+}
 
 } // namespace vcl::qt
-
-#endif // VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_H

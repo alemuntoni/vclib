@@ -215,6 +215,8 @@ void MeshViewer::visibilityDrawableObjectChanged()
         if (m) {
             mUI->meshRenderSettingsFrame->setMeshRenderSettings(
                 m->renderSettings());
+            mUI->meshRenderSettingsFrame->setCrossSectionSettings(
+                m->crossSectionSettings());
         }
         mUI->viewer->update();
     }
@@ -238,6 +240,8 @@ void MeshViewer::selectedDrawableObjectChanged(uint i)
         mUI->meshRenderSettingsFrame->setMeshRenderSettings(
             m->renderSettings());
         mUI->meshRenderSettingsFrame->setEnabled(true);
+        mUI->meshRenderSettingsFrame->setCrossSectionSettings(
+            m->crossSectionSettings());
     }
     else {
         // it is not a AbstractDrawableMesh, RenderSettingsFrame must be
@@ -249,9 +253,9 @@ void MeshViewer::selectedDrawableObjectChanged(uint i)
 /**
  * @brief Slot called every time that the MeshRenderSettingsFrame emits
  * 'meshRenderSettingsUpdated()', that is when the user changes render settings
- * of a GeneriDrawableMesh.
+ * of an AbstractDrawableMesh.
  *
- * We need to get the selected GeneriDrawableMesh first, and then update the
+ * We need to get the selected AbstractDrawableMesh first, and then update the
  * settings to it.
  */
 void MeshViewer::meshRenderSettingsUpdated()
@@ -268,6 +272,8 @@ void MeshViewer::meshRenderSettingsUpdated()
         // AbstractDrawableMesh
         m->setRenderSettings(
             mUI->meshRenderSettingsFrame->meshRenderSettings());
+        m->setCrossSectionSettings(
+            mUI->meshRenderSettingsFrame->crossSectionSettings());
         mUI->viewer->update();
     }
 }
@@ -297,6 +303,8 @@ void MeshViewer::updateGUI()
             mUI->meshRenderSettingsFrame->setMeshRenderSettings(
                 m->renderSettings(), true);
             mUI->meshRenderSettingsFrame->setEnabled(true);
+            mUI->meshRenderSettingsFrame->setCrossSectionSettings(
+                m->crossSectionSettings());
         }
         else {
             mUI->meshRenderSettingsFrame->setEnabled(false);

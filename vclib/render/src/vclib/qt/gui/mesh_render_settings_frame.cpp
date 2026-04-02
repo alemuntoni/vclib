@@ -74,12 +74,24 @@ const MeshRenderSettings& MeshRenderSettingsFrame::meshRenderSettings() const
     return mMRS;
 }
 
+const CrossSectionSettings& MeshRenderSettingsFrame::crossSectionSettings()
+    const
+{
+    return mUI->crossSectionFrame->crossSectionSettings();
+}
+
 void MeshRenderSettingsFrame::setMeshRenderSettings(
     const MeshRenderSettings& settings,
     bool                      changeCurrentTab /*= false*/)
 {
     mMRS = settings;
     updateGuiFromSettings(changeCurrentTab);
+}
+
+void MeshRenderSettingsFrame::setCrossSectionSettings(
+    const CrossSectionSettings& settings)
+{
+    mUI->crossSectionFrame->setCrossSectionSettings(settings);
 }
 
 void MeshRenderSettingsFrame::updateGuiFromSettings(bool changeCurrentTab)
