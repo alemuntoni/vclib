@@ -95,6 +95,12 @@ MeshViewer::MeshViewer(QWidget* parent) :
         this,
         SLOT(meshRenderSettingsUpdated()));
 
+    connect(
+        mUI->meshRenderSettingsFrame,
+        SIGNAL(crossSectionSettingsUpdated()),
+        this,
+        SLOT(crossSectionSettingsUpdated()));
+
     // each time that the drawVectorTree changes the visibility of an object,
     // we update the current settings of the RenderSettingsFrame, and we update
     // the glArea
@@ -239,9 +245,9 @@ void MeshViewer::selectedDrawableObjectChanged(uint i)
         // set it enabled
         mUI->meshRenderSettingsFrame->setMeshRenderSettings(
             m->renderSettings());
-        mUI->meshRenderSettingsFrame->setEnabled(true);
         mUI->meshRenderSettingsFrame->setCrossSectionSettings(
             m->crossSectionSettings());
+        mUI->meshRenderSettingsFrame->setEnabled(true);
     }
     else {
         // it is not a AbstractDrawableMesh, RenderSettingsFrame must be
@@ -272,6 +278,22 @@ void MeshViewer::meshRenderSettingsUpdated()
         // AbstractDrawableMesh
         m->setRenderSettings(
             mUI->meshRenderSettingsFrame->meshRenderSettings());
+        mUI->viewer->update();
+    }
+}
+
+void MeshViewer::crossSectionSettingsUpdated()
+{
+    // The user changed the CrossSectionSettings of the ith object.
+    uint i = mUI->drawVectorTree->selectedDrawableObject();
+    if (i != UINT_NULL && mDrawableObjectVector->size() > 0) {
+        // The selected object must always be a AbstractDrawableMesh, because
+        // the CrossSectionSettingsFrame (which called this member function) is
+        // visible only when the selected Object is a AbstractDrawableMesh
+        auto m = std::dynamic_pointer_cast<AbstractDrawableMesh>(
+            mDrawableObjectVector->at(i));
+        // get CrossSectionSettings from the CrossSectionSettingsFrame, and set
+        // it to the AbstractDrawableMesh
         m->setCrossSectionSettings(
             mUI->meshRenderSettingsFrame->crossSectionSettings());
         mUI->viewer->update();

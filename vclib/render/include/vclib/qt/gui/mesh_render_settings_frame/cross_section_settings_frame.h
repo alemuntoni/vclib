@@ -64,6 +64,8 @@ private slots:
     void onCrossSectionEnabledChanged(Qt::CheckState arg1);
     void onPerVertexToggled(bool checked);
     void onPerFragmentToggled(bool checked);
+    void onXFloatRangeSliderLowerValueChanged(float value);
+    void onXFloatRangeSliderUpperValueChanged(float value);
 };
 
 } // namespace vcl::qt

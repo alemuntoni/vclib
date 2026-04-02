@@ -51,6 +51,18 @@ CrossSectionSettingsFrame::CrossSectionSettingsFrame(
         SIGNAL(toggled(bool)),
         this,
         SLOT(onPerFragmentToggled(bool)));
+
+    connect(
+        mUI->xFloatRangeSlider,
+        SIGNAL(lowerValueChanged(float)),
+        this,
+        SLOT(onXFloatRangeSliderLowerValueChanged(float)));
+
+    connect(
+        mUI->xFloatRangeSlider,
+        SIGNAL(upperValueChanged(float)),
+        this,
+        SLOT(onXFloatRangeSliderUpperValueChanged(float)));
 }
 
 CrossSectionSettingsFrame::CrossSectionSettingsFrame(QWidget* parent) :
@@ -85,6 +97,17 @@ void CrossSectionSettingsFrame::updateFrameFromSettings()
         mUI->perVertexRadioButton->setChecked(true);
     else if (mCSS.type() == PER_FRAGMENT)
         mUI->perFragmentRadioButton->setChecked(true);
+
+    mUI->xFloatRangeSlider->blockSignals(true);
+    auto bb = mCSS.boundingBox();
+    mUI->xFloatRangeSlider->setRange(bb.min().x(), bb.max().x());
+
+    auto l = mCSS.lower();
+    auto u = mCSS.upper();
+
+    mUI->xFloatRangeSlider->setLowerValue(l.x());
+    mUI->xFloatRangeSlider->setUpperValue(u.x());
+    mUI->xFloatRangeSlider->blockSignals(false);
 
     // checkbox, last thing to do
     if (mCSS.type() == NONE)
@@ -129,6 +152,24 @@ void CrossSectionSettingsFrame::onPerFragmentToggled(bool checked)
         mCSS.type() = PER_FRAGMENT;
         emit crossSectionSettingsUpdated();
     }
+}
+
+void CrossSectionSettingsFrame::onXFloatRangeSliderLowerValueChanged(
+    float value)
+{
+    auto l = mCSS.lower();
+    l.x() = value;
+    mCSS.setLower(l);
+    emit crossSectionSettingsUpdated();
+}
+
+void CrossSectionSettingsFrame::onXFloatRangeSliderUpperValueChanged(
+    float value)
+{
+    auto u = mCSS.upper();
+    u.x() = value;
+    mCSS.setUpper(u);
+    emit crossSectionSettingsUpdated();
 }
 
 } // namespace vcl::qt

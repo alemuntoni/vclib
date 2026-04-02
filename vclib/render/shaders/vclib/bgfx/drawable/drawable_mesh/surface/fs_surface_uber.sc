@@ -34,7 +34,7 @@ BUFFER_RO(primitiveNormals, float, VCL_MRB_PRIMITIVE_NORMAL_BUFFER); // normal o
 
 void main()
 {
-    if (v_discardFlag > 0.0001) { // if vertex is marked as discard, discard the fragment
+    if (v_discardFlag > 0.0) { // if vertex is marked as discard, discard the fragment
         discard;
     }
 

@@ -53,6 +53,13 @@ public:
             Matrix44f transform = m.transformMatrix().template cast<float>();
             mBBox               = transformBox(mBBox, transform);
         }
+
+        // inflate bbox by epsilon of its diagonal
+        float eps = mBBox.diagonal() * 0.02f;
+
+        mBBox.min() -= eps;
+        mBBox.max() += eps;
+
         mLower = mBBox.min();
         mUpper = mBBox.max();
     }

@@ -96,6 +96,8 @@ public slots:
 
     void meshRenderSettingsUpdated();
 
+    void crossSectionSettingsUpdated();
+
     void fitScene();
 
     void fitView();

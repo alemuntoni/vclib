@@ -138,6 +138,7 @@ public:
         mMRB.update(*this, buffersToUpdate);
         mMRS.setRenderCapabilityFrom(*this);
         setRenderSettings(mMRS);
+        mCSS = CrossSectionSettings(*this);
     }
 
     void setRenderSettings(const MeshRenderSettings& rs) override

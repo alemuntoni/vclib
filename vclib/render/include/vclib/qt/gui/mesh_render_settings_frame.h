@@ -64,6 +64,8 @@ public:
 signals:
     void meshRenderSettingsUpdated();
 
+    void crossSectionSettingsUpdated();
+
 private:
     enum { POINTS_FRAME = 0, SURFACE_FRAME, WIREFRAME_FRAME, EDGES_FRAME };
 
