@@ -228,7 +228,6 @@ public:
         else {
             CrossSectionUniforms::set();
         }
-        CrossSectionUniforms::bind();
 
         if (mMRS.isSurface(MRI::Surface::VISIBLE)) {
             const PBRViewerSettings&   pbrSettings = settings.pbrSettings;
@@ -351,6 +350,17 @@ public:
             model = MeshType::transformMatrix().template cast<float>();
         }
 
+        if (AbstractDrawableMesh::mCSS.isEnabled()) {
+            using enum CrossSectionSettings::CrossSectionType;
+            CrossSectionUniforms::set(
+                AbstractDrawableMesh::mCSS.lower(),
+                AbstractDrawableMesh::mCSS.upper(),
+                AbstractDrawableMesh::mCSS.type() == PER_FRAGMENT);
+        }
+        else {
+            CrossSectionUniforms::set();
+        }
+
         if (mMRS.isSurface(MRI::Surface::VISIBLE)) {
             mMRB.bindVertexBuffers(mMRS);
             mMRB.bindIndexBuffers(mMRS);
@@ -440,6 +450,7 @@ protected:
     {
         MeshRenderSettingsUniforms::bind();
         DrawableMeshUniforms::bind();
+        CrossSectionUniforms::bind();
     }
 
     /**
