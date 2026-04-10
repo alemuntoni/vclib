@@ -36,4 +36,43 @@ uniform vec4 u_crossSectionMaxData;
 #define u_crossSectionMaxY u_crossSectionMaxData.y
 #define u_crossSectionMaxZ u_crossSectionMaxData.z
 
+/**
+ * Given the world position of the vertex, compute and returns the discard flag
+ * for the cross section test (1.0 if vertex should be discarded, 0.0 otherwise)
+ *
+ * This macro is meant to be used in the vertex shader. The result of this test
+ * can be passed to the fragment shader as a varying, so that the fragment
+ * shader can also discard fragments based on the same test
+ *
+ * pos: the world position of the vertex (vec3)
+ * returns: the discard flag (float)
+ */
+#define computeDiscardFlag(pos) ( \
+    (!u_crossSectionPerFragment && ( \
+        (pos).x < u_crossSectionMinX || (pos).x > u_crossSectionMaxX || \
+        (pos).y < u_crossSectionMinY || (pos).y > u_crossSectionMaxY || \
+        (pos).z < u_crossSectionMinZ || (pos).z > u_crossSectionMaxZ \
+    )) ? 1.0 : 0.0 \
+)
+
+/**
+ * Given the discard flag computed by computeDiscardFlag and the world position
+ * of the fragment, discard the fragment if the flag is greater than 0.0 or if
+ * the fragment is outside the cross section bounds (if
+ * u_crossSectionPerFragment is true).
+ *
+ * This macro is meant to be used in the fragment shader.
+ *
+ * flag: the discard flag computed by computeDiscardFlag and passed as a varying
+ *       from the vertex shader (float)
+ * pos: the world position of the fragment (vec3)
+ */
+#define discardIfCrossSectionClipped(flag, pos) \
+    if (flag > 0.0) discard; \
+    else if (u_crossSectionPerFragment && ( \
+        (pos).x < u_crossSectionMinX || (pos).x > u_crossSectionMaxX || \
+        (pos).y < u_crossSectionMinY || (pos).y > u_crossSectionMaxY || \
+        (pos).z < u_crossSectionMinZ || (pos).z > u_crossSectionMaxZ \
+    )) discard;
+
 #endif // VCL_EXT_BGFX_UNIFORMS_CROSS_SECTION_UNIFORMS_SH

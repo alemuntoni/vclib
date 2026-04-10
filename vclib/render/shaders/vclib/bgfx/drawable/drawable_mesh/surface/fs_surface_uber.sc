@@ -34,17 +34,7 @@ BUFFER_RO(primitiveNormals, float, VCL_MRB_PRIMITIVE_NORMAL_BUFFER); // normal o
 
 void main()
 {
-    if (v_discardFlag > 0.0) { // if vertex is marked as discard, discard the fragment
-        discard;
-    }
-
-    // discard the fragment if it is outside the cross-section box
-    if (v_worldPos.x < u_crossSectionMinX || v_worldPos.x > u_crossSectionMaxX ||
-            v_worldPos.y < u_crossSectionMinY || v_worldPos.y > u_crossSectionMaxY ||
-            v_worldPos.z < u_crossSectionMinZ || v_worldPos.z > u_crossSectionMaxZ)
-    {
-        discard;
-    }
+    discardIfCrossSectionClipped(v_discardFlag, v_worldPos);
 
     // depth offset - avoid z-fighting
     float depthOffset = 0.0;

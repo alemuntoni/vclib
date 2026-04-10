@@ -41,14 +41,5 @@ void main()
     v_color = a_color0;
 
     // discard flag - used to discard the whole vertex, but in fragment shader
-    if (!u_crossSectionPerFragment) {
-        bool isOutside = v_worldPos.x < u_crossSectionMinX || v_worldPos.x > u_crossSectionMaxX ||
-            v_worldPos.y < u_crossSectionMinY || v_worldPos.y > u_crossSectionMaxY ||
-            v_worldPos.z < u_crossSectionMinZ || v_worldPos.z > u_crossSectionMaxZ;
-
-        v_discardFlag = isOutside ? 1.0 : 0.0;
-    }
-    else {
-        v_discardFlag = 0.0; // no discard
-    }
+    v_discardFlag = computeDiscardFlag(v_worldPos);
 }
