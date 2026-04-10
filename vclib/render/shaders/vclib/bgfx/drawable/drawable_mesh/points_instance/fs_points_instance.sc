@@ -20,12 +20,15 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-$input v_normal, v_color, v_texcoord1
+$input v_worldPos, v_discardFlag, v_normal, v_color, v_texcoord1
 
 #include <vclib/bgfx/drawable/drawable_mesh/uniforms.sh>
+#include <vclib/bgfx/drawable/uniforms/cross_section_uniforms.sh>
 
 void main()
 {
+    discardIfCrossSectionClipped(v_discardFlag, v_worldPos);
+
     // defaul color and light
     vec4 light = vec4(1, 1, 1, 1);
     vec4 color = uintABGRToVec4Color(floatBitsToUint(u_userPointColorFloat));
