@@ -24,9 +24,9 @@
 #define VCL_RENDER_DRAWABLE_ABSTRACT_DRAWABLE_MESH_H
 
 #include "drawable_object.h"
-#include "mesh/cross_section_settings.h"
 #include "mesh/mesh_render_settings.h"
 
+#include <vclib/render/settings/cross_section_settings.h>
 #include <vclib/space/core/matrix.h>
 
 namespace vcl {

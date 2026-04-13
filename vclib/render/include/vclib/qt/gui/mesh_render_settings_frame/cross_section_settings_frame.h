@@ -24,7 +24,7 @@
 #define VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_CROSS_SECTION_SETTINGS_FRAME_H
 
 #include <vclib/qt/gui/float_range_slider.h>
-#include <vclib/render/drawable/mesh/cross_section_settings.h>
+#include <vclib/render/settings/cross_section_settings.h>
 
 #include <QDoubleSpinBox>
 #include <QFrame>

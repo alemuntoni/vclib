@@ -25,8 +25,8 @@
 
 #include "mesh_render_settings_frame/generic_mesh_render_settings_frame.h"
 
-#include <vclib/render/drawable/mesh/cross_section_settings.h>
 #include <vclib/render/drawable/mesh/mesh_render_settings.h>
+#include <vclib/render/settings/cross_section_settings.h>
 
 #include <QFrame>
 

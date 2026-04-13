@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_RENDER_DRAWABLE_MESH_CROSS_SECTION_SETTINGS_H
-#define VCL_RENDER_DRAWABLE_MESH_CROSS_SECTION_SETTINGS_H
+#ifndef VCL_RENDER_SETTINGS_CROSS_SECTION_SETTINGS_H
+#define VCL_RENDER_SETTINGS_CROSS_SECTION_SETTINGS_H
 
 #include <vclib/algorithms/mesh.h>
 #include <vclib/mesh.h>
@@ -105,4 +105,4 @@ public:
 
 } // namespace vcl
 
-#endif // VCL_RENDER_DRAWABLE_MESH_CROSS_SECTION_SETTINGS_H
+#endif // VCL_RENDER_SETTINGS_CROSS_SECTION_SETTINGS_H
