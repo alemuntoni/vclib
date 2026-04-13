@@ -21,7 +21,10 @@
  ****************************************************************************/
 
 $input a_position, a_texcoord0, a_color0, a_color1, a_normal, a_texcoord1
-$output v_worldPos0, v_worldPos1, v_discardFlag, v_t, v_color, v_normal
+$output v_color, v_normal
+
+// cross section
+$output v_worldPos0, v_worldPos1, v_discardFlag, v_t
 
 #include <bgfx_shader.sh>
 #include <bgfx_compute.sh>

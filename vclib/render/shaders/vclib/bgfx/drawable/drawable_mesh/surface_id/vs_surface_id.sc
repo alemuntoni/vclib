@@ -21,6 +21,8 @@
  ****************************************************************************/
 
 $input a_position
+
+// cross section
 $output v_worldPos, v_discardFlag
 
 #include <vclib/bgfx/shaders_common.sh>

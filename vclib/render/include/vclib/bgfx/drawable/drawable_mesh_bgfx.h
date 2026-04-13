@@ -257,8 +257,6 @@ public:
                 mMRB.bindIndexBuffers(mMRS, i);
 
                 /* UNIFORMS */
-                CrossSectionUniforms::bind();
-
                 DrawableMeshUniforms::setFirstChunkIndex(
                     mMRB.triangleChunk(i).startIndex);
                 uint64_t materialState =
@@ -305,7 +303,6 @@ public:
                 // 1 px vertices
                 mMRB.bindVertexBuffers(mMRS);
                 bindUniforms();
-                CrossSectionUniforms::bind();
 
                 bgfx::setState(state | BGFX_STATE_PT_POINTS);
                 bgfx::setTransform(model.data());
@@ -321,7 +318,6 @@ public:
                 // render splats
                 mMRB.bindVertexQuadBuffer();
                 bindUniforms();
-                CrossSectionUniforms::bind();
 
                 bgfx::setState(state);
                 bgfx::setTransform(model.data());
@@ -442,6 +438,7 @@ protected:
     {
         MeshRenderSettingsUniforms::bind();
         DrawableMeshUniforms::bind();
+        CrossSectionUniforms::bind();
     }
 
     void updateCrossSectionUniforms() const

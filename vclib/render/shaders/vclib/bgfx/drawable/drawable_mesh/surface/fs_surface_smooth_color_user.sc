@@ -1,4 +1,7 @@
-$input v_position, v_worldPos, v_discardFlag, v_normal, v_tangent, v_color, v_texcoord0, v_texcoord1
+$input v_position, v_normal, v_tangent, v_color, v_texcoord0, v_texcoord1
+
+// cross section
+$input v_worldPos, v_discardFlag
 
 #include "smooth.sh"
 #include "color_user.sh"

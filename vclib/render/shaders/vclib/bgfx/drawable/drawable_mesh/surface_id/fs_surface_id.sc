@@ -20,6 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
+// cross section
 $input v_worldPos, v_discardFlag
 
 #include <vclib/bgfx/shaders_common.sh>

@@ -20,7 +20,10 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-$input v_worldPos0, v_worldPos1, v_discardFlag, v_t, v_color, v_normal
+$input v_color, v_normal
+
+// cross section
+$input v_worldPos0, v_worldPos1, v_discardFlag, v_t
 
 #include <vclib/bgfx/drawable/uniforms/cross_section_uniforms.sh>
 #include <vclib/bgfx/drawable/uniforms/directional_light_uniforms.sh>
