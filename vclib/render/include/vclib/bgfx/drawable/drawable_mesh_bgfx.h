@@ -148,6 +148,12 @@ public:
         mMRB.updateWireframeSettings(rs);
     }
 
+    void setCrossSectionSettings(const CrossSectionSettings& css) override
+    {
+        AbstractDrawableMesh::setCrossSectionSettings(css);
+        mMRB.updateCrossSectionSettings(css);
+    }
+
     uint vertexCount() const override { return MeshType::vertexCount(); }
 
     uint faceCount() const override

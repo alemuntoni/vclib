@@ -21,11 +21,12 @@
  ****************************************************************************/
 
 $input a_position, a_texcoord0, a_color0, a_color1, a_normal, a_texcoord1
-$output v_color, v_normal
+$output v_worldPos0, v_worldPos1, v_discardFlag, v_t, v_color, v_normal
 
 #include <bgfx_shader.sh>
 #include <bgfx_compute.sh>
 
+#include <vclib/bgfx/drawable/uniforms/cross_section_uniforms.sh>
 #include <vclib/bgfx/primitives/lines/uniforms.sh>
 #include <vclib/bgfx/shaders_common.sh> 
 
@@ -47,6 +48,9 @@ $output v_color, v_normal
 void main() {
     int generalIndex = gl_VertexID % 4;
     vec2 uv = vec2((generalIndex >> 1) & 0x1, generalIndex & 0x1);
+
+    v_worldPos0 = mul(u_model[0], vec4(p0, 1.0)).xyz;
+    v_worldPos1 = mul(u_model[0], vec4(p1, 1.0)).xyz;
 
     // segment points in clip space
     vec4 p0_NDC = mul(u_modelViewProj, vec4(p0, 1.0));
@@ -108,7 +112,13 @@ void main() {
 
     v_color = color;
     v_normal = normal;
+    v_t = uv.x;
     // nudge towards camera to avoid z-fighting with other geometry
     p.z += -u_depthOffset * p.w;
     gl_Position = p;
+
+    // discard flag - 1.0 if either endpoint is outside the cross section
+    // (only used in per-vertex mode; in per-fragment mode computeDiscardFlag returns 0.0)
+    v_discardFlag =
+        max(computeDiscardFlag(v_worldPos0), computeDiscardFlag(v_worldPos1));
 }
