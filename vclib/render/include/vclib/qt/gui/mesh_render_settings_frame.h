@@ -23,6 +23,7 @@
 #ifndef VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_H
 #define VCL_QT_GUI_MESH_RENDER_SETTINGS_FRAME_H
 
+#include "mesh_render_settings_frame/cross_section_settings_frame.h"
 #include "mesh_render_settings_frame/generic_mesh_render_settings_frame.h"
 
 #include <vclib/render/drawable/mesh/mesh_render_settings.h>
@@ -45,7 +46,8 @@ class MeshRenderSettingsFrame : public QFrame
     Ui::MeshRenderSettingsFrame* mUI;
     MeshRenderSettings           mMRS;
 
-    std::vector<GenericMeshRenderSettingsFrame*> frames;
+    std::vector<GenericMeshRenderSettingsFrame*> mFrames;
+    CrossSectionSettingsFrame*                   mCrossSectionFrame;
 
 public:
     explicit MeshRenderSettingsFrame(QWidget* parent = nullptr);
