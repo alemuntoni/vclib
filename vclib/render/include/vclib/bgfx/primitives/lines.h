@@ -390,11 +390,20 @@ public:
      */
     Color& generalColor() { return mGeneralColor; }
 
-    CrossSectionSettings crossSectionSettings() const
+    /**
+     * @brief Returns the current cross section settings.
+     * @return The current cross section settings.
+     */
+    const CrossSectionSettings& crossSectionSettings() const
     {
         return mCrossSectionSettings;
     }
 
+    /**
+     * @brief Returns a reference to the current cross section settings. This
+     * allows to modify the settings directly.
+     * @return A reference to the current cross section settings.
+     */
     CrossSectionSettings& crossSectionSettings()
     {
         return mCrossSectionSettings;

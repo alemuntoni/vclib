@@ -40,10 +40,6 @@ namespace vcl {
  */
 class AbstractDrawableMesh : public vcl::DrawableObject
 {
-public:
-    enum class CrossSectionType { NONE, PER_VERTEX, PER_FRAGMENT };
-
-private:
     inline static const Image EMPTY_IMAGE;
 
 protected:
