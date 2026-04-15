@@ -8,6 +8,8 @@ $input v_worldPos, v_discardFlag
 
 void main()
 {
+    discardIfCrossSectionClipped(v_discardFlag, v_worldPos);
+
     SHADING
     COLORING
     gl_FragColor = light * color + vec4(specular, 0);
