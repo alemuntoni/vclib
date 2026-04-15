@@ -20,7 +20,7 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-$input v_normal, v_color, v_texcoord1
+$input v_normal, v_color, v_texcoord0
 
 // cross section
 $input v_worldPos, v_discardFlag
@@ -40,7 +40,7 @@ void main()
     bool isCircle = bool(u_pointsMode & posToBitFlag(VCL_MRS_POINTS_CIRCLE));
     bool isSphere = bool(u_pointsMode & posToBitFlag(VCL_MRS_POINTS_SPHERE));
     if (isCircle || isSphere) {
-        vec2 uv = v_texcoord1 * 2.0 - vec2(1.0, 1.0);
+        vec2 uv = v_texcoord0 * 2.0 - vec2(1.0, 1.0);
         if (length(uv) > 1.0) {
             discard;
         }

@@ -21,7 +21,7 @@
  ****************************************************************************/
 
 $input a_position, a_color0, a_normal, a_texcoord0
-$output v_normal, v_color, v_texcoord1
+$output v_normal, v_color, v_texcoord0
 
 // cross section
 $output v_worldPos, v_discardFlag
@@ -50,7 +50,7 @@ void main()
     v_color = a_color0;
 
     // quad parametrization
-    v_texcoord1 = quadUv;
+    v_texcoord0 = quadUv;
 
     // discard flag - used to discard the whole vertex, but in fragment shader
     v_discardFlag = computeDiscardFlag(v_worldPos);
