@@ -33,7 +33,6 @@
 #include "embedded_vf_programs/drawable_mesh_points_instance_id.h"
 // #include "embedded_vf_programs/drawable_mesh_surface.h"
 #include "embedded_vf_programs/drawable_mesh_surface_id.h"
-#include "embedded_vf_programs/drawable_mesh_wireframe_id.h"
 
 #include "embedded_vf_programs/drawable_mesh_surface_flat_color_face.h"
 #include "embedded_vf_programs/drawable_mesh_surface_flat_color_face_si.h"
