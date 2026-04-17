@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QCheckBox" name="crosSectionEnabledCheckBox">
+    <widget class="QCheckBox" name="crossSectionEnabledCheckBox">
      <property name="text">
       <string>Enable Cross Section</string>
      </property>
@@ -96,7 +96,11 @@
           <widget class="vcl::qt::FloatRangeSlider" name="zFloatRangeSlider" native="true"/>
          </item>
          <item row="5" column="1">
-          <widget class="QDoubleSpinBox" name="yMinSpinBox"/>
+          <widget class="QDoubleSpinBox" name="yMinSpinBox">
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
          </item>
          <item row="2" column="1">
           <widget class="QDoubleSpinBox" name="xMinSpinBox">
@@ -158,13 +162,25 @@
           </widget>
          </item>
          <item row="8" column="1">
-          <widget class="QDoubleSpinBox" name="zMinSpinBox"/>
+          <widget class="QDoubleSpinBox" name="zMinSpinBox">
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
          </item>
          <item row="8" column="2">
-          <widget class="QDoubleSpinBox" name="zMaxSpinBox"/>
+          <widget class="QDoubleSpinBox" name="zMaxSpinBox">
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
          </item>
          <item row="5" column="2">
-          <widget class="QDoubleSpinBox" name="yMaxSpinBox"/>
+          <widget class="QDoubleSpinBox" name="yMaxSpinBox">
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
          </item>
          <item row="3" column="0" colspan="3">
           <widget class="Line" name="yLine">

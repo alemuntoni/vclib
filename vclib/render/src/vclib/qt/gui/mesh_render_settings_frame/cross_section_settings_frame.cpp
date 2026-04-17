@@ -48,7 +48,7 @@ CrossSectionSettingsFrame::CrossSectionSettingsFrame(
     updateFrameFromSettings();
 
     connect(
-        mUI->crosSectionEnabledCheckBox,
+        mUI->crossSectionEnabledCheckBox,
         SIGNAL(checkStateChanged(Qt::CheckState)),
         this,
         SLOT(onCrossSectionEnabledChanged(Qt::CheckState)));
@@ -126,19 +126,19 @@ void CrossSectionSettingsFrame::updateFrameFromSettings()
     using enum CrossSectionSettings::CrossSectionType;
 
     // checkbox
-    mUI->crosSectionEnabledCheckBox->blockSignals(true);
+    mUI->crossSectionEnabledCheckBox->blockSignals(true);
 
     if (mCSS.type() == NONE) {
-        mUI->crosSectionEnabledCheckBox->setCheckState(
+        mUI->crossSectionEnabledCheckBox->setCheckState(
             Qt::CheckState::Unchecked);
         mUI->controlsFrame->setEnabled(false);
     }
     else {
-        mUI->crosSectionEnabledCheckBox->setCheckState(Qt::CheckState::Checked);
+        mUI->crossSectionEnabledCheckBox->setCheckState(Qt::CheckState::Checked);
         mUI->controlsFrame->setEnabled(true);
     }
 
-    mUI->crosSectionEnabledCheckBox->blockSignals(false);
+    mUI->crossSectionEnabledCheckBox->blockSignals(false);
 
     // radio buttons
     mUI->perVertexRadioButton->blockSignals(true);

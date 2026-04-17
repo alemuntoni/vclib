@@ -139,9 +139,7 @@ public:
         mMRS.setRenderCapabilityFrom(*this);
         setRenderSettings(mMRS);
 
-        auto tmpType = mCSS.type();
-        mCSS = CrossSectionSettings(*this);
-        mCSS.type() = tmpType;
+        mCSS.setBoundingBox(*this);
         mMRB.updateCrossSectionSettings(mCSS);
     }
 

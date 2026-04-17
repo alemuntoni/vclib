@@ -46,22 +46,9 @@ public:
     CrossSectionSettings() = default;
 
     template<MeshConcept MeshType>
-    CrossSectionSettings(const MeshType& m)
+    CrossSectionSettings(const MeshType& m, float epsilon = 0.02f)
     {
-        mBBox = vcl::boundingBox(m).template cast<float>();
-        if constexpr (HasTransformMatrix<MeshType>) {
-            Matrix44f transform = m.transformMatrix().template cast<float>();
-            mBBox               = transformBox(mBBox, transform);
-        }
-
-        // inflate bbox by epsilon of its diagonal
-        float eps = mBBox.diagonal() * 0.02f;
-
-        mBBox.min() -= eps;
-        mBBox.max() += eps;
-
-        mLower = mBBox.min();
-        mUpper = mBBox.max();
+        setBoundingBox(m, epsilon);
     }
 
     bool isEnabled() const { return mType != CrossSectionType::NONE; }
@@ -97,7 +84,7 @@ public:
             mLower = clampedLower.cwiseMin(clampedUpper);
             mUpper = clampedLower.cwiseMax(clampedUpper);
 
-            if (!mLower.isStrictlyBelow(mUpper)) {
+            if (!mLower.allLessEqualThan(mUpper)) {
                 mLower = bbox.min();
                 mUpper = bbox.max();
             }
@@ -105,6 +92,43 @@ public:
         else {
             mBBox = Box3f(Point3f::min(), Point3f::max());
         }
+    }
+
+    /**
+     * @brief Sets the bounding box for the cross-section settings based on the
+     * given mesh.
+     *
+     * The bounding box is computed from the vertices of the provided mesh, and
+     * the lower and upper points are adjusted to be within the new bounding box
+     * if necessary. Bounding box is inflated by an epsilon of its diagonal to
+     * avoid numerical issues when the cross-section plane is very close to the
+     * bounding box.
+     *
+     * Model transformation is applied to the bounding box if the mesh has a
+     * transform matrix.
+     *
+     * @tparam MeshType: The type of the mesh for which to compute the bounding
+     * box. The mesh type must satisfy the MeshConcept.
+     *
+     * @param[in] m: The mesh from which to compute the bounding box.
+     * @param[in] epsilon: The epsilon value used to inflate the bounding box.
+     * It is expressed as a fraction of the bounding box diagonal.
+     */
+    template<MeshConcept MeshType>
+    void setBoundingBox(const MeshType& m, float epsilon = 0.02f)
+    {
+        auto bbox = vcl::boundingBox(m).template cast<float>();
+        if constexpr (HasTransformMatrix<MeshType>) {
+            Matrix44f transform = m.transformMatrix().template cast<float>();
+            bbox                = transformBox(bbox, transform);
+        }
+        // inflate bbox by epsilon of its diagonal
+        float eps = bbox.diagonal() * epsilon;
+
+        bbox.min() -= eps;
+        bbox.max() += eps;
+
+        setBoundingBox(bbox);
     }
 
     /**
@@ -117,7 +141,7 @@ public:
      */
     void setLower(const Point3f& lower)
     {
-        if (mBBox.isInside(lower) && lower.isStrictlyBelow(mUpper)) {
+        if (mBBox.isInside(lower) && lower.allLessEqualThan(mUpper)) {
             mLower = lower;
         }
     }
@@ -132,7 +156,7 @@ public:
      */
     void setUpper(const Point3f& upper)
     {
-        if (mBBox.isInside(upper) && upper.isStrictlyAbove(mLower)) {
+        if (mBBox.isInside(upper) && upper.allGreaterEqualThan(mLower)) {
             mUpper = upper;
         }
     }
@@ -150,7 +174,7 @@ public:
     void setLowerUpper(const Point3f& lower, const Point3f& upper)
     {
         if (mBBox.isInside(lower) && mBBox.isInside(upper) &&
-            lower.isStrictlyBelow(upper)) {
+            lower.allLessEqualThan(upper)) {
             mLower = lower;
             mUpper = upper;
         }
