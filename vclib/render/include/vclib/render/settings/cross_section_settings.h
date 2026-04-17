@@ -138,7 +138,7 @@ public:
      * @brief Sets the lower point of the cross-section settings.
      *
      * The lower point is updated only if it is inside the bounding box and
-     * strictly below the upper point.
+     * strictly below or equal to the upper point.
      *
      * @param[in] lower: The new lower point to set.
      */
@@ -153,7 +153,7 @@ public:
      * @brief Sets the upper point of the cross-section settings.
      *
      * The upper point is updated only if it is inside the bounding box and
-     * strictly above the lower point.
+     * strictly above or equal to the lower point.
      *
      * @param[in] upper: The new upper point to set.
      */
@@ -169,7 +169,7 @@ public:
      * settings.
      *
      * Both points are updated only if they are inside the bounding box and
-     * the lower point is strictly below the upper point.
+     * the lower point is strictly below or equal to  the upper point.
      *
      * @param[in] lower: The new lower point to set.
      * @param[in] upper: The new upper point to set.

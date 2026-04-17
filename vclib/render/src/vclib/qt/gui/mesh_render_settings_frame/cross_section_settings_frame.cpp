@@ -94,6 +94,8 @@ CrossSectionSettingsFrame::CrossSectionSettingsFrame(
                 onMaxSpinBoxValueChanged(static_cast<Axis>(i), value);
             });
     }
+
+    updateFrameFromSettings();
 }
 
 CrossSectionSettingsFrame::CrossSectionSettingsFrame(QWidget* parent) :

@@ -47,7 +47,7 @@ class MeshRenderSettingsFrame : public QFrame
     MeshRenderSettings           mMRS;
 
     std::vector<GenericMeshRenderSettingsFrame*> mFrames;
-    CrossSectionSettingsFrame*                   mCrossSectionFrame;
+    CrossSectionSettingsFrame*                   mCrossSectionFrame = nullptr;
 
 public:
     explicit MeshRenderSettingsFrame(QWidget* parent = nullptr);
