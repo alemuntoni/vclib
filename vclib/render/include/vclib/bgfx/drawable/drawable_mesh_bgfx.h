@@ -142,6 +142,7 @@ public:
         auto tmpType = mCSS.type();
         mCSS = CrossSectionSettings(*this);
         mCSS.type() = tmpType;
+        mMRB.updateCrossSectionSettings(mCSS);
     }
 
     void setRenderSettings(const MeshRenderSettings& rs) override

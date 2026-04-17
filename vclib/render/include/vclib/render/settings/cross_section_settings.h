@@ -86,10 +86,25 @@ public:
      */
     void setBoundingBox(const Box3f& bbox)
     {
-        mBBox = bbox;
+        if (!bbox.isNull()) {
+            mBBox = bbox;
 
-        mLower = mLower.cwiseMax(bbox.min());
-        mUpper = mUpper.cwiseMin(bbox.max());
+            Point3f clampedLower =
+                mLower.cwiseMax(bbox.min()).cwiseMin(bbox.max());
+            Point3f clampedUpper =
+                mUpper.cwiseMax(bbox.min()).cwiseMin(bbox.max());
+
+            mLower = clampedLower.cwiseMin(clampedUpper);
+            mUpper = clampedLower.cwiseMax(clampedUpper);
+
+            if (!mLower.isStrictlyBelow(mUpper)) {
+                mLower = bbox.min();
+                mUpper = bbox.max();
+            }
+        }
+        else {
+            mBBox = Box3f(Point3f::min(), Point3f::max());
+        }
     }
 
     /**

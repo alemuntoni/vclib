@@ -128,11 +128,15 @@ void CrossSectionSettingsFrame::updateFrameFromSettings()
     // checkbox
     mUI->crosSectionEnabledCheckBox->blockSignals(true);
 
-    if (mCSS.type() == NONE)
+    if (mCSS.type() == NONE) {
         mUI->crosSectionEnabledCheckBox->setCheckState(
             Qt::CheckState::Unchecked);
-    else
+        mUI->controlsFrame->setEnabled(false);
+    }
+    else {
         mUI->crosSectionEnabledCheckBox->setCheckState(Qt::CheckState::Checked);
+        mUI->controlsFrame->setEnabled(true);
+    }
 
     mUI->crosSectionEnabledCheckBox->blockSignals(false);
 

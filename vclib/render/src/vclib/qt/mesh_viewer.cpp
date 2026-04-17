@@ -274,11 +274,13 @@ void MeshViewer::meshRenderSettingsUpdated()
         // visible only when the selected Object is a AbstractDrawableMesh
         auto m = std::dynamic_pointer_cast<AbstractDrawableMesh>(
             mDrawableObjectVector->at(i));
-        // get RenderSettings from the RenderSettingsFrame, and set it to the
-        // AbstractDrawableMesh
-        m->setRenderSettings(
-            mUI->meshRenderSettingsFrame->meshRenderSettings());
-        mUI->viewer->update();
+        if (m) { // just to be sure, but it should always be true
+            // get RenderSettings from the RenderSettingsFrame, and set it to
+            // the AbstractDrawableMesh
+            m->setRenderSettings(
+                mUI->meshRenderSettingsFrame->meshRenderSettings());
+            mUI->viewer->update();
+        }
     }
 }
 
@@ -292,11 +294,13 @@ void MeshViewer::crossSectionSettingsUpdated()
         // visible only when the selected Object is a AbstractDrawableMesh
         auto m = std::dynamic_pointer_cast<AbstractDrawableMesh>(
             mDrawableObjectVector->at(i));
-        // get CrossSectionSettings from the CrossSectionSettingsFrame, and set
-        // it to the AbstractDrawableMesh
-        m->setCrossSectionSettings(
-            mUI->meshRenderSettingsFrame->crossSectionSettings());
-        mUI->viewer->update();
+        if (m) { // just to be sure, but it should always be true
+            // get CrossSectionSettings from the CrossSectionSettingsFrame, and
+            // set it to the AbstractDrawableMesh
+            m->setCrossSectionSettings(
+                mUI->meshRenderSettingsFrame->crossSectionSettings());
+            mUI->viewer->update();
+        }
     }
 }
 
