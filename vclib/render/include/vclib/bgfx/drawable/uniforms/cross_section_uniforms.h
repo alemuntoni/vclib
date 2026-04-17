@@ -35,7 +35,8 @@ class CrossSectionUniforms
         Point3f::min().x(), // x min
         Point3f::min().y(), // y min
         Point3f::min().z(), // z min
-        0.0                 // unused
+        0.0                 // per-fragment flag
+                            // (0.0 = per-vertex, 1.0 = per-fragment)
     };
 
     inline static std::array<float, 4> sCrossSectionMaxData = {
@@ -52,9 +53,9 @@ public:
     CrossSectionUniforms() = delete;
 
     static void set(
-        const Point3f& minPoint = Point3f::min(),
-        const Point3f& maxPoint = Point3f::max(),
-        bool perFragment = false)
+        const Point3f& minPoint    = Point3f::min(),
+        const Point3f& maxPoint    = Point3f::max(),
+        bool           perFragment = false)
     {
         sCrossSectionMinData[0] = minPoint.x();
         sCrossSectionMinData[1] = minPoint.y();

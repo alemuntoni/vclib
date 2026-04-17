@@ -45,8 +45,6 @@ CrossSectionSettingsFrame::CrossSectionSettingsFrame(
     mMaxSpinBoxes[Y] = mUI->yMaxSpinBox;
     mMaxSpinBoxes[Z] = mUI->zMaxSpinBox;
 
-    updateFrameFromSettings();
-
     connect(
         mUI->crossSectionEnabledCheckBox,
         SIGNAL(checkStateChanged(Qt::CheckState)),

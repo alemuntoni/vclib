@@ -118,17 +118,20 @@ public:
     void setBoundingBox(const MeshType& m, float epsilon = 0.02f)
     {
         auto bbox = vcl::boundingBox(m).template cast<float>();
-        if constexpr (HasTransformMatrix<MeshType>) {
-            Matrix44f transform = m.transformMatrix().template cast<float>();
-            bbox                = transformBox(bbox, transform);
+
+        if (!bbox.isNull()) {
+            if constexpr (HasTransformMatrix<MeshType>) {
+                Matrix44f transform = m.transformMatrix().template cast<float>();
+                bbox                = transformBox(bbox, transform);
+            }
+            // inflate bbox by epsilon of its diagonal
+            float eps = bbox.diagonal() * epsilon;
+
+            bbox.min() -= eps;
+            bbox.max() += eps;
+
+            setBoundingBox(bbox);
         }
-        // inflate bbox by epsilon of its diagonal
-        float eps = bbox.diagonal() * epsilon;
-
-        bbox.min() -= eps;
-        bbox.max() += eps;
-
-        setBoundingBox(bbox);
     }
 
     /**
