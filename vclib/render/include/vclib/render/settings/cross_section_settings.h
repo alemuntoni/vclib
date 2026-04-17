@@ -76,28 +76,67 @@ public:
 
     const Point3f& upper() const { return mUpper; }
 
+    /**
+     * @brief Sets the bounding box for the cross-section settings.
+     *
+     * The bounding box is updated to the provided value, and the lower and
+     * upper points are adjusted to be within the new bounding box if necessary.
+     *
+     * @param[in] bbox: The new bounding box to set.
+     */
     void setBoundingBox(const Box3f& bbox)
     {
         mBBox = bbox;
 
-        if (mLower < bbox.min()) {
-            mLower = bbox.min();
-        }
-        if (mUpper > bbox.max()) {
-            mUpper = bbox.max();
-        }
+        mLower = mLower.cwiseMax(bbox.min());
+        mUpper = mUpper.cwiseMin(bbox.max());
     }
 
+    /**
+     * @brief Sets the lower point of the cross-section settings.
+     *
+     * The lower point is updated only if it is inside the bounding box and
+     * strictly below the upper point.
+     *
+     * @param[in] lower: The new lower point to set.
+     */
     void setLower(const Point3f& lower)
     {
-        if (mBBox.isInside(lower)) {
+        if (mBBox.isInside(lower) && lower.isStrictlyBelow(mUpper)) {
             mLower = lower;
         }
     }
 
+    /**
+     * @brief Sets the upper point of the cross-section settings.
+     *
+     * The upper point is updated only if it is inside the bounding box and
+     * strictly above the lower point.
+     *
+     * @param[in] upper: The new upper point to set.
+     */
     void setUpper(const Point3f& upper)
     {
-        if (mBBox.isInside(upper)) {
+        if (mBBox.isInside(upper) && upper.isStrictlyAbove(mLower)) {
+            mUpper = upper;
+        }
+    }
+
+    /**
+     * @brief Sets both the lower and upper points of the cross-section
+     * settings.
+     *
+     * Both points are updated only if they are inside the bounding box and
+     * the lower point is strictly below the upper point.
+     *
+     * @param[in] lower: The new lower point to set.
+     * @param[in] upper: The new upper point to set.
+     */
+    void setLowerUpper(const Point3f& lower, const Point3f& upper)
+    {
+        if (mBBox.isInside(lower) && mBBox.isInside(upper) &&
+            lower.isStrictlyBelow(upper)) {
+            mLower = lower;
             mUpper = upper;
         }
     }

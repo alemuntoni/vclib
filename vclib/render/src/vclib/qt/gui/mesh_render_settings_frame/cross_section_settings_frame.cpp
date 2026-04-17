@@ -27,8 +27,8 @@
 namespace vcl::qt {
 
 CrossSectionSettingsFrame::CrossSectionSettingsFrame(
-    const CrossSectionSettings css,
-    QWidget*                   parent) :
+    const CrossSectionSettings& css,
+    QWidget*                    parent) :
         QFrame(parent), mUI(new Ui::CrossSectionSettingsFrame), mCSS(css)
 {
     mUI->setupUi(this);
@@ -125,15 +125,33 @@ void CrossSectionSettingsFrame::updateFrameFromSettings()
 {
     using enum CrossSectionSettings::CrossSectionType;
 
+    // checkbox
+    mUI->crosSectionEnabledCheckBox->blockSignals(true);
+
+    if (mCSS.type() == NONE)
+        mUI->crosSectionEnabledCheckBox->setCheckState(
+            Qt::CheckState::Unchecked);
+    else
+        mUI->crosSectionEnabledCheckBox->setCheckState(Qt::CheckState::Checked);
+
+    mUI->crosSectionEnabledCheckBox->blockSignals(false);
+
     // radio buttons
+    mUI->perVertexRadioButton->blockSignals(true);
+    mUI->perFragmentRadioButton->blockSignals(true);
+
     if (mCSS.type() == PER_VERTEX)
         mUI->perVertexRadioButton->setChecked(true);
     else if (mCSS.type() == PER_FRAGMENT)
         mUI->perFragmentRadioButton->setChecked(true);
 
-    auto bb = mCSS.boundingBox();
-    auto l = mCSS.lower();
-    auto u = mCSS.upper();
+    mUI->perVertexRadioButton->blockSignals(false);
+    mUI->perFragmentRadioButton->blockSignals(false);
+
+    // sliders and spinboxes
+    const auto& bb = mCSS.boundingBox();
+    const auto& l  = mCSS.lower();
+    const auto& u  = mCSS.upper();
 
     for (uint i = X; i < AXIS_COUNT; ++i) {
         updateSlider(
@@ -145,13 +163,6 @@ void CrossSectionSettingsFrame::updateFrameFromSettings()
             l[i],
             u[i]);
     }
-
-    // checkbox, last thing to do
-    if (mCSS.type() == NONE)
-        mUI->crosSectionEnabledCheckBox->setCheckState(
-            Qt::CheckState::Unchecked);
-    else
-        mUI->crosSectionEnabledCheckBox->setCheckState(Qt::CheckState::Checked);
 }
 
 void CrossSectionSettingsFrame::updateSlider(
@@ -226,9 +237,10 @@ void CrossSectionSettingsFrame::onPerFragmentToggled(bool checked)
 }
 
 void CrossSectionSettingsFrame::onFloatRangeSliderLowerValueChanged(
-    Axis axis, float value)
+    Axis  axis,
+    float value)
 {
-    auto l = mCSS.lower();
+    auto l  = mCSS.lower();
     l[axis] = value;
     mCSS.setLower(l);
 
@@ -241,9 +253,10 @@ void CrossSectionSettingsFrame::onFloatRangeSliderLowerValueChanged(
 }
 
 void CrossSectionSettingsFrame::onFloatRangeSliderUpperValueChanged(
-    Axis axis, float value)
+    Axis  axis,
+    float value)
 {
-    auto u = mCSS.upper();
+    auto u  = mCSS.upper();
     u[axis] = value;
     mCSS.setUpper(u);
 
@@ -255,12 +268,16 @@ void CrossSectionSettingsFrame::onFloatRangeSliderUpperValueChanged(
     emit crossSectionSettingsUpdated();
 }
 
-void CrossSectionSettingsFrame::onMinSpinBoxValueChanged(Axis axis, double value)
+void CrossSectionSettingsFrame::onMinSpinBoxValueChanged(
+    Axis   axis,
+    double value)
 {
     mFloatSliders[axis]->setLowerValue(static_cast<float>(value));
 }
 
-void CrossSectionSettingsFrame::onMaxSpinBoxValueChanged(Axis axis, double value)
+void CrossSectionSettingsFrame::onMaxSpinBoxValueChanged(
+    Axis   axis,
+    double value)
 {
     mFloatSliders[axis]->setUpperValue(static_cast<float>(value));
 }

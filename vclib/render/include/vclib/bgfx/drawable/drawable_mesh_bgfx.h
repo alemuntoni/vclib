@@ -138,7 +138,10 @@ public:
         mMRB.update(*this, buffersToUpdate);
         mMRS.setRenderCapabilityFrom(*this);
         setRenderSettings(mMRS);
+
+        auto tmpType = mCSS.type();
         mCSS = CrossSectionSettings(*this);
+        mCSS.type() = tmpType;
     }
 
     void setRenderSettings(const MeshRenderSettings& rs) override

@@ -29,6 +29,8 @@
 #include <QDoubleSpinBox>
 #include <QFrame>
 
+#include <array>
+
 namespace vcl::qt {
 
 namespace Ui {
@@ -51,8 +53,8 @@ class CrossSectionSettingsFrame : public QFrame
 
 public:
     explicit CrossSectionSettingsFrame(
-        const CrossSectionSettings css,
-        QWidget*                   parent = nullptr);
+        const CrossSectionSettings& css,
+        QWidget*                    parent = nullptr);
 
     explicit CrossSectionSettingsFrame(QWidget* parent = nullptr);
 
