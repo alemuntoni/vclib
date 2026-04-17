@@ -413,14 +413,13 @@ public:
     }
 
     /**
-     * @brief Returns true if this point is strictly below another point p1,
-     * meaning that all the components of this point are strictly less than the
-     * corresponding components of p1.
+     * @brief Returns true if all the components of this point are strictly less
+     * than the corresponding components of another point p1.
      *
      * @param[in] p1: The Point object to compare with.
      * @return true if this point is strictly below p1, false otherwise.
      */
-    bool isStrictlyBelow(const Point& p1) const
+    bool allLessThan(const Point& p1) const
     {
         for (uint i = 0; i < N; i++) {
             if (at(i) >= p1(i))
@@ -430,17 +429,48 @@ public:
     }
 
     /**
-     * @brief Returns true if this point is strictly above another point p1,
-     * meaning that all the components of this point are strictly greater than
-     * the corresponding components of p1.
+     * @brief Returns true if all the components of this point are less than or
+     * equal to the corresponding components of another point p1.
+     *
+     * @param[in] p1: The Point object to compare with.
+     * @return true if this point is below or equal to p1, false otherwise.
+     */
+    bool allLessEqualThan(const Point& p1) const
+    {
+        for (uint i = 0; i < N; i++) {
+            if (at(i) > p1(i))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * @brief Returns true if all the components of this point are strictly
+     * greater than the corresponding components of another point p1.
      *
      * @param[in] p1: The Point object to compare with.
      * @return true if this point is strictly above p1, false otherwise.
      */
-    bool isStrictlyAbove(const Point& p1) const
+    bool allGreaterThan(const Point& p1) const
     {
         for (uint i = 0; i < N; i++) {
             if (at(i) <= p1(i))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * @brief Returns true if all the components of this point are greater than
+     * or equal to the corresponding components of another point p1.
+     *
+     * @param[in] p1: The Point object to compare with.
+     * @return true if this point is above or equal to p1, false otherwise.
+     */
+    bool allGreaterEqualThan(const Point& p1) const
+    {
+        for (uint i = 0; i < N; i++) {
+            if (at(i) < p1(i))
                 return false;
         }
         return true;
