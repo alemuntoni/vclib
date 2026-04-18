@@ -344,6 +344,9 @@ Context::Context(void* windowHandle, void* displayHandle)
     init.platformData.nwh  = mWindowHandle;
     init.type              = sRenderType;
     init.platformData.ndt  = mDisplayHandle;
+#ifdef VCLIB_RENDER_WITH_WAYLAND
+    init.platformData.type = bgfx::NativeWindowHandleType::Wayland;
+#endif
     init.resolution.width  = 1;
     init.resolution.height = 1;
     init.resolution.reset  = sResetFlags;
