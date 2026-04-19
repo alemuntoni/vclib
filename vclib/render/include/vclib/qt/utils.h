@@ -24,6 +24,6 @@
 #define VCL_QT_UTILS_H
 
 #include "utils/file_format.h"
-#include "utils/xcb_init.h"
+#include "utils/qapplication.h"
 
 #endif // VCL_QT_UTILS_H

@@ -35,18 +35,54 @@ namespace vcl::qt {
  *
  * Call this function before creating the QApplication instance in the main
  * function to ensure that the XCB platform plugin is used on Linux.
+ *
+ * @code{.cpp}
+ * int main(int argc, char** argv)
+ * {
+ *     vcl::qt::initXcb();
+ *     QApplication app(argc, argv);
+ *     // ...
+ *     return app.exec();
+ * }
+ * @endcode
  */
 inline void initXcb()
 {
 #ifdef Q_OS_LINUX
 #ifndef VCLIB_RENDER_WITH_WAYLAND
-    // Set the QT_QPA_PLATFORM environment variable to "xcb" to ensure that the
-    // XCB platform plugin is used on Linux. This is necessary to ensure that
-    // the display ID can be retrieved correctly using
-    // QNativeInterface::QX11Application.
     qputenv("QT_QPA_PLATFORM", QByteArray("xcb"));
 #endif // VCLIB_RENDER_WITH_WAYLAND
 #endif // Q_OS_LINUX
+}
+
+/**
+ * @brief Utility function to create a QApplication instance with the XCB
+ * platform plugin initialized. This function calls initXcb() before creating
+ * the QApplication instance to ensure that the XCB platform plugin is used on
+ * Linux.
+ *
+ * This function can be used as a drop-in replacement for the QApplication
+ * constructor in the main function.
+ *
+ * Usage:
+ *
+ * @code{.cpp}
+ * int main(int argc, char** argv)
+ * {
+ *     QApplication app = vcl::qt::qAppl(argc, argv);
+ *     // ...
+ *     return app.exec();
+ * }
+ * @endcode
+ *
+ * @param argc
+ * @param argv
+ * @return a QApplication instance.
+ */
+inline QApplication qAppl(int& argc, char** argv)
+{
+    initXcb();
+    return QApplication(argc, argv);
 }
 
 } // namespace vcl::qt
