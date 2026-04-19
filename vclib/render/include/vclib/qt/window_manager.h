@@ -114,7 +114,7 @@ public:
     void update() { QWindow::requestUpdate(); }
 
 protected:
-    bool event(QEvent* event)
+    bool event(QEvent* event) override
     {
         if (event->type() == QEvent::UpdateRequest) {
             DerivedRenderApp::WM::paint(derived());
