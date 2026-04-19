@@ -20,28 +20,35 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_QT_MESH_VIEWER_RENDER_APP_H
-#define VCL_QT_MESH_VIEWER_RENDER_APP_H
+#ifndef VCL_QT_UTILS_XCB_INIT_H
+#define VCL_QT_UTILS_XCB_INIT_H
 
-// This file defines the RenderApp used by the qt MeshViewer application.
-// By default, the vcl::qt::ViewerWidget is used as the RenderApp.
-// it can be replaced with a custom RenderApp by defining an header file
-// called custom_mesh_viewer_render_app.h that defines a RenderApp named
-// MeshViewerRenderApp (defined inside the vcl::qt namespace).
-// note: the MeshViewerRenderApp class must be a QWidget.
-
-#if __has_include(<custom_mesh_viewer_render_app.h>)
-#include "utils.h"
-#include <custom_mesh_viewer_render_app.h>
-#else
-
-#include "viewer_widget.h"
+#include <QApplication>
 
 namespace vcl::qt {
 
-using MeshViewerRenderApp = ViewerWidget;
+/**
+ * @brief Set the QT_QPA_PLATFORM environment variable to "xcb" to ensure that
+ * the XCB platform plugin is used on Linux. This is necessary to ensure that
+ * the display ID can be retrieved correctly using
+ * QNativeInterface::QX11Application.
+ *
+ * Call this function before creating the QApplication instance in the main
+ * function to ensure that the XCB platform plugin is used on Linux.
+ */
+inline void initXcb()
+{
+#ifdef Q_OS_LINUX
+#ifndef VCLIB_RENDER_WITH_WAYLAND
+    // Set the QT_QPA_PLATFORM environment variable to "xcb" to ensure that the
+    // XCB platform plugin is used on Linux. This is necessary to ensure that
+    // the display ID can be retrieved correctly using
+    // QNativeInterface::QX11Application.
+    qputenv("QT_QPA_PLATFORM", QByteArray("xcb"));
+#endif // VCLIB_RENDER_WITH_WAYLAND
+#endif // Q_OS_LINUX
+}
 
 } // namespace vcl::qt
-#endif
 
-#endif // VCL_QT_MESH_VIEWER_RENDER_APP_H
+#endif // VCL_QT_UTILS_XCB_INIT_H

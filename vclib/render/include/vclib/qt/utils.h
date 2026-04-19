@@ -20,28 +20,10 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_QT_MESH_VIEWER_RENDER_APP_H
-#define VCL_QT_MESH_VIEWER_RENDER_APP_H
+#ifndef VCL_QT_UTILS_H
+#define VCL_QT_UTILS_H
 
-// This file defines the RenderApp used by the qt MeshViewer application.
-// By default, the vcl::qt::ViewerWidget is used as the RenderApp.
-// it can be replaced with a custom RenderApp by defining an header file
-// called custom_mesh_viewer_render_app.h that defines a RenderApp named
-// MeshViewerRenderApp (defined inside the vcl::qt namespace).
-// note: the MeshViewerRenderApp class must be a QWidget.
+#include "utils/file_format.h"
+#include "utils/xcb_init.h"
 
-#if __has_include(<custom_mesh_viewer_render_app.h>)
-#include "utils.h"
-#include <custom_mesh_viewer_render_app.h>
-#else
-
-#include "viewer_widget.h"
-
-namespace vcl::qt {
-
-using MeshViewerRenderApp = ViewerWidget;
-
-} // namespace vcl::qt
-#endif
-
-#endif // VCL_QT_MESH_VIEWER_RENDER_APP_H
+#endif // VCL_QT_UTILS_H
