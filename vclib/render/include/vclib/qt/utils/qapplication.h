@@ -20,8 +20,8 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_QT_UTILS_XCB_INIT_H
-#define VCL_QT_UTILS_XCB_INIT_H
+#ifndef VCL_QT_UTILS_QAPPLICATION_H
+#define VCL_QT_UTILS_QAPPLICATION_H
 
 #include <QApplication>
 
@@ -87,4 +87,4 @@ inline QApplication qAppl(int& argc, char** argv)
 
 } // namespace vcl::qt
 
-#endif // VCL_QT_UTILS_XCB_INIT_H
+#endif // VCL_QT_UTILS_QAPPLICATION_H
