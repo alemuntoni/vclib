@@ -41,7 +41,8 @@ struct TypeWrapperConstructor<T, TypeWrapper<Args...>>
 
 } // namespace vcl::detail
 
-export namespace vcl {
+export
+namespace vcl {
 
 /**
  * @brief Removes all types that do not satisfy a condition, and get them as a

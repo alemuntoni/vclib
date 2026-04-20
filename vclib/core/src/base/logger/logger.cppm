@@ -33,9 +33,10 @@ export module vclib.base:logger.logger;
 import :logger.abstract_logger;
 import :timer;
 
+export
 namespace vcl {
 
-export template<typename Stream>
+template<typename Stream>
 class Logger : public AbstractLogger
 {
     struct ProgressStatus

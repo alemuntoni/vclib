@@ -29,10 +29,10 @@ export module vclib.base:logger.console_logger;
 
 import :logger.logger;
 
-
+export
 namespace vcl {
 
-export class ConsoleLogger : public Logger<std::ostream>
+class ConsoleLogger : public Logger<std::ostream>
 {
     std::ostream& mErrStream   = std::cerr;
     std::ostream& mWarnStream  = std::cout;

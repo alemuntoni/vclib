@@ -28,10 +28,7 @@ export module vclib.base:concepts.polymorphism;
 
 import :concepts.pointers;
 
-export
-namespace vcl {
-
-namespace detail {
+namespace vcl::detail {
 
 // true if T is a shared_ptr, and the type pointed by T is a base of D
 template<typename T, typename D>
@@ -39,7 +36,10 @@ concept IsSharedPtrOfBaseOf =
     IsSharedPointer<T> &&
     std::derived_from<D, std::remove_pointer_t<typename T::element_type>>;
 
-} // namespace detail
+} // namespace vcl::detail
+
+export
+namespace vcl {
 
 /**
  * @brief Concept that is evaluated true if T is a cloneable object.

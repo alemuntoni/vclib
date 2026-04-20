@@ -29,9 +29,7 @@ export module vclib.base:concepts.pointers;
 import :concepts.const_correctness;
 import :pointers;
 
-namespace vcl {
-
-namespace detail {
+namespace vcl::detail {
 
 template<typename T>
 struct IsSharedPtr : std::false_type
@@ -43,7 +41,10 @@ struct IsSharedPtr<std::shared_ptr<T>> : std::true_type
 {
 };
 
-} // namespace detail
+} // namespace vcl::detail
+
+export
+namespace vcl {
 
 /**
  * @brief The IsPointer concept is satisfied if T is a Pointer, even if the type
@@ -51,7 +52,7 @@ struct IsSharedPtr<std::shared_ptr<T>> : std::true_type
  *
  * @ingroup util_concepts
  */
-export template<typename T>
+template<typename T>
 concept IsPointer = std::is_pointer_v<RemoveRef<T>>;
 
 /**
@@ -59,7 +60,7 @@ concept IsPointer = std::is_pointer_v<RemoveRef<T>>;
  *
  * @ingroup util_concepts
  */
-export template<typename T>
+template<typename T>
 concept IsSharedPointer = detail::IsSharedPtr<T>::value;
 
 /**
@@ -68,7 +69,7 @@ concept IsSharedPointer = detail::IsSharedPtr<T>::value;
  *
  * @ingroup util_concepts
  */
-export template<typename T>
+template<typename T>
 concept IsAnyPointer = IsPointer<T> || IsSharedPointer<T>;
 
 /**
@@ -79,7 +80,7 @@ concept IsAnyPointer = IsPointer<T> || IsSharedPointer<T>;
  *
  * @private https://stackoverflow.com/a/37370281/5851101
  */
-export template<typename T>
+template<typename T>
 concept IsPointerToConst = IsPointer<T> && IsConst<T>;
 
 /**
@@ -88,7 +89,7 @@ concept IsPointerToConst = IsPointer<T> && IsConst<T>;
  *
  * @ingroup util_concepts
  */
-export template<typename T>
+template<typename T>
 concept IsSharedPointerToConst =
     IsSharedPointer<T> && IsConst<typename T::element_type>;
 
@@ -98,7 +99,7 @@ concept IsSharedPointerToConst =
  *
  * @ingroup util_concepts
  */
-export template<typename T>
+template<typename T>
 concept IsAnyPointerToConst = IsPointerToConst<T> || IsSharedPointerToConst<T>;
 
 } // namespace vcl

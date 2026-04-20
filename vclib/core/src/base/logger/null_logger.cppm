@@ -28,6 +28,7 @@ export module vclib.base:logger.null_logger;
 
 import :logger.abstract_logger;
 
+export
 namespace vcl {
 
 /**
@@ -39,7 +40,7 @@ namespace vcl {
  *
  * @ingroup base
  */
-export class NullLogger : public AbstractLogger
+class NullLogger : public AbstractLogger
 {
 public:
     NullLogger() = default;
@@ -121,6 +122,6 @@ public:
  *
  * @ingroup base
  */
-export inline NullLogger nullLogger;
+inline NullLogger nullLogger;
 
 } // namespace vcl

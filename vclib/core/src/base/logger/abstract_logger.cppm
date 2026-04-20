@@ -29,7 +29,7 @@ export module vclib.base:logger.abstract_logger;
 import :base;
 import :pointers;
 
-
+export
 namespace vcl {
 
 /**
@@ -38,7 +38,7 @@ namespace vcl {
  *
  * @ingroup base
  */
-export class AbstractLogger
+class AbstractLogger
 {
 public:
     // note: these constants have the _LOG suffix to avoid conflicts with some

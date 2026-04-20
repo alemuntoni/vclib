@@ -29,6 +29,7 @@ export module vclib.base:iterators.const_pointer_iterator;
 import :concepts.pointers;
 import :const_correctness;
 
+export
 namespace vcl {
 
 /**
@@ -52,7 +53,7 @@ namespace vcl {
  *
  * @tparam It The iterator type.
  */
-export template<typename It>
+template<typename It>
 requires (IsAnyPointer<typename std::iterator_traits<It>::value_type>)
 class ConstPointerIterator
 {

@@ -26,9 +26,7 @@ module;
 
 export module vclib.base:inheritance;
 
-namespace vcl {
-
-namespace detail {
+namespace vcl::detail {
 
 template<template<typename... formal> class base>
 struct IsDerivedFromImplementation
@@ -39,7 +37,10 @@ struct IsDerivedFromImplementation
     std::false_type operator()(void*) const;
 };
 
-} // namespace detail
+} // namespace vcl::detail
+
+export
+namespace vcl {
 
 /**
  * @brief Utility class that allows to check if given class 'Derived' is derived
@@ -64,7 +65,7 @@ struct IsDerivedFromImplementation
 // https://stackoverflow.com/a/25846080/5851101
 // https://stackoverflow.com/questions/25845536#comment40451928_25846080
 // http://coliru.stacked-crooked.com/a/9feadc62e7594eb2
-export template<typename derived, template<typename...> class base>
+template<typename derived, template<typename...> class base>
 using IsDerivedFromTemplateSpecialization = std::invoke_result<
     detail::IsDerivedFromImplementation<base>,
     typename std::remove_cv<derived>::type*>::type;
