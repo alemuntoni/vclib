@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -24,6 +24,7 @@
 #define VCL_QT_WIDGET_MANAGER_H
 
 #include "input.h"
+#include "utils.h"
 
 #include <vclib/render/concepts/render_app.h>
 #include <vclib/render/window_managers.h>

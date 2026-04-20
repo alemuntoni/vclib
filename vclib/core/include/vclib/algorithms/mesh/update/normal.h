@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -222,7 +222,9 @@ void clearPerReferencedVertexNormals(MeshType& mesh, LogType& log = nullLogger)
         if constexpr (comp::HasVertexReferences<Elem>) { // if Elem has vertices
             for (auto& e : mesh.template elements<Elem::ELEMENT_ID>()) {
                 for (auto* v : e.vertices()) {
-                    v->normal().setZero();
+                    // normal().setZero() does not compile on gcc (Release) with
+                    // Eigen 5.0.1
+                    v->normal() = {0., 0., 0.};
                 }
             }
         }
@@ -587,7 +589,7 @@ void updatePerVertexNormalsAngleWeighted(
     for (auto& f : mesh.faces()) {
         auto n = faceNormal(f).template cast<NScalarType>();
 
-        for (uint i = 0; i < f.vertexNumber(); ++i) {
+        for (uint i = 0; i < f.vertexCount(); ++i) {
             NormalType vec1 =
                 (f.vertexMod(i - 1)->position() - f.vertexMod(i)->position())
                     .normalized()
@@ -660,7 +662,7 @@ void updatePerVertexNormalsNelsonMaxWeighted(
     for (auto& f : mesh.faces()) {
         auto n = faceNormal(f).template cast<NScalarType>();
 
-        for (uint i = 0; i < f.vertexNumber(); ++i) {
+        for (uint i = 0; i < f.vertexCount(); ++i) {
             NScalarType e1 =
                 (f.vertexMod(i - 1)->position() - f.vertexMod(i)->position())
                     .squaredNorm();

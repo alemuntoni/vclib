@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -23,18 +23,16 @@
 #ifndef VCL_BGFX_PROGRAMS_EMBEDDED_VF_PROGRAMS_H
 #define VCL_BGFX_PROGRAMS_EMBEDDED_VF_PROGRAMS_H
 
+#include "embedded_vf_programs/custom_cpu_lines.h"
 #include "embedded_vf_programs/drawable_axis.h"
 #include "embedded_vf_programs/drawable_directional_light.h"
-#include "embedded_vf_programs/drawable_mesh_edges.h"
-#include "embedded_vf_programs/drawable_mesh_edges_id.h"
+#include "embedded_vf_programs/drawable_environment_pbr.h"
 #include "embedded_vf_programs/drawable_mesh_points.h"
 #include "embedded_vf_programs/drawable_mesh_points_id.h"
 #include "embedded_vf_programs/drawable_mesh_points_instance.h"
 #include "embedded_vf_programs/drawable_mesh_points_instance_id.h"
 // #include "embedded_vf_programs/drawable_mesh_surface.h"
 #include "embedded_vf_programs/drawable_mesh_surface_id.h"
-#include "embedded_vf_programs/drawable_mesh_wireframe.h"
-#include "embedded_vf_programs/drawable_mesh_wireframe_id.h"
 
 #include "embedded_vf_programs/drawable_mesh_surface_flat_color_face.h"
 #include "embedded_vf_programs/drawable_mesh_surface_flat_color_face_si.h"
@@ -73,6 +71,7 @@
 #include "embedded_vf_programs/drawable_mesh_surface_smooth_tex_wedge.h"
 #include "embedded_vf_programs/drawable_mesh_surface_smooth_tex_wedge_si.h"
 #include "embedded_vf_programs/drawable_mesh_surface_uber.h"
+#include "embedded_vf_programs/drawable_mesh_surface_uber_pbr.h"
 
 #include "embedded_vf_programs/drawable_trackball.h"
 #include "embedded_vf_programs/font_basic.h"
@@ -83,5 +82,7 @@
 #include "embedded_vf_programs/font_distance_field_outline_drop_shadow_image.h"
 #include "embedded_vf_programs/font_distance_field_outline_image.h"
 #include "embedded_vf_programs/font_distance_field_subpixel.h"
+
+#include "embedded_vf_programs/primitive_lines.h"
 
 #endif // VCL_BGFX_PROGRAMS_EMBEDDED_VF_PROGRAMS_H

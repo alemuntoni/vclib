@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -166,7 +166,7 @@ uint removeUnreferencedVertices(MeshType& m)
 
     // need to mark as deleted vertices only if the number of unreferenced is
     // less than vn
-    if (n < m.vertexNumber()) {
+    if (n < m.vertexCount()) {
         // will store on this vector only the indices of the referenced vertices
         std::vector<uint> refVertIndices(m.vertexContainerSize(), UINT_NULL);
         // Iterate over all vertices in the mesh, and mark any unreferenced
@@ -183,7 +183,7 @@ uint removeUnreferencedVertices(MeshType& m)
         // update the vertex indices of the mesh, setting to null the indices of
         // the unreferenced vertices (it may happen on adjacent vertices of some
         // container).
-        m.updateVertexIndices(refVertIndices);
+        m.updateVertexReferences(refVertIndices);
     }
 
     return n;
@@ -208,23 +208,23 @@ uint removeUnreferencedVertices(MeshType& m)
  * @ingroup clean
  */
 template<MeshConcept MeshType>
-uint removeDuplicatedVertices(MeshType& m)
+uint removeDuplicateVertices(MeshType& m)
 {
     using VertexType    = MeshType::VertexType;
     using VertexPointer = MeshType::VertexType*;
 
-    if (m.vertexNumber() == 0)
+    if (m.vertexCount() == 0)
         return 0;
 
     // a map that will be used to keep track of deleted vertices and their
     // corresponding pointers.
-    std::vector<uint> newVertexIndices(m.vertexNumber());
+    std::vector<uint> newVertexIndices(m.vertexCount());
     // assigning each vertex index to itself.
     std::iota(newVertexIndices.begin(), newVertexIndices.end(), 0);
 
     uint deleted = 0;
 
-    std::vector<VertexPointer> perm(m.vertexNumber());
+    std::vector<VertexPointer> perm(m.vertexCount());
 
     // put all the vertices into a vector for sorting.
     uint k = 0;
@@ -259,7 +259,7 @@ uint removeDuplicatedVertices(MeshType& m)
 
     // update the vertex pointers to point to the correct vertices, in every
     // container of the mesh
-    m.updateVertexIndices(newVertexIndices);
+    m.updateVertexReferences(newVertexIndices);
 
     // todo:
     // - add a flag that removes degenerate elements after
@@ -293,7 +293,7 @@ uint removeDuplicatedVertices(MeshType& m)
  * @ingroup clean
  */
 template<FaceMeshConcept MeshType>
-uint removeDuplicatedFaces(MeshType& m)
+uint removeDuplicateFaces(MeshType& m)
 {
     using VertexType = MeshType::VertexType;
     using FaceType   = MeshType::FaceType;
@@ -303,7 +303,7 @@ uint removeDuplicatedFaces(MeshType& m)
     std::vector<detail::SortedIndexContainer<
         VertexType*,
         FaceType*,
-        FaceType::VERTEX_NUMBER>>
+        FaceType::VERTEX_COUNT>>
         fvec;
 
     for (FaceType& f : m.faces()) {
@@ -348,7 +348,7 @@ uint removeDuplicatedFaces(MeshType& m)
  * @ingroup clean
  */
 template<MeshConcept MeshType>
-uint removeDegeneratedVertices(MeshType& m, bool deleteAlsoFaces)
+uint removeDegenerateVertices(MeshType& m, bool deleteAlsoFaces)
 {
     using VertexType = MeshType::VertexType;
 
@@ -417,7 +417,7 @@ uint removeDegenerateFaces(MeshType& m)
     // deleted.
     for (FaceType& f : m.faces()) {
         bool deg = false; // flag to check if a face is degenerate
-        for (uint i = 0; i < f.vertexNumber() && !deg; ++i) {
+        for (uint i = 0; i < f.vertexCount() && !deg; ++i) {
             if (f.vertex(i) == f.vertexMod(i + 1)) {
                 deg = true;
                 m.deleteFace(m.index(f));

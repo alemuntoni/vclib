@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -23,65 +23,127 @@
 #ifndef VCL_BGFX_DRAWERS_VIEWER_DRAWER_BGFX_H
 #define VCL_BGFX_DRAWERS_VIEWER_DRAWER_BGFX_H
 
+#include "uniforms/viewer_drawer_uniforms.h"
+
 #include <vclib/render/drawers/abstract_viewer_drawer.h>
 
 #include <vclib/bgfx/context.h>
+#include <vclib/bgfx/drawable/drawable_environment.h>
 #include <vclib/bgfx/drawable/uniforms/directional_light_uniforms.h>
-#include <vclib/bgfx/drawable/uniforms/mesh_render_settings_uniforms.h>
+
+#include <array>
 
 namespace vcl {
 
 template<typename ViewProjEventDrawer>
 class ViewerDrawerBGFX : public AbstractViewerDrawer<ViewProjEventDrawer>
 {
-    using ParentViewer = AbstractViewerDrawer<ViewProjEventDrawer>;
+    inline static const uint N_ADDITIONAL_VIEWS =
+        DrawObjectSettings::N_ADDITIONAL_VIEWS;
 
-    DirectionalLightUniforms mDirectionalLightUniforms;
+    using ParentViewer = AbstractViewerDrawer<ViewProjEventDrawer>;
+    using DRA          = ViewProjEventDrawer::DRA;
+
+    std::array<uint, N_ADDITIONAL_VIEWS> mAdditionalViewIds;
 
     // flags
     bool mStatsEnabled = false;
+
+    PBRViewerSettings mPBRSettings;
+
+    DrawableEnvironment mPanorama = DrawableEnvironment("");
 
 public:
     ViewerDrawerBGFX(uint width = 1024, uint height = 768) :
             ParentViewer(width, height)
     {
-        mDirectionalLightUniforms.updateLight(ParentViewer::light());
+        for (uint i = 0; i < N_ADDITIONAL_VIEWS; i++) {
+            mAdditionalViewIds[i] = Context::instance().requestViewId();
+        }
+        this->onResize(width, height);
     }
 
-    ViewerDrawerBGFX(
-        const std::shared_ptr<DrawableObjectVector>& v,
-        uint                                         width = 1024,
-        uint height = 768) : ViewerDrawerBGFX(width, height)
+    ~ViewerDrawerBGFX()
     {
-        ParentViewer::setDrawableObjectVector(v);
+        for (uint i = 0; i < N_ADDITIONAL_VIEWS; i++) {
+            Context::instance().releaseViewId(mAdditionalViewIds[i]);
+        }
+    }
+
+    const PBRViewerSettings& pbrSettings() const { return mPBRSettings; }
+
+    void setPbrSettings(const PBRViewerSettings& settings)
+    {
+        mPBRSettings = settings;
+    }
+
+    std::string panoramaFileName() const { return mPanorama.imageFileName(); }
+
+    void setPanorama(const std::string& panorama)
+    {
+        mPanorama = DrawableEnvironment(panorama, ParentViewer::canvasViewId());
+    }
+
+    void onResize(uint width, uint height) override
+    {
+        ParentViewer::onResize(width, height);
+        for (uint i = 0; i < N_ADDITIONAL_VIEWS; ++i) {
+            bgfx::setViewRect(mAdditionalViewIds[i], 0, 0, width, height);
+            bgfx::setViewClear(mAdditionalViewIds[i], BGFX_CLEAR_NONE);
+            bgfx::touch(mAdditionalViewIds[i]);
+        }
     }
 
     void onDrawContent(uint viewId) override
     {
-        bgfx::setViewTransform(
-            viewId,
-            ParentViewer::viewMatrix().data(),
-            ParentViewer::projectionMatrix().data());
+        auto fbh = DRA::DRW::canvasFrameBuffer(derived());
+        for (uint i = 0; i < N_ADDITIONAL_VIEWS; ++i) {
+            bgfx::setViewFrameBuffer(mAdditionalViewIds[i], fbh);
+            bgfx::touch(mAdditionalViewIds[i]);
+        }
 
-        mDirectionalLightUniforms.updateLight(ParentViewer::light());
-        mDirectionalLightUniforms.bind();
+        DrawObjectSettings settings;
+        settings.viewId = viewId;
 
-        ParentViewer::drawableObjectVector().draw(viewId);
+        settings.additionalViewIds = mAdditionalViewIds;
+
+        settings.pbrSettings = mPBRSettings;
+
+        settings.environment = &mPanorama;
+
+        setViewTransform(viewId);
+
+        DirectionalLightUniforms::setLight(ParentViewer::light());
+        DirectionalLightUniforms::bind();
+
+        ViewerDrawerUniforms::setExposure(mPBRSettings.exposure);
+        ViewerDrawerUniforms::setToneMapping(mPBRSettings.toneMapping);
+        ViewerDrawerUniforms::setSpecularMipsLevels(
+            mPanorama.specularMipLevels());
+        ViewerDrawerUniforms::bind();
+
+        // background will be drawn only if settings allow it
+        mPanorama.drawBackground(settings.viewId, settings.pbrSettings);
+
+        ParentViewer::drawableObjectVector().draw(settings);
     }
 
     void onDrawId(uint viewId) override
     {
-        bgfx::setViewTransform(
-            viewId,
-            ParentViewer::viewMatrix().data(),
-            ParentViewer::projectionMatrix().data());
+        DrawObjectSettings settings;
+        settings.objectId = ParentViewer::id();
+        settings.viewId   = viewId;
 
-        ParentViewer::drawableObjectVector().drawId(viewId, ParentViewer::id());
+        setViewTransform(viewId);
+
+        ParentViewer::drawableObjectVector().drawId(settings);
     }
 
-    void onKeyPress(Key::Enum key, const KeyModifiers& modifiers) override
+    bool onKeyPress(Key::Enum key, const KeyModifiers& modifiers) override
     {
-        if (key == Key::F1) {
+        bool block = ParentViewer::onKeyPress(key, modifiers);
+
+        if (!block && key == Key::F1) {
             if (mStatsEnabled) {
                 mStatsEnabled = false;
                 bgfx::setDebug(BGFX_DEBUG_NONE);
@@ -91,24 +153,44 @@ public:
                 bgfx::setDebug(BGFX_DEBUG_STATS);
             }
         }
-        ParentViewer::onKeyPress(key, modifiers);
+        return block;
     }
 
-    void onMouseDoubleClick(
+    bool onMouseDoubleClick(
         MouseButton::Enum   button,
         double              x,
         double              y,
         const KeyModifiers& modifiers) override
     {
-        ParentViewer::onMouseDoubleClick(button, x, y, modifiers);
+        bool block = ParentViewer::onMouseDoubleClick(button, x, y, modifiers);
 
-        if (button == MouseButton::LEFT) {
+        if (!block && button == MouseButton::LEFT) {
             const bool homogeneousNDC =
                 Context::instance().capabilites().homogeneousDepth;
 
             ParentViewer::readDepthRequest(x, y, homogeneousNDC);
         }
+        return block;
     }
+
+private:
+    void setViewTransform(uint viewId)
+    {
+        // need to store the matrices
+        // parent viewer returns by value
+        Matrix44f vm = ParentViewer::viewMatrix();
+        Matrix44f pm = ParentViewer::projectionMatrix();
+
+        bgfx::setViewTransform(viewId, vm.data(), pm.data());
+
+        for (uint i = 0; i < N_ADDITIONAL_VIEWS; ++i) {
+            bgfx::setViewTransform(mAdditionalViewIds[i], vm.data(), pm.data());
+        }
+    }
+
+    auto* derived() { return static_cast<DRA*>(this); }
+
+    const auto* derived() const { return static_cast<const DRA*>(this); }
 };
 
 } // namespace vcl

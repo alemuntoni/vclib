@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -23,8 +23,8 @@
 #ifndef VCL_SPACE_COMPLEX_MESH_EDGE_UTIL_H
 #define VCL_SPACE_COMPLEX_MESH_EDGE_UTIL_H
 
-#include <vclib/mesh.h>
 #include <vclib/base.h>
+#include <vclib/mesh.h>
 
 namespace vcl {
 
@@ -64,6 +64,23 @@ public:
     int         e;    // Index of the edge inside the face
 
     MeshEdgeUtil() : v {nullptr, nullptr}, f(nullptr), e(-1) {}
+
+    MeshEdgeUtil(
+        VertexType* v0,
+        VertexType* v1,
+        FaceType*   pf = nullptr,
+        int         ne = -1) : f(pf), e(ne)
+    {
+        assert(v0 != v1);
+        if (v0 < v1) {
+            v[0] = v0;
+            v[1] = v1;
+        }
+        else {
+            v[0] = v1;
+            v[1] = v0;
+        }
+    }
 
     MeshEdgeUtil(FaceType& pf, uint ne)
     {

@@ -64,3 +64,10 @@
   - [X] move example 07 mesh-viewer-imgui in example 02
   - [ ] examples using qt and imgui freeze on macos when set fullscreen
   - [ ] completely rethink trackball event handling
+  - [ ] on DrawableMesh, manage right click event (draw id) for wireframe and edges
+  - [ ] add shading per-line on Lines and their implementations
+  - [X] add wireframe and edge size for imgui interface
+  - [X] add possibility to set and get camera from the trackball (and viewer)
+  - [ ] implement and test orthographic camera set and get from the trackball
+  - [ ] rename TextureUnit class
+  - [x] Uniform class should not be copy-constructible - just move-able like the other GPU resources.

@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -28,9 +28,7 @@ export module vclib.base:filter_types;
 
 import :type_wrapper;
 
-namespace vcl {
-
-namespace detail {
+namespace vcl::detail {
 
 template<typename, typename>
 struct TypeWrapperConstructor;
@@ -41,7 +39,9 @@ struct TypeWrapperConstructor<T, TypeWrapper<Args...>>
     using type = TypeWrapper<T, Args...>;
 };
 
-} // namespace detail
+} // namespace vcl::detail
+
+export namespace vcl {
 
 /**
  * @brief Removes all types that do not satisfy a condition, and get them as a
@@ -68,18 +68,19 @@ struct TypeWrapperConstructor<T, TypeWrapper<Args...>>
  *
  * @ingroup base
  */
-export template<template<typename> typename, typename...>
+template<template<typename> typename, typename...>
 struct FilterTypesByCondition
 {
     using type = TypeWrapper<>;
 };
+
 
 /**
  * @copydoc FilterTypesByCondition
  *
  * @ingroup base
  */
-export template<template<typename> typename Pred, typename Head, typename... Tail>
+template<template<typename> typename Pred, typename Head, typename... Tail>
 struct FilterTypesByCondition<Pred, Head, Tail...>
 {
     using type = std::conditional<
@@ -96,7 +97,7 @@ struct FilterTypesByCondition<Pred, Head, Tail...>
  * @ingroup base
  */
 // TypeWrapper specialization
-export template<template<typename> typename Pred, typename... Tail>
+template<template<typename> typename Pred, typename... Tail>
 struct FilterTypesByCondition<Pred, TypeWrapper<Tail...>>
 {
     using type = FilterTypesByCondition<Pred, Tail...>::type;
@@ -124,7 +125,7 @@ struct FilterTypesByCondition<Pred, TypeWrapper<Tail...>>
  *
  * @ingroup base
  */
-export template<template<typename> typename Pred, typename... Args>
+template<template<typename> typename Pred, typename... Args>
 struct OneTypeAtLeastSatisfiesCondition
 {
 private:
@@ -140,7 +141,7 @@ public:
  * @ingroup base
  */
 // TypeWrapper specialization
-export template<template<typename> typename Pred, typename... Args>
+template<template<typename> typename Pred, typename... Args>
 struct OneTypeAtLeastSatisfiesCondition<Pred, TypeWrapper<Args...>>
 {
     using type = OneTypeAtLeastSatisfiesCondition<Pred, Args...>::type;
@@ -160,7 +161,7 @@ struct OneTypeAtLeastSatisfiesCondition<Pred, TypeWrapper<Args...>>
  *
  * @ingroup base
  */
-export template<template<typename> typename Pred, typename... Args>
+template<template<typename> typename Pred, typename... Args>
 struct GetTypeByCondition
 {
 private:
@@ -176,7 +177,7 @@ public:
  * @ingroup base
  */
 // TypeWrapper specialization
-export template<template<typename> typename Pred, typename... Args>
+template<template<typename> typename Pred, typename... Args>
 struct GetTypeByCondition<Pred, TypeWrapper<Args...>>
 {
     using type = GetTypeByCondition<Pred, Args...>::type;

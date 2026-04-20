@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -52,6 +52,8 @@ class Face;
  * @extends vert::OptionalAdjacentVertices
  * @extends vert::OptionalPrincipalCurvature
  * @extends vert::OptionalTexCoord
+ * @extends vert::OptionalMaterialIndex
+ * @extends vert::OptionalTangent3
  * @extends vert::OptionalMark
  * @extends vert::CustomComponents
  *
@@ -74,9 +76,13 @@ class Vertex :
             vert::OptionalAdjacentVertices<I, Vertex<Scalar, I>>,
             vert::OptionalPrincipalCurvature<Scalar, Vertex<Scalar, I>>,
             vert::OptionalTexCoord<Scalar, Vertex<Scalar, I>>,
+            vert::OptionalMaterialIndex<Vertex<Scalar, I>>,
+            vert::OptionalTangent3<Scalar, Vertex<Scalar, I>>,
             vert::OptionalMark<Vertex<Scalar, I>>,
             vert::CustomComponents<Vertex<Scalar, I>>>
 {
+public:
+    friend void swap(Vertex& a, Vertex& b) { a.swap(b); }
 };
 
 /**
@@ -89,6 +95,7 @@ class Vertex :
  * @extends face::OptionalQuality
  * @extends face::OptionalAdjacentPolygons
  * @extends face::OptionalPolygonWedgeTexCoords
+ * @extends face::OptionalMaterialIndex
  * @extends face::OptionalMark
  * @extends face::CustomComponents
  *
@@ -109,9 +116,12 @@ class Face :
             face::OptionalQuality<Scalar, Face<Scalar, I>>,
             face::OptionalAdjacentPolygons<I, Face<Scalar, I>>,
             face::OptionalPolygonWedgeTexCoords<Scalar, Face<Scalar, I>>,
+            face::OptionalMaterialIndex<Face<Scalar, I>>,
             face::OptionalMark<Face<Scalar, I>>,
             face::CustomComponents<Face<Scalar, I>>>
 {
+public:
+    friend void swap(Face& a, Face& b) { a.swap(b); }
 };
 
 } // namespace vcl::polymesh
@@ -132,8 +142,8 @@ namespace vcl {
  * @extends mesh::BoundingBox3
  * @extends mesh::Color
  * @extends mesh::Mark
+ * @extends mesh::Materials
  * @extends mesh::Name
- * @extends mesh::TextureImages
  * @extends mesh::TransformMatrix
  * @extends mesh::CustomComponents
  *
@@ -147,8 +157,8 @@ class PolyMeshT :
             mesh::BoundingBox3<Scalar>,
             mesh::Color,
             mesh::Mark,
+            mesh::Materials,
             mesh::Name,
-            mesh::TextureImages,
             mesh::TransformMatrix<Scalar>,
             mesh::CustomComponents>
 {

@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -140,6 +140,13 @@ public:
     {
         for (auto& p : mMap) {
             compactVector(p.second, newIndices);
+        }
+    }
+
+    void swapCustomComponents(uint i, uint j)
+    {
+        for (auto& p : mMap) {
+            std::swap(p.second[i], p.second[j]);
         }
     }
 

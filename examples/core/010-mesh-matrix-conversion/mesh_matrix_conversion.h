@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -34,11 +34,11 @@
 // 3. Working with different matrix types (Eigen, VCLib Array2)
 // 4. Creating meshes from matrices
 
-vcl::Color randomColor()
+inline vcl::Color randomColor()
 {
     // generate random color using std::mt19937
 
-    static std::mt19937                         gen;
+    std::mt19937                                gen(std::random_device {}());
     std::uniform_int_distribution<unsigned int> dist(0, 255);
     return vcl::Color(dist(gen), dist(gen), dist(gen), dist(gen));
 }
@@ -64,13 +64,13 @@ auto meshMatrixConversion()
     for (auto& f : mesh.faces())
         f.color() = randomColor();
 
-    std::cout << "Loaded mesh: " << mesh.vertexNumber() << " vertices, "
-              << mesh.faceNumber() << " faces" << std::endl;
+    std::cout << "Loaded mesh: " << mesh.vertexCount() << " vertices, "
+              << mesh.faceCount() << " faces" << std::endl;
 
     // Export basic geometry
     Eigen::MatrixXd vertices =
         vcl::vertexPositionsMatrix<Eigen::MatrixXd>(mesh);
-    Eigen::MatrixXi faces = vcl::faceIndicesMatrix<Eigen::MatrixXi>(mesh);
+    Eigen::MatrixXi faces = vcl::faceVertexIndicesMatrix<Eigen::MatrixXi>(mesh);
 
     // Export additional components
     Eigen::MatrixXd vertexNormals =
@@ -97,15 +97,16 @@ auto meshMatrixConversion()
 
     // Create a new mesh from the exported matrices
     vcl::TriMesh importedMesh =
-        vcl::meshFromMatrices<vcl::TriMesh>(vertices, faces, vertexNormals);
+        vcl::meshFromMatrices<vcl::TriMesh>(vertices, faces);
     importedMesh.name() = "Imported Mesh";
 
     // Import additional components separately
-    vcl::importVertexColorsFromMatrix(importedMesh, vertexColors);
-    vcl::importFaceColorsFromMatrix(importedMesh, faceColors);
+    vcl::vertexNormalsFromMatrix(importedMesh, vertexNormals);
+    vcl::vertexColorsFromMatrix(importedMesh, vertexColors);
+    vcl::faceColorsFromMatrix(importedMesh, faceColors);
 
-    std::cout << "Imported mesh: " << importedMesh.vertexNumber()
-              << " vertices, " << importedMesh.faceNumber() << " faces"
+    std::cout << "Imported mesh: " << importedMesh.vertexCount()
+              << " vertices, " << importedMesh.faceCount() << " faces"
               << std::endl;
 
     // Verify data integrity
@@ -128,7 +129,7 @@ auto meshMatrixConversion()
     vcl::Array2<double> polyVertices =
         vcl::vertexPositionsMatrix<vcl::Array2<double>>(polyMesh);
     vcl::Array2<int> polyFaces =
-        vcl::faceIndicesMatrix<vcl::Array2<int>>(polyMesh);
+        vcl::faceVertexIndicesMatrix<vcl::Array2<int>>(polyMesh);
 
     std::cout << "Polygon mesh with VCLib Array2:" << std::endl;
     std::cout << "- Vertices: " << polyVertices.rows() << "x"
@@ -152,22 +153,41 @@ auto meshMatrixConversion()
         1, 1, 1,                // 6
         -1, 1, 1;               // 7
 
-    Eigen::MatrixXi cubeFaces(12, 3);
-    cubeFaces << 0, 2, 1, 0, 3, 2, // bottom (z = -1)
-        4, 5, 6, 4, 6, 7,          // top    (z = +1)
-        0, 1, 5, 0, 5, 4,          // front  (y = -1)
-        2, 3, 7, 2, 7, 6,          // back   (y = +1)
-        0, 4, 7, 0, 7, 3,          // left   (x = -1)
-        1, 2, 6, 1, 6, 5;          // right  (x = +1)
+    Eigen::MatrixXi cubeQuads(6, 4);
+    cubeQuads << 0, 1, 2, 3, // bottom (z = -1)
+        4, 7, 6, 5,          // top    (z = +1)
+        0, 4, 5, 1,          // front  (y = -1)
+        2, 6, 7, 3,          // back   (y = +1)
+        0, 3, 7, 4,          // left   (x = -1)
+        1, 5, 6, 2;          // right  (x = +1)
+
+    try {
+        // Create trimesh mesh from polygonal matrices is not allowed
+        vcl::TriMesh failMesh =
+            vcl::meshFromMatrices<vcl::TriMesh>(cubeVertices, cubeQuads);
+        // You should first call meshFromMatrices with PolyMesh, then
+        // convert to TriMesh if needed using triMesh.importFrom(polyMesh);
+    }
+    catch (const vcl::WrongSizeException& e) {
+        std::cerr << "Error creating tri mesh: " << e.what() << std::endl
+                  << std::endl;
+    }
+
+    Eigen::MatrixXi cubeTriangles(12, 3);
+    cubeTriangles << 0, 2, 1, 0, 3, 2, // bottom (z = -1)
+        4, 5, 6, 4, 6, 7,              // top    (z = +1)
+        0, 1, 5, 0, 5, 4,              // front  (y = -1)
+        2, 3, 7, 2, 7, 6,              // back   (y = +1)
+        0, 4, 7, 0, 7, 3,              // left   (x = -1)
+        1, 2, 6, 1, 6, 5;              // right  (x = +1)
 
     // Create mesh from these matrices
     vcl::TriMesh cubeMesh =
-        vcl::meshFromMatrices<vcl::TriMesh>(cubeVertices, cubeFaces);
+        vcl::meshFromMatrices<vcl::TriMesh>(cubeVertices, cubeTriangles);
     cubeMesh.name() = "Cube Mesh";
 
-    std::cout << "Created cube mesh: " << cubeMesh.vertexNumber()
-              << " vertices, " << cubeMesh.faceNumber() << " faces"
-              << std::endl;
+    std::cout << "Created cube mesh: " << cubeMesh.vertexCount()
+              << " vertices, " << cubeMesh.faceCount() << " faces" << std::endl;
 
     vcl::updatePerVertexAndFaceNormals(cubeMesh);
 

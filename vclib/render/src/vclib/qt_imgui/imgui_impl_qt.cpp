@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -23,7 +23,6 @@
 #ifndef IMGUI_DISABLE
 #include <vclib/qt_imgui/imgui_impl_qt.h>
 
-#include <QApplication>
 #include <QClipboard>
 #include <QEvent>
 #include <QKeyEvent>

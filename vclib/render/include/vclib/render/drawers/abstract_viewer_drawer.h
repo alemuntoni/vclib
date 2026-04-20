@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -119,27 +119,40 @@ public:
         Base::fitScene(sceneCenter, sceneRadius);
     }
 
+    void fitView()
+    {
+        Point3f sceneCenter = mDrawList->center().cast<float>();
+
+        Base::fitView(sceneCenter);
+    }
+
     // events
     void onInit(uint) override
     {
         DRA::DRW::setCanvasDefaultClearColor(derived(), Color::DarkGray);
+        mDrawList->init();
     }
 
-    void onKeyPress(Key::Enum key, const KeyModifiers& modifiers) override
+    bool onKeyPress(Key::Enum key, const KeyModifiers& modifiers) override
     {
-        Base::onKeyPress(key, modifiers);
+        bool block = Base::onKeyPress(key, modifiers);
+        if (!block) {
+            switch (key) {
+            case Key::R: fitScene(); break;
+            case Key::S:
+                if (modifiers[KeyModifier::CONTROL])
+                    DRA::DRW::screenshot(derived(), "viewer_screenshot.png");
+                break;
 
-        switch (key) {
-        case Key::S:
-            if (modifiers[KeyModifier::CONTROL])
-                DRA::DRW::screenshot(derived(), "viewer_screenshot.png");
-            break;
-
-        default: break;
+            default: break;
+            }
         }
+        return block;
     }
 
 protected:
+    uint canvasViewId() const { return DRA::DRW::canvasViewId(derived()); }
+
     void readDepthRequest(double x, double y, bool homogeneousNDC = true)
     {
         using ReadData   = ReadBufferTypes::ReadData;
@@ -174,8 +187,8 @@ protected:
 
             // unproject the point
             const Point3f p2d(p.x(), vp[3] - p.y(), depth);
-            auto          unproj =
-                unproject(p2d, MatrixType(proj * view), vp, homogeneousNDC);
+            auto          unproj = unprojectScreenPosition(
+                p2d, MatrixType(proj * view), vp, homogeneousNDC);
 
             this->focus(unproj);
             derived()->update();

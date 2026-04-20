@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -52,7 +52,7 @@ void setPerElemColorFromVertexColor(MeshType& m)
         for (const auto* v : e.vertices()) {
             avg += v->color().template cast<uint>();
         }
-        avg /= e.vertexNumber();
+        avg /= e.vertexCount();
         e.color() = avg.template cast<uint8_t>();
     }
 }
@@ -69,14 +69,31 @@ void setPerVertexColorFromElemColor(MeshType& m)
     for (const auto& e : m.template elements<ELEM_ID>()) {
         for (const auto* v : e.vertices()) {
             avgColors[v->index()].c += e.color().template cast<uint>();
-            avgColors[v->index()].cnt[v->index()]++;
+            avgColors[v->index()].cnt++;
         }
     }
 
     for (auto& v : m.vertices()) {
         if (avgColors[v.index()].cnt > 0) {
-            avgColors[v.index()] /= avgColors[v.index()].cnt[v.index()];
+            avgColors[v.index()].c /= avgColors[v.index()].cnt;
             v.color() = avgColors[v.index()].c.template cast<uint8_t>();
+        }
+    }
+}
+
+template<uint ELEM_ID, MeshConcept MeshType>
+void setPerElemColorFromMaterial(MeshType& m)
+{
+    static_assert(
+        HasMaterials<MeshType>,
+        "The input Mesh must have the Materials component.");
+    requirePerElementComponent<ELEM_ID, CompId::COLOR>(m);
+    requirePerElementComponent<ELEM_ID, CompId::MATERIAL_INDEX>(m);
+
+    for (auto& e : m.template elements<ELEM_ID>()) {
+        uint matIndex = e.materialIndex();
+        if (matIndex < m.materialCount()) {
+            e.color() = m.materials()[matIndex].baseColor();
         }
     }
 }
@@ -182,23 +199,6 @@ void setPerEdgeColor(
     else {
         std::ranges::fill(m.edges() | views::colors, c);
     }
-}
-
-/**
- * @brief Sets the color component of a mesh.
- *
- * @tparam MeshType: type of the input mesh. It must satisfy the HasColor
- * concept.
- *
- * @param[in,out] m: the mesh on which set the color.
- * @param[in] c: the color to set to the mesh.
- *
- * @ingroup update
- */
-template<HasColor MeshType>
-void setMeshColor(MeshType& m, Color c = Color::White)
-{
-    m.color() = c;
 }
 
 /**
@@ -365,6 +365,50 @@ void setPerFaceColorFromQuality(
 }
 
 /**
+ * @brief Sets the per-vertex color of a mesh according to a material assigned
+ * to each vertex.
+ *
+ * This function assigns a color to each vertex based on the material associated
+ * with it. The color is derived from the base color of the material.
+ *
+ * @note The base color of the material is applied only if the material index
+ * is valid (i.e., less than the number of materials in the mesh).
+ *
+ * @tparam MeshType The type of the mesh, which must satisfy the MeshConcept.
+ *
+ * @param[in] m: The mesh whose vertices will have their colors set.
+ *
+ * @ingroup update
+ */
+template<MeshConcept MeshType>
+void setPerVertexColorFromMaterial(MeshType& m)
+{
+    detail::setPerElemColorFromMaterial<ElemId::VERTEX>(m);
+}
+
+/**
+ * @brief Sets the per-face color of a mesh according to a material assigned to
+ * each face.
+ *
+ * This function assigns a color to each face based on the material associated
+ * with it. The color is derived from the base color of the material.
+ *
+ * @note The base color of the material is applied only if the material index
+ * is valid (i.e., less than the number of materials in the mesh).
+ *
+ * @tparam MeshType The type of the mesh, which must satisfy the MeshConcept.
+ *
+ * @param[in] m: The mesh whose faces will have their colors set.
+ *
+ * @ingroup update
+ */
+template<FaceMeshConcept MeshType>
+void setPerFaceColorFromMaterial(MeshType& m)
+{
+    detail::setPerElemColorFromMaterial<ElemId::FACE>(m);
+}
+
+/**
  * @brief Color the vertices of the mesh that are on border, using the border
  * flags of the faces.
  *
@@ -405,26 +449,26 @@ void setPerVertexColorFromFaceBorderFlag(
     setPerVertexColor(m, baseColor);
 
     for (FaceType& f : m.faces()) {
-        for (uint i = 0; i < f.vertexNumber(); ++i) {
+        for (uint i = 0; i < f.vertexCount(); ++i) {
             if (f.edgeOnBorder(i)) {
-                if (f.vertex(i).color() == baseColor)
-                    f.vertex(i).color() = borderColor;
-                if (f.vertex(i).color() == internalColor)
-                    f.vertex(i).color() = mixColor;
-                if (f.vertexMod(i + 1).color() == baseColor)
-                    f.vertexMod(i + 1).color() = borderColor;
-                if (f.vertexMod(i + 1).color() == internalColor)
-                    f.vertexMod(i + 1).color() = mixColor;
+                if (f.vertex(i)->color() == baseColor)
+                    f.vertex(i)->color() = borderColor;
+                if (f.vertex(i)->color() == internalColor)
+                    f.vertex(i)->color() = mixColor;
+                if (f.vertexMod(i + 1)->color() == baseColor)
+                    f.vertexMod(i + 1)->color() = borderColor;
+                if (f.vertexMod(i + 1)->color() == internalColor)
+                    f.vertexMod(i + 1)->color() = mixColor;
             }
             else {
-                if (f.vertex(i).color() == baseColor)
-                    f.vertex(i).color() = internalColor;
-                if (f.vertex(i).color() == borderColor)
-                    f.vertex(i).color() = mixColor;
-                if (f.vertexMod(i + 1).color() == baseColor)
-                    f.vertexMod(i + 1).color() = internalColor;
-                if (f.vertexMod(i + 1).color() == borderColor)
-                    f.vertexMod(i + 1).color() = mixColor;
+                if (f.vertex(i)->color() == baseColor)
+                    f.vertex(i)->color() = internalColor;
+                if (f.vertex(i)->color() == borderColor)
+                    f.vertex(i)->color() = mixColor;
+                if (f.vertexMod(i + 1)->color() == baseColor)
+                    f.vertexMod(i + 1)->color() = internalColor;
+                if (f.vertexMod(i + 1)->color() == borderColor)
+                    f.vertexMod(i + 1)->color() = mixColor;
             }
         }
     }
@@ -536,10 +580,10 @@ void setPerFaceColorScattering(
         }
         if constexpr (HasPerFaceAdjacentFaces<MeshType>) {
             if (checkFauxEdges && isPerFaceAdjacentFacesAvailable(m)) {
-                for (uint i = 0; i < f.vertexNumber(); ++i) {
+                for (uint i = 0; i < f.vertexCount(); ++i) {
                     if (f.edgeFaux(i)) {
                         assert(f.adjFace(i) != nullptr);
-                        f.adjFace(i)->color = f.color();
+                        f.adjFace(i)->color() = f.color();
                     }
                 }
             }
@@ -568,12 +612,12 @@ void setPerFaceColorScattering(
  *
  * @ingroup update
  */
-template<MeshConcept MeshType, PointConcept PointType>
+template<MeshConcept MeshType, Point3Concept PointType>
 void setPerVertexColorPerlinNoise(
-    MeshType& m,
-    PointType period,
-    PointType offset     = PointType(0, 0, 0),
-    bool      onSelected = false)
+    MeshType&        m,
+    const PointType& period,
+    const PointType& offset     = PointType(0, 0, 0),
+    bool             onSelected = false)
 {
     requirePerVertexColor(m);
 
@@ -613,14 +657,14 @@ void setPerVertexColorPerlinNoise(
  *
  * @ingroup update
  */
-template<MeshConcept MeshType, PointConcept PointType>
+template<MeshConcept MeshType, Point3Concept PointType>
 void setPerVertexPerlinColor(
-    MeshType& m,
-    double    period,
-    PointType offset     = PointType(0, 0, 0),
-    Color     color1     = Color::Black,
-    Color     color2     = Color::White,
-    bool      onSelected = false)
+    MeshType&        m,
+    double           period,
+    const PointType& offset     = PointType(0, 0, 0),
+    const Color&     color1     = Color::Black,
+    const Color&     color2     = Color::White,
+    bool             onSelected = false)
 {
     requirePerVertexColor(m);
 

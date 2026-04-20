@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -73,6 +73,11 @@ inline std::set<FileFormat> saveMeshFormats()
  * @param[in] settings: Settings for saving the file.
  * @param[in, out] log: The logger object to use for logging messages during
  * saving.
+ *
+ * @throws vcl::UnknownFileFormatException if the file extension is not
+ * recognized.
+ *
+ * @ingroup save_mesh
  */
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void saveMesh(

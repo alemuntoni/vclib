@@ -23,8 +23,7 @@
 #include <vclib/bindings/core/algorithms/mesh/stat.h>
 #include <vclib/bindings/utils.h>
 
-#include <vclib/algorithms/mesh/stat.h>
-#include <vclib/algorithms/mesh/type_name.h>
+#include <vclib/algorithms/mesh.h>
 
 #include <pybind11/stl.h>
 
@@ -34,89 +33,96 @@ void initStatAlgorithms(pybind11::module& m)
 {
     namespace py = pybind11;
 
-    auto fAllMeshes =
-        []<MeshConcept MeshType>(pybind11::module& m, MeshType = MeshType()) {
+    auto fAllMeshes = []<MeshConcept MeshType>(
+                          pybind11::module& m, MeshType = MeshType()) {
+        // barycenter.h
 
-            // barycenter.h
+        m.def("barycenter", [](const MeshType& m) {
+            return vcl::barycenter(m);
+        });
 
-            m.def("barycenter", [](const MeshType& m) {
-                return vcl::barycenter(m);
-            });
+        m.def("quality_weighted_barycenter", [](const MeshType& m) {
+            return vcl::qualityWeightedBarycenter(m);
+        });
 
-            m.def("quality_weighted_barycenter", [](const MeshType& m) {
-                return vcl::qualityWeightedBarycenter(m);
-            });
+        // bounding_box.h
 
-            // bounding_box.h
+        m.def("bounding_box", [](const MeshType& m) {
+            return vcl::boundingBox(m);
+        });
 
-            m.def("bounding_box", [](const MeshType& m) {
-                return vcl::boundingBox(m);
-            });
+        // geometry.h
 
-            // geometry.h
+        m.def("covariance_matrix_of_point_cloud", [](const MeshType& m) {
+            return vcl::covarianceMatrixOfPointCloud(m);
+        });
 
-            m.def("covariance_matrix_of_point_cloud", [](const MeshType& m) {
-                return vcl::covarianceMatrixOfPointCloud(m);
-            });
+        m.def(
+            "vertex_radius_from_wheights",
+            [](const MeshType&            m,
+               const std::vector<double>& weights,
+               double                     diskRadius,
+               double                     radiusVariance,
+               bool                       invert) {
+                return vcl::vertexRadiusFromWeights<double>(
+                    m, weights, diskRadius, radiusVariance, invert);
+            },
+            py::arg("mesh"),
+            py::arg("weights"),
+            py::arg("disk_radius"),
+            py::arg("radius_variance"),
+            py::arg("invert") = false);
 
-            m.def(
-                "vertex_radius_from_wheights",
-                [](const MeshType&            m,
-                   const std::vector<double>& weights,
-                   double                     diskRadius,
-                   double                     radiusVariance,
-                   bool                       invert) {
-                    return vcl::vertexRadiusFromWeights<double>(
-                        m, weights, diskRadius, radiusVariance, invert);
-                },
-                py::arg("mesh"),
-                py::arg("weights"),
-                py::arg("disk_radius"),
-                py::arg("radius_variance"),
-                py::arg("invert") = false);
+        // quality.h
 
-            // quality.h
+        m.def("vertex_quality_min_max", [](const MeshType& m) {
+            return vcl::vertexQualityMinMax(m);
+        });
 
-            m.def("vertex_quality_min_max", [](const MeshType& m) {
-                return vcl::vertexQualityMinMax(m);
-            });
+        m.def("vertex_quality_average", [](const MeshType& m) {
+            return vcl::vertexQualityAverage(m);
+        });
 
-            m.def("vertex_quality_average", [](const MeshType& m) {
-                return vcl::vertexQualityAverage(m);
-            });
+        m.def(
+            "vertex_quality_histogram",
+            [](const MeshType& m, bool selectionOnly, uint histSize) {
+                return vcl::vertexQualityHistogram(m, selectionOnly, histSize);
+            },
+            py::arg("mesh"),
+            py::arg("selection_only") = false,
+            py::arg("hist_size")      = 10000u);
 
-            // selection.h
+        // selection.h
 
-            m.def("vertex_selection_number", [](const MeshType& m) {
-                return vcl::vertexSelectionNumber(m);
-            });
+        m.def("vertex_selection_count", [](const MeshType& m) {
+            return vcl::vertexSelectionCount(m);
+        });
 
-            // topology.h
+        // topology.h
 
-            m.def(
-                "referenced_vertices",
-                [](const MeshType& m, bool onlyFaces) {
-                    uint nUnref = 0;
-                    return vcl::referencedVertices<std::vector<bool>>(
-                        m, nUnref, onlyFaces);
-                },
-                py::arg("mesh"),
-                py::arg("only_faces") = false);
+        m.def(
+            "referenced_vertices",
+            [](const MeshType& m, bool onlyFaces) {
+                uint nUnref = 0;
+                return vcl::referencedVertices<std::vector<bool>>(
+                    m, nUnref, onlyFaces);
+            },
+            py::arg("mesh"),
+            py::arg("only_faces") = false);
 
-            m.def(
-                "number_unreferenced_vertices",
-                [](const MeshType& m, bool onlyFaces) {
-                    return vcl::numberUnreferencedVertices(m, onlyFaces);
-                },
-                py::arg("mesh"),
-                py::arg("only_faces") = false);
-        };
+        m.def(
+            "unreferenced_vertex_count",
+            [](const MeshType& m, bool onlyFaces) {
+                return vcl::unreferencedVertexCount(m, onlyFaces);
+            },
+            py::arg("mesh"),
+            py::arg("only_faces") = false);
+    };
 
     defForAllMeshTypes(m, fAllMeshes);
 
     auto fFaceMeshes = []<FaceMeshConcept MeshType>(
                            pybind11::module& m, MeshType = MeshType()) {
-
         // barycenter.h
 
         m.def("shell_barycenter", [](const MeshType& m) {
@@ -165,50 +171,57 @@ void initStatAlgorithms(pybind11::module& m)
             return vcl::faceQualityAverage(m);
         });
 
-        // todo: face_quality_histogram - need histogram class
+        m.def(
+            "face_quality_histogram",
+            [](const MeshType& m, bool selectionOnly, uint histSize) {
+                return vcl::faceQualityHistogram(m, selectionOnly, histSize);
+            },
+            py::arg("mesh"),
+            py::arg("selection_only") = false,
+            py::arg("hist_size")      = 10000u);
 
         // selection.h
 
-        m.def("face_selection_number", [](const MeshType& m) {
-            return vcl::faceSelectionNumber(m);
+        m.def("face_selection_count", [](const MeshType& m) {
+            return vcl::faceSelectionCount(m);
         });
 
-        m.def("face_edges_selection_number", [](const MeshType& m) {
-            return vcl::faceEdgesSelectionNumber(m);
+        m.def("face_edges_selection_count", [](const MeshType& m) {
+            return vcl::faceEdgesSelectionCount(m);
         });
 
         // topology.h
 
         m.def("count_per_face_vertex_references", [](const MeshType& m) {
-            return vcl::countPerFaceVertexReferences(m);
+            return vcl::faceVertexReferencesCount(m);
         });
 
         m.def("largest_face_size", [](const MeshType& m) {
             return vcl::largestFaceSize(m);
         });
 
-        m.def("count_trinagulated_triangles", [](const MeshType& m) {
-            return vcl::countTriangulatedTriangles(m);
+        m.def("triangulated_face_count", [](const MeshType& m) {
+            return vcl::triangulatedFaceCount(m);
         });
 
-        m.def("number_non_manifold_vertices", [](const MeshType& m) {
-            return vcl::numberNonManifoldVertices(m);
+        m.def("non_manifold_vertex_count", [](const MeshType& m) {
+            return vcl::nonManifoldVertexCount(m);
         });
 
         m.def("is_water_tight", [](const MeshType& m) {
             return vcl::isWaterTight(m);
         });
 
-        m.def("number_holes", [](const MeshType& m) {
-            return vcl::numberHoles(m);
+        m.def("hole_count", [](const MeshType& m) {
+            return vcl::holeCount(m);
         });
 
         m.def("connected_components", [](const MeshType& m) {
             return vcl::connectedComponents(m);
         });
 
-        m.def("number_connected_components", [](const MeshType& m) {
-            return vcl::numberConnectedComponents(m);
+        m.def("connected_component_count", [](const MeshType& m) {
+            return vcl::connectedComponentCount(m);
         });
     };
 

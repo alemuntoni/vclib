@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-24.04-arm', 'macos-13', 'macos-latest', 'windows-latest']
+        os: ['ubuntu-latest', 'ubuntu-24.04-arm', 'macos-15-intel', 'macos-latest', 'windows-latest']
     steps:
     - uses: actions/checkout@v4
       with:
@@ -22,15 +22,19 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get install cmake ninja-build libtbb-dev catch2
+        sudo apt-get install libembree-dev
     - name: Install dependencies
       if: runner.os == 'macOS'
       shell: bash
       run: |
         brew install catch2
+        brew install embree
     - name: Install dependencies
       if: runner.os == 'Windows'
       run: |
-        choco upgrade ccache ninja
+        winget install Ccache.Ccache Ninja-build.Ninja --accept-source-agreements --accept-package-agreements
+        # embree not available with winget
+        choco install embree
     - name: Ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
@@ -39,11 +43,17 @@ jobs:
       shell: bash
       run: |
         mkdir build
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          export CMAKE_PREFIX_PATH="C:/ProgramData/chocolatey/lib/embree.install/tools"
+        fi
         cmake -B build --preset=vclib-external-ci \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
         cmake --build build --parallel
     - name: Run Tests
       shell: bash
       run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          export PATH="/c/ProgramData/chocolatey/lib/embree.install/tools/embree-4.4.1.x64.windows/bin:$PATH"
+        fi
         cd build
         ctest --verbose

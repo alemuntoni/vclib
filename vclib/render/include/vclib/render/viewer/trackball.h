@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -23,19 +23,20 @@
 #ifndef VCL_RENDER_VIEWER_TRACKBALL_H
 #define VCL_RENDER_VIEWER_TRACKBALL_H
 
-#include "camera.h"
 #include "lights/directional_light.h"
 
-#include <vclib/space/core/quaternion.h>
+#include <vclib/algorithms/core.h>
+#include <vclib/space/core.h>
 
 #include <variant>
 
 namespace vcl {
 
 /**
- * @brief The TrackBall class implements a trackball camera.
+ * @brief The TrackBall class implements a trackball (a camera combined with
+ * model transformation).
  *
- * The trackball class stores a camera and provides a set motions that allow the
+ * The trackball class stores a view and provides a set motions that allow the
  * user to manipulate it.
  *
  * There are two main types of motions:
@@ -60,7 +61,7 @@ public:
         FOV,
         FOCUS,
         DIR_LIGHT_ARC,
-        MOTION_NUMBER
+        MOTION_COUNT
     };
 
     struct TransformArgs
@@ -83,6 +84,8 @@ private:
 
     static constexpr Scalar DEFAULT_FOV_DEG = 54.0;
 
+    // the camera used by the trackball (in front of the model centered in
+    // the origin)
     Camera<Scalar> mCamera;
 
     // Similarity holding the manipulator transformation.
@@ -94,6 +97,7 @@ private:
 
     Quaternion<Scalar> mDirectionalLightTransform;
 
+    // screen size in 'pixels' (or generic units for high-DPI screens)
     Point2<Scalar> mScreenSize = {-1, -1};
 
     // trackball radius in camera space
@@ -102,7 +106,7 @@ private:
 
     // trackball interaction state
     bool       mDragging       = false;
-    MotionType mCurrDragMotion = MOTION_NUMBER;
+    MotionType mCurrDragMotion = MOTION_COUNT;
 
     // initial arcball hit point
     Point3<Scalar> mInitialPoint;
@@ -138,6 +142,137 @@ public:
         reset();
         mTransform.scale(scale);
         mTransform.translate(-center);
+    }
+
+    /**
+     *  @brief return the camera containing the current view point of
+     *  the trackball.
+     *
+     *  @return the camera matching the current view of the trackball
+     */
+    Camera<Scalar> camera() const
+    {
+        Camera<Scalar> cam = mCamera;
+
+        // compute the camera properties from the trackball camere and
+        // the model transformation
+        const Affine3<Scalar> modelToCamera = mTransform.inverse();
+
+        Point3<Scalar> y = modelToCamera.linear().col(1);
+        Point3<Scalar> z = modelToCamera.linear().col(2);
+
+        cam.up()     = y.normalized();
+        cam.eye()    = modelToCamera * cam.eye();
+        cam.center() = cam.eye() - z.normalized();
+
+        if (cam.projectionMode() == Camera<Scalar>::ProjectionMode::ORTHO) {
+            // ortho camera always uses the vertical height = 2.0
+            // correct it using a scale factor when the model is scaled
+            // (assume uniform scale)
+            Scalar scale = mTransform.linear().col(0).norm();
+            cam.verticalHeight() /= scale;
+        }
+
+        return cam;
+    }
+
+    /**
+     * @brief Set the camera of the trackball.
+     *
+     * The function sets the trackball to match the provided camera.
+     * The function does not change the aspect ratio of the trackball camera,
+     * as it may be different from the provided camera.
+     *
+     * @param[in] cam: The camera to set.
+     */
+    void setCamera(const Camera<Scalar>& cam)
+    {
+        // FIXME? check what to do with the aspect ratio (if != 1.0)
+        this->reset();
+        mCamera.projectionMode()     = cam.projectionMode();
+        Scalar correctiveScaleFactor = 1.0;
+        if (mCamera.projectionMode() ==
+            Camera<Scalar>::ProjectionMode::PERSPECTIVE) {
+            mCamera.setFieldOfViewAdaptingEyeDistance(cam.fieldOfView());
+        }
+        else {
+            // ortho camera always uses the vertical height = 2.0
+            // correct it using a scale factor
+            correctiveScaleFactor =
+                mCamera.verticalHeight() / cam.verticalHeight();
+        }
+        const Point3<Scalar> camTrackballTransl =
+            mCamera.eye() - mCamera.center();
+
+        // FIXME? near and far planes should be corrected too but we don't care
+        mCamera.nearPlane() = cam.nearPlane();
+        mCamera.farPlane()  = cam.farPlane();
+        // generate a transformation that will place the model
+        // in front of the camera as if view from the the provided camera
+        const Point3<Scalar> y = cam.up();
+        const Point3<Scalar> z = (cam.eye() - cam.center()).normalized();
+        const Point3<Scalar> x = y.cross(z).normalized();
+
+        // set the transformation of the trackball such that the frame of the
+        // model is aligned with the inverse of the computed camera frame
+        mTransform.linear().col(0) = x;
+        mTransform.linear().col(1) = y;
+        mTransform.linear().col(2) = z;
+
+        // set the translation of the transformation such that the center
+        // of the camera is mapped to the origin
+        mTransform.pretranslate(cam.eye());
+
+        // invert the transformation
+        mTransform = mTransform.inverse();
+
+        // apply the corrective scale factor
+        mTransform.prescale(correctiveScaleFactor);
+
+        // correct the translation to account for the position of the
+        // trackball camera (mCamera)
+        mTransform.pretranslate(camTrackballTransl);
+    }
+
+    /**
+     * @brief Adapt the current view to a given center.
+     * The function adapts the trackball transformation in order to manipulate
+     * the scene with a pivot point close to the given center.
+     * This is done without affecting the current view.
+     *
+     * @param[in] center: The center of the scene.
+     * @note This function does nothing if the provided center is behind the
+     * camera.
+     */
+    void adaptCurrentViewToCenter(const Point3<Scalar>& center)
+    {
+        if (mCamera.projectionMode() ==
+            Camera<Scalar>::ProjectionMode::PERSPECTIVE) {
+            Point3<Scalar> transformedCenter = mTransform * center;
+            Point3<Scalar> toCenter    = transformedCenter - mCamera.eye();
+            Point3<Scalar> eyeToCenter = (mCamera.center() - mCamera.eye());
+            Scalar         scaleRatio =
+                toCenter.dot(eyeToCenter.normalized()) / eyeToCenter.norm();
+            if (scaleRatio < 0)
+                return; // center is behind the camera
+
+            mTransform.pretranslate(eyeToCenter);
+            mTransform.prescale(1.0 / scaleRatio);
+            mTransform.pretranslate(-eyeToCenter);
+        }
+        else {
+            assert(
+                mCamera.projectionMode() ==
+                Camera<Scalar>::ProjectionMode::ORTHO);
+            // for ortho camera just translate the model along camera view
+            // direction
+            Point3<Scalar> transformedCenter = mTransform * center;
+            Point3<Scalar> toCenter = transformedCenter - mCamera.center();
+            Point3<Scalar> viewDir =
+                (mCamera.center() - mCamera.eye()).normalized();
+            Scalar distance = toCenter.dot(viewDir);
+            mTransform.pretranslate(-viewDir * distance);
+        }
     }
 
     void resetDirectionalLight()
@@ -241,8 +376,6 @@ public:
         mDirectionalLightTransform = Quaternion<Scalar>::FromTwoVectors(
             Point3<Scalar>(0, 0, 1), direction);
     }
-
-    const vcl::Camera<Scalar>& camera() const { return mCamera; }
 
     Matrix44<Scalar> viewMatrix() const
     {
@@ -365,7 +498,7 @@ public:
      */
     void beginDragMotion(MotionType motion)
     {
-        assert(motion != MOTION_NUMBER && "Invalid motion type");
+        assert(motion != MOTION_COUNT && "Invalid motion type");
 
         // no need to restart?
         if (mCurrDragMotion == motion)
@@ -402,7 +535,7 @@ public:
     void update() // TODO: rename this function (it just updates the motion)
     {
         assert(
-            mDragging != (mCurrDragMotion == MOTION_NUMBER) &&
+            mDragging != (mCurrDragMotion == MOTION_COUNT) &&
             "Invalid state: dragging and no motion");
         if (mDragging && mCurrMousePosition != mPrevMousePosition)
             drag(mCurrDragMotion);
@@ -413,7 +546,7 @@ private:
 
     void setDragMotionValue(MotionType motion, bool value)
     {
-        mCurrDragMotion = value ? motion : MOTION_NUMBER;
+        mCurrDragMotion = value ? motion : MOTION_COUNT;
     }
 
     void drag(MotionType motion)

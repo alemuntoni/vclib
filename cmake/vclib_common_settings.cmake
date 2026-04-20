@@ -2,7 +2,7 @@
 #* VCLib                                                                     *
 #* Visual Computing Library                                                  *
 #*                                                                           *
-#* Copyright(C) 2021-2025                                                    *
+#* Copyright(C) 2021-2026                                                    *
 #* Visual Computing Lab                                                      *
 #* ISTI - Italian National Research Council                                  *
 #*                                                                           *
@@ -21,7 +21,7 @@
 #****************************************************************************/
 
 ### Build settings
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 # In case of building shared libraries, on windows we need to export all symbols
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)

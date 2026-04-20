@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -24,10 +24,12 @@
 #define VCL_QT_MESH_VIEWER_H
 
 #include "gui/drawable_object_vector_tree.h"
+#include "utils.h"
 
 #include <vclib/qt/gui/text_edit_logger.h>
 #include <vclib/qt/mesh_viewer_render_app.h>
 #include <vclib/render/drawable/drawable_object_vector.h>
+#include <vclib/render/settings/pbr_viewer_settings.h>
 
 #include <QWidget>
 
@@ -49,12 +51,11 @@ class MeshViewer : public QWidget
 {
     Q_OBJECT
 
+    enum class RenderMode { CLASSIC = 0, PBR = 1 };
+
     Ui::MeshViewer* mUI;
 
     std::shared_ptr<vcl::DrawableObjectVector> mDrawableObjectVector;
-
-    std::shared_ptr<vcl::DrawableObjectVector> mListedDrawableObjects;
-    std::shared_ptr<vcl::DrawableObjectVector> mUnlistedDrawableObjects;
 
 protected:
     MeshViewerRenderApp& viewer() const;
@@ -70,15 +71,24 @@ public:
     void setDrawableObjectVector(
         const std::shared_ptr<vcl::DrawableObjectVector>& v);
 
-    void setUnlistedDrawableObjectVector(
-        const std::shared_ptr<vcl::DrawableObjectVector>& v);
-
     uint selectedDrawableObject() const;
 
     TextEditLogger& logger();
 
     void setDrawVectorIconFunction(
         const DrawableObjectVectorTree::IconFunction& f);
+
+    Camera<float> camera() const;
+
+    void setCamera(const Camera<float>& c);
+
+    // void showRenderModeSelector(bool show);
+
+    void setPbrSettings(const PBRViewerSettings& settings);
+
+    const PBRViewerSettings& pbrSettings() const;
+
+    void setPanorama(const std::string& panorama);
 
 public slots:
     void visibilityDrawableObjectChanged();
@@ -88,6 +98,8 @@ public slots:
     void renderSettingsUpdated();
 
     void fitScene();
+
+    void fitView();
 
     void updateGUI();
 };

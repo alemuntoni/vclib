@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -43,7 +43,7 @@ void setReferencedVertices(const auto& mesh, auto& refs, uint& nRefs)
     // check if the Cont container of the Mesh has vertex references
     if constexpr (comp::HasVertexReferences<typename Cont::ElementType>) {
         // if there are still some vertices non-referenced
-        if (nRefs < mesh.vertexNumber()) {
+        if (nRefs < mesh.vertexCount()) {
             constexpr uint ELEM_ID = Cont::ElementType::ELEMENT_ID;
             // for eache element of the Cont container
             for (const auto& el : mesh.template elements<ELEM_ID>()) {
@@ -80,7 +80,7 @@ template<typename WedgeTexCoordType>
 struct WedgeTexCoordsInfo
 {
     WedgeTexCoordType texCoord;
-    ushort            texCoordIndex;
+    uint              texCoordIndex;
 
     bool operator<(const WedgeTexCoordsInfo& other) const
     {
@@ -106,7 +106,7 @@ std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
     // First Loop, count how many faces are incident on a vertex and store it in
     // TD, and flag how many vertices are incident on non manifold edges.
     for (const FaceType& f : m.faces()) {
-        for (uint i = 0; i < f.vertexNumber(); ++i) {
+        for (uint i = 0; i < f.vertexCount(); ++i) {
             TD[m.index(f.vertex(i))]++;
             if (!isFaceManifoldOnEdge(f, i)) {
                 nonManifoldInc[m.index(f.vertex(i))]        = true;
@@ -117,7 +117,7 @@ std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
 
     std::vector<bool> visited(m.vertexContainerSize(), false);
     for (const FaceType& f : m.faces()) {
-        for (uint i = 0; i < f.vertexNumber(); ++i) {
+        for (uint i = 0; i < f.vertexCount(); ++i) {
             if (!visited[m.index(f.vertex(i))]) {
                 visited[m.index(f.vertex(i))] = true;
                 MeshPos pos(&f, i);
@@ -132,7 +132,7 @@ std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
 }
 
 template<FaceMeshConcept MeshType>
-uint numberEdges(
+uint edgeCount(
     const MeshType& m,
     uint&           numBoundaryEdges,
     uint&           numNonManifoldEdges)
@@ -168,7 +168,7 @@ inline std::vector<std::pair<uint, uint>>          dummyVectorOfPairs;
 } // namespace detail
 
 /**
- * @brief Count the number of references to vertices in the mesh faces.
+ * @brief Count the total number of vertex references in the mesh faces.
  *
  * If the mesh is a TriangleMesh, the number of references is equal to the
  * number of faces times 3. Otherwise, the function counts the number of
@@ -179,18 +179,18 @@ inline std::vector<std::pair<uint, uint>>          dummyVectorOfPairs;
  *
  * @ingroup mesh_stat
  */
-uint countPerFaceVertexReferences(const FaceMeshConcept auto& mesh)
+uint faceVertexReferencesCount(const FaceMeshConcept auto& mesh)
 {
     using MeshType = decltype(mesh);
 
     uint nRefs = 0;
 
     if constexpr (TriangleMeshConcept<MeshType>) {
-        return mesh.faceNumber() * 3;
+        return mesh.faceCount() * 3;
     }
     else {
         for (const auto& f : mesh.faces()) {
-            nRefs += f.vertexNumber();
+            nRefs += f.vertexCount();
         }
     }
 
@@ -200,26 +200,27 @@ uint countPerFaceVertexReferences(const FaceMeshConcept auto& mesh)
 /**
  * @brief Returns the largest face size in the mesh.
  *
- * If the mesh is a TriangleMesh, the function returns 3. Otherwise, the
- * function returns the size of the largest face in the mesh.
+ * If the mesh has static face size, the function returns the static size.
+ * Otherwise, the function iterates through all the faces of the mesh to find
+ * the largest face size.
  *
- * @param[in] mesh: The input mesh. It must satisfy the MeshConcept.
+ * @param[in] mesh: The input mesh. It must satisfy the FaceMeshConcept.
  * @return The largest face size in the mesh.
  *
  * @ingroup mesh_stat
  */
 uint largestFaceSize(const FaceMeshConcept auto& mesh)
 {
-    using MeshType = decltype(mesh);
+    using FaceType = RemoveRef<decltype(mesh)>::FaceType;
 
     uint maxFaceSize = 0;
 
-    if constexpr (TriangleMeshConcept<MeshType>) {
-        return 3;
+    if constexpr (FaceType::VERTEX_COUNT > 0) {
+        return FaceType::VERTEX_COUNT;
     }
     else {
         for (const auto& f : mesh.faces()) {
-            maxFaceSize = std::max(maxFaceSize, f.vertexNumber());
+            maxFaceSize = std::max(maxFaceSize, f.vertexCount());
         }
     }
 
@@ -236,17 +237,208 @@ uint largestFaceSize(const FaceMeshConcept auto& mesh)
  *
  * @ingroup mesh_stat
  */
-uint countTriangulatedTriangles(const FaceMeshConcept auto& mesh)
+uint triangulatedFaceCount(const FaceMeshConcept auto& mesh)
 {
     using MeshType = decltype(mesh);
 
     uint nTris = 0;
 
     for (const auto& f : mesh.faces()) {
-        nTris += f.vertexNumber() - 2;
+        nTris += f.vertexCount() - 2;
     }
 
     return nTris;
+}
+
+/**
+ * @brief Returns the largest number of per-vertex adjacent vertices in the
+ * mesh.
+ *
+ * The function requires that per-vertex adjacent vertices have been
+ * precomputed for the mesh (see @ref vcl::updatePerVertexAdjacentVertices).
+ *
+ * @throws vcl::MissingComponentException if the mesh does not have per-vertex
+ * adjacent vertices available.
+ *
+ * @param[in] mesh: The input mesh. It must satisfy the MeshConcept.
+ * @return The largest number of per-vertex adjacent vertices in the mesh.
+ *
+ * @ingroup mesh_stat
+ */
+uint largestPerVertexAdjacentVerticesCount(const MeshConcept auto& mesh)
+{
+    requirePerVertexAdjacentVertices(mesh);
+
+    uint maxAVC = 0;
+
+    for (const auto& v : mesh.vertices()) {
+        maxAVC = std::max(maxAVC, v.adjVertexCount());
+    }
+
+    return maxAVC;
+}
+
+/**
+ * @brief Returns the largest number of per-ELEM_ID element adjacent faces in
+ * the mesh.
+ *
+ * The function requires that per-ELEM_ID element adjacent faces have been
+ * precomputed for the mesh (see `vcl::updatePer<Element>AdjacentFaces`).
+ *
+ * @note If the element has Tied To Vertex Count Adjacent Faces, the returned
+ * value is equal to the number of vertices of the element.
+ *
+ * @throws vcl::MissingComponentException if the mesh does not have per-element
+ * adjacent faces available.
+ *
+ * @param[in] mesh: The input mesh. It must satisfy the FaceMeshConcept.
+ * @return The largest number of per-element adjacent faces in the mesh.
+ *
+ * @ingroup mesh_stat
+ */
+template<uint ELEM_ID>
+uint largestPerElementAdjacentFacesCount(const FaceMeshConcept auto& mesh)
+{
+    requirePerElementComponent<ELEM_ID, CompId::ADJACENT_FACES>(mesh);
+
+    uint maxAFC = 0;
+
+    for (const auto& e : mesh.template elements<ELEM_ID>()) {
+        maxAFC = std::max(maxAFC, e.adjFaceCount());
+    }
+
+    return maxAFC;
+}
+
+/**
+ * @brief Returns the largest number of per-vertex adjacent faces in the mesh.
+ *
+ * The function requires that per-vertex adjacent faces have been
+ * precomputed for the mesh (see @ref vcl::updatePerVertexAdjacentFaces).
+ *
+ * @throws vcl::MissingComponentException if the mesh does not have per-vertex
+ * adjacent faces available.
+ *
+ * @param[in] mesh: The input mesh. It must satisfy the FaceMeshConcept.
+ * @return The largest number of per-vertex adjacent faces in the mesh.
+ *
+ * @ingroup mesh_stat
+ */
+uint largestPerVertexAdjacentFacesCount(const FaceMeshConcept auto& mesh)
+{
+    return largestPerElementAdjacentFacesCount<ElemId::VERTEX>(mesh);
+}
+
+/**
+ * @brief Returns the largest number of per-edge adjacent faces in the mesh.
+ *
+ * The function requires that per-edge adjacent faces have been
+ * precomputed for the mesh.
+ *
+ * @throws vcl::MissingComponentException if the mesh does not have per-edge
+ * adjacent faces available.
+ *
+ * @param[in] mesh: The input mesh. It must satisfy the FaceMeshConcept and
+ * EdgeMeshConcept.
+ * @return The largest number of per-edge adjacent faces in the mesh.
+ *
+ * @ingroup mesh_stat
+ */
+uint largestPerEdgeAdjacentFacesCount(const FaceMeshConcept auto& mesh)
+    requires EdgeMeshConcept<decltype(mesh)>
+{
+    return largestPerElementAdjacentFacesCount<ElemId::EDGE>(mesh);
+}
+
+/**
+ * @brief Returns the largest number of per-ELEM_ID element adjacent edges in
+ * the mesh.
+ *
+ * The function requires that per-ELEM_ID element adjacent edges have been
+ * precomputed for the mesh (see `vcl::updatePer<Element>AdjacentEdges`).
+ *
+ * @note If the element has Tied To Vertex Count Adjacent Edges, the returned
+ * value is equal to the number of vertices of the element.
+ *
+ * @throws vcl::MissingComponentException if the mesh does not have per-element
+ * adjacent edges available.
+ *
+ * @param[in] mesh: The input mesh. It must satisfy the EdgeMeshConcept.
+ * @return The largest number of per-element adjacent edges in the mesh.
+ *
+ * @ingroup mesh_stat
+ */
+template<uint ELEM_ID>
+uint largestPerElementAdjacentEdgesCount(const EdgeMeshConcept auto& mesh)
+{
+    requirePerElementComponent<ELEM_ID, CompId::ADJACENT_EDGES>(mesh);
+
+    uint maxAEC = 0;
+
+    for (const auto& e : mesh.template elements<ELEM_ID>()) {
+        maxAEC = std::max(maxAEC, e.adjEdgeCount());
+    }
+
+    return maxAEC;
+}
+
+/**
+ * @brief Returns the largest number of per-vertex adjacent edges in the mesh.
+ *
+ * The function requires that per-vertex adjacent edges have been
+ * precomputed for the mesh (see @ref vcl::updatePerVertexAdjacentEdges).
+ *
+ * @throws vcl::MissingComponentException if the mesh does not have per-vertex
+ * adjacent edges available.
+ *
+ * @param[in] mesh: The input mesh. It must satisfy the EdgeMeshConcept.
+ * @return The largest number of per-vertex adjacent edges in the mesh.
+ *
+ * @ingroup mesh_stat
+ */
+uint largestPerVertexAdjacentEdgesCount(const EdgeMeshConcept auto& mesh)
+{
+    return largestPerElementAdjacentEdgesCount<ElemId::VERTEX>(mesh);
+}
+
+/**
+ * @brief Returns the largest number of per-face adjacent edges in the mesh.
+ *
+ * The function requires that per-face adjacent edges have been
+ * precomputed for the mesh (see @ref vcl::updatePerFaceAdjacentEdges).
+ *
+ * @throws vcl::MissingComponentException if the mesh does not have per-face
+ * adjacent edges available.
+ *
+ * @param[in] mesh: The input mesh. It must satisfy the EdgeMeshConcept and
+ * FaceMeshConcept.
+ * @return The largest number of per-face adjacent edges in the mesh.
+ *
+ * @ingroup mesh_stat
+ */
+uint largestPerFaceAdjacentEdgesCount(const EdgeMeshConcept auto& mesh)
+    requires FaceMeshConcept<decltype(mesh)>
+{
+    return largestPerElementAdjacentEdgesCount<ElemId::FACE>(mesh);
+}
+
+/**
+ * @brief Returns the largest number of per-edge adjacent edges in the mesh.
+ *
+ * The function requires that per-edge adjacent edges have been
+ * precomputed for the mesh (see @ref vcl::updatePerEdgeAdjacentEdges).
+ *
+ * @throws vcl::MissingComponentException if the mesh does not have per-edge
+ * adjacent edges available.
+ *
+ * @param[in] mesh: The input mesh. It must satisfy the EdgeMeshConcept.
+ * @return The largest number of per-edge adjacent edges in the mesh.
+ *
+ * @ingroup mesh_stat
+ */
+uint largestPerEdgeAdjacentEdgesCount(const EdgeMeshConcept auto& mesh)
+{
+    return largestPerElementAdjacentEdgesCount<ElemId::EDGE>(mesh);
 }
 
 /**
@@ -276,7 +468,7 @@ uint countTriangulatedTriangles(const FaceMeshConcept auto& mesh)
  * @ingroup mesh_stat
  */
 template<FaceMeshConcept MeshType>
-uint countVerticesToDuplicateByWedgeTexCoords(
+uint verticesToDuplicateByWedgeTexCoordsCount(
     const MeshType&                     mesh,
     std::vector<std::pair<uint, uint>>& vertWedgeMap =
         detail::dummyVectorOfPairs,
@@ -284,6 +476,7 @@ uint countVerticesToDuplicateByWedgeTexCoords(
     std::list<std::list<std::pair<uint, uint>>>& facesToReassign =
         detail::dummyListOfLists)
 {
+    vcl::requirePerFaceMaterialIndex(mesh);
     vcl::requirePerFaceWedgeTexCoords(mesh);
 
     using WedgeTexCoordType  = MeshType::FaceType::WedgeTexCoordType;
@@ -307,11 +500,11 @@ uint countVerticesToDuplicateByWedgeTexCoords(
         mesh.vertexContainerSize());
 
     for (const auto& f : mesh.faces()) {
-        for (uint i = 0; i < f.vertexNumber(); ++i) {
+        for (uint i = 0; i < f.vertexCount(); ++i) {
             uint vi = f.vertexIndex(i);
 
             // check if the i-th wedge texcoord of the face already exists
-            WedgeTexCoordsInfo wi = {f.wedgeTexCoord(i), f.textureIndex()};
+            WedgeTexCoordsInfo wi = {f.wedgeTexCoord(i), f.materialIndex()};
             auto               it = wedges[vi].find(wi);
             if (it == wedges[vi].end()) { // if it doesn't exist, add it
                 // if there was already a texcoord for the vertex, it means that
@@ -429,7 +622,7 @@ Container referencedVertices(
             mesh, refVertices, nRefs, typename MeshType::Containers());
     }
 
-    nUnref = mesh.vertexNumber() - nRefs;
+    nUnref = mesh.vertexCount() - nRefs;
 
     return refVertices;
 }
@@ -453,7 +646,7 @@ Container referencedVertices(
  * @ingroup clean
  */
 template<MeshConcept MeshType>
-uint numberUnreferencedVertices(const MeshType& m, bool onlyFaces = false)
+uint unreferencedVertexCount(const MeshType& m, bool onlyFaces = false)
 {
     uint nV = 0;
     // store the number of unref vertices into nV
@@ -482,7 +675,7 @@ uint numberUnreferencedVertices(const MeshType& m, bool onlyFaces = false)
  * @ingroup clean
  */
 template<FaceMeshConcept MeshType>
-uint numberNonManifoldVertices(const MeshType& m)
+uint nonManifoldVertexCount(const MeshType& m)
 {
     std::vector<bool> nonManifoldVertices =
         detail::nonManifoldVerticesVectorBool(m);
@@ -514,7 +707,7 @@ template<FaceMeshConcept MeshType>
 bool isWaterTight(const MeshType& m)
 {
     uint numEdgeBorder, numNonManifoldEdges;
-    detail::numberEdges(m, numEdgeBorder, numNonManifoldEdges);
+    detail::edgeCount(m, numEdgeBorder, numNonManifoldEdges);
     return numEdgeBorder == 0 && numNonManifoldEdges == 0;
 }
 
@@ -538,7 +731,7 @@ bool isWaterTight(const MeshType& m)
  * @ingroup clean
  */
 template<FaceMeshConcept MeshType>
-uint numberHoles(const MeshType& m) requires HasPerFaceAdjacentFaces<MeshType>
+uint holeCount(const MeshType& m) requires HasPerFaceAdjacentFaces<MeshType>
 {
     requirePerFaceAdjacentFaces(m);
 
@@ -632,7 +825,7 @@ std::vector<std::set<uint>> connectedComponents(const MeshType& m)
                 ccf.insert(m.index(fpt));
 
                 // add the adjacent faces of the current visited in the stack
-                for (uint j = 0; j < fpt->vertexNumber(); ++j) {
+                for (uint j = 0; j < fpt->vertexCount(); ++j) {
                     const FaceType* adjf = fpt->adjFace(j);
                     // if there is an adj face and it has not been visited
                     if (adjf != nullptr && !visitedFaces[m.index(adjf)]) {
@@ -666,7 +859,7 @@ std::vector<std::set<uint>> connectedComponents(const MeshType& m)
  * @ingroup clean
  */
 template<FaceMeshConcept MeshType>
-uint numberConnectedComponents(const MeshType& m)
+uint connectedComponentCount(const MeshType& m)
 {
     return connectedComponents(m).size();
 }

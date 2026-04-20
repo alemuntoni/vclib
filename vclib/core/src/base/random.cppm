@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -51,7 +51,8 @@ inline std::mt19937 randomGenerator(std::optional<uint> seed = std::nullopt)
 
     if (seed.has_value()) {
         gen.seed(seed.value());
-    } else {
+    }
+    else {
         std::random_device rd;
         gen.seed(rd()); // random seed
     }

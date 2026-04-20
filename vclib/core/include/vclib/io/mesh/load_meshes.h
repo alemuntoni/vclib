@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -42,7 +42,7 @@ namespace vcl {
  *
  * @ingroup load_mesh
  */
-inline std::set<FileFormat> loadMeshesFileFormats()
+inline std::set<FileFormat> loadMeshesFormats()
 {
     std::set<FileFormat> ff;
 

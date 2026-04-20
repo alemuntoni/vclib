@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -52,6 +52,12 @@ using Eigen3ColMatrix =
 template<typename ScalarType>
 using Eigen4ColMatrix =
     Eigen::Matrix<ScalarType, Eigen::Dynamic, 4, Eigen::ColMajor>;
+
+template<typename ScalarType, typename...>
+using EigenVector = Eigen::Vector<ScalarType, Eigen::Dynamic>;
+
+template<typename ScalarType, typename...>
+using VclVector = vcl::Vector<ScalarType, -1>;
 
 // utility functions
 
@@ -104,7 +110,7 @@ void testPositionsMatrix(const auto& tm)
 {
     auto verts = vcl::vertexPositionsMatrix<MatrixType>(tm);
 
-    REQUIRE(verts.rows() == tm.vertexNumber());
+    REQUIRE(verts.rows() == tm.vertexCount());
     REQUIRE(verts.cols() == 3);
 
     for (vcl::uint   i = 0;
@@ -119,9 +125,9 @@ void testPositionsMatrix(const auto& tm)
 template<typename MatrixType>
 void testTrianglesMatrix(const auto& tm)
 {
-    auto tris = vcl::faceIndicesMatrix<MatrixType>(tm);
+    auto tris = vcl::faceVertexIndicesMatrix<MatrixType>(tm);
 
-    REQUIRE(tris.rows() == tm.faceNumber());
+    REQUIRE(tris.rows() == tm.faceCount());
     REQUIRE(tris.cols() == 3);
 
     for (vcl::uint i = 0; const auto& f : tm.faces()) {
@@ -137,10 +143,10 @@ void testFaceSizesVector(const auto& pm)
 {
     auto sizes = vcl::faceSizesVector<VectorType>(pm);
 
-    REQUIRE(sizes.size() == pm.faceNumber());
+    REQUIRE(sizes.size() == pm.faceCount());
 
     for (vcl::uint i = 0; const auto& f : pm.faces()) {
-        REQUIRE(sizes[i] == f.vertexNumber());
+        REQUIRE(sizes[i] == f.vertexCount());
         ++i;
     }
 }
@@ -148,9 +154,9 @@ void testFaceSizesVector(const auto& pm)
 template<typename VectorType>
 void testFaceVector(const auto& pm)
 {
-    auto faces = vcl::faceIndicesVector<VectorType>(pm);
+    auto faces = vcl::faceVertexIndicesVector<VectorType>(pm);
 
-    vcl::uint nIndices = countPerFaceVertexReferences(pm);
+    vcl::uint nIndices = faceVertexReferencesCount(pm);
     REQUIRE(faces.size() == nIndices);
 
     for (vcl::uint i = 0; const auto& f : pm.faces()) {
@@ -164,14 +170,14 @@ void testFaceVector(const auto& pm)
 template<typename MatrixType>
 void testFaceMatrix(const auto& pm)
 {
-    auto faces = vcl::faceIndicesMatrix<MatrixType>(pm);
+    auto faces = vcl::faceVertexIndicesMatrix<MatrixType>(pm);
 
-    REQUIRE(faces.rows() == pm.faceNumber());
+    REQUIRE(faces.rows() == pm.faceCount());
     REQUIRE(faces.cols() == vcl::largestFaceSize(pm));
 
     for (vcl::uint i = 0; const auto& f : pm.faces()) {
         vcl::uint j = 0;
-        for (j = 0; j < f.vertexNumber(); ++j) {
+        for (j = 0; j < f.vertexCount(); ++j) {
             REQUIRE(faces(i, j) == f.vertexIndex(j));
         }
         for (; j < faces.cols(); ++j) {
@@ -186,11 +192,12 @@ template<typename MatrixType>
 void testTriangulatedFaceMatrix(const auto& pm)
 {
     vcl::TriPolyIndexBiMap indexMap;
-    auto tris = vcl::triangulatedFaceIndicesMatrix<MatrixType>(pm, indexMap);
+    auto                   tris =
+        vcl::triangulatedFaceVertexIndicesMatrix<MatrixType>(pm, indexMap);
 
-    vcl::uint tNumber = countTriangulatedTriangles(pm);
+    vcl::uint tCount = triangulatedFaceCount(pm);
 
-    REQUIRE(tris.rows() == tNumber);
+    REQUIRE(tris.rows() == tCount);
     REQUIRE(tris.cols() == 3);
 
     for (vcl::uint i = 0; i < 3; ++i) {
@@ -210,7 +217,7 @@ void testVertexSelectionVector(const auto& tm)
 {
     auto sel = vcl::vertexSelectionVector<VectorType>(tm);
 
-    REQUIRE(sel.size() == tm.vertexNumber());
+    REQUIRE(sel.size() == tm.vertexCount());
 
     for (vcl::uint i = 0; const auto& v : tm.vertices()) {
         REQUIRE((bool) sel[i] == v.selected());
@@ -223,7 +230,7 @@ void testFaceSelectionVector(const auto& tm)
 {
     auto sel = vcl::faceSelectionVector<VectorType>(tm);
 
-    REQUIRE(sel.size() == tm.faceNumber());
+    REQUIRE(sel.size() == tm.faceCount());
 
     for (vcl::uint i = 0; const auto& f : tm.faces()) {
         REQUIRE((bool) sel[i] == f.selected());
@@ -236,7 +243,7 @@ void testVertNormalsMatrix(const auto& tm)
 {
     auto vertNormals = vcl::vertexNormalsMatrix<MatrixType>(tm);
 
-    REQUIRE(vertNormals.rows() == tm.vertexNumber());
+    REQUIRE(vertNormals.rows() == tm.vertexCount());
     REQUIRE(vertNormals.cols() == 3);
 
     for (vcl::uint i = 0; const auto& n : tm.vertices() | vcl::views::normals) {
@@ -252,7 +259,7 @@ void testFaceNormalsMatrix(const auto& tm)
 {
     auto faceNormals = vcl::faceNormalsMatrix<MatrixType>(tm);
 
-    REQUIRE(faceNormals.rows() == tm.faceNumber());
+    REQUIRE(faceNormals.rows() == tm.faceCount());
     REQUIRE(faceNormals.cols() == 3);
 
     for (vcl::uint i = 0; const auto& n : tm.faces() | vcl::views::normals) {
@@ -268,7 +275,7 @@ void testVertColorsMatrix(const auto& tm)
 {
     auto vertColors = vcl::vertexColorsMatrix<MatrixType>(tm);
 
-    REQUIRE(vertColors.rows() == tm.vertexNumber());
+    REQUIRE(vertColors.rows() == tm.vertexCount());
     REQUIRE(vertColors.cols() == 4);
 
     for (vcl::uint i = 0; const auto& c : tm.vertices() | vcl::views::colors) {
@@ -286,7 +293,7 @@ void testVertColorsVector(const auto& tm)
     auto vertColors =
         vcl::vertexColorsVector<VectorType>(tm, vcl::Color::Format::RGBA);
 
-    REQUIRE(vertColors.size() == tm.vertexNumber());
+    REQUIRE(vertColors.size() == tm.vertexCount());
 
     for (vcl::uint i = 0; const auto& c : tm.vertices() | vcl::views::colors) {
         REQUIRE(vertColors[i] == c.rgba());
@@ -299,7 +306,7 @@ void testFaceColorsMatrix(const auto& tm)
 {
     auto faceColors = vcl::faceColorsMatrix<MatrixType>(tm);
 
-    REQUIRE(faceColors.rows() == tm.faceNumber());
+    REQUIRE(faceColors.rows() == tm.faceCount());
     REQUIRE(faceColors.cols() == 4);
 
     for (vcl::uint i = 0; const auto& c : tm.faces() | vcl::views::colors) {
@@ -317,7 +324,7 @@ void testFaceColorsVector(const auto& tm)
     auto faceColors =
         vcl::faceColorsVector<VectorType>(tm, vcl::Color::Format::RGBA);
 
-    REQUIRE(faceColors.size() == tm.faceNumber());
+    REQUIRE(faceColors.size() == tm.faceCount());
 
     for (vcl::uint i = 0; const auto& c : tm.faces() | vcl::views::colors) {
         REQUIRE(faceColors[i] == c.rgba());
@@ -330,7 +337,7 @@ void testVertexQualityVector(const auto& tm)
 {
     auto qual = vcl::vertexQualityVector<VectorType>(tm);
 
-    REQUIRE(qual.size() == tm.vertexNumber());
+    REQUIRE(qual.size() == tm.vertexCount());
 
     for (vcl::uint i = 0; const auto& v : tm.vertices()) {
         REQUIRE(qual[i] == v.quality());
@@ -343,10 +350,142 @@ void testFaceQualityVector(const auto& tm)
 {
     auto qual = vcl::faceQualityVector<VectorType>(tm);
 
-    REQUIRE(qual.size() == tm.faceNumber());
+    REQUIRE(qual.size() == tm.faceCount());
 
     for (vcl::uint i = 0; const auto& f : tm.faces()) {
         REQUIRE(qual[i] == f.quality());
+        ++i;
+    }
+}
+
+template<template<typename, typename...> typename Container, typename T>
+void testVertexAdjacentVerticesVectors(const auto& tm)
+{
+    auto adjacencies = vcl::vertexAdjacentVerticesVectors<Container, T>(tm);
+
+    REQUIRE(adjacencies.size() == tm.vertexCount());
+
+    for (vcl::uint i = 0; const auto& v : tm.vertices()) {
+        const auto& adjList = adjacencies[i];
+        REQUIRE(adjList.size() == v.adjVertexCount());
+
+        vcl::uint j = 0;
+        for (const auto* adjV : v.adjVertices()) {
+            REQUIRE(adjList[j] == static_cast<T>(adjV->index()));
+            ++j;
+        }
+        ++i;
+    }
+}
+
+template<typename MatrixType>
+void testVertexAdjacentVerticesMatrix(const auto& tm)
+{
+    auto adjMatrix = vcl::vertexAdjacentVerticesMatrix<MatrixType>(tm);
+
+    vcl::uint lva = vcl::largestPerVertexAdjacentVerticesCount(tm);
+
+    REQUIRE(adjMatrix.rows() == tm.vertexCount());
+    REQUIRE(adjMatrix.cols() == lva);
+
+    for (vcl::uint i = 0; const auto& v : tm.vertices()) {
+        vcl::uint j = 0;
+        for (const auto* adjV : v.adjVertices()) {
+            REQUIRE(adjMatrix(i, j) == static_cast<vcl::uint>(adjV->index()));
+            ++j;
+        }
+        // Check that remaining entries are set to -1 (UINT_NULL)
+        for (; j < lva; ++j) {
+            REQUIRE(adjMatrix(i, j) == vcl::uint(-1));
+        }
+        ++i;
+    }
+}
+
+template<template<typename, typename...> typename Container, typename T>
+void testVertexAdjacentFacesVectors(const auto& tm)
+{
+    auto adjacencies = vcl::vertexAdjacentFacesVectors<Container, T>(tm);
+
+    REQUIRE(adjacencies.size() == tm.vertexCount());
+
+    for (vcl::uint i = 0; const auto& v : tm.vertices()) {
+        const auto& adjList = adjacencies[i];
+        REQUIRE(adjList.size() == v.adjFaceCount());
+
+        vcl::uint j = 0;
+        for (const auto* adjF : v.adjFaces()) {
+            REQUIRE(adjList[j] == static_cast<T>(adjF->index()));
+            ++j;
+        }
+        ++i;
+    }
+}
+
+template<typename MatrixType>
+void testVertexAdjacentFacesMatrix(const auto& tm)
+{
+    auto adjMatrix = vcl::vertexAdjacentFacesMatrix<MatrixType>(tm);
+
+    vcl::uint lfa = vcl::largestPerVertexAdjacentFacesCount(tm);
+
+    REQUIRE(adjMatrix.rows() == tm.vertexCount());
+    REQUIRE(adjMatrix.cols() == lfa);
+
+    for (vcl::uint i = 0; const auto& v : tm.vertices()) {
+        vcl::uint j = 0;
+        for (const auto* adjF : v.adjFaces()) {
+            REQUIRE(adjMatrix(i, j) == static_cast<vcl::uint>(adjF->index()));
+            ++j;
+        }
+        // Check that remaining entries are set to -1 (UINT_NULL)
+        for (; j < lfa; ++j) {
+            REQUIRE(adjMatrix(i, j) == vcl::uint(-1));
+        }
+        ++i;
+    }
+}
+
+template<template<typename, typename...> typename Container, typename T>
+void testFaceAdjacentFacesVectors(const auto& tm)
+{
+    auto adjacencies = vcl::faceAdjacentFacesVectors<Container, T>(tm);
+
+    REQUIRE(adjacencies.size() == tm.faceCount());
+
+    for (vcl::uint i = 0; const auto& f : tm.faces()) {
+        const auto& adjList = adjacencies[i];
+        REQUIRE(adjList.size() == f.adjFaceCount());
+
+        vcl::uint j = 0;
+        for (const auto* adjF : f.adjFaces()) {
+            REQUIRE(adjList[j] == static_cast<T>(adjF->index()));
+            ++j;
+        }
+        ++i;
+    }
+}
+
+template<typename MatrixType>
+void testFaceAdjacentFacesMatrix(const auto& tm)
+{
+    auto adjMatrix = vcl::faceAdjacentFacesMatrix<MatrixType>(tm);
+
+    vcl::uint lfa = vcl::largestFaceSize(tm);
+
+    REQUIRE(adjMatrix.rows() == tm.faceCount());
+    REQUIRE(adjMatrix.cols() == lfa);
+
+    for (vcl::uint i = 0; const auto& f : tm.faces()) {
+        vcl::uint j = 0;
+        for (const auto* adjF : f.adjFaces()) {
+            REQUIRE(adjMatrix(i, j) == static_cast<vcl::uint>(adjF->index()));
+            ++j;
+        }
+        // Check that remaining entries are set to -1 (UINT_NULL)
+        for (; j < lfa; ++j) {
+            REQUIRE(adjMatrix(i, j) == vcl::uint(-1));
+        }
         ++i;
     }
 }
@@ -359,7 +498,7 @@ using MeshesIndexedf = std::
     tuple<vcl::TriMeshIndexedf, vcl::PolyMeshIndexedf, vcl::EdgeMeshIndexedf>;
 
 TEMPLATE_TEST_CASE(
-    "Export TriMesh to Matrix",
+    "Export Mesh to Matrix",
     "",
     Meshes,
     Meshesf,
@@ -748,6 +887,126 @@ TEMPLATE_TEST_CASE(
         SECTION("vcl::Vector")
         {
             testFaceQualityVector<vcl::Vector<ScalarType, -1>>(tm);
+        }
+    }
+
+    SECTION("Vertex Adjacent Vertices Vectors...")
+    {
+        // Update per-vertex adjacency information first
+        tm.enablePerVertexAdjacentVertices();
+        vcl::updatePerVertexAdjacentVertices(tm);
+
+        SECTION("std::vector<std::vector<vcl::uint>>")
+        {
+            testVertexAdjacentVerticesVectors<std::vector, vcl::uint>(tm);
+        }
+        SECTION("Eigen::Vector<Eigen::Vector<vcl::uint>>")
+        {
+            testVertexAdjacentVerticesVectors<EigenVector, vcl::uint>(tm);
+        }
+        SECTION("vcl::Vector<vcl::Vector<vcl::uint>>")
+        {
+            testVertexAdjacentVerticesVectors<VclVector, vcl::uint>(tm);
+        }
+    }
+
+    SECTION("Vertex Adjacent Vertices Matrix...")
+    {
+        // Update per-vertex adjacency information first
+        tm.enablePerVertexAdjacentVertices();
+        vcl::updatePerVertexAdjacentVertices(tm);
+
+        SECTION("Eigen Row Major")
+        {
+            testVertexAdjacentVerticesMatrix<EigenRowMatrix<vcl::uint>>(tm);
+        }
+        SECTION("Eigen Col Major")
+        {
+            testVertexAdjacentVerticesMatrix<EigenColMatrix<vcl::uint>>(tm);
+        }
+        SECTION("vcl::Array2")
+        {
+            testVertexAdjacentVerticesMatrix<vcl::Array2<vcl::uint>>(tm);
+        }
+    }
+
+    SECTION("Vertex Adjacent Faces Vectors...")
+    {
+        // Update per-vertex adjacent faces information first
+        tm.enablePerVertexAdjacentFaces();
+        vcl::updatePerVertexAdjacentFaces(tm);
+
+        SECTION("std::vector<std::vector<vcl::uint>>")
+        {
+            testVertexAdjacentFacesVectors<std::vector, vcl::uint>(tm);
+        }
+        SECTION("Eigen::Vector<Eigen::Vector<vcl::uint>>")
+        {
+            testVertexAdjacentFacesVectors<EigenVector, vcl::uint>(tm);
+        }
+        SECTION("vcl::Vector<vcl::Vector<vcl::uint>>")
+        {
+            testVertexAdjacentFacesVectors<VclVector, vcl::uint>(tm);
+        }
+    }
+
+    SECTION("Vertex Adjacent Faces Matrix...")
+    {
+        // Update per-vertex adjacent faces information first
+        tm.enablePerVertexAdjacentFaces();
+        vcl::updatePerVertexAdjacentFaces(tm);
+
+        SECTION("Eigen Row Major")
+        {
+            testVertexAdjacentFacesMatrix<EigenRowMatrix<vcl::uint>>(tm);
+        }
+        SECTION("Eigen Col Major")
+        {
+            testVertexAdjacentFacesMatrix<EigenColMatrix<vcl::uint>>(tm);
+        }
+        SECTION("vcl::Array2")
+        {
+            testVertexAdjacentFacesMatrix<vcl::Array2<vcl::uint>>(tm);
+        }
+    }
+
+    SECTION("Face Adjacent Faces Vectors...")
+    {
+        // Update per-face adjacent faces information first
+        tm.enablePerFaceAdjacentFaces();
+        vcl::updatePerFaceAdjacentFaces(tm);
+
+        SECTION("std::vector<std::vector<vcl::uint>>")
+        {
+            testFaceAdjacentFacesVectors<std::vector, vcl::uint>(tm);
+        }
+        SECTION("Eigen::Vector<Eigen::Vector<vcl::uint>>")
+        {
+            testFaceAdjacentFacesVectors<EigenVector, vcl::uint>(tm);
+        }
+        SECTION("vcl::Vector<vcl::Vector<vcl::uint>>")
+        {
+            testFaceAdjacentFacesVectors<VclVector, vcl::uint>(tm);
+        }
+    }
+
+    SECTION("Face Adjacent Faces Matrix...")
+    {
+        // Update per-face adjacent faces information first
+        tm.enablePerFaceAdjacentFaces();
+        vcl::updatePerFaceAdjacentFaces(tm);
+
+        SECTION("Eigen Row Major")
+        {
+            testFaceAdjacentFacesMatrix<EigenRowMatrix<vcl::uint>>(tm);
+        }
+        SECTION("Eigen Col Major")
+        {
+            testFaceAdjacentFacesMatrix<EigenColMatrix<vcl::uint>>(tm);
+        }
+        SECTION("vcl::Array2")
+        {
+            testFaceAdjacentFacesMatrix<vcl::Array2<vcl::uint>>(tm);
         }
     }
 }

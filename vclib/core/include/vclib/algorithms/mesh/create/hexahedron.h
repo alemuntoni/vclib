@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -127,6 +127,9 @@ MeshType createHexahedron(const PositionType& min, const PositionType& max)
  * If the mesh is composed of triangles, the the returned mesh is already
  * triangulated. If the mesh is composed of quads or polygons, a mesh containing
  * 6 quads will be returned.
+ *
+ * @param[in] min: The minimum extreme of the Cube.
+ * @param[in] edgeLength: The length of the edges of the Cube.
  *
  * @return A Mesh containing a ``[min, min+edgeLength]`` Cube.
  *

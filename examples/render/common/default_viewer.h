@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -32,7 +32,6 @@
 #endif
 
 #ifdef VCLIB_RENDER_EXAMPLES_WITH_QT
-#include <QApplication>
 #include <vclib/qt/mesh_viewer.h>
 #elif VCLIB_RENDER_EXAMPLES_WITH_GLFW
 #include <vclib/glfw/viewer_window.h>
@@ -100,7 +99,9 @@ void showMeshesOnViewer(
     int                      argc,
     char**                   argv,
     auto&                    viewer,
-    std::vector<MeshTypes>&& meshes)
+    std::vector<MeshTypes>&& meshes,
+    bool                     pbrMode  = false,
+    const std::string&       panorama = "")
 {
     std::shared_ptr<vcl::DrawableObjectVector> vector =
         std::make_shared<vcl::DrawableObjectVector>();
@@ -109,6 +110,18 @@ void showMeshesOnViewer(
         (pushMeshOnVector(vector, std::move(mesh)));
 
     viewer.setDrawableObjectVector(vector);
+
+#ifdef VCLIB_RENDER_BACKEND_BGFX
+    auto sts = viewer.pbrSettings();
+
+    if (!panorama.empty()) {
+        viewer.setPanorama(panorama);
+        sts.imageBasedLighting       = true;
+        sts.renderBackgroundPanorama = true;
+    }
+    sts.pbrMode = pbrMode;
+    viewer.setPbrSettings(sts);
+#endif
 
 #if VCLIB_RENDER_EXAMPLES_WITH_GLFW
     viewer.fitScene();
@@ -121,7 +134,7 @@ template<vcl::MeshConcept... MeshTypes>
 int showMeshesOnDefaultViewer(int argc, char** argv, MeshTypes&&... meshes)
 {
 #if VCLIB_RENDER_EXAMPLES_WITH_QT
-    QApplication application(argc, argv);
+    auto application = vcl::qt::qAppl(argc, argv);
 #endif
 
     auto viewer = defaultViewer();
@@ -142,15 +155,18 @@ template<vcl::MeshConcept MeshTypes>
 int showMeshesOnDefaultViewer(
     int                      argc,
     char**                   argv,
-    std::vector<MeshTypes>&& meshes)
+    std::vector<MeshTypes>&& meshes,
+    bool                     pbrMode  = false,
+    const std::string&       panorama = "")
 {
 #if VCLIB_RENDER_EXAMPLES_WITH_QT
-    QApplication application(argc, argv);
+    auto application = vcl::qt::qAppl(argc, argv);
 #endif
 
     auto viewer = defaultViewer();
 
-    showMeshesOnViewer(argc, argv, viewer, std::move(meshes));
+    showMeshesOnViewer(
+        argc, argv, viewer, std::move(meshes), pbrMode, panorama);
 
 #if VCLIB_RENDER_EXAMPLES_WITH_QT
     viewer.showMaximized();

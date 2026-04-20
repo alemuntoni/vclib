@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -25,8 +25,8 @@
 
 #include "mesh_render_info_macros.h"
 
-#include <vclib/space/core/bit_set.h>
 #include <vclib/base.h>
+#include <vclib/space/core/bit_set.h>
 
 #include <array>
 
@@ -65,6 +65,7 @@ public:
         VERT_NORMALS,
         VERT_COLORS,
         VERT_TEXCOORDS,
+        VERT_TANGENT,
 
         TRIANGLES,
         TRI_NORMALS,
@@ -79,7 +80,7 @@ public:
 
         TEXTURES,
 
-        MESH_UNIFORMS,
+        MESH_ADDITIONAL_DATA,
 
         COUNT,
     };

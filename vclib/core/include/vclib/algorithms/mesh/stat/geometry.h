@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -85,7 +85,7 @@ double borderLength(const MeshType& m)
 
     double l = 0;
     for (const FaceType& f : m.faces()) {
-        for (uint i = 0; i < f.vertexNumber(); ++i) {
+        for (uint i = 0; i < f.vertexCount(); ++i) {
             if (f.adjFace(i) == nullptr) {
                 l += f.vertex(i)->position().dist(
                     f.vertexMod(i + 1)->position());
@@ -214,7 +214,7 @@ std::vector<ScalarType> vertexRadiusFromWeights(
 {
     using VertexType = MeshType::VertexType;
 
-    assert(std::ranges::size(weights) == m.vertexNumber());
+    assert(std::ranges::size(weights) == m.vertexCount());
 
     std::vector<ScalarType> radius(m.vertexContainerSize());
     const auto [min, max] = std::ranges::minmax_element(weights);
@@ -224,7 +224,7 @@ std::vector<ScalarType> vertexRadiusFromWeights(
     double deltaQ   = *max - *min;
     double deltaRad = maxRad - minRad;
     for (const auto& [v, w] : std::views::zip(m.vertices(), weights)) {
-        double num = invert ? (*max - w) : (w - *min);
+        double num         = invert ? (*max - w) : (w - *min);
         radius[m.index(v)] = minRad + deltaRad * (num / deltaQ);
     }
 
@@ -258,7 +258,7 @@ std::vector<std::pair<uint, uint>> creaseFaceEdges(
     std::vector<std::pair<uint, uint>> creaseEdges;
 
     for (const auto& f : m.faces()) {
-        for (uint i = 0; i < f.vertexNumber(); ++i) {
+        for (uint i = 0; i < f.vertexCount(); ++i) {
             if (f.adjFace(i) == nullptr) {
                 // border edge
                 if (alsoBorderEdges) {

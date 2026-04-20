@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -356,6 +356,32 @@ void multiplyNormalsByMatrix(
         mat.template cast<ScalarType>().block(0, 0, 3, 3);
 
     multiplyNormalsByMatrix(normals, m33, removeScalingFromMatrix);
+}
+
+/**
+ * @brief Transforms a 3D box by applying a 4x4 transformation matrix to all its
+ * 8 vertices, and returns the axis-aligned bounding box that contains the
+ * transformed vertices.
+ *
+ * @param[in] box: The input 3D box to be transformed.
+ * @param[in] mat: The 4x4 transformation matrix to be applied to the box.
+ * @return The axis-aligned bounding box that contains the transformed vertices.
+ */
+template<Box3Concept BoxType, Matrix44Concept MatrixType>
+BoxType transformBox(const BoxType& box, const MatrixType& mat)
+{
+    using PointType  = typename BoxType::PointType;
+    using ScalarType = typename PointType::ScalarType;
+
+    Matrix44<ScalarType> m44 = mat.template cast<ScalarType>();
+
+    BoxType result;
+    for (uint i = 0; i < 8; ++i) {
+        PointType corner = boxVertex(box, i);
+        corner *= m44;
+        result.add(corner);
+    }
+    return result;
 }
 
 } // namespace vcl

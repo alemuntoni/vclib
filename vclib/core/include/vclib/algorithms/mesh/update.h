@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -23,10 +23,10 @@
 #ifndef VCL_ALGORITHMS_MESH_UPDATE_H
 #define VCL_ALGORITHMS_MESH_UPDATE_H
 
+#include "update/border.h"
 #include "update/bounding_box.h"
 #include "update/color.h"
 #include "update/curvature.h"
-#include "update/flag.h"
 #include "update/normal.h"
 #include "update/quality.h"
 #include "update/selection.h"

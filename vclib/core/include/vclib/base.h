@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -23,7 +23,6 @@
 #ifndef VCL_BASE_H
 #define VCL_BASE_H
 
-#include "base/compactness.h"
 #include "base/comparators.h"
 #include "base/concepts.h"
 #include "base/const_correctness.h"
@@ -38,6 +37,7 @@
 #include "base/nested_initializer_lists.h"
 #include "base/pair.h"
 #include "base/parallel.h"
+#include "base/permute.h"
 #include "base/pointers.h"
 #include "base/random.h"
 #include "base/serialization.h"

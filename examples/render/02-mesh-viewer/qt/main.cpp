@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -26,8 +26,6 @@
 #include <vclib/algorithms/mesh/update/transform.h>
 #include <vclib/qt/mesh_viewer.h>
 
-#include <QApplication>
-
 class MeshViewerSelectQt : public vcl::qt::MeshViewer
 {
 public:
@@ -43,7 +41,7 @@ public:
 
 int main(int argc, char** argv)
 {
-    QApplication app(argc, argv);
+    auto app = vcl::qt::qAppl(argc, argv);
 
     MeshViewerSelectQt mv;
 
@@ -52,8 +50,14 @@ int main(int argc, char** argv)
 
     using enum vcl::MeshRenderInfo::Buffers;
 
+    // to test the per-vertex and per-face color rendering, we set both of them
+    m.enablePerVertexColor();
     m.enablePerFaceColor();
+
     for (auto& f : m.faces()) {
+        f.vertex(0)->color() = vcl::Color::Red;
+        f.vertex(1)->color() = vcl::Color::Green;
+        f.vertex(2)->color() = vcl::Color::Blue;
         if (f.index() % 3 == 0)
             f.color() = vcl::Color::Red;
         else if (f.index() % 3 == 1)
@@ -61,7 +65,7 @@ int main(int argc, char** argv)
         else
             f.color() = vcl::Color::Blue;
     }
-    m.updateBuffers({TRI_COLORS});
+    m.updateBuffers({VERT_COLORS, TRI_COLORS, WIREFRAME});
 
     auto v = std::make_shared<vcl::DrawableObjectVector>();
     v->pushBack(std::move(m));
@@ -76,7 +80,7 @@ int main(int argc, char** argv)
     vcl::scale(drawable, 0.5f);
     vcl::translate(drawable, vcl::Point3d(bb.size().x(), 0, 0));
 
-    drawable.updateBuffers({VERTICES, VERT_NORMALS});
+    drawable.updateBuffers({VERTICES, VERT_NORMALS, WIREFRAME});
     v->pushBack(std::move(drawable));
 
     mv.setDrawableObjectVector(v);

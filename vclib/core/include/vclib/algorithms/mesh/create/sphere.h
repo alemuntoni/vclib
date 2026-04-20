@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -54,14 +54,14 @@ namespace vcl {
  */
 struct CreateSphereArgs
 {
-    typedef enum {
+    enum class CreateSphereMode {
         UV = 0,
         NORMALIZED_CUBE,
         SPHERIFIED_CUBE,
         ICOSAHEDRON
-    } CreateSphereMode;
+    };
 
-    CreateSphereMode mode = UV;
+    CreateSphereMode mode = CreateSphereMode::UV;
 
     // used for mode = UV
     uint parallels = 10;
@@ -175,7 +175,7 @@ MeshType createSphereUV(
         VertexType* a = &mesh.vertex(i + meridians * (parallels - 2) + 1);
         VertexType* b =
             &mesh.vertex((i + 1) % meridians + meridians * (parallels - 2) + 1);
-        VertexType* v = &mesh.vertex(mesh.vertexNumber() - 1);
+        VertexType* v = &mesh.vertex(mesh.vertexCount() - 1);
         mesh.addFace(v, a, b);
     }
 
@@ -375,7 +375,7 @@ MeshType createSphereIcosahedron(const SphereConcept auto& sp, uint divisions)
     MeshType mesh = createIcosahedron<MeshType>(true);
 
     for (uint d = 0; d < divisions; d++) {
-        uint nf = mesh.faceNumber();
+        uint nf = mesh.faceCount();
         for (uint f = 0; f < nf; f++) {
             FaceType&   f0   = mesh.face(f);
             VertexType& v0   = *f0.vertex(0);
@@ -402,7 +402,7 @@ MeshType createSphereIcosahedron(const SphereConcept auto& sp, uint divisions)
         }
     }
 
-    removeDuplicatedVertices(mesh);
+    removeDuplicateVertices(mesh);
 
     scale(mesh, sp.radius());
     translate(mesh, sp.center());
@@ -430,18 +430,20 @@ MeshType createSphere(
     const SphereConcept auto& sp,
     const CreateSphereArgs&   args = CreateSphereArgs())
 {
+    using enum CreateSphereArgs::CreateSphereMode;
+
     MeshType m;
     switch (args.mode) {
-    case CreateSphereArgs::UV:
+    case UV:
         m = createSphereUV<MeshType>(sp, args.parallels, args.meridians);
         break;
-    case CreateSphereArgs::NORMALIZED_CUBE:
+    case NORMALIZED_CUBE:
         m = createSphereNormalizedCube<MeshType>(sp, args.divisions);
         break;
-    case CreateSphereArgs::SPHERIFIED_CUBE:
+    case SPHERIFIED_CUBE:
         m = createSphereSpherifiedCube<MeshType>(sp, args.divisions);
         break;
-    case CreateSphereArgs::ICOSAHEDRON:
+    case ICOSAHEDRON:
         m = createSphereIcosahedron<MeshType>(sp, args.divisions);
         break;
     }

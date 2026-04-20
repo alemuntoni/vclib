@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -23,10 +23,10 @@
 #ifndef VCL_BGFX_CONTEXT_PROGRAM_MANAGER_H
 #define VCL_BGFX_CONTEXT_PROGRAM_MANAGER_H
 
+#include <vclib/base.h>
 #include <vclib/bgfx/programs/embedded_c_programs.h>
 #include <vclib/bgfx/programs/embedded_vf_programs.h>
 #include <vclib/bgfx/programs/load_program.h>
-#include <vclib/base.h>
 
 #include <array>
 

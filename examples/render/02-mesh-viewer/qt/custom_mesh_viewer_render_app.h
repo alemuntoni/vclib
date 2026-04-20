@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -40,13 +40,15 @@ class ViewerDrawerSelectQt : public vcl::TrackBallViewerDrawer<DerivedRenderApp>
 public:
     using Base::Base;
 
-    void onMousePress(
+    bool onMousePress(
         vcl::MouseButton::Enum   button,
         double                   x,
         double                   y,
         const vcl::KeyModifiers& modifiers) override
     {
-        if (button == vcl::MouseButton::RIGHT) {
+        bool block = Base::onMousePress(button, x, y, modifiers);
+
+        if (!block && button == vcl::MouseButton::RIGHT) {
             this->readIdRequest(x, y, [&](uint id) {
                 if (id == vcl::UINT_NULL)
                     return;
@@ -56,8 +58,7 @@ public:
                     mOnObjectSelected(id);
             });
         }
-
-        Base::onMousePress(button, x, y, modifiers);
+        return block;
     }
 
     // seeter fo the callback function called when an object is selected

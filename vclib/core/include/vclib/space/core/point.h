@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -435,6 +435,7 @@ public:
         return res;
     }
 
+    // TODO: this function should return a pair
     /**
      * @brief Computes an [Orthonormal
      * Basis](https://en.wikipedia.org/wiki/Orthonormal_basis) starting from
@@ -670,6 +671,42 @@ public:
     {
         *this = *this * m;
         return *this;
+    }
+
+    /**
+     * @brief Returns a Point object with all components set to the lowest
+     * representable value of the Scalar type.
+     *
+     * The function returns a Point object where each component is initialized
+     * to the lowest representable value of the Scalar type, which is typically
+     * the most negative value for signed types. This can be useful for
+     * initializing a Point object to a known minimum value before performing
+     * comparisons or other operations.
+     *
+     * @return A Point object with all components set to the lowest
+     * representable value of the Scalar type.
+     */
+    static Point min()
+    {
+        return Point::Constant(std::numeric_limits<Scalar>::lowest());
+    }
+
+    /**
+     * @brief Returns a Point object with all components set to the highest
+     * representable value of the Scalar type.
+     *
+     * The function returns a Point object where each component is initialized
+     * to the highest representable value of the Scalar type, which is typically
+     * the most positive value for signed types. This can be useful for
+     * initializing a Point object to a known maximum value before performing
+     * comparisons or other operations.
+     *
+     * @return A Point object with all components set to the highest
+     * representable value of the Scalar type.
+     */
+    static Point max()
+    {
+        return Point::Constant(std::numeric_limits<Scalar>::max());
     }
 
 private:

@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['ubuntu-latest', 'macos-13', 'macos-15', 'windows-latest']
+        os: ['ubuntu-latest', 'ubuntu-24.04-arm', 'macos-15-intel', 'macos-latest', 'windows-latest']
         render_backend: ['bgfx', 'opengl2']
     steps:
     - uses: actions/checkout@v4
@@ -34,14 +34,10 @@ jobs:
       shell: bash
       run: |
         brew install catch2 glfw
-        # if matrix.os == 'macos-13'
-        if [[ "${{ matrix.os }}" == "macos-13" ]]; then
-          brew install llvm@18
-        fi
     - name: Install dependencies
       if: runner.os == 'Windows'
       run: |
-        choco upgrade ccache ninja
+        winget install Ccache.Ccache Ninja-build.Ninja --accept-source-agreements --accept-package-agreements
     - name: Ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
@@ -49,19 +45,6 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        if [[ "${{ matrix.os }}" == "macos-13" ]]; then
-          export BREW_PATH="$(brew --prefix)"
-          export LLVM_PATH="$(brew --prefix llvm@18)"
-          export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
-          export LIBRARY_PATH="$LIBRARY_PATH:$SDKROOT/usr/lib"
-          export PATH="$LLVM_PATH/bin:$PATH"
-          export CC="$LLVM_PATH/bin/clang"
-          export CXX="$LLVM_PATH/bin/clang++"
-          export COMPILER=${CXX}
-          export CFLAGS="-I $BREW_PATH/include -I $LLVM_PATH/include"
-          export CXXFLAGS="-I $BREW_PATH/include -I $LLVM_PATH/include"
-          export LDFLAGS="-L $LIBRARY_PATH -L $BREW_PATH/lib -L $LLVM_PATH/lib -L $LLVM_PATH/lib/c++" 
-        fi
         mkdir build
         cmake -B build --preset=vclib-render-${{matrix.render_backend}}-ci \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache

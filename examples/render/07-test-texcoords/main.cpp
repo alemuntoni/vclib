@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -23,47 +23,35 @@
 #include <default_viewer.h>
 #include <get_drawable_mesh.h>
 
-#if VCLIB_RENDER_EXAMPLES_WITH_QT
-#include <QApplication>
-#endif
-
 int main(int argc, char** argv)
 {
 #if VCLIB_RENDER_EXAMPLES_WITH_QT
-    QApplication application(argc, argv);
+    auto application = vcl::qt::qAppl(argc, argv);
 #endif
 
     auto viewer = defaultViewer();
 
-    const bool TEXCOORDS_PER_VERTEX = false;
-    const bool USE_BUNNY            = true;
+    enum TexCoordsExamples {
+        SPONZA = 0,
+        VERT_TEXTURE_PLY,
+        BUNNY,
+        QUAD_OBJ,
+        TEXTURE_DOUBLE_OBJ,
+        COUNT
+    };
 
-    if constexpr (TEXCOORDS_PER_VERTEX) {
-        vcl::DrawableMesh<vcl::TriMesh> drawable =
-            getDrawableMesh<vcl::TriMesh>("VertTextureDouble.ply");
-        auto mrs = drawable.renderSettings();
-        mrs.setSurface(vcl::MeshRenderInfo::Surface::SHADING_FLAT);
-        mrs.setSurface(vcl::MeshRenderInfo::Surface::COLOR_VERTEX_TEX);
-        drawable.setRenderSettings(mrs);
-        showMeshesOnViewer(argc, argv, viewer, std::move(drawable));
-    }
-    else if constexpr (USE_BUNNY) {
-        vcl::DrawableMesh<vcl::TriMesh> drawable =
-            getDrawableMesh<vcl::TriMesh>("bunny_textured.ply");
-        auto mrs = drawable.renderSettings();
-        mrs.setSurface(vcl::MeshRenderInfo::Surface::COLOR_WEDGE_TEX);
-        drawable.setRenderSettings(mrs);
-        showMeshesOnViewer(argc, argv, viewer, std::move(drawable));
-    }
-    else {
-        vcl::DrawableMesh<vcl::TriMesh> drawable =
-            getDrawableMesh<vcl::TriMesh>("TextureDouble.obj");
-        auto mrs = drawable.renderSettings();
-        mrs.setSurface(vcl::MeshRenderInfo::Surface::SHADING_FLAT);
-        mrs.setSurface(vcl::MeshRenderInfo::Surface::COLOR_WEDGE_TEX);
-        drawable.setRenderSettings(mrs);
-        showMeshesOnViewer(argc, argv, viewer, std::move(drawable));
-    }
+    static const std::string exampleFilenames[COUNT] = {
+        "sponza/sponza.obj",
+        "VertTextureDouble.ply",
+        "bunny_textured.ply",
+        "TextureDoubleQuad.obj",
+        "TextureDouble.obj"};
+
+    uint selectedExample = SPONZA;
+
+    vcl::DrawableMesh<vcl::TriMesh> drawable =
+        getDrawableMesh<vcl::TriMesh>(exampleFilenames[selectedExample]);
+    showMeshesOnViewer(argc, argv, viewer, std::move(drawable));
 
 #if VCLIB_RENDER_EXAMPLES_WITH_QT
     viewer.showMaximized();

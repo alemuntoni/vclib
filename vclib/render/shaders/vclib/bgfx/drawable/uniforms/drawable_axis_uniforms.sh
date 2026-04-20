@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -20,9 +20,9 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_EXT_BGFX_UNIFORMS_DRAWABLE_AXIS_UNIFORMS_SH
-#define VCL_EXT_BGFX_UNIFORMS_DRAWABLE_AXIS_UNIFORMS_SH
+#ifndef VCL_BGFX_DRAWABLE_UNIFORMS_DRAWABLE_AXIS_UNIFORMS_SH
+#define VCL_BGFX_DRAWABLE_UNIFORMS_DRAWABLE_AXIS_UNIFORMS_SH
 
 uniform vec4 u_axisColor;
 
-#endif // VCL_EXT_BGFX_UNIFORMS_DRAWABLE_AXIS_UNIFORMS_SH
+#endif // VCL_BGFX_DRAWABLE_UNIFORMS_DRAWABLE_AXIS_UNIFORMS_SH

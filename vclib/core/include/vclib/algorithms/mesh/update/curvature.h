@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -37,10 +37,7 @@
 
 namespace vcl {
 
-typedef enum {
-    VCL_PRINCIPAL_CURVATURE_TAUBIN95,
-    VCL_PRINCIPAL_CURVATURE_PCA
-} VCLibPrincipalCurvatureAlgorithm;
+enum class PrincipalCurvatureAlgorithm { TAUBIN95, PCA };
 
 template<FaceMeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void updatePrincipalCurvatureTaubin95(MeshType& m, LogType& log = nullLogger)
@@ -70,7 +67,7 @@ void updatePrincipalCurvatureTaubin95(MeshType& m, LogType& log = nullLogger)
 
     log.log(5, "Computing per vertex curvature...");
     // log every 5%, starting from 5% to 100%
-    log.startProgress("", m.vertexNumber(), 5, 5, 100);
+    log.startProgress("", m.vertexCount(), 5, 5, 100);
 
     for (VertexType& v : m.vertices()) {
         std::vector<ScalarType> weights;
@@ -268,7 +265,7 @@ void updatePrincipalCurvaturePCA(
     normalizePerVertexNormals(m);
 
     log.log(0, "Computing per vertex curvature...");
-    log.startProgress("", m.vertexNumber());
+    log.startProgress("", m.vertexCount());
 
     if (montecarloSampling) {
         area  = surfaceArea(m);
@@ -379,18 +376,17 @@ void updatePrincipalCurvature(MeshType& m, LogType& log = nullLogger)
 
 template<FaceMeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void updatePrincipalCurvature(
-    MeshType&                        m,
-    VCLibPrincipalCurvatureAlgorithm alg = VCL_PRINCIPAL_CURVATURE_TAUBIN95,
-    LogType&                         log = nullLogger)
+    MeshType&                   m,
+    PrincipalCurvatureAlgorithm alg = PrincipalCurvatureAlgorithm::TAUBIN95,
+    LogType&                    log = nullLogger)
 {
+    using enum PrincipalCurvatureAlgorithm;
     requirePerVertexPrincipalCurvature(m);
 
     double radius;
     switch (alg) {
-    case VCL_PRINCIPAL_CURVATURE_TAUBIN95:
-        updatePrincipalCurvatureTaubin95(m, log);
-        break;
-    case VCL_PRINCIPAL_CURVATURE_PCA:
+    case TAUBIN95: updatePrincipalCurvatureTaubin95(m, log); break;
+    case PCA:
         radius = boundingBox(m).diagonal() * 0.1;
         updatePrincipalCurvaturePCA(m, radius, true, log);
     }

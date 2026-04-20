@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -40,8 +40,8 @@ TEMPLATE_TEST_CASE(
 
     THEN("The size for each container start at 0")
     {
-        REQUIRE(m.vertexNumber() == 0);
-        REQUIRE(m.faceNumber() == 0);
+        REQUIRE(m.vertexCount() == 0);
+        REQUIRE(m.faceCount() == 0);
     }
 
     THEN("The optional components are all disabled")
@@ -89,20 +89,20 @@ TEMPLATE_TEST_CASE(
     {
         unsigned int vi0 = m.addVertex();
 
-        REQUIRE(m.vertexNumber() == 1);
-        REQUIRE(m.faceNumber() == 0);
+        REQUIRE(m.vertexCount() == 1);
+        REQUIRE(m.faceCount() == 0);
         REQUIRE(m.vertex(0).position() == TriMeshPoint(0, 0, 0));
         REQUIRE(&m.vertex(vi0) == &m.vertex(0));
 
         unsigned int vi1 = m.addVertex();
 
-        REQUIRE(m.vertexNumber() == 2);
+        REQUIRE(m.vertexCount() == 2);
         REQUIRE(m.vertex(1).position() == TriMeshPoint(0, 0, 0));
         REQUIRE(&m.vertex(vi0) == &m.vertex(0));
         REQUIRE(&m.vertex(vi1) == &m.vertex(1));
 
         unsigned int vi2 = m.addVertices(5);
-        REQUIRE(m.vertexNumber() == 7);
+        REQUIRE(m.vertexCount() == 7);
         REQUIRE(&m.vertex(vi0) == &m.vertex(0));
         REQUIRE(&m.vertex(vi1) == &m.vertex(1));
         REQUIRE(&m.vertex(vi2) == &m.vertex(2));
@@ -110,15 +110,15 @@ TEMPLATE_TEST_CASE(
 
     WHEN("Adding and removing vertices and faces")
     {
-        REQUIRE(m.vertexNumber() == 0);
-        REQUIRE(m.faceNumber() == 0);
+        REQUIRE(m.vertexCount() == 0);
+        REQUIRE(m.faceCount() == 0);
         m.addVertices(3);
-        REQUIRE(m.vertexNumber() == 3);
+        REQUIRE(m.vertexCount() == 3);
         unsigned int fi0 = m.addFace();
-        REQUIRE(m.faceNumber() == 1);
+        REQUIRE(m.faceCount() == 1);
         REQUIRE(&m.face(fi0) == &m.face(0));
         m.addFace(0, 1, 2);
-        REQUIRE(m.faceNumber() == 2);
+        REQUIRE(m.faceCount() == 2);
         REQUIRE(m.face(1).vertexIndex(0) == 0);
         REQUIRE(m.face(1).vertexIndex(1) == 1);
         REQUIRE(m.face(1).vertexIndex(2) == 2);
@@ -152,7 +152,7 @@ TEMPLATE_TEST_CASE(
 
         // force reallocation of vertex container
         m.addVertices(100);
-        REQUIRE(m.vertexNumber() == 103);
+        REQUIRE(m.vertexCount() == 103);
         REQUIRE(m.vertexContainerSize() == 103);
         REQUIRE(m.face(1).vertexIndex(0) == 0);
         REQUIRE(m.face(1).vertexIndex(1) == 1);
@@ -163,7 +163,7 @@ TEMPLATE_TEST_CASE(
 
         m.face(1).setVertex(2, 3);
         m.deleteVertex(2);
-        REQUIRE(m.vertexNumber() == 102);
+        REQUIRE(m.vertexCount() == 102);
         REQUIRE(m.vertexContainerSize() == 103);
         REQUIRE(m.face(1).vertexIndex(0) == 0);
         REQUIRE(m.face(1).vertexIndex(1) == 1);
@@ -172,7 +172,7 @@ TEMPLATE_TEST_CASE(
         REQUIRE(m.face(1).vertex(1) == &m.vertex(1));
         REQUIRE(m.face(1).vertex(2) == &m.vertex(3));
         m.compactVertices();
-        REQUIRE(m.vertexNumber() == 102);
+        REQUIRE(m.vertexCount() == 102);
         REQUIRE(m.vertexContainerSize() == 102);
         REQUIRE(m.face(1).vertexIndex(0) == 0);
         REQUIRE(m.face(1).vertexIndex(1) == 1);
@@ -260,8 +260,8 @@ TEMPLATE_TEST_CASE(
     m.addFace(5, 7, 6);
     m.addFace(7, 5, 4);
 
-    REQUIRE(m.vertexNumber() == 8);
-    REQUIRE(m.faceNumber() == 12);
+    REQUIRE(m.vertexCount() == 8);
+    REQUIRE(m.faceCount() == 12);
 
     THEN("Test Vertex References queries")
     {
@@ -289,5 +289,42 @@ TEMPLATE_TEST_CASE(
         REQUIRE(m.face(3).indexOfEdge(&m.vertex(4), &m.vertex(5)) == 1);
         REQUIRE(m.face(3).indexOfEdge(4, 3) == 2);
         REQUIRE(m.face(3).indexOfEdge(3, 4) == 2);
+    }
+
+    WHEN("Enable per Vertex Colors")
+    {
+        m.enablePerVertexColor();
+
+        REQUIRE(m.isPerVertexColorEnabled() == true);
+
+        // colors are initialized to black
+        for (auto& v : m.vertices()) {
+            REQUIRE(v.color() == vcl::Color::Black);
+        }
+
+        // set the color of the first vertex to red
+        m.vertex(0).color() = vcl::Color::Red;
+
+        // set the color of the second vertex to green
+        m.vertex(1).color() = vcl::Color::Green;
+
+        REQUIRE(m.vertex(0).color() == vcl::Color::Red);
+        REQUIRE(m.vertex(1).color() == vcl::Color::Green);
+
+        // save coordinate of the first two vertices
+        PointT p0 = m.vertex(0).position();
+        PointT p1 = m.vertex(1).position();
+
+        // swap vertices
+        using std::swap;
+        swap(m.vertex(0), m.vertex(1));
+
+        // check that positions are swapped
+        REQUIRE(m.vertex(0).position() == p1);
+        REQUIRE(m.vertex(1).position() == p0);
+
+        // check that colors are swapped too
+        REQUIRE(m.vertex(0).color() == vcl::Color::Green);
+        REQUIRE(m.vertex(1).color() == vcl::Color::Red);
     }
 }

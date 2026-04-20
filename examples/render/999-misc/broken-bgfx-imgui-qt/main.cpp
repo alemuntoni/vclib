@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -24,34 +24,34 @@
 #include <vclib/imgui/imgui_stats_drawer.h>
 #include <vclib/qt/viewer_widget.h>
 
-#include <QApplication>
 #include <QFileDialog>
 
 template<typename Der>
 class ViewerDrawer : public vcl::TrackBallViewerDrawer<Der>
 {
 public:
-    using ParentViewer = vcl::TrackBallViewerDrawer<Der>;
-    using ParentViewer::ParentViewer;
+    using Base = vcl::TrackBallViewerDrawer<Der>;
+    using Base::Base;
 
-    void onMousePress(
+    bool onMousePress(
         vcl::MouseButton::Enum   button,
         double                   x,
         double                   y,
         const vcl::KeyModifiers& modifiers) override
     {
-        vcl::TrackBallViewerDrawer<Der>::onMousePress(button, x, y, modifiers);
+        bool block = Base::onMousePress(button, x, y, modifiers);
 
-        if (button == vcl::MouseButton::RIGHT) {
+        if (!block && button == vcl::MouseButton::RIGHT) {
             QFileDialog::getOpenFileName(
                 nullptr, QObject::tr("Open Document"), QDir::currentPath());
         }
+        return block;
     }
 };
 
 int main(int argc, char** argv)
 {
-    QApplication app(argc, argv);
+    auto app = vcl::qt::qAppl(argc, argv);
 
     // vcl::Context::setResetFlags(BGFX_RESET_NONE);
 

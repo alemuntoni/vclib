@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -45,7 +45,7 @@ public:
     explicit ClickableLabel(
         QWidget*        parent = Q_NULLPTR,
         Qt::WindowFlags f      = Qt::WindowFlags());
-    ~ClickableLabel();
+    ~ClickableLabel() = default;
 
 signals:
     void clicked();

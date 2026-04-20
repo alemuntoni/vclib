@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -311,6 +311,51 @@ TEST_CASE("Array serialization")
                 REQUIRE(array3D1(i, j, k) == array3D2(i, j, k));
 }
 
+TEST_CASE("std map and unordered map serialization")
+{
+    // Create and populate std::map
+    std::map<std::string, vcl::Point3f> map1;
+    map1["p1"] = randomPoint<float, 3>();
+    map1["p2"] = randomPoint<float, 3>();
+    map1["p3"] = randomPoint<float, 3>();
+
+    // Create and populate std::unordered_map
+    std::unordered_map<std::string, vcl::Color> umap1;
+    umap1["c1"] = randomColor();
+    umap1["c2"] = randomColor();
+    umap1["c3"] = randomColor();
+
+    // Serialize
+    std::ofstream fo =
+        vcl::openOutputFileStream(VCLIB_RESULTS_PATH "/serialization/maps.bin");
+    vcl::serialize(fo, map1);
+    vcl::serialize(fo, umap1);
+    fo.close();
+
+    // Deserialize
+    std::map<std::string, vcl::Point3f>         map2;
+    std::unordered_map<std::string, vcl::Color> umap2;
+    std::ifstream                               fi =
+        vcl::openInputFileStream(VCLIB_RESULTS_PATH "/serialization/maps.bin");
+    vcl::deserialize(fi, map2);
+    vcl::deserialize(fi, umap2);
+    fi.close();
+
+    // Verify std::map
+    REQUIRE(map1.size() == map2.size());
+    for (const auto& [key, value] : map1) {
+        REQUIRE(map2.count(key) == 1);
+        REQUIRE(map2.at(key) == value);
+    }
+
+    // Verify std::unordered_map
+    REQUIRE(umap1.size() == umap2.size());
+    for (const auto& [key, value] : umap1) {
+        REQUIRE(umap2.count(key) == 1);
+        REQUIRE(umap2.at(key) == value);
+    }
+}
+
 TEST_CASE("std vector of strings serialization")
 {
     std::vector<std::string> vecStr1;
@@ -372,7 +417,7 @@ TEMPLATE_TEST_CASE("Mesh serialization", "", vcl::PolyMesh, vcl::TriMesh)
     Mesh mesh1 = vcl::loadMesh<Mesh>(VCLIB_EXAMPLE_MESHES_PATH "/bunny.obj");
 
     mesh1.enablePerVertexColor();
-    for (unsigned int i = 0; i < mesh1.vertexNumber(); i++)
+    for (unsigned int i = 0; i < mesh1.vertexCount(); i++)
         mesh1.vertex(i).color() = randomColor();
 
     std::ofstream fo =
@@ -386,18 +431,18 @@ TEMPLATE_TEST_CASE("Mesh serialization", "", vcl::PolyMesh, vcl::TriMesh)
     mesh2.deserialize(fi);
     fi.close();
 
-    REQUIRE(mesh1.vertexNumber() == mesh2.vertexNumber());
-    REQUIRE(mesh1.faceNumber() == mesh2.faceNumber());
+    REQUIRE(mesh1.vertexCount() == mesh2.vertexCount());
+    REQUIRE(mesh1.faceCount() == mesh2.faceCount());
     REQUIRE(mesh2.isPerVertexColorEnabled());
 
-    for (unsigned int i = 0; i < mesh1.vertexNumber(); i++) {
+    for (unsigned int i = 0; i < mesh1.vertexCount(); i++) {
         REQUIRE(mesh1.vertex(i).position() == mesh2.vertex(i).position());
         REQUIRE(mesh1.vertex(i).color() == mesh2.vertex(i).color());
     }
 
-    for (unsigned int i = 0; i < mesh1.faceNumber(); i++) {
-        REQUIRE(mesh1.face(i).vertexNumber() == mesh2.face(i).vertexNumber());
-        for (unsigned int j = 0; j < mesh1.face(i).vertexNumber(); j++)
+    for (unsigned int i = 0; i < mesh1.faceCount(); i++) {
+        REQUIRE(mesh1.face(i).vertexCount() == mesh2.face(i).vertexCount());
+        for (unsigned int j = 0; j < mesh1.face(i).vertexCount(); j++)
             REQUIRE(
                 mesh1.face(i).vertexIndex(j) == mesh2.face(i).vertexIndex(j));
     }
@@ -429,7 +474,7 @@ TEMPLATE_TEST_CASE(
     auto vh = mesh1.template perVertexCustomComponentVectorHandle<vcl::Point3d>(
         "rand");
 
-    for (unsigned int i = 0; i < mesh1.vertexNumber(); i++) {
+    for (unsigned int i = 0; i < mesh1.vertexCount(); i++) {
         vh[i] = randomPoint<double, 3>();
     }
 
@@ -437,7 +482,7 @@ TEMPLATE_TEST_CASE(
         vcl::ElemId::FACE,
         vcl::Color>("rand_color");
 
-    for (unsigned int i = 0; i < mesh1.faceNumber(); i++) {
+    for (unsigned int i = 0; i < mesh1.faceCount(); i++) {
         fh[i] = randomColor();
     }
 

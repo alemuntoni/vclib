@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -45,8 +45,8 @@ auto meshCurvature()
     originalMesh.name() = "Original Bunny Mesh";
 
     std::cout << "Original mesh loaded:" << std::endl;
-    std::cout << "  Vertices: " << originalMesh.vertexNumber() << std::endl;
-    std::cout << "  Faces: " << originalMesh.faceNumber() << std::endl;
+    std::cout << "  Vertices: " << originalMesh.vertexCount() << std::endl;
+    std::cout << "  Faces: " << originalMesh.faceCount() << std::endl;
 
     // Enable required components
     originalMesh.enablePerVertexAdjacentFaces();
@@ -83,12 +83,12 @@ auto meshCurvature()
     vcl::setPerVertexColorFromQuality(
         taubinMesh,
         vcl::Color::ColorMap::RedBlue,
-        h.percentile(0.1),
-        h.percentile(0.9));
+        h.valueAtPercentile(0.1),
+        h.valueAtPercentile(0.9));
 
     std::cout << "Taubin95 curvature computed." << std::endl;
-    std::cout << "  Mean curvature range: " << h.minRangeValue() << " to "
-              << h.maxRangeValue() << std::endl;
+    std::cout << "  Mean curvature range: " << h.rangeValueMin() << " to "
+              << h.rangeValueMax() << std::endl;
 
     /****** Principal Curvature with PCA Method ******/
 
@@ -112,13 +112,13 @@ auto meshCurvature()
     vcl::setPerVertexColorFromQuality(
         pcaMesh,
         vcl::Color::ColorMap::RedBlue,
-        h2.percentile(0.05),
-        h2.percentile(0.95));
+        h2.valueAtPercentile(0.05),
+        h2.valueAtPercentile(0.95));
 
     std::cout << "PCA curvature computed (radius: " << radius << ")."
               << std::endl;
-    std::cout << "  Gaussian curvature range: " << h2.minRangeValue() << " to "
-              << h2.maxRangeValue() << std::endl;
+    std::cout << "  Gaussian curvature range: " << h2.rangeValueMin() << " to "
+              << h2.rangeValueMax() << std::endl;
 
     /****** General Principal Curvature Function ******/
 
@@ -131,7 +131,7 @@ auto meshCurvature()
     {
         vcl::Timer timer("General principal curvature");
         vcl::updatePrincipalCurvature(
-            generalMesh, vcl::VCL_PRINCIPAL_CURVATURE_TAUBIN95);
+            generalMesh, vcl::PrincipalCurvatureAlgorithm::TAUBIN95);
         timer.stopAndPrint();
     }
 
@@ -147,12 +147,12 @@ auto meshCurvature()
     vcl::setPerVertexColorFromQuality(
         generalMesh,
         vcl::Color::ColorMap::RedBlue,
-        h3.percentile(0.1),
-        h3.percentile(0.9));
+        h3.valueAtPercentile(0.1),
+        h3.valueAtPercentile(0.9));
 
     std::cout << "General curvature computed." << std::endl;
-    std::cout << "  Maximum curvature range: " << h3.minRangeValue() << " to "
-              << h3.maxRangeValue() << std::endl;
+    std::cout << "  Maximum curvature range: " << h3.rangeValueMin() << " to "
+              << h3.rangeValueMax() << std::endl;
 
     /****** Display statistics ******/
 

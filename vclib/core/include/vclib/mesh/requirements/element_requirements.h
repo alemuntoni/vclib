@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -45,8 +45,7 @@ namespace vcl {
 template<uint ELEM_ID, MeshConcept MeshType>
 bool isElementContainerCompact(const MeshType& m)
 {
-    return (
-        m.template number<ELEM_ID>() == m.template containerSize<ELEM_ID>());
+    return (m.template count<ELEM_ID>() == m.template containerSize<ELEM_ID>());
 }
 
 /**
@@ -193,6 +192,19 @@ void requireElementContainerCompactness(const MeshType& m)
 template<uint ELEM_ID, uint COMP_ID, MeshConcept MeshType>
 void requirePerElementComponent(const MeshType& m)
 {
+    // TODO C++26: use elementEnumString<ELEM_ID>() and
+    // componentEnumString<COMP_ID>() in static_assert messages
+    static_assert(
+        mesh::HasElementContainer<MeshType, ELEM_ID>,
+        "The input Mesh does not have a Container of the given Element ID.");
+
+    using ElementType = MeshType::template ElementType<ELEM_ID>;
+
+    static_assert(
+        comp::HasComponentOfType<ElementType, COMP_ID>,
+        "The Element of the input Mesh does not have a Component of the given "
+        "Component ID.");
+
     if (!isPerElementComponentAvailable<ELEM_ID, COMP_ID>(m)) {
         throw MissingComponentException(
             "Per " + std::string(elementEnumString<ELEM_ID>()) + " " +

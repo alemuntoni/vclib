@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -24,7 +24,6 @@
 #define VCL_BGFX_DRAWABLE_DRAWABLE_AXIS_H
 
 #include "mesh/mesh_render_buffers.h"
-#include "uniforms/drawable_axis_uniforms.h"
 
 #include <vclib/algorithms/mesh/create.h>
 #include <vclib/meshes/tri_mesh.h>
@@ -56,13 +55,10 @@ class DrawableAxis : public DrawableObject
 
     MeshRenderBuffers<vcl::TriMesh> mArrowBuffers[2]; // 0: cylinder, 1: cone
 
-    mutable DrawableAxisUniforms mUniforms;
-
 public:
     DrawableAxis(double size = 1);
 
-    DrawableAxis(const DrawableAxis& other) :
-            mVisible(other.mVisible), mUniforms(other.mUniforms)
+    DrawableAxis(const DrawableAxis& other) : mVisible(other.mVisible)
     {
         for (uint i = 0; i < 3; i++) {
             mMatrices[i] = other.mMatrices[i];
@@ -85,7 +81,6 @@ public:
     {
         using std::swap;
         swap(mVisible, other.mVisible);
-        swap(mUniforms, other.mUniforms);
         for (uint i = 0; i < 3; i++) {
             swap(mMatrices[i], other.mMatrices[i]);
         }
@@ -100,7 +95,7 @@ public:
 
     // DrawableObject interface
 
-    void draw(uint viewId) const override;
+    void draw(const DrawObjectSettings& settings) const override;
 
     Box3d boundingBox() const override { return Box3d(); }
 

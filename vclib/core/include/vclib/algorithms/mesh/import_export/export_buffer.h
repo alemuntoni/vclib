@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -23,6 +23,10 @@
 #ifndef VCL_ALGORITHMS_MESH_IMPORT_EXPORT_EXPORT_BUFFER_H
 #define VCL_ALGORITHMS_MESH_IMPORT_EXPORT_EXPORT_BUFFER_H
 
+#include "detail.h"
+
+#include <vclib/algorithms/mesh/utility.h>
+
 #include <vclib/algorithms/core.h>
 #include <vclib/mesh.h>
 #include <vclib/space/complex.h>
@@ -35,41 +39,11 @@
  * @brief List Export Mesh to Buffer algorithms.
  *
  * They allow to export mesh data to pre-allocated buffers.
- *
- * You can access these algorithms by including `#include
- * <vclib/algorithms/mesh/import_export.h>`
  */
 
 namespace vcl {
 
 namespace detail {
-
-// returns a non-empty vector if the vertex container is not compact and the
-// user wants compact indices
-std::vector<uint> vertCompactIndices(const auto& mesh, bool wantCompact)
-{
-    std::vector<uint> vertCompIndices;
-
-    bool isCompact = mesh.vertexNumber() == mesh.vertexContainerSize();
-
-    if (wantCompact && !isCompact)
-        vertCompIndices = mesh.vertexCompactIndices();
-    return vertCompIndices;
-}
-
-// lambda to get the vertex index of a face (considering compact vertex indices)
-auto vIndexLambda(const auto& mesh, const std::vector<uint>& vertCompIndices)
-{
-    // lambda to get the vertex index of a face (considering compact indices)
-    auto vIndex = [&vertCompIndices](const auto& f, uint i) {
-        if (vertCompIndices.size() > 0)
-            return vertCompIndices[f.vertexIndex(i)];
-        else
-            return f.vertexIndex(i);
-    };
-
-    return vIndex;
-}
 
 inline TriPolyIndexBiMap indexMap;
 
@@ -79,7 +53,7 @@ inline TriPolyIndexBiMap indexMap;
  * @brief Export the vertex positions of a mesh to a buffer.
  *
  * This function exports the vertex positions of a mesh to a buffer. Vertices
- * are stored in the buffer following the order they appear in the mesh.  The
+ * are stored in the buffer following the order they appear in the mesh. The
  * buffer must be preallocated with the correct size (number of vertices times
  * the number of positions per vertex).
  *
@@ -91,7 +65,7 @@ inline TriPolyIndexBiMap indexMap;
  * @param[in] mesh: input mesh
  * @param[out] buffer: preallocated buffer
  * @param[in] storage: storage type of the matrix (row or column major)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of vertices in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -100,22 +74,16 @@ template<MeshConcept MeshType>
 void vertexPositionsToBuffer(
     const MeshType&   mesh,
     auto*             buffer,
-    MatrixStorageType storage   = MatrixStorageType::ROW_MAJOR,
-    uint              rowNumber = UINT_NULL)
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
 {
-    const uint VERT_NUM =
-        rowNumber == UINT_NULL ? mesh.vertexNumber() : rowNumber;
-    for (uint i = 0; const auto& c : mesh.vertices() | views::positions) {
-        if (storage == MatrixStorageType::ROW_MAJOR) {
-            buffer[i * 3 + 0] = c.x();
-            buffer[i * 3 + 1] = c.y();
-            buffer[i * 3 + 2] = c.z();
-        }
-        else {
-            buffer[0 * VERT_NUM + i] = c.x();
-            buffer[1 * VERT_NUM + i] = c.y();
-            buffer[2 * VERT_NUM + i] = c.z();
-        }
+    using namespace detail;
+
+    const uint NUM_ROWS = numRows == UINT_NULL ? mesh.vertexCount() : numRows;
+    for (uint i = 0; const auto& p : mesh.vertices() | views::positions) {
+        at(buffer, i, 0, NUM_ROWS, 3, storage) = p.x();
+        at(buffer, i, 1, NUM_ROWS, 3, storage) = p.y();
+        at(buffer, i, 2, NUM_ROWS, 3, storage) = p.z();
         ++i;
     }
 }
@@ -196,8 +164,8 @@ uint faceSizesToBuffer(const MeshType& mesh, auto* buffer)
 {
     uint sum = 0;
     for (uint i = 0; const auto& f : mesh.faces()) {
-        buffer[i] = f.vertexNumber();
-        sum += f.vertexNumber();
+        buffer[i] = f.vertexCount();
+        sum += f.vertexCount();
         ++i;
     }
     return sum;
@@ -216,14 +184,14 @@ uint faceSizesToBuffer(const MeshType& mesh, auto* buffer)
  * faces and allocate the buffer accordingly:
  *
  * @code{.cpp}
- * std::vector<uint> faceSizes(myMesh.faceNumber());
+ * std::vector<uint> faceSizes(myMesh.faceCount());
  * uint sum = vcl::faceSizesToBuffer(myMesh, sizes.data());
  * std::vector<uint> faceIndices(sum);
- * vcl::faceIndicesToBuffer(myMesh, faceIndices.data());
+ * vcl::faceVertexIndicesToBuffer(myMesh, faceIndices.data());
  *
  * // read indices for each face
  * uint offset = 0;
- * for (uint i = 0; i < myMesh.faceNumber(); ++i) {
+ * for (uint i = 0; i < myMesh.faceCount(); ++i) {
  *     uint size = faceSizes[i];
  *     for (uint j = 0; j < size; ++j) {
  *         uint vIdx = faceIndices[offset + j];
@@ -254,7 +222,7 @@ uint faceSizesToBuffer(const MeshType& mesh, auto* buffer)
  * @ingroup export_buffer
  */
 template<FaceMeshConcept MeshType>
-void faceIndicesToBuffer(
+void faceVertexIndicesToBuffer(
     const MeshType& mesh,
     auto*           buffer,
     bool            getIndicesAsIfContainerCompact = true)
@@ -266,7 +234,7 @@ void faceIndicesToBuffer(
     auto vIndex = detail::vIndexLambda(mesh, vertCompIndices);
 
     for (uint i = 0; const auto& f : mesh.faces()) {
-        for (uint j = 0; j < f.vertexNumber(); ++j) {
+        for (uint j = 0; j < f.vertexCount(); ++j) {
             buffer[i] = vIndex(f, j);
             ++i;
         }
@@ -290,8 +258,8 @@ void faceIndicesToBuffer(
  *
  * @code{.cpp}
  * uint lfs = vcl::largestFaceSize(myMesh);
- * Eigen::MatrixXi faceIndices(myMesh.faceNumber(), lfs);
- * vcl::faceIndicesToBuffer(
+ * Eigen::MatrixXi faceIndices(myMesh.faceCount(), lfs);
+ * vcl::faceVertexIndicesToBuffer(
  *     myMesh, faceIndices.data(), lfs, MatrixStorageType::COLUMN_MAJOR);
  * @endcode
  *
@@ -314,40 +282,34 @@ void faceIndicesToBuffer(
  * @param[in] getIndicesAsIfContainerCompact: if true, the function will
  * store the vertex indices as if the vertex container of the mesh is compact.
  * If false, the actual vertex indices in the input mesh will be stored.
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of faces in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
  */
 template<FaceMeshConcept MeshType>
-void faceIndicesToBuffer(
+void faceVertexIndicesToBuffer(
     const MeshType&   mesh,
     auto*             buffer,
     uint              largestFaceSize,
     MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
     bool              getIndicesAsIfContainerCompact = true,
-    uint              rowNumber                      = UINT_NULL)
+    uint              numRows                        = UINT_NULL)
 {
+    using namespace detail;
+
     const std::vector<uint> vertCompIndices =
         detail::vertCompactIndices(mesh, getIndicesAsIfContainerCompact);
 
     // lambda to get the vertex index of a face (considering compact indices)
     auto vIndex = detail::vIndexLambda(mesh, vertCompIndices);
 
-    const uint FACE_NUM =
-        rowNumber == UINT_NULL ? mesh.faceNumber() : rowNumber;
+    const uint NUM_ROWS = numRows == UINT_NULL ? mesh.faceCount() : numRows;
 
     for (uint i = 0; const auto& f : mesh.faces()) {
         for (uint j = 0; j < largestFaceSize; ++j) {
-            uint index = i * largestFaceSize + j;
-            if (storage == MatrixStorageType::COLUMN_MAJOR)
-                index = j * FACE_NUM + i;
-            if (j < f.vertexNumber()) {
-                buffer[index] = vIndex(f, j);
-            }
-            else {
-                buffer[index] = -1;
-            }
+            at(buffer, i, j, NUM_ROWS, largestFaceSize, storage) =
+                j < f.vertexCount() ? vIndex(f, j) : -1;
         }
         ++i;
     }
@@ -362,14 +324,14 @@ void faceIndicesToBuffer(
  * the order the faces appear in the mesh. The buffer must be preallocated with
  * the correct size (number of *resulting triangles* times 3).
  *
- * You can use the function @ref vcl::countTriangulatedTriangles to get the
- * number of resulting triangles and allocate the buffer accordingly:
+ * You can use the function @ref vcl::triangulatedFaceCount to get the number of
+ * resulting triangles and allocate the buffer accordingly:
  *
  * @code{.cpp}
- * uint numTris = vcl::countTriangulatedTriangles(myMesh);
+ * uint numTris = vcl::triangulatedFaceCount(myMesh);
  * Eigen::MatrixXi triIndices(numTris, 3);
  * vcl::TriPolyIndexBiMap indexMap;
- * vcl::triangulatedFaceIndicesToBuffer(
+ * vcl::triangulatedFaceVertexIndicesToBuffer(
  *     myMesh, triIndices.data(), indexMap, MatrixStorageType::COLUMN_MAJOR,
  *     numTris);
  * @endcode
@@ -400,7 +362,7 @@ void faceIndicesToBuffer(
  * @ingroup export_buffer
  */
 template<FaceMeshConcept MeshType>
-void triangulatedFaceIndicesToBuffer(
+void triangulatedFaceVertexIndicesToBuffer(
     const MeshType&    mesh,
     auto*              buffer,
     TriPolyIndexBiMap& indexMap     = detail::indexMap,
@@ -408,6 +370,8 @@ void triangulatedFaceIndicesToBuffer(
     uint               numTriangles = UINT_NULL,
     bool               getIndicesAsIfContainerCompact = true)
 {
+    using namespace detail;
+
     const std::vector<uint> vertCompIndices =
         detail::vertCompactIndices(mesh, getIndicesAsIfContainerCompact);
 
@@ -416,7 +380,7 @@ void triangulatedFaceIndicesToBuffer(
 
     // there will be at least a triangle for each polygon
     indexMap.clear();
-    indexMap.reserve(mesh.faceNumber(), mesh.faceContainerSize());
+    indexMap.reserve(mesh.faceCount(), mesh.faceContainerSize());
 
     if constexpr (TriangleMeshConcept<MeshType>) {
         // construct the indexMap, which maps each triangle to the face index
@@ -426,7 +390,7 @@ void triangulatedFaceIndicesToBuffer(
             ++t;
         }
 
-        return faceIndicesToBuffer(
+        return faceVertexIndicesToBuffer(
             mesh, buffer, 3, storage, getIndicesAsIfContainerCompact);
     }
     else {
@@ -435,8 +399,8 @@ void triangulatedFaceIndicesToBuffer(
         // triangles
         if (numTriangles == UINT_NULL &&
             storage == MatrixStorageType::COLUMN_MAJOR &&
-            mesh.faceNumber() > 0) {
-            numTriangles = countTriangulatedTriangles(mesh);
+            mesh.faceCount() > 0) {
+            numTriangles = triangulatedFaceCount(mesh);
         }
         for (uint t = 0; const auto& f : mesh.faces()) {
             std::vector<uint> vind = vcl::earCut(f);
@@ -446,16 +410,10 @@ void triangulatedFaceIndicesToBuffer(
                 // map the t-th triangle to the f polygonal face
                 indexMap.insert(t, f.index());
 
-                if (storage == MatrixStorageType::ROW_MAJOR) {
-                    buffer[t * 3 + 0] = vIndex(f, vind[vi + 0]);
-                    buffer[t * 3 + 1] = vIndex(f, vind[vi + 1]);
-                    buffer[t * 3 + 2] = vIndex(f, vind[vi + 2]);
-                }
-                else {
-                    buffer[0 * numTriangles + t] = vIndex(f, vind[vi + 0]);
-                    buffer[1 * numTriangles + t] = vIndex(f, vind[vi + 1]);
-                    buffer[2 * numTriangles + t] = vIndex(f, vind[vi + 2]);
-                }
+                for (uint k = 0; k < 3; ++k)
+                    at(buffer, t, k, numTriangles, 3, storage) =
+                        vIndex(f, vind[vi + k]);
+
                 ++t;
             }
         }
@@ -488,37 +446,33 @@ void triangulatedFaceIndicesToBuffer(
  * @param[in] getIndicesAsIfContainerCompact: if true, the function will
  * store the vertex indices as if the vertex container of the mesh is compact.
  * If false, the actual vertex indices in the input mesh will be stored.
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of edges in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
  */
 template<EdgeMeshConcept MeshType>
-void edgeIndicesToBuffer(
+void edgeVertexIndicesToBuffer(
     const MeshType&   mesh,
     auto*             buffer,
     MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
     bool              getIndicesAsIfContainerCompact = true,
-    uint              rowNumber                      = UINT_NULL)
+    uint              numRows                        = UINT_NULL)
 {
+    using namespace detail;
+
     const std::vector<uint> vertCompIndices =
         detail::vertCompactIndices(mesh, getIndicesAsIfContainerCompact);
 
     // lambda to get the vertex index of a edge (considering compact indices)
     auto vIndex = detail::vIndexLambda(mesh, vertCompIndices);
 
-    const uint EDGE_NUM =
-        rowNumber == UINT_NULL ? mesh.edgeNumber() : rowNumber;
+    const uint NUM_ROWS = numRows == UINT_NULL ? mesh.edgeCount() : numRows;
 
     for (uint i = 0; const auto& e : mesh.edges()) {
-        if (storage == MatrixStorageType::ROW_MAJOR) {
-            buffer[i * 2 + 0] = vIndex(e, 0);
-            buffer[i * 2 + 1] = vIndex(e, 1);
-        }
-        else {
-            buffer[0 * EDGE_NUM + i] = vIndex(e, 0);
-            buffer[1 * EDGE_NUM + i] = vIndex(e, 1);
-        }
+        at(buffer, i, 0, NUM_ROWS, 2, storage) = vIndex(e, 0);
+        at(buffer, i, 1, NUM_ROWS, 2, storage) = vIndex(e, 1);
+
         ++i;
     }
 }
@@ -531,7 +485,7 @@ void edgeIndicesToBuffer(
  * a buffer. Indices are stored following the order the edges appear in the
  * faces. The buffer must be preallocated with the correct size (number of
  * references to vertices in the mesh faces times 2 - see @ref
- * countPerFaceVertexReferences).
+ * faceVertexReferencesCount).
  *
  * @note As a default behaviour (`getIndicesAsIfContainerCompact == true`) the
  * function stores the vertex indices as if the vertex container of the mesh is
@@ -546,41 +500,39 @@ void edgeIndicesToBuffer(
  * @param[in] getIndicesAsIfContainerCompact: if true, the function will
  * store the vertex indices as if the vertex container of the mesh is compact.
  * If false, the actual vertex indices in the input mesh will be stored.
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of references to vertices in the mesh faces times 2) - used only when
  * storage is column major
  *
  * @ingroup export_buffer
  */
 template<FaceMeshConcept MeshType>
-void wireframeIndicesToBuffer(
+void wireframeVertexIndicesToBuffer(
     const MeshType&   mesh,
     auto*             buffer,
     MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
     bool              getIndicesAsIfContainerCompact = true,
-    uint              rowNumber                      = UINT_NULL)
+    uint              numRows                        = UINT_NULL)
 {
+    using namespace detail;
+
     const std::vector<uint> vertCompIndices =
         detail::vertCompactIndices(mesh, getIndicesAsIfContainerCompact);
 
     // lambda to get the vertex index of a edge (considering compact indices)
     auto vIndex = detail::vIndexLambda(mesh, vertCompIndices);
 
-    const uint EDGE_NUM =
-        rowNumber == UINT_NULL ? countPerFaceVertexReferences(mesh) : rowNumber;
+    const uint NUM_ROWS =
+        numRows == UINT_NULL ? faceVertexReferencesCount(mesh) : numRows;
 
     for (uint i = 0; const auto& f : mesh.faces()) {
-        for (uint j = 0; j < f.vertexNumber(); ++j) {
+        for (uint j = 0; j < f.vertexCount(); ++j) {
             uint v0 = vIndex(f, j);
-            uint v1 = vIndex(f, (j + 1) % f.vertexNumber());
-            if (storage == MatrixStorageType::ROW_MAJOR) {
-                buffer[i * 2 + 0] = v0;
-                buffer[i * 2 + 1] = v1;
-            }
-            else {
-                buffer[0 * EDGE_NUM + i] = v0;
-                buffer[1 * EDGE_NUM + i] = v1;
-            }
+            uint v1 = vIndex(f, (j + 1) % f.vertexCount());
+
+            at(buffer, i, 0, NUM_ROWS, 2, storage) = v0;
+            at(buffer, i, 1, NUM_ROWS, 2, storage) = v1;
+
             ++i;
         }
     }
@@ -598,7 +550,7 @@ void wireframeIndicesToBuffer(
  * Usage example with std::vector<bool>:
  *
  * @code{.cpp}
- * std::vector<bool> vec(myMesh.elementNumber<ElemId::VERTEX>());
+ * std::vector<bool> vec(myMesh.elementCount<ElemId::VERTEX>());
  * vcl::elementSelectionToBuffer<ElemId::VERTEX>(myMesh, vec.data());
  * @endif
  *
@@ -633,7 +585,7 @@ void elementSelectionToBuffer(const MeshType& mesh, auto* buffer)
  * Usage example with std::vector<bool>:
  *
  * @code{.cpp}
- * std::vector<bool> vec(myMesh.vertexNumber());
+ * std::vector<bool> vec(myMesh.vertexCount());
  * vcl::vertexSelectionToBuffer(myMesh, vec.data());
  * @endif
  *
@@ -664,7 +616,7 @@ void vertexSelectionToBuffer(const MeshType& mesh, auto* buffer)
  * Usage example with std::vector<bool>:
  *
  * @code{.cpp}
- * std::vector<bool> vec(myMesh.faceNumber());
+ * std::vector<bool> vec(myMesh.faceCount());
  * vcl::faceSelectionToBuffer(myMesh, vec.data());
  * @endif
  *
@@ -695,7 +647,7 @@ void faceSelectionToBuffer(const MeshType& mesh, auto* buffer)
  * Usage example with std::vector<bool>:
  *
  * @code{.cpp}
- * std::vector<bool> vec(myMesh.edgeNumber());
+ * std::vector<bool> vec(myMesh.edgeCount());
  * vcl::edgeSelectionToBuffer(myMesh, vec.data());
  * @endif
  *
@@ -732,7 +684,7 @@ void edgeSelectionToBuffer(const MeshType& mesh, auto* buffer)
  * @param[in] mesh: input mesh
  * @param[out] buffer: preallocated buffer
  * @param[in] storage: storage type of the matrix (row or column major)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of elements in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -741,26 +693,22 @@ template<uint ELEM_ID, MeshConcept MeshType>
 void elementNormalsToBuffer(
     const MeshType&   mesh,
     auto*             buffer,
-    MatrixStorageType storage   = MatrixStorageType::ROW_MAJOR,
-    uint              rowNumber = UINT_NULL)
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
 {
+    using namespace detail;
+
     requirePerElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
 
-    const uint ELEM_NUM =
-        rowNumber == UINT_NULL ? mesh.template number<ELEM_ID>() : rowNumber;
+    const uint NUM_ROWS =
+        numRows == UINT_NULL ? mesh.template count<ELEM_ID>() : numRows;
 
     for (uint        i = 0;
          const auto& n : mesh.template elements<ELEM_ID>() | views::normals) {
-        if (storage == MatrixStorageType::ROW_MAJOR) {
-            buffer[i * 3 + 0] = n.x();
-            buffer[i * 3 + 1] = n.y();
-            buffer[i * 3 + 2] = n.z();
-        }
-        else {
-            buffer[0 * ELEM_NUM + i] = n.x();
-            buffer[1 * ELEM_NUM + i] = n.y();
-            buffer[2 * ELEM_NUM + i] = n.z();
-        }
+        at(buffer, i, 0, NUM_ROWS, 3, storage) = n.x();
+        at(buffer, i, 1, NUM_ROWS, 3, storage) = n.y();
+        at(buffer, i, 2, NUM_ROWS, 3, storage) = n.z();
+
         ++i;
     }
 }
@@ -781,7 +729,7 @@ void elementNormalsToBuffer(
  * @param[in] mesh: input mesh
  * @param[out] buffer: preallocated buffer
  * @param[in] storage: storage type of the matrix (row or column major)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of vertices in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -790,10 +738,10 @@ template<MeshConcept MeshType>
 void vertexNormalsToBuffer(
     const MeshType&   mesh,
     auto*             buffer,
-    MatrixStorageType storage   = MatrixStorageType::ROW_MAJOR,
-    uint              rowNumber = UINT_NULL)
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
 {
-    elementNormalsToBuffer<ElemId::VERTEX>(mesh, buffer, storage, rowNumber);
+    elementNormalsToBuffer<ElemId::VERTEX>(mesh, buffer, storage, numRows);
 }
 
 /**
@@ -811,7 +759,7 @@ void vertexNormalsToBuffer(
  * @param[in] mesh: input mesh
  * @param[out] buffer: preallocated buffer
  * @param[in] storage: storage type of the matrix (row or column major)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of faces in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -820,10 +768,10 @@ template<FaceMeshConcept MeshType>
 void faceNormalsToBuffer(
     const MeshType&   mesh,
     auto*             buffer,
-    MatrixStorageType storage   = MatrixStorageType::ROW_MAJOR,
-    uint              rowNumber = UINT_NULL)
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
 {
-    elementNormalsToBuffer<ElemId::FACE>(mesh, buffer, storage, rowNumber);
+    elementNormalsToBuffer<ElemId::FACE>(mesh, buffer, storage, numRows);
 }
 
 /**
@@ -838,14 +786,14 @@ void faceNormalsToBuffer(
  * The function requires an already computed index map, which maps each triangle
  * to the face index and vice versa. You can use the @ref
  * vcl::triangulatedFaceIndicesToBuffer function to get the index map. You can
- * use the function @ref vcl::countTriangulatedTriangles to get the number of
+ * use the function @ref vcl::triangulatedFaceCount to get the number of
  * resulting triangles and allocate the buffer accordingly.
  *
  * @param[in] mesh: input mesh
  * @param[out] buffer: preallocated buffer
  * @param[in] indexMap: map from triangle index to face index
  * @param[in] storage: storage type of the matrix (row or column major)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of triangles in the map) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -855,29 +803,24 @@ void triangulatedFaceNormalsToBuffer(
     const MeshType&          mesh,
     auto*                    buffer,
     const TriPolyIndexBiMap& indexMap,
-    MatrixStorageType        storage   = MatrixStorageType::ROW_MAJOR,
-    uint                     rowNumber = UINT_NULL)
+    MatrixStorageType        storage = MatrixStorageType::ROW_MAJOR,
+    uint                     numRows = UINT_NULL)
 {
+    using namespace detail;
+
     requirePerFaceNormal(mesh);
 
-    const uint FACE_NUM =
-        rowNumber == UINT_NULL ? indexMap.triangleNumber() : rowNumber;
+    const uint NUM_ROWS =
+        numRows == UINT_NULL ? indexMap.triangleCount() : numRows;
 
     for (const auto& f : mesh.faces()) {
         const auto& n     = f.normal();
         uint        first = indexMap.triangleBegin(f.index());
-        uint        last  = first + indexMap.triangleNumber(f.index());
+        uint        last  = first + indexMap.triangleCount(f.index());
         for (uint t = first; t < last; ++t) {
-            if (storage == MatrixStorageType::ROW_MAJOR) {
-                buffer[t * 3 + 0] = n.x();
-                buffer[t * 3 + 1] = n.y();
-                buffer[t * 3 + 2] = n.z();
-            }
-            else {
-                buffer[0 * FACE_NUM + t] = n.x();
-                buffer[1 * FACE_NUM + t] = n.y();
-                buffer[2 * FACE_NUM + t] = n.z();
-            }
+            at(buffer, t, 0, NUM_ROWS, 3, storage) = n.x();
+            at(buffer, t, 1, NUM_ROWS, 3, storage) = n.y();
+            at(buffer, t, 2, NUM_ROWS, 3, storage) = n.z();
         }
     }
 }
@@ -897,7 +840,7 @@ void triangulatedFaceNormalsToBuffer(
  * @param[in] mesh: input mesh
  * @param[out] buffer: preallocated buffer
  * @param[in] storage: storage type of the matrix (row or column major)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of edges in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -906,10 +849,10 @@ template<EdgeMeshConcept MeshType>
 void edgeNormalsToBuffer(
     const MeshType&   mesh,
     auto*             buffer,
-    MatrixStorageType storage   = MatrixStorageType::ROW_MAJOR,
-    uint              rowNumber = UINT_NULL)
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
 {
-    elementNormalsToBuffer<ElemId::EDGE>(mesh, buffer, storage, rowNumber);
+    elementNormalsToBuffer<ElemId::EDGE>(mesh, buffer, storage, numRows);
 }
 
 /**
@@ -931,7 +874,7 @@ void edgeNormalsToBuffer(
  * @param[in] storage: storage type of the matrix (row or column major)
  * @param[in] representation: representation of the color components (integer or
  * float)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of elements in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -942,29 +885,24 @@ void elementColorsToBuffer(
     auto*                 buffer,
     MatrixStorageType     storage        = MatrixStorageType::ROW_MAJOR,
     Color::Representation representation = Color::Representation::INT_0_255,
-    uint                  rowNumber      = UINT_NULL)
+    uint                  numRows        = UINT_NULL)
 {
+    using namespace detail;
+
     requirePerElementComponent<ELEM_ID, CompId::COLOR>(mesh);
 
     const bool R_INT = representation == Color::Representation::INT_0_255;
 
-    const uint ELEM_NUM =
-        rowNumber == UINT_NULL ? mesh.template number<ELEM_ID>() : rowNumber;
+    const uint NUM_ROWS =
+        numRows == UINT_NULL ? mesh.template count<ELEM_ID>() : numRows;
 
     for (uint        i = 0;
          const auto& c : mesh.template elements<ELEM_ID>() | views::colors) {
-        if (storage == MatrixStorageType::ROW_MAJOR) {
-            buffer[i * 4 + 0] = R_INT ? c.red() : c.redF();
-            buffer[i * 4 + 1] = R_INT ? c.green() : c.greenF();
-            buffer[i * 4 + 2] = R_INT ? c.blue() : c.blueF();
-            buffer[i * 4 + 3] = R_INT ? c.alpha() : c.alphaF();
-        }
-        else {
-            buffer[0 * ELEM_NUM + i] = R_INT ? c.red() : c.redF();
-            buffer[1 * ELEM_NUM + i] = R_INT ? c.green() : c.greenF();
-            buffer[2 * ELEM_NUM + i] = R_INT ? c.blue() : c.blueF();
-            buffer[3 * ELEM_NUM + i] = R_INT ? c.alpha() : c.alphaF();
-        }
+        at(buffer, i, 0, NUM_ROWS, 4, storage) = R_INT ? c.red() : c.redF();
+        at(buffer, i, 1, NUM_ROWS, 4, storage) = R_INT ? c.green() : c.greenF();
+        at(buffer, i, 2, NUM_ROWS, 4, storage) = R_INT ? c.blue() : c.blueF();
+        at(buffer, i, 3, NUM_ROWS, 4, storage) = R_INT ? c.alpha() : c.alphaF();
+
         ++i;
     }
 }
@@ -1030,7 +968,7 @@ void elementColorsToBuffer(
  * @param[in] storage: storage type of the matrix (row or column major)
  * @param[in] representation: representation of the color components (integer or
  * float)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of vertices in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -1041,10 +979,10 @@ void vertexColorsToBuffer(
     auto*                 buffer,
     MatrixStorageType     storage        = MatrixStorageType::ROW_MAJOR,
     Color::Representation representation = Color::Representation::INT_0_255,
-    uint                  rowNumber      = UINT_NULL)
+    uint                  numRows        = UINT_NULL)
 {
     elementColorsToBuffer<ElemId::VERTEX>(
-        mesh, buffer, storage, representation, rowNumber);
+        mesh, buffer, storage, representation, numRows);
 }
 
 /**
@@ -1094,7 +1032,7 @@ void vertexColorsToBuffer(
  * @param[in] storage: storage type of the matrix (row or column major)
  * @param[in] representation: representation of the color components (integer or
  * float)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of faces in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -1105,10 +1043,10 @@ void faceColorsToBuffer(
     auto*                 buffer,
     MatrixStorageType     storage        = MatrixStorageType::ROW_MAJOR,
     Color::Representation representation = Color::Representation::INT_0_255,
-    uint                  rowNumber      = UINT_NULL)
+    uint                  numRows        = UINT_NULL)
 {
     elementColorsToBuffer<ElemId::FACE>(
-        mesh, buffer, storage, representation, rowNumber);
+        mesh, buffer, storage, representation, numRows);
 }
 
 /**
@@ -1123,7 +1061,7 @@ void faceColorsToBuffer(
  * The function requires an already computed index map, which maps each triangle
  * to the face index and vice versa. You can use the @ref
  * vcl::triangulatedFaceIndicesToBuffer function to get the index map. You can
- * use the function @ref vcl::countTriangulatedTriangles to get the number of
+ * use the function @ref vcl::triangulatedFaceCount to get the number of
  * resulting triangles and allocate the buffer accordingly.
  *
  * @param[in] mesh: input mesh
@@ -1132,7 +1070,7 @@ void faceColorsToBuffer(
  * @param[in] storage: storage type of the matrix (row or column major)
  * @param[in] representation: representation of the color components (integer or
  * float)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of triangles in the map) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -1144,32 +1082,29 @@ void triangulatedFaceColorsToBuffer(
     const TriPolyIndexBiMap& indexMap,
     MatrixStorageType        storage        = MatrixStorageType::ROW_MAJOR,
     Color::Representation    representation = Color::Representation::INT_0_255,
-    uint                     rowNumber      = UINT_NULL)
+    uint                     numRows        = UINT_NULL)
 {
+    using namespace detail;
+
     requirePerFaceColor(mesh);
 
     const bool R_INT = representation == Color::Representation::INT_0_255;
 
-    const uint FACE_NUM =
-        rowNumber == UINT_NULL ? indexMap.triangleNumber() : rowNumber;
+    const uint NUM_ROWS =
+        numRows == UINT_NULL ? indexMap.triangleCount() : numRows;
 
     for (const auto& f : mesh.faces()) {
         const auto& c     = f.color();
         uint        first = indexMap.triangleBegin(f.index());
-        uint        last  = first + indexMap.triangleNumber(f.index());
+        uint        last  = first + indexMap.triangleCount(f.index());
         for (uint t = first; t < last; ++t) {
-            if (storage == MatrixStorageType::ROW_MAJOR) {
-                buffer[t * 4 + 0] = R_INT ? c.red() : c.redF();
-                buffer[t * 4 + 1] = R_INT ? c.green() : c.greenF();
-                buffer[t * 4 + 2] = R_INT ? c.blue() : c.blueF();
-                buffer[t * 4 + 3] = R_INT ? c.alpha() : c.alphaF();
-            }
-            else {
-                buffer[0 * FACE_NUM + t] = R_INT ? c.red() : c.redF();
-                buffer[1 * FACE_NUM + t] = R_INT ? c.green() : c.greenF();
-                buffer[2 * FACE_NUM + t] = R_INT ? c.blue() : c.blueF();
-                buffer[3 * FACE_NUM + t] = R_INT ? c.alpha() : c.alphaF();
-            }
+            at(buffer, t, 0, NUM_ROWS, 4, storage) = R_INT ? c.red() : c.redF();
+            at(buffer, t, 1, NUM_ROWS, 4, storage) =
+                R_INT ? c.green() : c.greenF();
+            at(buffer, t, 2, NUM_ROWS, 4, storage) =
+                R_INT ? c.blue() : c.blueF();
+            at(buffer, t, 3, NUM_ROWS, 4, storage) =
+                R_INT ? c.alpha() : c.alphaF();
         }
     }
 }
@@ -1216,7 +1151,7 @@ void faceColorsToBuffer(
  * The function requires an already computed index map, which maps each triangle
  * to the face index and vice versa. You can use the @ref
  * vcl::triangulatedFaceIndicesToBuffer function to get the index map. You can
- * use the function @ref vcl::countTriangulatedTriangles to get the number of
+ * use the function @ref vcl::triangulatedFaceCount to get the number of
  * resulting triangles and allocate the buffer accordingly.
  *
  * @param[in] mesh: input mesh
@@ -1238,7 +1173,7 @@ void triangulatedFaceColorsToBuffer(
     for (const auto& f : mesh.faces()) {
         const auto& c     = f.color();
         uint        first = indexMap.triangleBegin(f.index());
-        uint        last  = first + indexMap.triangleNumber(f.index());
+        uint        last  = first + indexMap.triangleCount(f.index());
         for (uint t = first; t < last; ++t) {
             switch (colorFormat) {
                 using enum Color::Format;
@@ -1269,7 +1204,7 @@ void triangulatedFaceColorsToBuffer(
  * @param[in] storage: storage type of the matrix (row or column major)
  * @param[in] representation: representation of the color components (integer or
  * float)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of edges in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -1280,10 +1215,10 @@ void edgeColorsToBuffer(
     auto*                 buffer,
     MatrixStorageType     storage        = MatrixStorageType::ROW_MAJOR,
     Color::Representation representation = Color::Representation::INT_0_255,
-    uint                  rowNumber      = UINT_NULL)
+    uint                  numRows        = UINT_NULL)
 {
     elementColorsToBuffer<ElemId::EDGE>(
-        mesh, buffer, storage, representation, rowNumber);
+        mesh, buffer, storage, representation, numRows);
 }
 
 /**
@@ -1417,6 +1352,60 @@ void edgeQualityToBuffer(const MeshType& mesh, auto* buffer)
 }
 
 /**
+ * @brief Export the vertex tangent of a mesh to a buffer.
+ *
+ * This function exports the vertex tangent of a mesh to a buffer. Tangents are
+ * stored in the buffer following the order the vertices appear in the mesh. The
+ * buffer must be preallocated with the correct size.
+ *
+ * The number of components for each tangent stored in the buffer depends on
+ * the `storeHandednessAsW` parameter: if true, 4 components are stored (xyz
+ * and w for the handedness: -1 if the bitangent is computed as cross product of
+ * normal and tangent, +1 otherwise); otherwise only the xyz components are
+ * stored.
+ *
+ * @note This function does not guarantee that the rows of the matrix
+ * correspond to the vertex indices of the mesh. This scenario is possible
+ * when the mesh has deleted vertices. To be sure to have a direct
+ * correspondence, compact the vertex container before calling this function.
+ *
+ * @param[in] mesh: input mesh
+ * @param[out] buffer: preallocated buffer
+ * @param[in] storage: storage type of the matrix (row or column major)
+ * @param[in] numRows: number of rows of the matrix (if different from the
+ * number of vertices in the mesh) - used only when storage is column major
+ *
+ * @ingroup export_buffer
+ */
+template<MeshConcept MeshType>
+void vertexTangentsToBuffer(
+    const MeshType&   mesh,
+    auto*             buffer,
+    bool              storeHandednessAsW = true,
+    MatrixStorageType storage            = MatrixStorageType::ROW_MAJOR,
+    uint              numRows            = UINT_NULL)
+{
+    using namespace detail;
+
+    requirePerVertexTangent(mesh);
+
+    const uint NUM_ROWS = numRows == UINT_NULL ? mesh.vertexCount() : numRows;
+    const uint NUM_COLS = storeHandednessAsW ? 4 : 3;
+
+    for (uint i = 0; const auto& v : mesh.vertices()) {
+        at(buffer, i, 0, NUM_ROWS, NUM_COLS, storage) = v.tangent().x();
+        at(buffer, i, 1, NUM_ROWS, NUM_COLS, storage) = v.tangent().y();
+        at(buffer, i, 2, NUM_ROWS, NUM_COLS, storage) = v.tangent().z();
+        if (storeHandednessAsW) {
+            at(buffer, i, 3, NUM_ROWS, NUM_COLS, storage) =
+                v.tangentRightHanded() ? 1.0 : -1.0;
+        }
+
+        ++i;
+    }
+}
+
+/**
  * @brief Export the vertex texcoords of a mesh to a buffer.
  *
  * This function exports the vertex texcoords of a mesh to a buffer. Texcoords
@@ -1432,7 +1421,7 @@ void edgeQualityToBuffer(const MeshType& mesh, auto* buffer)
  * @param[in] mesh: input mesh
  * @param[out] buffer: preallocated buffer
  * @param[in] storage: storage type of the matrix (row or column major)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of vertices in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -1441,31 +1430,27 @@ template<MeshConcept MeshType>
 void vertexTexCoordsToBuffer(
     const MeshType&   mesh,
     auto*             buffer,
-    MatrixStorageType storage   = MatrixStorageType::ROW_MAJOR,
-    uint              rowNumber = UINT_NULL)
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
 {
+    using namespace detail;
+
     requirePerVertexTexCoord(mesh);
 
-    const uint VERT_NUM =
-        rowNumber == UINT_NULL ? mesh.vertexNumber() : rowNumber;
+    const uint NUM_ROWS = numRows == UINT_NULL ? mesh.vertexCount() : numRows;
 
     for (uint i = 0; const auto& t : mesh.vertices() | views::texCoords) {
-        if (storage == MatrixStorageType::ROW_MAJOR) {
-            buffer[i * 2 + 0] = t.u();
-            buffer[i * 2 + 1] = t.v();
-        }
-        else {
-            buffer[0 * VERT_NUM + i] = t.u();
-            buffer[1 * VERT_NUM + i] = t.v();
-        }
+        at(buffer, i, 0, NUM_ROWS, 2, storage) = t.u();
+        at(buffer, i, 1, NUM_ROWS, 2, storage) = t.v();
+
         ++i;
     }
 }
 
 /**
- * @brief Export the vertex texcoord indices of a mesh to a buffer.
+ * @brief Export the vertex material indices of a mesh to a buffer.
  *
- * This function exports the vertex texcoord indices of a mesh to a buffer.
+ * This function exports the vertex material indices of a mesh to a buffer.
  * Indices are stored in the buffer following the order the vertices appear in
  * the mesh. The buffer must be preallocated with the correct size (number of
  * vertices).
@@ -1481,27 +1466,27 @@ void vertexTexCoordsToBuffer(
  * @ingroup export_buffer
  */
 template<MeshConcept MeshType>
-void vertexTexCoordIndicesToBuffer(const MeshType& mesh, auto* buffer)
+void vertexMaterialIndicesToBuffer(const MeshType& mesh, auto* buffer)
 {
-    requirePerVertexTexCoord(mesh);
+    requirePerVertexMaterialIndex(mesh);
 
-    for (uint i = 0; const auto& t : mesh.vertices() | views::texCoords) {
-        buffer[i] = t.index();
+    for (uint i = 0; const auto& v : mesh.vertices()) {
+        buffer[i] = v.materialIndex();
         ++i;
     }
 }
 
 /**
- * @brief Export the vertex texture indices of a mesh into a buffer that has
- * a texture index for each face of the mesh (as if the indices were wedge
- * texcoord indices).
+ * @brief Export the vertex material indices of a mesh into a buffer that has
+ * a material index for each face of the mesh (as if the indices were face
+ * material indices).
  *
- * This function exports the vertex texture indices of a mesh to a buffer. The
+ * This function exports the vertex material indices of a mesh to a buffer. The
  * indices are stored in the buffer following the order the faces appear in the
  * mesh. The buffer must be preallocated with the correct size (number of
  * faces).
  *
- * For each face, the function takes the texture index of the first vertex of
+ * For each face, the function takes the material index of the first vertex of
  * the face and stores it in the buffer.
  *
  * @note This function does not guarantee that the rows of the buffer
@@ -1515,31 +1500,31 @@ void vertexTexCoordIndicesToBuffer(const MeshType& mesh, auto* buffer)
  * @ingroup export_buffer
  */
 template<FaceMeshConcept MeshType>
-void vertexTexCoordIndicesAsFaceTexCoordIndicesToBuffer(
+void vertexMaterialIndicesAsFaceMaterialIndicesToBuffer(
     const MeshType& mesh,
     auto*           buffer)
 {
-    requirePerVertexTexCoord(mesh);
+    requirePerVertexMaterialIndex(mesh);
 
     for (uint i = 0; const auto& f : mesh.faces()) {
-        ushort ti = f.vertex(0)->texCoord()->index();
+        ushort ti = f.vertex(0)->materialIndex();
         buffer[i] = ti;
         ++i;
     }
 }
 
 /**
- * @brief Export the vertex texture indices of a mesh into a buffer that has
- * a texture index for each triangle of the mesh (as if the indices were wedge
- * texcoord indices).
+ * @brief Export the vertex material indices of a mesh into a buffer that has
+ * a material index for each triangle of the mesh (as if the indices were face
+ * material indices).
  *
- * This function exports the vertex texture indices of a mesh to a buffer. The
+ * This function exports the vertex material indices of a mesh to a buffer. The
  * indices are stored in the buffer following the order the faces appear in the
  * mesh. The buffer must be preallocated with the correct size (number of
  * triangles).
  *
  * For each triangle computed from the triangulation of a face, the function
- * takes the texture index of the first vertex of the face that contains the
+ * takes the material index of the first vertex of the face that contains the
  * triangle and stores it in the buffer.
  *
  * The function requires an already computed index map, which maps each triangle
@@ -1553,17 +1538,17 @@ void vertexTexCoordIndicesAsFaceTexCoordIndicesToBuffer(
  * @ingroup export_buffer
  */
 template<FaceMeshConcept MeshType>
-void vertexTexCoordIndicesAsTriangulatedFaceTexCoordIndicesToBuffer(
+void vertexMaterialIndicesAsTriangulatedFaceMaterialIndicesToBuffer(
     const MeshType&          mesh,
     auto*                    buffer,
     const TriPolyIndexBiMap& indexMap)
 {
-    requirePerVertexTexCoord(mesh);
+    requirePerVertexMaterialIndex(mesh);
 
     for (const auto& f : mesh.faces()) {
-        ushort ti    = f.vertex(0)->texCoord().index();
+        ushort ti    = f.vertex(0)->materialIndex();
         uint   first = indexMap.triangleBegin(f.index());
-        uint   last  = first + indexMap.triangleNumber(f.index());
+        uint   last  = first + indexMap.triangleCount(f.index());
         for (uint t = first; t < last; ++t) {
             buffer[t] = ti;
         }
@@ -1588,7 +1573,7 @@ void vertexTexCoordIndicesAsTriangulatedFaceTexCoordIndicesToBuffer(
  *
  * @code{.cpp}
  * uint lfs = vcl::largestFaceSize(myMesh);
- * Eigen::MatrixXi faceIndices(myMesh.faceNumber(), lfs * 2);
+ * Eigen::MatrixXi faceIndices(myMesh.faceCount(), lfs * 2);
  * vcl::faceWedgeTexCoordsToBuffer(
  *     myMesh, faceIndices.data(), lfs, MatrixStorageType::COLUMN_MAJOR);
  * @endcode
@@ -1602,7 +1587,7 @@ void vertexTexCoordIndicesAsTriangulatedFaceTexCoordIndicesToBuffer(
  * @param[out] buffer: preallocated buffer
  * @param[in] largestFaceSize: size of the largest face in the mesh
  * @param[in] storage: storage type of the matrix (row or column major)
- * @param[in] rowNumber: number of rows of the matrix (if different from the
+ * @param[in] numRows: number of rows of the matrix (if different from the
  * number of faces in the mesh) - used only when storage is column major
  *
  * @ingroup export_buffer
@@ -1613,20 +1598,19 @@ void faceWedgeTexCoordsToBuffer(
     auto*             buffer,
     uint              largestFaceSize = 3,
     MatrixStorageType storage         = MatrixStorageType::ROW_MAJOR,
-    uint              rowNumber       = UINT_NULL)
+    uint              numRows         = UINT_NULL)
 {
     requirePerFaceWedgeTexCoords(mesh);
 
-    const uint FACE_NUM =
-        rowNumber == UINT_NULL ? mesh.faceNumber() : rowNumber;
+    const uint NUM_ROWS = numRows == UINT_NULL ? mesh.faceCount() : numRows;
 
     for (uint i = 0; const auto& f : mesh.faces()) {
         for (uint j = 0; j < largestFaceSize * 2; ++j) {
             uint fi    = j / 2;
             uint index = i * largestFaceSize * 2 + j;
             if (storage == MatrixStorageType::COLUMN_MAJOR)
-                index = j * FACE_NUM + i;
-            if (fi < f.wedgeTexCoordsNumber()) {
+                index = j * NUM_ROWS + i;
+            if (fi < f.vertexCount()) {
                 const auto& w = f.wedgeTexCoord(fi);
                 if (j % 2 == 0)
                     buffer[index] = w.u();
@@ -1642,12 +1626,12 @@ void faceWedgeTexCoordsToBuffer(
 }
 
 /**
- * @brief Export into a buffer the per face wedge texture indices of a mesh.
+ * @brief Export into a buffer the per face material indices of a mesh.
  *
- * This function exports the per face wedge texture coordinate indices of a mesh
- * to a buffer. Texture coordinate indices are stored in the buffer following
- * the order the faces appear in the mesh. The buffer must be preallocated with
- * the correct size (number of faces).
+ * This function exports the per face material indices of a mesh to a buffer.
+ * Material indices are stored in the buffer following the order the faces
+ * appear in the mesh. The buffer must be preallocated with the correct size
+ * (number of faces).
  *
  * @note This function does not guarantee that the rows of the buffer
  * correspond to the face indices of the mesh. This scenario is possible when
@@ -1660,29 +1644,29 @@ void faceWedgeTexCoordsToBuffer(
  * @ingroup export_buffer
  */
 template<FaceMeshConcept MeshType>
-void faceWedgeTexCoordIndicesToBuffer(const MeshType& mesh, auto* buffer)
+void faceMaterialIndicesToBuffer(const MeshType& mesh, auto* buffer)
 {
-    requirePerFaceWedgeTexCoords(mesh);
+    requirePerFaceMaterialIndex(mesh);
 
     for (uint i = 0; const auto& f : mesh.faces()) {
-        buffer[i] = f.textureIndex();
+        buffer[i] = f.materialIndex();
         ++i;
     }
 }
 
 /**
- * @brief Export into a buffer the per triangle wedge texture indices of a mesh.
+ * @brief Export into a buffer the per triangle material indices of a mesh.
  * Triangles are computed by triangulating the faces of the mesh.
  *
- * This function exports the per triangle wedge texture coordinate indices of a
- * mesh to a buffer. Texture coordinate indices are stored in the buffer
- * following the order the faces appear in the mesh. The buffer must be
- * preallocated with the correct size (number of triangles).
+ * This function exports the per triangle material indices of a mesh to a
+ * buffer. Material indices are stored in the buffer following the order the
+ * faces appear in the mesh. The buffer must be preallocated with the correct
+ * size (number of triangles).
  *
  * The function requires an already computed index map, which maps each triangle
  * to the face index and vice versa. You can use the @ref
  * vcl::triangulatedFaceIndicesToBuffer function to get the index map. You can
- * use the function @ref vcl::countTriangulatedTriangles to get the number of
+ * use the function @ref vcl::triangulatedFaceCount to get the number of
  * resulting triangles and allocate the buffer accordingly.
  *
  * @param[in] mesh: input mesh
@@ -1692,18 +1676,18 @@ void faceWedgeTexCoordIndicesToBuffer(const MeshType& mesh, auto* buffer)
  * @ingroup export_buffer
  */
 template<FaceMeshConcept MeshType>
-void triangulatedFaceWedgeTexCoordIndicesToBuffer(
+void triangulatedFaceMaterialIndicesToBuffer(
     const MeshType&          mesh,
     auto*                    buffer,
     const TriPolyIndexBiMap& indexMap)
 {
-    requirePerFaceWedgeTexCoords(mesh);
+    requirePerFaceMaterialIndex(mesh);
 
     for (const auto& f : mesh.faces()) {
         uint first = indexMap.triangleBegin(f.index());
-        uint last  = first + indexMap.triangleNumber(f.index());
+        uint last  = first + indexMap.triangleCount(f.index());
         for (uint t = first; t < last; ++t) {
-            buffer[t] = f.textureIndex();
+            buffer[t] = f.materialIndex();
         }
     }
 }
@@ -1718,7 +1702,7 @@ void triangulatedFaceWedgeTexCoordIndicesToBuffer(
  * duplicate.
  *
  * Typical usage of this function is after the @ref
- * countVerticesToDuplicateByWedgeTexCoords function:
+ * verticesToDuplicateByWedgeTexCoordsCount function:
  *
  * @code{.cpp}
  *
@@ -1726,10 +1710,10 @@ void triangulatedFaceWedgeTexCoordIndicesToBuffer(
  * std::list<uint> vertsToDuplicate;
  * std::list<std::list<std::pair<uint, uint>>> facesToReassign;
  *
- * uint nV = countVerticesToDuplicateByWedgeTexCoords(mesh, vertWedgeMap,
+ * uint nV = verticesToDuplicateByWedgeTexCoordsCount(mesh, vertWedgeMap,
  *     vertsToDuplicate, facesToReassign);
  *
- * std::vector<double> buffer((mesh.vertexNumber() + nV) * 2);
+ * std::vector<double> buffer((mesh.vertexCount() + nV) * 2);
  * wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(mesh, vertWedgeMap,
  *     facesToReassign, buffer.data());
  * @endcode
@@ -1761,11 +1745,12 @@ void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
     auto*             buffer,
     MatrixStorageType storage = MatrixStorageType::ROW_MAJOR)
 {
+    using namespace detail;
     using TexCoordType = typename MeshType::FaceType::WedgeTexCoordType;
 
     requirePerFaceWedgeTexCoords(mesh);
 
-    const uint VERT_NUM = mesh.vertexNumber() + facesToReassign.size();
+    const uint NUM_ROWS = mesh.vertexCount() + facesToReassign.size();
 
     // first export the texcoords of the non-duplicated vertices, using the
     // vertWedgeMap to get the texcoord index in the face
@@ -1779,14 +1764,9 @@ void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
         if (fInd != UINT_NULL && wInd != UINT_NULL) {
             w = mesh.face(fInd).wedgeTexCoord(wInd);
         }
-        if (storage == MatrixStorageType::ROW_MAJOR) {
-            buffer[vi * 2 + 0] = w.u();
-            buffer[vi * 2 + 1] = w.v();
-        }
-        else {
-            buffer[0 * VERT_NUM + vi] = w.u();
-            buffer[1 * VERT_NUM + vi] = w.v();
-        }
+        at(buffer, vi, 0, NUM_ROWS, 2, storage) = w.u();
+        at(buffer, vi, 1, NUM_ROWS, 2, storage) = w.v();
+
         ++vi;
     }
 
@@ -1799,29 +1779,24 @@ void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
         uint        wInd = p.second;
 
         const auto& w = mesh.face(fInd).wedgeTexCoord(wInd);
-        if (storage == MatrixStorageType::ROW_MAJOR) {
-            buffer[vi * 2 + 0] = w.u();
-            buffer[vi * 2 + 1] = w.v();
-        }
-        else {
-            buffer[0 * VERT_NUM + vi] = w.u();
-            buffer[1 * VERT_NUM + vi] = w.v();
-        }
+        at(buffer, vi, 0, NUM_ROWS, 2, storage) = w.u();
+        at(buffer, vi, 1, NUM_ROWS, 2, storage) = w.v();
+
         ++vi;
     }
 }
 
 /**
- * @brief Export wedge texture coordinate indices to a buffer of the duplicated
- * vertex texture coordinate indices.
+ * @brief Export face material indices to a buffer of the duplicated vertex
+ * material indices.
  *
  * Given the list of vertices to duplicate, this function exports to the given
- * buffer the wedge texture indices as if they were vertex texture
- * indices, and appending only the texture indices of the vertices to
+ * buffer the face material indices as if they were vertex material
+ * indices, and appending only the material indices of the vertices to
  * duplicate.
  *
  * Typical usage of this function is after the @ref
- * countVerticesToDuplicateByWedgeTexCoords function:
+ * verticesToDuplicateByWedgeTexCoordsCount function:
  *
  * @code{.cpp}
  *
@@ -1829,11 +1804,11 @@ void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
  * std::list<uint> vertsToDuplicate;
  * std::list<std::list<std::pair<uint, uint>>> facesToReassign;
  *
- * uint nV = countVerticesToDuplicateByWedgeTexCoords(mesh, vertWedgeMap,
+ * uint nV = verticesToDuplicateByWedgeTexCoordsCount(mesh, vertWedgeMap,
  *     vertsToDuplicate, facesToReassign);
  *
- * std::vector<ushort> buffer(mesh.vertexNumber() + nV);
- * wedgeTexCoordIndicesAsDuplicatedVertexTexCoordIndicesToBuffer(mesh,
+ * std::vector<ushort> buffer(mesh.vertexCount() + nV);
+ * faceMaterialIndicesAsDuplicatedVertexMaterialIndicesToBuffer(mesh,
  *     vertWedgeMap, facesToReassign, buffer.data());
  * @endcode
  *
@@ -1842,52 +1817,466 @@ void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
  *
  * @tparam MeshType: The type of the mesh.
  *
- * @param[in] mesh: The mesh from which take the wedge texture coordinate
- * indices.
+ * @param[in] mesh: The mesh from which take the face material indices.
  * @param[in] vertWedgeMap: The map from non-duplicated vertex index to face
  * index and wedge index in the face.
  * @param[in] facesToReassign: The list of lists of pairs face/vertex index in
  * the face that must be reassigned to the duplicated vertices. Each list of
  * pairs is the list of faces that must be reassigned to the corresponding
  * duplicated vertex.
- * @param[out] buffer: The buffer where to export the vertex wedge texture
- * coordinate indices.
+ * @param[out] buffer: The buffer where to export the vertex material indices.
  *
  * @ingroup append_replace_to_buffer
  */
 template<FaceMeshConcept MeshType>
-void wedgeTexCoordIndicesAsDuplicatedVertexTexCoordIndicesToBuffer(
+void faceMaterialIndicesAsDuplicatedVertexMaterialIndicesToBuffer(
     const MeshType&                                     mesh,
     const std::vector<std::pair<vcl::uint, vcl::uint>>& vertWedgeMap,
     const std::list<std::list<std::pair<vcl::uint, vcl::uint>>>&
           facesToReassign,
     auto* buffer)
 {
-    requirePerFaceWedgeTexCoords(mesh);
+    requirePerFaceMaterialIndex(mesh);
 
-    const uint VERT_NUM = mesh.vertexNumber() + facesToReassign.size();
+    const uint VERT_NUM = mesh.vertexCount() + facesToReassign.size();
 
-    // first export the tex indices of the non-duplicated vertices, using the
-    // vertWedgeMap to get the texcoord index in the face
+    // first export the material indices of the non-duplicated vertices, using
+    // the vertWedgeMap to get the material index in the face
     uint vi = 0; // current vertex (or current row in the matrix)
     for (const auto& v : mesh.vertices()) {
         uint   fInd = vertWedgeMap[vi].first;
-        ushort ti   = mesh.face(fInd).textureIndex();
+        ushort ti   = mesh.face(fInd).materialIndex();
         buffer[vi]  = ti;
         ++vi;
     }
 
-    // then append the tex indices of the duplicated vertices, that can be found
-    // by looking into the any of the facesToReassign element lists
+    // then append the material indices of the duplicated vertices, that can be
+    // found by looking into the any of the facesToReassign element lists
     for (const auto& list : facesToReassign) {
         assert(list.begin() != list.end());
         const auto& p    = list.front();
         uint        fInd = p.first;
 
-        ushort ti  = mesh.face(fInd).textureIndex();
+        ushort ti  = mesh.face(fInd).materialIndex();
         buffer[vi] = ti;
         ++vi;
     }
+}
+
+/**
+ * @brief Export into a buffer the adjacent vertex indices for each vertex of a
+ * Mesh. The number of adjacent vertices for each vertex can be different, so
+ * the user must provide the size of the largest adjacency list with the
+ * `largestAdjacentVerticesSize` parameter.
+ * For vertices that have less adjacent vertices than
+ * `largestAdjacentVerticesSize`, the remaining entries are filled with
+ * `UINT_NULL`.
+ *
+ * You can use the function @ref vcl::largestPerVertexAdjacentVerticesCount to
+ * get the largest adjacency size and allocate the buffer accordingly:
+ *
+ * @code{.cpp}
+ * uint lva = vcl::largestPerVertexAdjacentVerticesCount(myMesh);
+ * Eigen::MatrixXi vertexAdj(myMesh.vertexCount(), lva);
+ * vcl::vertexAdjacentVerticesToBuffer(
+ *    myMesh, vertexAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
+ * @endcode
+ *
+ * @param[in] mesh: input mesh
+ * @param[out] buffer: preallocated buffer
+ * @param[in] largestAdjacentVerticesSize: size of the largest per-vertex vertex
+ * adjacency list
+ * @param[in] storage: storage type of the matrix (row or column major)
+ * @param[in] numRows: number of rows of the matrix (if different from the
+ * number of vertices in the mesh) - used only when storage is column major
+ *
+ * @ingroup export_buffer
+ */
+template<MeshConcept MeshType>
+void vertexAdjacentVerticesToBuffer(
+    const MeshType&   mesh,
+    auto*             buffer,
+    uint              largestAdjacentVerticesSize,
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
+{
+    using namespace detail;
+
+    requireVertexContainerCompactness(mesh);
+    requirePerVertexAdjacentVertices(mesh);
+
+    const uint NUM_ROWS = numRows == UINT_NULL ? mesh.vertexCount() : numRows;
+
+    const uint NUM_COLS = largestAdjacentVerticesSize;
+
+    for (uint i = 0; const auto& v : mesh.vertices()) {
+        uint adjIndex = 0;
+        for (const auto* a : v.adjVertices()) {
+            uint idx = a ? a->index() : UINT_NULL;
+            at(buffer, i, adjIndex, NUM_ROWS, NUM_COLS, storage) = idx;
+            ++adjIndex;
+        }
+        // fill the remaining entries with UINT_NULL
+        for (; adjIndex < NUM_COLS; ++adjIndex) {
+            at(buffer, i, adjIndex, NUM_ROWS, NUM_COLS, storage) = UINT_NULL;
+        }
+        ++i;
+    }
+}
+
+/**
+ * @brief Export into a buffer the adjacent faces indices for each ELEM_ID
+ * element of a Mesh. The number of adjacent faces for each ELEM_ID can be
+ * different, so the user must provide the size of the largest adjacency list
+ * with the `largestAdjacentFacesSize` parameter. For elements that have less
+ * adjacent faces than `largestAdjacentFacesSize`, the remaining entries
+ * are filled with `UINT_NULL`.
+ *
+ * You can use the function @ref vcl::largestPerElementAdjacentFacesCount to
+ * get the largest adjacency size and allocate the buffer accordingly:
+ *
+ * @code{.cpp}
+ * uint lva = vcl::largestPerElementAdjacentFacesCount<ELEM_ID>(myMesh);
+ * Eigen::MatrixXi faceAdj(myMesh.count<ELEM_ID>(), lva);
+ * vcl::elementAdjacentFacesToBuffer<ELEM_ID>(
+ *    myMesh, faceAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
+ * @endcode
+ *
+ * @param[in] mesh: input mesh
+ * @param[out] buffer: preallocated buffer
+ * @param[in] largestAdjacentFacesSize: size of the largest per-element face
+ * adjacency list
+ * @param[in] storage: storage type of the matrix (row or column major)
+ * @param[in] numRows: number of rows of the matrix (if different from the
+ * number of elements in the mesh) - used only when storage is column major
+ *
+ * @ingroup export_buffer
+ */
+template<uint ELEM_ID, FaceMeshConcept MeshType>
+void elementAdjacentFacesToBuffer(
+    const MeshType&   mesh,
+    auto*             buffer,
+    uint              largestAdjacentFacesSize,
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
+{
+    using namespace detail;
+
+    requireFaceContainerCompactness(mesh);
+    requirePerElementComponent<ELEM_ID, CompId::ADJACENT_FACES>(mesh);
+
+    const uint NUM_ROWS =
+        numRows == UINT_NULL ? mesh.template count<ELEM_ID>() : numRows;
+
+    const uint NUM_COLS = largestAdjacentFacesSize;
+
+    for (uint i = 0; const auto& v : mesh.template elements<ELEM_ID>()) {
+        uint adjIndex = 0;
+        for (const auto* a : v.adjFaces()) {
+            uint idx = a ? a->index() : UINT_NULL;
+            at(buffer, i, adjIndex, NUM_ROWS, NUM_COLS, storage) = idx;
+            ++adjIndex;
+        }
+        // fill the remaining entries with UINT_NULL
+        for (; adjIndex < NUM_COLS; ++adjIndex) {
+            at(buffer, i, adjIndex, NUM_ROWS, NUM_COLS, storage) = UINT_NULL;
+        }
+        ++i;
+    }
+}
+
+/**
+ * @brief Export into a buffer the adjacent faces indices for each vertex
+ * of a Mesh. The number of adjacent faces for each vertex can be
+ * different, so the user must provide the size of the largest adjacency list
+ * with the `largestAdjacentFacesSize` parameter. For elements that have less
+ * adjacent faces than `largestAdjacentFacesSize`, the remaining entries
+ * are filled with `UINT_NULL`.
+ *
+ * You can use the function @ref vcl::largestPerVertexAdjacentFacesCount to
+ * get the largest adjacency size and allocate the buffer accordingly:
+ *
+ * @code{.cpp}
+ * uint lva = vcl::largestPerVertexAdjacentFacesCount(myMesh);
+ * Eigen::MatrixXi faceAdj(myMesh.vertexCount(), lva);
+ * vcl::vertexAdjacentFacesToBuffer(
+ *    myMesh, faceAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
+ * @endcode
+ *
+ * @param[in] mesh: input mesh
+ * @param[out] buffer: preallocated buffer
+ * @param[in] largestAdjacentFacesSize: size of the largest per-vertex face
+ * adjacency list
+ * @param[in] storage: storage type of the matrix (row or column major)
+ * @param[in] numRows: number of rows of the matrix (if different from the
+ * number of vertices in the mesh) - used only when storage is column major
+ *
+ * @ingroup export_buffer
+ */
+template<FaceMeshConcept MeshType>
+void vertexAdjacentFacesToBuffer(
+    const MeshType&   mesh,
+    auto*             buffer,
+    uint              largestAdjacentFacesSize,
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
+{
+    elementAdjacentFacesToBuffer<ElemId::VERTEX>(
+        mesh, buffer, largestAdjacentFacesSize, storage, numRows);
+}
+
+/**
+ * @brief Export into a buffer the adjacent faces indices for each face
+ * of a Mesh. The number of adjacent faces for each face is expected to
+ * be equal to the largestFaceSize (see @ref vcl::largestFaceSize).
+ *
+ * @code{.cpp}
+ * uint lfs = vcl::largestFaceSize(myMesh);
+ * Eigen::MatrixXi faceAdj(myMesh.faceCount(), lfs);
+ * vcl::faceAdjacentFacesToBuffer(
+ *    myMesh, faceAdj.data(), lfs, MatrixStorageType::COLUMN_MAJOR);
+ * @endcode
+ *
+ * @param[in] mesh: input mesh
+ * @param[out] buffer: preallocated buffer
+ * @param[in] largestFacesSize: size of the largest face in the mesh
+ * @param[in] storage: storage type of the matrix (row or column major)
+ * @param[in] numRows: number of rows of the matrix (if different from the
+ * number of faces in the mesh) - used only when storage is column major
+ *
+ * @ingroup export_buffer
+ */
+template<FaceMeshConcept MeshType>
+void faceAdjacentFacesToBuffer(
+    const MeshType&   mesh,
+    auto*             buffer,
+    uint              largestFacesSize,
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
+{
+    elementAdjacentFacesToBuffer<ElemId::FACE>(
+        mesh, buffer, largestFacesSize, storage, numRows);
+}
+
+/**
+ * @brief Export into a buffer the adjacent faces indices for each edge
+ * of a Mesh. The number of adjacent faces for each edge can be
+ * different, so the user must provide the size of the largest adjacency list
+ * with the `largestAdjacentFacesSize` parameter. For elements that have less
+ * adjacent faces than `largestAdjacentFacesSize`, the remaining entries
+ * are filled with `UINT_NULL`.
+ *
+ * You can use the function @ref vcl::largestPerEdgeAdjacentFacesCount to
+ * get the largest adjacency size and allocate the buffer accordingly:
+ *
+ * @code{.cpp}
+ * uint lva = vcl::largestPerEdgeAdjacentFacesCount(myMesh);
+ * Eigen::MatrixXi faceAdj(myMesh.edgeCount(), lva);
+ * vcl::edgeAdjacentFacesToBuffer(
+ *    myMesh, faceAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
+ * @endcode
+ *
+ * @param[in] mesh: input mesh
+ * @param[out] buffer: preallocated buffer
+ * @param[in] largestAdjacentFacesSize: size of the largest per-edge face
+ * adjacency list
+ * @param[in] storage: storage type of the matrix (row or column major)
+ * @param[in] numRows: number of rows of the matrix (if different from the
+ * number of edges in the mesh) - used only when storage is column major
+ *
+ * @ingroup export_buffer
+ */
+template<FaceMeshConcept MeshType>
+void edgeAdjacentFacesToBuffer(
+    const MeshType&   mesh,
+    auto*             buffer,
+    uint              largestAdjacentFacesSize,
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL) requires (EdgeMeshConcept<MeshType>)
+{
+    elementAdjacentFacesToBuffer<ElemId::EDGE>(
+        mesh, buffer, largestAdjacentFacesSize, storage, numRows);
+}
+
+/**
+ * @brief Export into a buffer the adjacent edges indices for each ELEM_ID
+ * element of a Mesh. The number of adjacent edges for each ELEM_ID can be
+ * different, so the user must provide the size of the largest adjacency list
+ * with the `largestAdjacentEdgesSize` parameter. For elements that have less
+ * adjacent faces than `largestAdjacentEdgesSize`, the remaining entries
+ * are filled with `UINT_NULL`.
+ *
+ * You can use the function @ref vcl::largestPerElementAdjacentEdgesCount to
+ * get the largest adjacency size and allocate the buffer accordingly:
+ *
+ * @code{.cpp}
+ * uint lva = vcl::largestPerElementAdjacentEdgesCount<ELEM_ID>(myMesh);
+ * Eigen::MatrixXi edgeAdj(myMesh.count<ELEM_ID>(), lva);
+ * vcl::elementAdjacentEdgesToBuffer<ELEM_ID>(
+ *    myMesh, edgeAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
+ * @endcode
+ *
+ * @param[in] mesh: input mesh
+ * @param[out] buffer: preallocated buffer
+ * @param[in] largestAdjacentEdgesSize: size of the largest per-element edge
+ * adjacency list
+ * @param[in] storage: storage type of the matrix (row or column major)
+ * @param[in] numRows: number of rows of the matrix (if different from the
+ * number of elements in the mesh) - used only when storage is column major
+ *
+ * @ingroup export_buffer
+ */
+template<uint ELEM_ID, EdgeMeshConcept MeshType>
+void elementAdjacentEdgesToBuffer(
+    const MeshType&   mesh,
+    auto*             buffer,
+    uint              largestAdjacentEdgesSize,
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
+{
+    using namespace detail;
+
+    requireEdgeContainerCompactness(mesh);
+    requirePerElementComponent<ELEM_ID, CompId::ADJACENT_EDGES>(mesh);
+
+    const uint NUM_ROWS =
+        numRows == UINT_NULL ? mesh.template count<ELEM_ID>() : numRows;
+
+    const uint NUM_COLS = largestAdjacentEdgesSize;
+
+    for (uint i = 0; const auto& v : mesh.template elements<ELEM_ID>()) {
+        uint adjIndex = 0;
+        for (const auto* a : v.adjEdges()) {
+            uint idx = a ? a->index() : UINT_NULL;
+            at(buffer, i, adjIndex, NUM_ROWS, NUM_COLS, storage) = idx;
+            ++adjIndex;
+        }
+        // fill the remaining entries with UINT_NULL
+        for (; adjIndex < NUM_COLS; ++adjIndex) {
+            at(buffer, i, adjIndex, NUM_ROWS, NUM_COLS, storage) = UINT_NULL;
+        }
+        ++i;
+    }
+}
+
+/**
+ * @brief Export into a buffer the adjacent edges indices for each vertex
+ * of a Mesh. The number of adjacent edges for each vertex can be
+ * different, so the user must provide the size of the largest adjacency list
+ * with the `largestAdjacentEdgesSize` parameter. For elements that have less
+ * adjacent edges than `largestAdjacentEdgesSize`, the remaining entries
+ * are filled with `UINT_NULL`.
+ *
+ * You can use the function @ref vcl::largestPerVertexAdjacentEdgesCount to
+ * get the largest adjacency size and allocate the buffer accordingly:
+ *
+ * @code{.cpp}
+ * uint lva = vcl::largestPerVertexAdjacentEdgesCount(myMesh);
+ * Eigen::MatrixXi edgeAdj(myMesh.vertexCount(), lva);
+ * vcl::vertexAdjacentEdgesToBuffer(
+ *    myMesh, edgeAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
+ * @endcode
+ *
+ * @param[in] mesh: input mesh
+ * @param[out] buffer: preallocated buffer
+ * @param[in] largestAdjacentEdgesSize: size of the largest per-vertex edge
+ * adjacency list
+ * @param[in] storage: storage type of the matrix (row or column major)
+ * @param[in] numRows: number of rows of the matrix (if different from the
+ * number of vertices in the mesh) - used only when storage is column major
+ *
+ * @ingroup export_buffer
+ */
+template<EdgeMeshConcept MeshType>
+void vertexAdjacentEdgesToBuffer(
+    const MeshType&   mesh,
+    auto*             buffer,
+    uint              largestAdjacentEdgesSize,
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
+{
+    elementAdjacentEdgesToBuffer<ElemId::VERTEX>(
+        mesh, buffer, largestAdjacentEdgesSize, storage, numRows);
+}
+
+/**
+ * @brief Export into a buffer the adjacent edges indices for each face
+ * of a Mesh. The number of adjacent edges for each face can be
+ * different, so the user must provide the size of the largest adjacency list
+ * with the `largestAdjacentEdgesSize` parameter. For elements that have less
+ * adjacent edges than `largestAdjacentEdgesSize`, the remaining entries
+ * are filled with `UINT_NULL`.
+ *
+ * You can use the function @ref vcl::largestPerFaceAdjacentEdgesCount to
+ * get the largest adjacency size and allocate the buffer accordingly:
+ *
+ * @code{.cpp}
+ * uint lva = vcl::largestPerFaceAdjacentEdgesCount(myMesh);
+ * Eigen::MatrixXi edgeAdj(myMesh.vertexCount(), lva);
+ * vcl::faceAdjacentEdgesToBuffer(
+ *    myMesh, edgeAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
+ * @endcode
+ *
+ * @param[in] mesh: input mesh
+ * @param[out] buffer: preallocated buffer
+ * @param[in] largestAdjacentEdgesSize: size of the largest per-face edge
+ * adjacency list
+ * @param[in] storage: storage type of the matrix (row or column major)
+ * @param[in] numRows: number of rows of the matrix (if different from the
+ * number of faces in the mesh) - used only when storage is column major
+ *
+ * @ingroup export_buffer
+ */
+template<EdgeMeshConcept MeshType>
+void faceAdjacentEdgesToBuffer(
+    const MeshType&   mesh,
+    auto*             buffer,
+    uint              largestAdjacentEdgesSize,
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL) requires (FaceMeshConcept<MeshType>)
+{
+    elementAdjacentEdgesToBuffer<ElemId::FACE>(
+        mesh, buffer, largestAdjacentEdgesSize, storage, numRows);
+}
+
+/**
+ * @brief Export into a buffer the adjacent edges indices for each edge
+ * of a Mesh. The number of adjacent edges for each edge can be
+ * different, so the user must provide the size of the largest adjacency list
+ * with the `largestAdjacentEdgesSize` parameter. For elements that have less
+ * adjacent edges than `largestAdjacentEdgesSize`, the remaining entries
+ * are filled with `UINT_NULL`.
+ *
+ * You can use the function @ref vcl::largestPerEdgeAdjacentEdgesCount to
+ * get the largest adjacency size and allocate the buffer accordingly:
+ *
+ * @code{.cpp}
+ * uint lva = vcl::largestPerEdgeAdjacentEdgesCount(myMesh);
+ * Eigen::MatrixXi edgeAdj(myMesh.vertexCount(), lva);
+ * vcl::edgeAdjacentEdgesToBuffer(
+ *    myMesh, edgeAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
+ * @endcode
+ *
+ * @param[in] mesh: input mesh
+ * @param[out] buffer: preallocated buffer
+ * @param[in] largestAdjacentEdgesSize: size of the largest per-edge edge
+ * adjacency list
+ * @param[in] storage: storage type of the matrix (row or column major)
+ * @param[in] numRows: number of rows of the matrix (if different from the
+ * number of edges in the mesh) - used only when storage is column major
+ *
+ * @ingroup export_buffer
+ */
+template<EdgeMeshConcept MeshType>
+void edgeAdjacentEdgesToBuffer(
+    const MeshType&   mesh,
+    auto*             buffer,
+    uint              largestAdjacentEdgesSize,
+    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
+    uint              numRows = UINT_NULL)
+{
+    elementAdjacentEdgesToBuffer<ElemId::EDGE>(
+        mesh, buffer, largestAdjacentEdgesSize, storage, numRows);
 }
 
 } // namespace vcl

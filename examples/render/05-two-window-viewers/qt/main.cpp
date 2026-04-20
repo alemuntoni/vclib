@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -24,11 +24,9 @@
 
 #include <vclib/qt/viewer_widget.h>
 
-#include <QApplication>
-
 int main(int argc, char** argv)
 {
-    QApplication app(argc, argv);
+    auto app = vcl::qt::qAppl(argc, argv);
 
     vcl::qt::ViewerWidget viewer1("Viewer Qt 1");
     vcl::qt::ViewerWidget viewer2("Viewer Qt 2");
@@ -38,7 +36,7 @@ int main(int argc, char** argv)
 
     using enum vcl::MeshRenderInfo::Buffers;
     drawable.color() = vcl::Color::Yellow;
-    drawable.updateBuffers({MESH_UNIFORMS});
+    drawable.updateBuffers({MESH_ADDITIONAL_DATA});
 
     auto mrs = drawable.renderSettings();
     mrs.setSurface(vcl::MeshRenderInfo::Surface::COLOR_MESH);

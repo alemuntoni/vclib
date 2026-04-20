@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -25,6 +25,7 @@
 
 #include "ui_mesh_viewer.h"
 
+#include <vclib/render/concepts/pbr_viewer.h>
 #include <vclib/render/drawable/drawable_mesh.h>
 
 namespace vcl::qt {
@@ -77,26 +78,19 @@ MeshViewer::MeshViewer(QWidget* parent) :
 
     mDrawableObjectVector = std::make_shared<DrawableObjectVector>();
 
-    // create the vector of DrawableObjects
-    mDrawableObjectVector->resize(2, DrawableObjectVector());
-
-    mListedDrawableObjects = std::dynamic_pointer_cast<DrawableObjectVector>(
-        mDrawableObjectVector->at(0));
-
-    mUnlistedDrawableObjects = std::dynamic_pointer_cast<DrawableObjectVector>(
-        mDrawableObjectVector->at(1));
-
     // give the vector pointer to the contained widgets
     mUI->viewer->setDrawableObjectVector(mDrawableObjectVector);
-    mUI->drawVectorTree->setDrawableObjectVector(mListedDrawableObjects);
+    mUI->drawVectorTree->setDrawableObjectVector(mDrawableObjectVector);
 
     // install the key filter
     mUI->viewer->installEventFilter(new KeyFilter(this));
 
+    mUI->viewerRenderSettingsFrame->setViewer(mUI->viewer);
+
     // each time that the RenderSettingsFrame updates its settings, we call the
     // renderSettingsUpdated() member function
     connect(
-        mUI->renderSettingsFrame,
+        mUI->meshRenderSettingsFrame,
         SIGNAL(settingsUpdated()),
         this,
         SLOT(renderSettingsUpdated()));
@@ -133,20 +127,14 @@ MeshViewer::~MeshViewer()
 void MeshViewer::setDrawableObjectVector(
     const std::shared_ptr<DrawableObjectVector>& v)
 {
-    mDrawableObjectVector->set(0, v);
-    mListedDrawableObjects = v;
+    mDrawableObjectVector = v;
 
     // order here is important: drawVectorTree must have the drawVector before
     // the renderSettingsFrame!
     mUI->viewer->setDrawableObjectVector(mDrawableObjectVector);
-    mUI->drawVectorTree->setDrawableObjectVector(mListedDrawableObjects);
+    mUI->drawVectorTree->setDrawableObjectVector(mDrawableObjectVector);
 
     updateGUI();
-}
-
-void MeshViewer::setUnlistedDrawableObjectVector(
-    const std::shared_ptr<DrawableObjectVector>& v)
-{
 }
 
 uint MeshViewer::selectedDrawableObject() const
@@ -165,15 +153,44 @@ void MeshViewer::setDrawVectorIconFunction(
     mUI->drawVectorTree->setIconFunction(f);
 }
 
+Camera<float> MeshViewer::camera() const
+{
+    return mUI->viewer->camera();
+}
+
+void MeshViewer::setCamera(const Camera<float>& c)
+{
+    mUI->viewer->setCamera(c);
+}
+
+// void MeshViewer::showRenderModeSelector(bool show)
+// {
+// }
+
+void MeshViewer::setPbrSettings(const PBRViewerSettings& settings)
+{
+    mUI->viewerRenderSettingsFrame->setPbrSettings(settings);
+}
+
+const PBRViewerSettings& MeshViewer::pbrSettings() const
+{
+    return mUI->viewerRenderSettingsFrame->pbrSettings();
+}
+
+void MeshViewer::setPanorama(const std::string& panorama)
+{
+    mUI->viewerRenderSettingsFrame->setPanorama(panorama);
+}
+
 void MeshViewer::keyPressEvent(QKeyEvent* event)
 {
     // show screenshot dialog on CTRL + S
     if (event->key() == Qt::Key_S && event->modifiers() & Qt::ControlModifier) {
         vcl::qt::ScreenShotDialog dialog(this);
         if (dialog.exec() && dialog.selectedFiles().size() > 0) {
+            auto sf = dialog.selectedFiles();
             mUI->viewer->screenshot(
-                dialog.selectedFiles()[0].toStdString(),
-                dialog.screenMultiplierValue());
+                sf[0].toStdString(), dialog.screenMultiplierValue());
         }
     }
     else {
@@ -192,11 +209,11 @@ void MeshViewer::visibilityDrawableObjectChanged()
     uint i = mUI->drawVectorTree->selectedDrawableObject();
     if (i != UINT_NULL) {
         auto m = std::dynamic_pointer_cast<AbstractDrawableMesh>(
-            mListedDrawableObjects->at(i));
+            mDrawableObjectVector->at(i));
         // if it is a AbstractDrawableMesh, we must be sure that its render
         // settings are updated accordingly.
         if (m) {
-            mUI->renderSettingsFrame->setMeshRenderSettings(
+            mUI->meshRenderSettingsFrame->setMeshRenderSettings(
                 m->renderSettings());
         }
         mUI->viewer->update();
@@ -212,18 +229,20 @@ void MeshViewer::selectedDrawableObjectChanged(uint i)
 {
     // take the newly selected DrawableObject and check whether it is a
     // AbstractDrawableMesh
+    mDrawableObjectVector->setSelectedObjectId(i);
     auto m = std::dynamic_pointer_cast<AbstractDrawableMesh>(
-        mListedDrawableObjects->at(i));
+        mDrawableObjectVector->at(i));
     if (m) {
         // if it is a AbstractDrawableMesh, update the RenderSettingsFrame, and
         // set it enabled
-        mUI->renderSettingsFrame->setMeshRenderSettings(m->renderSettings());
-        mUI->renderSettingsFrame->setEnabled(true);
+        mUI->meshRenderSettingsFrame->setMeshRenderSettings(
+            m->renderSettings());
+        mUI->meshRenderSettingsFrame->setEnabled(true);
     }
     else {
         // it is not a AbstractDrawableMesh, RenderSettingsFrame must be
         // disabled
-        mUI->renderSettingsFrame->setEnabled(false);
+        mUI->meshRenderSettingsFrame->setEnabled(false);
     }
 }
 
@@ -239,15 +258,16 @@ void MeshViewer::renderSettingsUpdated()
 {
     // The user changed the RenderSettings of the ith object.
     uint i = mUI->drawVectorTree->selectedDrawableObject();
-    if (i != UINT_NULL && mListedDrawableObjects->size() > 0) {
+    if (i != UINT_NULL && mDrawableObjectVector->size() > 0) {
         // The selected object must always be a AbstractDrawableMesh, because
         // the RenderSettingsFrame (which called this member function) is
         // visible only when the selected Object is a AbstractDrawableMesh
         auto m = std::dynamic_pointer_cast<AbstractDrawableMesh>(
-            mListedDrawableObjects->at(i));
+            mDrawableObjectVector->at(i));
         // get RenderSettings from the RenderSettingsFrame, and set it to the
         // AbstractDrawableMesh
-        m->setRenderSettings(mUI->renderSettingsFrame->meshRenderSettings());
+        m->setRenderSettings(
+            mUI->meshRenderSettingsFrame->meshRenderSettings());
         mUI->viewer->update();
     }
 }
@@ -255,6 +275,12 @@ void MeshViewer::renderSettingsUpdated()
 void MeshViewer::fitScene()
 {
     mUI->viewer->fitScene();
+    mUI->viewer->update();
+}
+
+void MeshViewer::fitView()
+{
+    mUI->viewer->fitView();
     mUI->viewer->update();
 }
 
@@ -266,20 +292,30 @@ void MeshViewer::updateGUI()
 
     if (selected != UINT_NULL) {
         auto m = std::dynamic_pointer_cast<AbstractDrawableMesh>(
-            mListedDrawableObjects->at(selected));
+            mDrawableObjectVector->at(selected));
         if (m) {
-            mUI->renderSettingsFrame->setMeshRenderSettings(
+            mUI->meshRenderSettingsFrame->setMeshRenderSettings(
                 m->renderSettings(), true);
-            mUI->renderSettingsFrame->setEnabled(true);
+            mUI->meshRenderSettingsFrame->setEnabled(true);
         }
         else {
-            mUI->renderSettingsFrame->setEnabled(false);
+            mUI->meshRenderSettingsFrame->setEnabled(false);
         }
     }
     else {
-        mUI->renderSettingsFrame->setEnabled(false);
+        mUI->meshRenderSettingsFrame->setEnabled(false);
     }
     mUI->viewer->update();
+}
+
+template<typename V>
+void setPBRModef(V* v, bool b)
+{
+    if constexpr (PBRViewerConcept<V>) {
+        auto s    = v->pbrSettings();
+        s.pbrMode = b;
+        return v->setPbrSettings(s);
+    }
 }
 
 } // namespace vcl::qt

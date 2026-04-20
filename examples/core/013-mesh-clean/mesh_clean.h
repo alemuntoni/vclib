@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -50,8 +50,8 @@ auto meshClean()
     vcl::TriMesh mesh = originalMesh;
     mesh.name()       = "Cleaned Brain Mesh";
 
-    std::cout << "Original mesh: " << mesh.vertexNumber() << " vertices, "
-              << mesh.faceNumber() << " faces" << std::endl;
+    std::cout << "Original mesh: " << mesh.vertexCount() << " vertices, "
+              << mesh.faceCount() << " faces" << std::endl;
 
     // Remove unreferenced vertices
     vcl::uint removedUnref = vcl::removeUnreferencedVertices(mesh);
@@ -59,13 +59,13 @@ auto meshClean()
               << std::endl;
 
     // Remove duplicated vertices
-    vcl::uint removedDupVerts = vcl::removeDuplicatedVertices(mesh);
-    std::cout << "Removed " << removedDupVerts << " duplicated vertices"
+    vcl::uint removedDupVerts = vcl::removeDuplicateVertices(mesh);
+    std::cout << "Removed " << removedDupVerts << " duplicate vertices"
               << std::endl;
 
     // Remove duplicated faces
-    vcl::uint removedDupFaces = vcl::removeDuplicatedFaces(mesh);
-    std::cout << "Removed " << removedDupFaces << " duplicated faces"
+    vcl::uint removedDupFaces = vcl::removeDuplicateFaces(mesh);
+    std::cout << "Removed " << removedDupFaces << " duplicate faces"
               << std::endl;
 
     // Remove degenerate faces
@@ -76,8 +76,8 @@ auto meshClean()
     // Compact the mesh to remove deleted elements
     mesh.compact();
 
-    std::cout << "Cleaned mesh: " << mesh.vertexNumber() << " vertices, "
-              << mesh.faceNumber() << " faces\n"
+    std::cout << "Cleaned mesh: " << mesh.vertexCount() << " vertices, "
+              << mesh.faceCount() << " faces\n"
               << std::endl;
 
     /****** Removing degenerate vertices with NaN positions ******/
@@ -101,19 +101,17 @@ auto meshClean()
     testMesh.addFace(v0, v1, v2);
     testMesh.addFace(v0, v1, v3); // This face will be affected
 
-    std::cout << "Test mesh before cleaning: " << testMesh.vertexNumber()
-              << " vertices, " << testMesh.faceNumber() << " faces"
-              << std::endl;
+    std::cout << "Test mesh before cleaning: " << testMesh.vertexCount()
+              << " vertices, " << testMesh.faceCount() << " faces" << std::endl;
 
     // Remove degenerate vertices and associated faces
-    vcl::uint removedDegVerts = vcl::removeDegeneratedVertices(testMesh, true);
+    vcl::uint removedDegVerts = vcl::removeDegenerateVertices(testMesh, true);
     std::cout << "Removed " << removedDegVerts << " degenerate vertices"
               << std::endl;
 
     testMesh.compact();
-    std::cout << "Test mesh after cleaning: " << testMesh.vertexNumber()
-              << " vertices, " << testMesh.faceNumber() << " faces"
-              << std::endl;
+    std::cout << "Test mesh after cleaning: " << testMesh.vertexCount()
+              << " vertices, " << testMesh.faceCount() << " faces" << std::endl;
 
     std::cout << "Example completed successfully!\n";
 

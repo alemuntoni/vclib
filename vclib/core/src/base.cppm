@@ -23,7 +23,6 @@
 export module vclib.base;
 
 export import :base;
-export import :compactness;
 export import :comparators;
 export import :concepts;
 export import :const_correctness;
@@ -32,6 +31,7 @@ export import :filter_types;
 export import :hash;
 export import :inheritance;
 export import :iterators;
+export import :permute;
 
 // todo: aggregate
 export import :logger;

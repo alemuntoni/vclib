@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -26,11 +26,9 @@
 #include <vclib/render/canvas.h>
 #include <vclib/render/render_app.h>
 
-#include <QApplication>
-
 int main(int argc, char** argv)
 {
-    QApplication app(argc, argv);
+    auto app = vcl::qt::qAppl(argc, argv);
 
     using WidgetQt = vcl::
         RenderApp<vcl::qt::WidgetManager, vcl::Canvas, HelloTriangleDrawer>;

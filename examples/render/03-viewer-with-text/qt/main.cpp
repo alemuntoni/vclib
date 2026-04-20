@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -24,13 +24,12 @@
 
 #include <vclib/qt/viewer_widget.h>
 
+#include <vclib/bgfx/drawable/drawable_box3.h>
 #include <vclib/bgfx/drawers/text_drawer.h>
 #include <vclib/qt/widget_manager.h>
 #include <vclib/render/canvas.h>
 #include <vclib/render/drawers/trackball_viewer_drawer.h>
 #include <vclib/render/render_app.h>
-
-#include <QApplication>
 
 int main(int argc, char** argv)
 {
@@ -40,7 +39,7 @@ int main(int argc, char** argv)
         vcl::TrackBallViewerDrawer,
         vcl::TextDrawer>;
 
-    QApplication app(argc, argv);
+    auto app = vcl::qt::qAppl(argc, argv);
 
     ViewerWidget tw("Viewer Qt");
 
@@ -48,16 +47,21 @@ int main(int argc, char** argv)
     vcl::DrawableMesh<vcl::TriMesh> m =
         getDrawableMesh<vcl::TriMesh>("greek_helmet.obj");
 
+    vcl::updateBoundingBox(m);
+
+    vcl::DrawableBox3 db(m.boundingBox(), vcl::Color::Red, 3.0f);
+    db.name() = "Bounding Box";
+
     // add the drawable mesh to the scene
     // the viewer will own **a copy** of the drawable mesh
     tw.pushDrawableObject(m);
+    tw.pushDrawableObject(db);
 
     tw.enableText();
 
     tw.setTextFont(vcl::VclFont::DROID_SANS, 20);
-    tw.appendStaticText(
-        {5, 5}, "Vertices: " + std::to_string(m.vertexNumber()));
-    tw.appendStaticText({5, 30}, "Faces: " + std::to_string(m.faceNumber()));
+    tw.appendStaticText({5, 5}, "Vertices: " + std::to_string(m.vertexCount()));
+    tw.appendStaticText({5, 30}, "Faces: " + std::to_string(m.faceCount()));
 
     tw.fitScene();
 

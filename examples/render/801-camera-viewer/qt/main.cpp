@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -28,8 +28,6 @@
 #include <vclib/render/drawers/viewer_drawer.h>
 #include <vclib/render/render_app.h>
 
-#include <QApplication>
-
 template<typename DerivedRenderApp>
 class CameraViewerDrawer :
         public vcl::ViewerDrawer<vcl::CameraDrawer<DerivedRenderApp>>
@@ -41,7 +39,7 @@ public:
 
 int main(int argc, char** argv)
 {
-    QApplication app(argc, argv);
+    auto app = vcl::qt::qAppl(argc, argv);
 
     using SimpleCameraDemo =
         vcl::RenderApp<vcl::qt::WidgetManager, vcl::Canvas, CameraViewerDrawer>;

@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -31,6 +31,7 @@
 // note: the MeshViewerRenderApp class must be a QWidget.
 
 #if __has_include(<custom_mesh_viewer_render_app.h>)
+#include "utils.h"
 #include <custom_mesh_viewer_render_app.h>
 #else
 

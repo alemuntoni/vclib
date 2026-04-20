@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -25,14 +25,15 @@
 
 #include "imgui_helpers.h"
 
+#include <vclib/render/concepts/pbr_viewer.h>
 #include <vclib/render/drawable/drawable_mesh.h>
 #include <vclib/render/drawers/trackball_viewer_drawer.h>
+#include <vclib/render/settings/pbr_viewer_settings.h>
 
 #include <imgui.h>
 
 #include <algorithm>
 #include <iterator>
-#include <numeric>
 
 namespace vcl::imgui {
 
@@ -41,9 +42,6 @@ class MeshViewerDrawerImgui :
         public vcl::TrackBallViewerDrawer<DerivedRenderApp>
 {
     using Base = vcl::TrackBallViewerDrawer<DerivedRenderApp>;
-
-    // selected mesh index
-    int mMeshIndex = 0;
 
 public:
     using Base::Base;
@@ -70,40 +68,140 @@ public:
         }
 
         // drawable mesh info and settings for selected mesh
-        if (mMeshIndex >= 0 && mMeshIndex < Base::mDrawList->size()) {
+        uint meshIndex = Base::mDrawList->selectedObjectId();
+        if (meshIndex >= 0 && meshIndex < Base::mDrawList->size()) {
             auto drawable =
                 std::dynamic_pointer_cast<vcl::AbstractDrawableMesh>(
-                    Base::mDrawList->at(mMeshIndex));
+                    Base::mDrawList->at(meshIndex));
             if (drawable) {
                 drawMeshSettings(*drawable);
+            }
+        }
+
+        if constexpr (PBRViewerConcept<Base>) {
+            // combo box for pbr mode
+            ImGui::Separator();
+            ImGui::Text("Render Mode:");
+            ImGui::SameLine();
+
+            PBRViewerSettings pbrSettings = Base::pbrSettings();
+
+            const char* renderModeNames[] = {"Classic", "PBR"};
+            bool        pbrMode           = pbrSettings.pbrMode;
+            ImGui::SetNextItemWidth(80);
+            if (ImGui::BeginCombo(
+                    "##ComboRenderMode",
+                    pbrMode ? renderModeNames[1] : renderModeNames[0])) {
+                for (int n = 0; n < IM_ARRAYSIZE(renderModeNames); n++) {
+                    bool isSelected =
+                        (pbrMode && n == 1) || (!pbrMode && n == 0);
+                    if (ImGui::Selectable(renderModeNames[n], isSelected)) {
+                        pbrSettings.pbrMode = (n == 1);
+                    }
+                    if (isSelected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            // Update local state and persist any changes to the viewer.
+            pbrMode = pbrSettings.pbrMode;
+            Base::setPbrSettings(pbrSettings);
+
+            ImGui::BeginDisabled(!pbrMode);
+            {
+                // exposure slider
+                ImGui::Separator();
+                ImGui::Text("Exposure:");
+                ImGui::SameLine();
+                float exposure = pbrSettings.exposure;
+                if (ImGui::SliderFloat(
+                        "##Exposure",
+                        &exposure,
+                        0.001f,
+                        64.0f,
+                        "%.3f",
+                        ImGuiSliderFlags_Logarithmic))
+                    pbrSettings.exposure = exposure;
+
+                // tone mapping combo box
+                ImGui::Text("Tone mapping:");
+                ImGui::SameLine();
+                uint toneMapping = toUnderlying(pbrSettings.toneMapping);
+
+                const auto* toneMappingNames =
+                    PBRViewerSettings::TONE_MAPPING_STRINGS;
+                if (ImGui::BeginCombo(
+                        "##ComboToneMapping", toneMappingNames[toneMapping])) {
+                    const uint CNT =
+                        toUnderlying(PBRViewerSettings::ToneMapping::COUNT);
+                    for (uint n = 0; n < CNT; n++) {
+                        bool isSelected = toneMapping == n;
+                        if (ImGui::Selectable(
+                                toneMappingNames[n], isSelected)) {
+                            pbrSettings.toneMapping =
+                                static_cast<PBRViewerSettings::ToneMapping>(n);
+                        }
+                        if (isSelected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndCombo();
+                }
+
+                // image based lighting
+                ImGui::Checkbox(
+                    "Image Based Lighting",
+                    [&]() {
+                        return pbrSettings.imageBasedLighting;
+                    },
+                    [&](bool ibl) {
+                        pbrSettings.imageBasedLighting = ibl;
+                    });
+
+                // draw background checkbox
+                ImGui::Checkbox(
+                    "Render Background Panorama",
+                    [&]() {
+                        return pbrSettings.renderBackgroundPanorama;
+                    },
+                    [&](bool renderBg) {
+                        pbrSettings.renderBackgroundPanorama = renderBg;
+                    });
+            }
+            ImGui::EndDisabled();
+            if (pbrSettings.pbrMode) {
+                Base::setPbrSettings(pbrSettings);
             }
         }
 
         ImGui::End();
     }
 
-    void onMousePress(
+    bool onMousePress(
         MouseButton::Enum   button,
         double              x,
         double              y,
         const KeyModifiers& modifiers) override
     {
-        if (button == MouseButton::RIGHT) {
+        bool block = Base::onMousePress(button, x, y, modifiers);
+
+        if (!block && button == MouseButton::RIGHT) {
             this->readIdRequest(x, y, [&](uint id) {
                 if (id == UINT_NULL)
                     return;
 
-                mMeshIndex = id;
+                Base::mDrawList->setSelectedObjectId(id);
                 std::cout << "Selected  ID: " << id << std::endl;
             });
         }
-
-        Base::onMousePress(button, x, y, modifiers);
+        return block;
     }
 
 private:
     void drawMeshList()
     {
+        uint meshIndex = Base::mDrawList->selectedObjectId();
+
         if (!Base::mDrawList || Base::mDrawList->empty()) {
             ImGui::Text("No objects loaded");
             return;
@@ -136,12 +234,12 @@ private:
                 ImGui::TableSetColumnIndex(1);
 
                 // row selection
-                bool isSelected = (mMeshIndex == meshId - 1);
+                bool isSelected = (meshIndex == meshId - 1);
                 if (ImGui::Selectable(
                         drawable.name().c_str(),
                         isSelected,
                         ImGuiSelectableFlags_SpanAllColumns)) {
-                    mMeshIndex = meshId - 1;
+                    Base::mDrawList->setSelectedObjectId(meshId - 1);
                 }
                 // tooltip with info
                 if (!drawable.info().empty() &&
@@ -358,11 +456,15 @@ private:
             });
 
         // color
+        const uint CS_COUNT =
+            toUnderlying(COUNT) - 4; // exclude shading options
+
         ImGui::Text("Color:");
         ImGui::SameLine();
-        const char* surfColorNames[] = {
+        const char* surfColorNames[CS_COUNT] = {
             "Vertex", "Face", "Mesh", "PerVertexTex", "PerWedgeTex", "User"};
-        const std::array<bool, 6> colorSelected = {
+
+        const std::array<bool, CS_COUNT> colorSelected = {
             settings.isSurface(COLOR_VERTEX),
             settings.isSurface(COLOR_FACE),
             settings.isSurface(COLOR_MESH),
@@ -376,10 +478,10 @@ private:
             std::begin(colorSelected),
             std::find(
                 std::begin(colorSelected), std::end(colorSelected), true));
-        assert(idx >= 0 && idx < 6);
+        assert(idx >= 0 && idx < CS_COUNT);
         ImGui::SetNextItemWidth(-40);
         if (ImGui::BeginCombo("##ComboSurfColor", surfColorNames[idx])) {
-            for (int n = 0; n < IM_ARRAYSIZE(surfColorNames); n++) {
+            for (int n = 0; n < CS_COUNT; n++) {
                 const bool selected = (n == idx);
 
                 switch (n) {
@@ -545,6 +647,22 @@ private:
             ImGuiColorEditFlags_NoInputs);
         ImGui::EndDisabled();
 
+        // wireframe size
+        ImGui::Text("Size:");
+        // set the width of the window minus the width of the label
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(-10);
+        ImGui::SliderFloat(
+            "##WireframeSize",
+            [&] {
+                return settings.wireframeWidth();
+            },
+            [&](float v) {
+                settings.setWireframeWidth(v);
+            },
+            1.0f,
+            32.0f);
+
         ImGui::EndDisabled();
     }
 
@@ -673,6 +791,22 @@ private:
             },
             ImGuiColorEditFlags_NoInputs);
         ImGui::EndDisabled();
+
+        // edge size
+        ImGui::Text("Size:");
+        // set the width of the window minus the width of the label
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(-10);
+        ImGui::SliderFloat(
+            "##EdgeSize",
+            [&] {
+                return settings.edgesWidth();
+            },
+            [&](float v) {
+                settings.setEdgesWidth(v);
+            },
+            1.0f,
+            32.0f);
 
         ImGui::EndDisabled();
     }

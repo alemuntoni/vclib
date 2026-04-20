@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -27,13 +27,14 @@ namespace vcl {
 
 enum class VertFragProgram {
     DRAWABLE_AXIS,
+    DRAWABLE_ENVIRONMENT_PBR,
     DRAWABLE_DIRECTIONAL_LIGHT,
 
-    DRAWABLE_MESH_EDGES,
     DRAWABLE_MESH_POINTS,
     DRAWABLE_MESH_POINTS_INSTANCE,
 
     DRAWABLE_MESH_SURFACE_UBER,
+    DRAWABLE_MESH_SURFACE_UBER_PBR,
     // SURFACE_NONE
     DRAWABLE_MESH_SURFACE_NONE_COLOR_VERTEX,
     DRAWABLE_MESH_SURFACE_NONE_COLOR_MESH,
@@ -78,12 +79,9 @@ enum class VertFragProgram {
     DRAWABLE_MESH_SURFACE_SMOOTH_TEX_VERTEX_SI,
     DRAWABLE_MESH_SURFACE_SMOOTH_TEX_WEDGE_SI,
 
-    DRAWABLE_MESH_WIREFRAME,
-    DRAWABLE_MESH_EDGES_ID,
     DRAWABLE_MESH_POINTS_ID,
     DRAWABLE_MESH_POINTS_INSTANCE_ID,
     DRAWABLE_MESH_SURFACE_ID,
-    DRAWABLE_MESH_WIREFRAME_ID,
 
     DRAWABLE_TRACKBALL,
 
@@ -95,6 +93,9 @@ enum class VertFragProgram {
     FONT_DISTANCE_FIELD_OUTLINE_DROP_SHADOW_IMAGE,
     FONT_DISTANCE_FIELD_OUTLINE_IMAGE,
     FONT_DISTANCE_FIELD_SUBPIXEL,
+
+    PRIMITIVE_LINES,
+    CUSTOM_CPU_LINES, // TODO: change this name to a more meaningful one
 
     COUNT
 };

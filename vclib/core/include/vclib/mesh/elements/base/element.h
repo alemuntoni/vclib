@@ -2,7 +2,7 @@
  * VCLib                                                                     *
  * Visual Computing Library                                                  *
  *                                                                           *
- * Copyright(C) 2021-2025                                                    *
+ * Copyright(C) 2021-2026                                                    *
  * Visual Computing Lab                                                      *
  * ISTI - Italian National Research Council                                  *
  *                                                                           *
@@ -97,14 +97,14 @@ public:
     template<uint COMP_ID>
     auto& component()
     {
-        using Comp = GetComponentFromID<COMP_ID>::type;
+        using Comp = comp::ComponentTypeFromID<COMP_ID, Components>;
         return *static_cast<Comp*>(this);
     }
 
     template<uint COMP_ID>
     const auto& component() const
     {
-        using Comp = GetComponentFromID<COMP_ID>::type;
+        using Comp = comp::ComponentTypeFromID<COMP_ID, Components>;
         return *static_cast<const Comp*>(this);
     }
 
@@ -116,6 +116,20 @@ public:
         // available (e.g. optional and not enabled)
         (importComponent<Comps>(v, importRefs), ...);
     }
+
+    void swap(Element& other)
+    {
+        using PM = comp::ParentMeshPointer<MeshType>;
+
+        assert(PM::parentMesh() == other.parentMesh());
+        using std::swap;
+        (swap((Comps&) *this, (Comps&) other), ...);
+        if (PM::parentMesh()) {
+            PM::parentMesh()->swapVerticalComponents(*this, other);
+        }
+    }
+
+    friend void swap(Element& a, Element& b) { a.swap(b); }
 
     void serialize(std::ostream& out) const
     {
@@ -199,49 +213,6 @@ private:
             }
         }
     }
-
-    // Predicate structures
-
-    // Components can be individuated with their ID, which is an unsigned int.
-    // This struct sets its bool `value` to true if this Element has a Component
-    // with the given unsigned integer COMP_ID. Sets also `type` with a
-    // TypeWrapper containing the Component that satisfied the condition. The
-    // TypeWrapper will be empty if no Components were found.
-    template<uint COMP_ID>
-    struct ComponentIDPred
-    {
-    private:
-        template<typename Cont>
-        struct SameCmpPred
-        {
-            static constexpr bool value = Cont::COMPONENT_ID == COMP_ID;
-        };
-
-    public:
-        // TypeWrapper of the found component, if any
-        using type = FilterTypesByCondition<SameCmpPred, Components>::type;
-        static constexpr bool value = NumberOfTypes<type>::value == 1;
-    };
-
-    template<uint COMP_ID>
-    struct GetComponentFromID
-    {
-    private:
-        template<typename>
-        struct TypeUnwrapper
-        {
-        };
-
-        template<typename C>
-        struct TypeUnwrapper<TypeWrapper<C>>
-        {
-            using type = C;
-        };
-
-    public:
-        using type =
-            TypeUnwrapper<typename ComponentIDPred<COMP_ID>::type>::type;
-    };
 };
 
 } // namespace vcl
