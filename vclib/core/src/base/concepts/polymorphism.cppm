@@ -23,6 +23,7 @@
 module;
 
 #include <concepts>
+#include <type_traits>
 
 export module vclib.base:concepts.polymorphism;
 
