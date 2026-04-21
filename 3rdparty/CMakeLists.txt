@@ -65,7 +65,9 @@ include(zip-views.cmake)
 # === OPTIONAL === #
 
 # IO or RENDER 3rd Party libraries
-if (VCLIB_BUILD_CORE_WITH_3RDPARTY_IO_LIBRARIES OR VCLIB_BUILD_MODULE_RENDER)
+# Qt is not available on Emscripten (web) targets
+if ((VCLIB_BUILD_CORE_WITH_3RDPARTY_IO_LIBRARIES OR VCLIB_BUILD_MODULE_RENDER)
+        AND NOT EMSCRIPTEN)
     # Qt
     option(VCLIB_ALLOW_SYSTEM_QT "Allow use of system-provided Qt" ON)
     include(qt.cmake)
@@ -114,14 +116,21 @@ if (VCLIB_BUILD_MODULE_RENDER)
         include(opengl.cmake)
     endif()
 
-    ### GLFW
-    option(VCLIB_ALLOW_SYSTEM_GLFW "Allow use of system-provided GLFW" ON)
-    option(VCLIB_ALLOW_DOWNLOAD_GLFW "Allow use of downloaded GLFW source" ON)
-    include(glfw.cmake)
+    ### GLFW (not available on Emscripten web targets)
+    if (NOT EMSCRIPTEN)
+        option(VCLIB_ALLOW_SYSTEM_GLFW "Allow use of system-provided GLFW" ON)
+        option(VCLIB_ALLOW_DOWNLOAD_GLFW "Allow use of downloaded GLFW source" ON)
+        include(glfw.cmake)
+    endif()
 
     ### ImGui
     option(VCLIB_ALLOW_DOWNLOAD_IMGUI "Allow use of downloaded ImGui source" ON)
     include(imgui.cmake)
+
+    ### Emscripten (web target: replaces GLFW/Qt with WebGL2/WASM environment)
+    if (EMSCRIPTEN)
+        include(emscripten.cmake)
+    endif()
 endif()
 
 if (VCLIB_BUILD_MODULE_BINDINGS)

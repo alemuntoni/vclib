@@ -332,6 +332,35 @@
                 "VCLIB_INSTALL_MODULE_EXTERNAL": "OFF",
                 "VCLIB_INSTALL_MODULE_RENDER": "OFF"
             }
+        },
+        {
+            "name": "emscripten-toolchain",
+            "hidden": true,
+            "displayName": "Emscripten Toolchain",
+            "description": "Activates the Emscripten compiler toolchain. Either set the EMSDK environment variable (emsdk install) or install the system package (apt install emscripten) and pass -DCMAKE_TOOLCHAIN_FILE=/usr/share/emscripten/cmake/Modules/Platform/Emscripten.cmake manually.",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "$env{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+            }
+        },
+        {
+            "name": "vclib-render-bgfx-emscripten-debug",
+            "inherits": [
+                "debug",
+                "build-render-module",
+                "emscripten-toolchain"
+            ],
+            "displayName": "VCLib::Render (BGFX) Emscripten - Debug",
+            "description": "Render module with bgfx on WebGL2 via Emscripten"
+        },
+        {
+            "name": "vclib-render-bgfx-emscripten-release",
+            "inherits": [
+                "release",
+                "build-render-module",
+                "emscripten-toolchain"
+            ],
+            "displayName": "VCLib::Render (BGFX) Emscripten - Release",
+            "description": "Render module with bgfx on WebGL2 via Emscripten"
         }
     ]
 }

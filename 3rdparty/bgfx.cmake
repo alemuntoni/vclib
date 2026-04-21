@@ -86,6 +86,13 @@ elseif(VCLIB_ALLOW_DOWNLOAD_BGFX)
     set(BIMG_DECODE ON CACHE BOOL "" FORCE)
     set(BIMG_CUBEMAP ON CACHE BOOL "" FORCE)
 
+    # bimg_encode contains nvtt (NVIDIA Texture Tools) which does not support
+    # WebAssembly: posh.h cannot detect the WASM target CPU. Texture encoding
+    # is a CPU-side offline tool and is not useful in a browser anyway.
+    if (EMSCRIPTEN)
+        set(BIMG_ENCODE OFF CACHE BOOL "" FORCE)
+    endif()
+
     FetchContent_Declare(bgfx
         GIT_REPOSITORY https://github.com/bkaradzic/bgfx.cmake
         GIT_TAG        v1.136.9114-510
@@ -98,8 +105,13 @@ elseif(VCLIB_ALLOW_DOWNLOAD_BGFX)
     # there are three warnings on gcc that we need to ignore
     set_property(TARGET bgfx PROPERTY COMPILE_WARNING_AS_ERROR OFF)
 
-    target_link_libraries(vclib-3rd-bgfx INTERFACE
-        bx bgfx bimg bimg_decode bimg_encode)
+    if (EMSCRIPTEN)
+        target_link_libraries(vclib-3rd-bgfx INTERFACE
+            bx bgfx bimg bimg_decode)
+    else()
+        target_link_libraries(vclib-3rd-bgfx INTERFACE
+            bx bgfx bimg bimg_decode bimg_encode)
+    endif()
 
     target_include_directories(vclib-3rd-bgfx
         INTERFACE ${bgfx_SOURCE_DIR}/bgfx/3rdparty)
