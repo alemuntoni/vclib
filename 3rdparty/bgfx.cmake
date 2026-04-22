@@ -122,6 +122,71 @@ elseif(VCLIB_ALLOW_DOWNLOAD_BGFX)
     set_target_properties(vclib-3rd-bgfx PROPERTIES
         BGFX_SHADER_INCLUDE_PATH ${bgfx_SOURCE_DIR}/bgfx/src)
 
+    if (EMSCRIPTEN)
+        # When cross-compiling for WebAssembly, bgfx::shaderc is itself compiled
+        # to WASM (shaderc.js) and runs inside Node.js with Emscripten's virtual
+        # MEMFS filesystem. MEMFS does not expose the host filesystem, so shaderc
+        # cannot open source files by absolute path.
+        # Additionally, CMAKE_CROSSCOMPILING_EMULATOR is set to 'node' by the
+        # Emscripten toolchain, so CMake would prepend 'node' to every executable
+        # target used in COMMAND - even if we replaced the imported location.
+        #
+        # Solution: build a native shaderc (for the host) via ExternalProject_Add
+        # using explicit host compilers, then store its path so bgfx_config.cmake
+        # can reference it directly as a file path (bypassing the emulator logic).
+        include(ExternalProject)
+
+        find_program(VCLIB_NATIVE_C_COMPILER   NAMES gcc cc   clang   REQUIRED)
+        find_program(VCLIB_NATIVE_CXX_COMPILER NAMES g++ c++ clang++ REQUIRED)
+
+        set(_VCLIB_BGFX_HOST_SHADERC_BINDIR
+            "${CMAKE_CURRENT_BINARY_DIR}/bgfx-host-shaderc")
+        set(_VCLIB_BGFX_HOST_SHADERC_EXE
+            "${_VCLIB_BGFX_HOST_SHADERC_BINDIR}/cmake/bgfx/shaderc")
+        # bin2c is a bx utility, output goes into the bx subdirectory
+        set(_VCLIB_BGFX_HOST_BIN2C_EXE
+            "${_VCLIB_BGFX_HOST_SHADERC_BINDIR}/cmake/bx/bin2c")
+
+        ExternalProject_Add(vclib-bgfx-host-shaderc
+            SOURCE_DIR    "${bgfx_SOURCE_DIR}"
+            BINARY_DIR    "${_VCLIB_BGFX_HOST_SHADERC_BINDIR}"
+            INSTALL_COMMAND ""
+            # Build shaderc and bin2c (both needed for shader/asset compilation).
+            BUILD_COMMAND
+                ${CMAKE_COMMAND} --build <BINARY_DIR>
+                                 --target shaderc bin2c
+                                 --config Release
+            CMAKE_ARGS
+                -DCMAKE_BUILD_TYPE=Release
+                "-DCMAKE_C_COMPILER=${VCLIB_NATIVE_C_COMPILER}"
+                "-DCMAKE_CXX_COMPILER=${VCLIB_NATIVE_CXX_COMPILER}"
+                -DBGFX_BUILD_EXAMPLES=OFF
+                -DBGFX_BUILD_TOOLS=ON
+                -DBGFX_BUILD_TOOLS_SHADERC=ON
+                -DBGFX_BUILD_TOOLS_GEOMETRYC=OFF
+                -DBGFX_BUILD_TOOLS_TEXTUREC=OFF
+                -DBGFX_BUILD_TOOLS_TEXTUREV=OFF
+                -DBIMG_DECODE=OFF
+                -DBIMG_ENCODE=OFF
+                -DBIMG_CUBEMAP=OFF
+            BUILD_BYPRODUCTS
+                "${_VCLIB_BGFX_HOST_SHADERC_EXE}"
+                "${_VCLIB_BGFX_HOST_BIN2C_EXE}"
+        )
+
+        message(STATUS
+            "- bgfx - native shaderc/bin2c will be built at: "
+            "${_VCLIB_BGFX_HOST_SHADERC_BINDIR}")
+
+        # Store for use in bgfx_config.cmake.
+        # Using a file path (not the imported target name) in COMMAND bypasses
+        # CMAKE_CROSSCOMPILING_EMULATOR which would otherwise prepend 'node'.
+        set_target_properties(vclib-3rd-bgfx PROPERTIES
+            BGFX_NATIVE_SHADERC     "${_VCLIB_BGFX_HOST_SHADERC_EXE}"
+            BGFX_NATIVE_BIN2C       "${_VCLIB_BGFX_HOST_BIN2C_EXE}"
+            BGFX_NATIVE_SHADERC_DEP vclib-bgfx-host-shaderc)
+    endif()
+
     list(APPEND VCLIB_RENDER_3RDPARTY_LIBRARIES vclib-3rd-bgfx)
 else()
     message(FATAL_ERROR

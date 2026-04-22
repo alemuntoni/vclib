@@ -24,6 +24,31 @@ get_property(BGFX_CMAKE_SCRIPTS_PATH TARGET vclib-3rd-bgfx PROPERTY BGFX_CMAKE_S
 
 include(${BGFX_CMAKE_SCRIPTS_PATH}/bgfxToolUtils.cmake)
 
+# When cross-compiling for Emscripten, bgfx::bin2c is a WASM binary that
+# cannot access host filesystem paths, and CMAKE_CROSSCOMPILING_EMULATOR
+# ('node') would be prepended to it by CMake. Re-define the function to call
+# the native bin2c (built as a host tool via ExternalProject in bgfx.cmake).
+if (EMSCRIPTEN)
+    function(bgfx_compile_binary_to_header)
+        set(options "")
+        set(oneValueArgs INPUT_FILE OUTPUT_FILE ARRAY_NAME)
+        cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "" ${ARGN})
+        get_property(_native_bin2c TARGET vclib-3rd-bgfx PROPERTY BGFX_NATIVE_BIN2C)
+        get_property(_native_dep   TARGET vclib-3rd-bgfx PROPERTY BGFX_NATIVE_SHADERC_DEP)
+        get_filename_component(_out_dir "${ARG_OUTPUT_FILE}" DIRECTORY)
+        add_custom_command(
+            OUTPUT "${ARG_OUTPUT_FILE}"
+            COMMAND "${CMAKE_COMMAND}" -E make_directory "${_out_dir}"
+            COMMAND "${_native_bin2c}"
+                -f "${ARG_INPUT_FILE}"
+                -o "${ARG_OUTPUT_FILE}"
+                -n "${ARG_ARRAY_NAME}"
+            MAIN_DEPENDENCY "${ARG_INPUT_FILE}"
+            DEPENDS "${_native_dep}"
+        )
+    endfunction()
+endif()
+
 function(_set_bgfx_profiles)
     set(GLSL_PROFILE 140 PARENT_SCOPE)
     set(GLSL_COMPUTE_PROFILE 400 PARENT_SCOPE)
@@ -63,7 +88,17 @@ function(_bgfx_compile_shader_to_header)
     set(oneValueArgs TYPE VARYING_DEF OUTPUT_DIR OUT_FILES_VAR)
     set(multiValueArgs SHADERS INCLUDE_DIRS DEPENDS)
     cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
-
+    # When cross-compiling for Emscripten, bgfx::shaderc is a WASM binary that
+    # cannot access host filesystem paths, and CMAKE_CROSSCOMPILING_EMULATOR
+    # ('node') would be prepended to any target used in COMMAND. Use the native
+    # shaderc path directly (a file path bypasses the emulator logic).
+    set(_SHADERC_CMD "bgfx::shaderc")
+    set(_SHADERC_EXTRA_DEP "")
+    get_property(_native_shaderc TARGET vclib-3rd-bgfx PROPERTY BGFX_NATIVE_SHADERC)
+    if (_native_shaderc)
+        set(_SHADERC_CMD  "${_native_shaderc}")
+        get_property(_SHADERC_EXTRA_DEP TARGET vclib-3rd-bgfx PROPERTY BGFX_NATIVE_SHADERC_DEP)
+    endif()
     set(PROFILES ${ESSL_PROFILE} ${SPIRV_PROFILE}) # pssl
 
     if (NOT "${ARGS_TYPE}" STREQUAL "COMPUTE")
@@ -134,14 +169,14 @@ function(_bgfx_compile_shader_to_header)
 
             list(APPEND OUTPUTS ${OUTPUT})
             list(APPEND ALL_OUTPUTS ${OUTPUT})
-            list(APPEND COMMANDS COMMAND bgfx::shaderc ${CLI})
+            list(APPEND COMMANDS COMMAND "${_SHADERC_CMD}" ${CLI})
         endforeach()
 
         add_custom_command(
             OUTPUT ${OUTPUTS}
             COMMAND ${CMAKE_COMMAND} -E make_directory ${ARGS_OUTPUT_DIR} ${COMMANDS}
             MAIN_DEPENDENCY ${SHADER_FILE_ABSOLUTE}
-            DEPENDS ${ARGS_VARYING_DEF} ${ARGS_DEPENDS}
+            DEPENDS ${ARGS_VARYING_DEF} ${ARGS_DEPENDS} ${_SHADERC_EXTRA_DEP}
         )
     endforeach()
 
@@ -160,6 +195,16 @@ endfunction()
 # <BINARY_DIR>/shaders/<platform>/<DIR>/<FILE_NAME>.bin
 function(_add_bgfx_shader FILE DIR TARGET)
     _set_bgfx_profiles()
+
+    # Same rationale as in _bgfx_compile_shader_to_header: use native shaderc
+    # path when cross-compiling for Emscripten.
+    set(_SHADERC_CMD "bgfx::shaderc")
+    set(_SHADERC_EXTRA_DEP "")
+    get_property(_native_shaderc TARGET vclib-3rd-bgfx PROPERTY BGFX_NATIVE_SHADERC)
+    if (_native_shaderc)
+        set(_SHADERC_CMD  "${_native_shaderc}")
+        get_property(_SHADERC_EXTRA_DEP TARGET vclib-3rd-bgfx PROPERTY BGFX_NATIVE_SHADERC_DEP)
+    endif()
 
     get_property(BGFX_SHADER_INCLUDE_PATH TARGET vclib-3rd-bgfx PROPERTY BGFX_SHADER_INCLUDE_PATH)
     get_property(VCLIB_RENDER_DIR TARGET vclib::render PROPERTY VCLIB_RENDER_INCLUDE_DIR)
@@ -270,7 +315,7 @@ function(_add_bgfx_shader FILE DIR TARGET)
 
         foreach(OUT ${OUTPUTS})
             list(APPEND OUTPUT_FILES ${${OUT}_OUTPUT})
-            list(APPEND COMMANDS COMMAND "bgfx::shaderc" ${${OUT}})
+            list(APPEND COMMANDS COMMAND "${_SHADERC_CMD}" ${${OUT}})
             get_filename_component(OUT_DIR ${${OUT}_OUTPUT} DIRECTORY)
             file(MAKE_DIRECTORY ${OUT_DIR})
         endforeach()
@@ -282,6 +327,7 @@ function(_add_bgfx_shader FILE DIR TARGET)
             OUTPUT ${OUTPUT_FILES}
             ${COMMANDS}
             COMMENT "Compiling shader ${PRINT_NAME} for ${OUTPUTS_PRETTY}"
+            DEPENDS ${_SHADERC_EXTRA_DEP}
         )
     endif()
 endfunction()

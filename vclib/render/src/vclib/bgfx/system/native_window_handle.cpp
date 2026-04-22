@@ -25,6 +25,39 @@
 #include <cassert>
 #include <iostream>
 
+#ifdef VCLIB_WITH_EMSCRIPTEN
+
+// On Emscripten the browser owns the canvas and the WebGL context.
+// bgfx discovers it automatically via Emscripten APIs; no native window
+// handle needs to be created or destroyed by vclib.
+
+namespace vcl {
+
+void* createWindow(
+    const char* /*title*/,
+    int /*width*/,
+    int /*height*/,
+    void*& /*display*/,
+    bool /*hidden*/)
+{
+    return nullptr;
+}
+
+void* createWindow(
+    const char* /*title*/,
+    int /*width*/,
+    int /*height*/,
+    bool /*hidden*/)
+{
+    return nullptr;
+}
+
+void closeWindow(void* /*window*/, void* /*display*/) {}
+
+} // namespace vcl
+
+#else // !VCLIB_WITH_EMSCRIPTEN
+
 #ifdef _WIN32
 #ifndef UNICODE
 #define VCLIB_DEF_UNICODE
@@ -180,3 +213,5 @@ void closeWindow(void* window, void* display)
 }
 
 } // namespace vcl
+
+#endif // !VCLIB_WITH_EMSCRIPTEN
