@@ -106,14 +106,20 @@ void Callback::cacheWrite(uint64_t id, const void* data, uint32_t size)
 }
 
 void Callback::screenShot(
-    const char* filePath,
-    uint32_t    width,
-    uint32_t    height,
-    uint32_t    pitch,
-    const void* data,
-    uint32_t    size,
-    bool        yflip)
+    const char*               filePath,
+    uint32_t                  width,
+    uint32_t                  height,
+    uint32_t                  pitch,
+    bgfx::TextureFormat::Enum format,
+    const void*               data,
+    uint32_t                  size,
+    bool                      yflip)
 {
+    if (format != bgfx::TextureFormat::BGRA8) {
+        std::cerr << "Unsupported texture format for screenshot: "
+                  << std::endl;
+        return;
+    }
     vcl::Image img(data, width, height, yflip, vcl::Color::Format::ARGB);
     vcl::saveImage(img, filePath);
 }
