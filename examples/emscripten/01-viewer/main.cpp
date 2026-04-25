@@ -40,6 +40,7 @@ int main()
     vcl::TriMesh sphere = vcl::createSphere<vcl::TriMesh>();
     vcl::updatePerFaceNormals(sphere);
     vcl::updatePerVertexNormalsFromFaceNormals(sphere);
+    sphere.enablePerVertexColor();
     vcl::setPerVertexColor(sphere, vcl::Color(vcl::Color::LightBlue));
 
     vcl::DrawableMesh<vcl::TriMesh> drawable(sphere);

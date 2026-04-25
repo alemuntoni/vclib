@@ -73,7 +73,13 @@ namespace vcl {
 template<typename Iterator, typename Lambda>
 void parallelFor(Iterator&& begin, Iterator&& end, Lambda&& F)
 {
+#ifdef __EMSCRIPTEN__
+    // Emscripten does not support threads without -pthread + SharedArrayBuffer.
+    // Fall back to sequential execution to avoid std::thread constructor failure.
+    std::for_each(std::execution::seq, begin, end, F);
+#else
     std::for_each(std::execution::par, begin, end, F);
+#endif
 }
 
 /**

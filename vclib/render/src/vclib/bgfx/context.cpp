@@ -319,10 +319,10 @@ Context::Context(void* windowHandle, void* displayHandle)
     mWindowHandle  = windowHandle;
     mDisplayHandle = nullptr;
 
-    // Prevent bgfx from spawning a render thread; must be called before init.
-    bgfx::renderFrame();
-
     // WebGL / OpenGL ES is the only renderer available on Emscripten.
+    // NOTE: bgfx::renderFrame() must NOT be called here — on Emscripten bgfx
+    // compiles with BGFX_CONFIG_MULTITHREADED=0, so renderFrame() is a no-op
+    // that unconditionally asserts "only makes sense with multi-threaded renderer".
     if (sRenderType == bgfx::RendererType::Count)
         sRenderType = bgfx::RendererType::OpenGLES;
 #else

@@ -226,9 +226,10 @@ public:
                 chunk.startIndex * 3, chunk.indexCount * 3);
         }
 
-        mTriangleNormalBuffer.bind(VCL_MRB_PRIMITIVE_NORMAL_BUFFER);
-
-        mTriangleColorBuffer.bind(VCL_MRB_PRIMITIVE_COLOR_BUFFER);
+        if (Context::instance().supportsCompute()) {
+            mTriangleNormalBuffer.bind(VCL_MRB_PRIMITIVE_NORMAL_BUFFER);
+            mTriangleColorBuffer.bind(VCL_MRB_PRIMITIVE_COLOR_BUFFER);
+        }
     }
 
     void drawEdgeLines(uint viewId) const { mEdgeLines.draw(viewId); }
