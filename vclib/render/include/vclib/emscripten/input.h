@@ -20,31 +20,45 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_RENDER_WINDOW_MANAGERS_H
-#define VCL_RENDER_WINDOW_MANAGERS_H
+#ifndef VCL_EMSCRIPTEN_INPUT_H
+#define VCL_EMSCRIPTEN_INPUT_H
 
-namespace vcl {
+#include <vclib/render/input.h>
+
+#include <emscripten/html5.h>
+
+namespace vcl::emscripten {
 
 /**
- * @brief The WindowManagerId struct enumerates the window managers that can be
- * used to create and manage a window and its events.
+ * @brief Converts an HTML5 mouse button index to a vcl::MouseButton::Enum.
  *
- * The window managers are identified by an unsigned integer value, that
- * corresponds to a specific window manager implementation.
+ * HTML5 button values: 0=left, 1=middle, 2=right.
  */
-struct WindowManagerId
-{
-    enum Enum {
-        GLFW_WINDOW,
-        QT_WIDGET,
-        QT_WINDOW,
-        EMSCRIPTEN_CANVAS,
-        // Additional window managers here
+vcl::MouseButton::Enum fromEmscriptenButton(unsigned short button);
 
-        WINDOW_MANAGER_COUNT
-    };
-};
+/**
+ * @brief Extracts a vcl::Key from an Emscripten keyboard event.
+ *
+ * Uses the event's `key` string (e.g. "a", "ArrowLeft", "F1").
+ */
+vcl::Key::Enum fromEmscripten(const EmscriptenKeyboardEvent& event);
 
-} // namespace vcl
+/**
+ * @brief Extracts the active vcl::KeyModifiers from an Emscripten mouse event.
+ */
+vcl::KeyModifiers fromEmscriptenModifiers(const EmscriptenMouseEvent& event);
 
-#endif // VCL_RENDER_WINDOW_MANAGERS_H
+/**
+ * @brief Extracts the active vcl::KeyModifiers from an Emscripten keyboard
+ * event.
+ */
+vcl::KeyModifiers fromEmscriptenModifiers(const EmscriptenKeyboardEvent& event);
+
+/**
+ * @brief Extracts the active vcl::KeyModifiers from an Emscripten wheel event.
+ */
+vcl::KeyModifiers fromEmscriptenModifiers(const EmscriptenWheelEvent& event);
+
+} // namespace vcl::emscripten
+
+#endif // VCL_EMSCRIPTEN_INPUT_H

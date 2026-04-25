@@ -102,6 +102,16 @@ if (TARGET vclib-3rd-imgui)
     list(APPEND HEADERS ${HEADERS_IMGUI})
 endif()
 
+if (TARGET vclib-3rd-emscripten)
+    file(GLOB_RECURSE HEADERS_EMSCRIPTEN CONFIGURE_DEPENDS
+        "include/vclib/emscripten/*.h")
+    list(APPEND HEADERS ${HEADERS_EMSCRIPTEN})
+
+    file(GLOB_RECURSE SOURCES_EMSCRIPTEN CONFIGURE_DEPENDS
+        "src/vclib/emscripten/*.cpp")
+    list(APPEND SOURCES ${SOURCES_EMSCRIPTEN})
+endif()
+
 if (TARGET vclib-3rd-qt)
     file(GLOB_RECURSE HEADERS_QT CONFIGURE_DEPENDS "include/vclib/qt/*.h")
     list(APPEND HEADERS ${HEADERS_QT})

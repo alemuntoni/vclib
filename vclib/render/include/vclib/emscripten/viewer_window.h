@@ -20,31 +20,27 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_RENDER_WINDOW_MANAGERS_H
-#define VCL_RENDER_WINDOW_MANAGERS_H
+#ifndef VCL_EMSCRIPTEN_VIEWER_WINDOW_H
+#define VCL_EMSCRIPTEN_VIEWER_WINDOW_H
 
-namespace vcl {
+#include <vclib/emscripten/window_manager.h>
+#include <vclib/render/canvas.h>
+#include <vclib/render/drawers/trackball_viewer_drawer.h>
+#include <vclib/render/render_app.h>
+
+namespace vcl::emscripten {
 
 /**
- * @brief The WindowManagerId struct enumerates the window managers that can be
- * used to create and manage a window and its events.
+ * @brief Convenience alias for a full-featured Emscripten viewer.
  *
- * The window managers are identified by an unsigned integer value, that
- * corresponds to a specific window manager implementation.
+ * Combines the Emscripten window manager, bgfx canvas, and the standard
+ * trackball viewer drawer into a ready-to-use RenderApp.
  */
-struct WindowManagerId
-{
-    enum Enum {
-        GLFW_WINDOW,
-        QT_WIDGET,
-        QT_WINDOW,
-        EMSCRIPTEN_CANVAS,
-        // Additional window managers here
+using ViewerWindow = vcl::RenderApp<
+    vcl::emscripten::WindowManager,
+    vcl::Canvas,
+    vcl::TrackBallViewerDrawer>;
 
-        WINDOW_MANAGER_COUNT
-    };
-};
+} // namespace vcl::emscripten
 
-} // namespace vcl
-
-#endif // VCL_RENDER_WINDOW_MANAGERS_H
+#endif // VCL_EMSCRIPTEN_VIEWER_WINDOW_H
