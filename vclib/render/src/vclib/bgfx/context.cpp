@@ -312,6 +312,20 @@ ProgramManager& Context::programManager()
 
 Context::Context(void* windowHandle, void* displayHandle)
 {
+#ifdef __EMSCRIPTEN__
+    // On Emscripten, bgfx renders to the WebGL canvas identified by the CSS
+    // selector stored in windowHandle (e.g. "#canvas").  There is no
+    // X11/Wayland display handle.
+    mWindowHandle  = windowHandle;
+    mDisplayHandle = nullptr;
+
+    // Prevent bgfx from spawning a render thread; must be called before init.
+    bgfx::renderFrame();
+
+    // WebGL / OpenGL ES is the only renderer available on Emscripten.
+    if (sRenderType == bgfx::RendererType::Count)
+        sRenderType = bgfx::RendererType::OpenGLES;
+#else
     static const bool forceWindow = false;
 
     if (windowHandle == nullptr) {
@@ -339,6 +353,7 @@ Context::Context(void* windowHandle, void* displayHandle)
         bgfx::renderFrame(); // needed for macos
     }
 #endif // __APPLE__
+#endif // __EMSCRIPTEN__
 
     bgfx::Init init;
     init.platformData.nwh = mWindowHandle;

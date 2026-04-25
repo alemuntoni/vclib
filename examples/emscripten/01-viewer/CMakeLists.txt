@@ -46,4 +46,5 @@ set_target_properties(${TARGET_NAME} PROPERTIES SUFFIX ".html")
 target_link_options(${TARGET_NAME} PRIVATE
     "SHELL:--shell-file ${VCLIB_RENDER_CMAKE_DIR}/emscripten_shell.html"
     -sEXIT_RUNTIME=0
-    -sALLOW_MEMORY_GROWTH=1)
+    -sALLOW_MEMORY_GROWTH=1
+    $<$<CONFIG:Debug>:-sASSERTIONS=2>)

@@ -124,10 +124,18 @@ public:
     Point2f dpiScale() const { return Point2f(mDpiScale, mDpiScale); }
 
     /**
-     * @brief Returns nullptr: bgfx on Emscripten discovers the canvas
-     * automatically and does not need a native window handle.
+     * @brief Returns the canvas CSS selector as the window handle.
+     *
+     * bgfx on Emscripten passes this string to
+     * @c emscripten_webgl_create_context to locate the canvas element.
+     * Returning a non-null, stable pointer is also required so that
+     * @ref Context does not treat the rendering context as headless and
+     * correctly targets the WebGL default framebuffer.
      */
-    void* winId() const { return nullptr; }
+    void* winId() const
+    {
+        return static_cast<void*>(const_cast<char*>(mCanvasTarget.c_str()));
+    }
 
     /**
      * @brief Returns nullptr: no display handle is needed on Emscripten.
