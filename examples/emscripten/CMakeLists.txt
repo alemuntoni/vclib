@@ -31,4 +31,11 @@ if (NOT TARGET vclib-3rd-emscripten)
         "Use an emscripten CMake preset.")
 endif()
 
+# vclib_add_example(... VCLIB_MODULE render ...) always links this target.
+# It is normally defined by examples/render/common, which is not included in
+# the emscripten build.  A stub INTERFACE target is sufficient here.
+if (NOT TARGET vclib-render-examples-common)
+    add_library(vclib-render-examples-common INTERFACE)
+endif()
+
 add_subdirectory(01-viewer)
