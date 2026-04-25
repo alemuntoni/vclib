@@ -152,6 +152,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     VCLIB_RENDER_SHADER_INCLUDE_DIR
     "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    VCLIB_RENDER_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 if (VCLIB_RENDER_BACKEND STREQUAL "bgfx")
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/bgfx_config.cmake)
 

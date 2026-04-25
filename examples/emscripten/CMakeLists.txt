@@ -21,36 +21,14 @@
 #****************************************************************************/
 
 cmake_minimum_required(VERSION 3.24)
-project(vclib-examples)
+project(vclib-emscripten-examples)
 
 set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 
-option(VCLIB_CORE_BUILD_EXAMPLES
-    "If true, the examples of VCLib-core will be built." OFF)
-
-option(VCLIB_EXTERNAL_BUILD_EXAMPLES
-    "If true, the examples of VCLib-external will be built." OFF)
-
-option(VCLIB_RENDER_BUILD_EXAMPLES
-    "If true, the examples of VCLib-render will be built." OFF)
-
-option(VCLIB_EMSCRIPTEN_BUILD_EXAMPLES
-    "If true, the Emscripten-specific examples of VCLib will be built." OFF)
-
-# examples
-if (VCLIB_CORE_BUILD_EXAMPLES)
-    add_subdirectory(core)
+if (NOT TARGET vclib-3rd-emscripten)
+    message(FATAL_ERROR
+        "vclib-emscripten examples require the Emscripten toolchain. "
+        "Use an emscripten CMake preset.")
 endif()
 
-if (VCLIB_BUILD_MODULE_EXTERNAL AND VCLIB_EXTERNAL_BUILD_EXAMPLES)
-    add_subdirectory(external)
-endif()
-
-if (VCLIB_BUILD_MODULE_RENDER AND VCLIB_RENDER_BUILD_EXAMPLES)
-    add_subdirectory(render)
-endif()
-
-if (VCLIB_BUILD_MODULE_RENDER AND VCLIB_EMSCRIPTEN_BUILD_EXAMPLES)
-    add_subdirectory(emscripten)
-endif()
-
+add_subdirectory(01-viewer)

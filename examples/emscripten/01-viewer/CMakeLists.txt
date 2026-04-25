@@ -21,36 +21,29 @@
 #****************************************************************************/
 
 cmake_minimum_required(VERSION 3.24)
-project(vclib-examples)
 
-set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
+set(EXAMPLE_NAME 01-viewer)
+project(vclib-emscripten-example-${EXAMPLE_NAME})
 
-option(VCLIB_CORE_BUILD_EXAMPLES
-    "If true, the examples of VCLib-core will be built." OFF)
+set(CMAKE_CXX_STANDARD 20)
 
-option(VCLIB_EXTERNAL_BUILD_EXAMPLES
-    "If true, the examples of VCLib-external will be built." OFF)
+set(SOURCES main.cpp)
 
-option(VCLIB_RENDER_BUILD_EXAMPLES
-    "If true, the examples of VCLib-render will be built." OFF)
+# creates target 'vclib-render-example-01-viewer'
+vclib_add_example(${EXAMPLE_NAME}
+    VCLIB_MODULE render
+    SOURCES ${SOURCES})
 
-option(VCLIB_EMSCRIPTEN_BUILD_EXAMPLES
-    "If true, the Emscripten-specific examples of VCLib will be built." OFF)
+set(TARGET_NAME vclib-render-example-${EXAMPLE_NAME})
 
-# examples
-if (VCLIB_CORE_BUILD_EXAMPLES)
-    add_subdirectory(core)
-endif()
+# Retrieve the path to the vclib-render cmake directory where the HTML shell
+# template lives. It is stored as a property on the vclib-render target.
+get_target_property(VCLIB_RENDER_CMAKE_DIR vclib-render VCLIB_RENDER_CMAKE_DIR)
 
-if (VCLIB_BUILD_MODULE_EXTERNAL AND VCLIB_EXTERNAL_BUILD_EXAMPLES)
-    add_subdirectory(external)
-endif()
-
-if (VCLIB_BUILD_MODULE_RENDER AND VCLIB_RENDER_BUILD_EXAMPLES)
-    add_subdirectory(render)
-endif()
-
-if (VCLIB_BUILD_MODULE_RENDER AND VCLIB_EMSCRIPTEN_BUILD_EXAMPLES)
-    add_subdirectory(emscripten)
-endif()
-
+# Emscripten: output as .html using our custom shell, keep the runtime alive
+# after main() returns (the requestAnimationFrame loop is the real main loop).
+set_target_properties(${TARGET_NAME} PROPERTIES SUFFIX ".html")
+target_link_options(${TARGET_NAME} PRIVATE
+    "SHELL:--shell-file ${VCLIB_RENDER_CMAKE_DIR}/emscripten_shell.html"
+    -sEXIT_RUNTIME=0
+    -sALLOW_MEMORY_GROWTH=1)
