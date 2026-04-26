@@ -38,4 +38,5 @@ if (NOT TARGET vclib-render-examples-common)
     add_library(vclib-render-examples-common INTERFACE)
 endif()
 
+add_subdirectory(00-hello-triangle)
 add_subdirectory(01-viewer)
