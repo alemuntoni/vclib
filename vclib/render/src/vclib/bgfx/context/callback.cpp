@@ -115,12 +115,19 @@ void Callback::screenShot(
     uint32_t                  size,
     bool                      yflip)
 {
-    if (format != bgfx::TextureFormat::BGRA8) {
+    vcl::Color::Format colorFormat = vcl::Color::Format::BGRA;
+    switch (format) {
+    case bgfx::TextureFormat::BGRA8:
+        break;
+    case bgfx::TextureFormat::RGBA8: colorFormat = vcl::Color::Format::ARGB;
+        break;
+    default:
         std::cerr << "Unsupported texture format for screenshot: "
                   << std::endl;
         return;
     }
-    vcl::Image img(data, width, height, yflip, vcl::Color::Format::ARGB);
+
+    vcl::Image img(data, width, height, yflip, colorFormat);
     vcl::saveImage(img, filePath);
 }
 
