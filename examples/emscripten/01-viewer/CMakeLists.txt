@@ -31,7 +31,7 @@ set(SOURCES main.cpp)
 
 # creates target 'vclib-render-example-01-viewer'
 vclib_add_example(${EXAMPLE_NAME}
-    VCLIB_MODULE render
+    MODULE render
     SOURCES ${SOURCES})
 
 set(TARGET_NAME vclib-render-example-${EXAMPLE_NAME})

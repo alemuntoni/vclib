@@ -41,7 +41,7 @@ set(SHADERS
 
 # creates target 'vclib-render-example-00-hello-triangle'
 vclib_add_example(${EXAMPLE_NAME}
-    VCLIB_MODULE render
+    MODULE render
     SOURCES ${HEADERS} ${SOURCES})
 
 set(TARGET_NAME vclib-render-example-${EXAMPLE_NAME})
