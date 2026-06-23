@@ -5,8 +5,9 @@
  * VCLib when included via FetchContent.
  *
  * It shows:
- * - Loading meshes from different file formats (OBJ, PLY)
+ * - Loading meshes from different file formats (OBJ, PLY, STL, OFF)
  * - Saving meshes in various formats
+ * - Loading glTF files with texture information
  * - Querying mesh information
  * - Using LoadSettings and SaveSettings
  *
@@ -115,6 +116,37 @@ int main()
     } catch (const std::exception& e) {
         std::cerr << "  Error loading mesh: " << e.what() << std::endl;
         return 1;
+    }
+    std::cout << std::endl;
+
+    // Load glTF file from assets
+    std::cout << "--- Loading glTF File (Duck) ---" << std::endl;
+
+#ifdef ASSETS_PATH
+    fs::path duckPath = fs::path(ASSETS_PATH) / "example_meshes" / "gltf" / "Duck" / "Duck.gltf";
+#else
+    fs::path duckPath = fs::current_path() / "test_assets" / "gltf" / "Duck" / "Duck.gltf";
+#endif
+
+    if (fs::exists(duckPath)) {
+        try {
+            vcl::TriMesh duckMesh;
+            vcl::MeshInfo duckInfo;
+            vcl::loadGltf(duckMesh, duckPath.string(), duckInfo);
+
+            std::cout << "  Loaded: " << duckPath.string() << std::endl;
+            std::cout << "    Vertices: " << duckMesh.vertexCount() << std::endl;
+            std::cout << "    Faces: " << duckMesh.faceCount() << std::endl;
+            std::cout << "    Has positions: " << duckInfo.hasPerVertexPosition() << std::endl;
+            std::cout << "    Has normals: " << duckInfo.hasPerVertexNormal() << std::endl;
+            std::cout << "    Has tex coords: " << duckInfo.hasPerVertexTexCoord() << std::endl;
+            std::cout << "    ✓ glTF loaded successfully!" << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << "  Error loading glTF: " << e.what() << std::endl;
+            return 1;
+        }
+    } else {
+        std::cout << "  Skipped (file not found: " << duckPath.string() << ")" << std::endl;
     }
     std::cout << std::endl;
 

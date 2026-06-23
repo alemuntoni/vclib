@@ -35,8 +35,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(vclib)
 
+# Define ASSETS_PATH macro pointing to the repository's assets directory
+set(ASSETS_PATH "${vclib_SOURCE_DIR}/assets")
+
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE vclib::vclib)
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    ASSETS_PATH="${ASSETS_PATH}")
 
 message(STATUS "VCLib Standalone Example 002: Mesh I/O")
 message(STATUS "  VCLib source: ${vclib_SOURCE_DIR}")
+message(STATUS "  Assets path: ${ASSETS_PATH}")
