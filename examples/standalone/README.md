@@ -28,7 +28,7 @@ cmake --build . --config Release
 
 | # | Example | Description |
 |---|---------|-------------|
-| 001 | `basic-mesh-creation` | Creating basic mesh structures (icosahedron, cube, point cloud, polymesh) |
+| 001 | `basic-mesh-creation` | Creating basic mesh structures (icosahedron, point cloud, polymesh) |
 | 002 | `mesh-io` | Loading and saving meshes in various formats (OBJ, PLY, STL, OFF) |
 
 ## Using FetchContent
@@ -79,6 +79,15 @@ FetchContent_Declare(
     GIT_TAG        v0.1.0  # Use a specific tag
 )
 ```
+
+## CI Testing
+
+These examples are automatically built and tested on all supported platforms via GitHub Actions:
+- **Ubuntu** (x86_64 and ARM)
+- **macOS** (Intel and Apple Silicon)
+- **Windows** (x86_64)
+
+See [StandaloneExamples.yml](../../.github/workflows/StandaloneExamples.yml) for the workflow configuration.
 
 ## License
 

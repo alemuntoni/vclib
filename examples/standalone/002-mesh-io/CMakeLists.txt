@@ -13,7 +13,7 @@
 #############################################################################
 
 cmake_minimum_required(VERSION 3.24)
-project(standalone_002_mesh_io LANGUAGES CXX)
+project(standalone-002-mesh-io LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

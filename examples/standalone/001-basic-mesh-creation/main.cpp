@@ -66,7 +66,7 @@ int main()
     auto v3 = polyMesh.addVertex({0.0, 1.0, 0.0});
 
     // Add a quad face
-    std::vector<uint> faceVertices = {v0, v1, v2, v3};
+    std::vector<vcl::uint> faceVertices = {v0, v1, v2, v3};
     polyMesh.addFace(faceVertices);
 
     std::cout << "  Vertices: " << polyMesh.vertexCount() << std::endl;
