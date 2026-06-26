@@ -30,29 +30,29 @@ The repository contains several GitHub Actions workflows in `.github/workflows`:
 To reach the final goal of a fully automated `CreateRelease` workflow, we should proceed with the following incremental steps:
 
 ### Phase 1: CMake Configuration & `find_package` Support (Focus on Core First)
-1. **Add `install(EXPORT)` to CMakeLists.txt (Core Module):** 
+- [x] **1. Add `install(EXPORT)` to CMakeLists.txt (Core Module):** 
    - Modify the root `CMakeLists.txt` and `3rdparty/CMakeLists.txt` to conditionally export the `core` module and its 3rdparty dependencies.
-   - Ensure `vclib-core` remains strictly *header-only* (e.g., forcing `tinygltf` into header-only mode, and disabling strict TBB/Qt linking during CMake installation).
+   - Ensure `vclib-core` installs correctly, handling external static dependencies (like `tinygltf` and `stb`) and dynamically linking system dependencies (like TBB/Qt).
    - Create a CMake preset (e.g. `vclib-core-install`) for building and installing the standalone core module.
    - Create a `cmake/vclibConfig.cmake.in` file to configure the package for `find_package(vclib)`.
-2. **Create Standalone Examples for `find_package`:**
-   - Add new standalone examples in the `examples/standalone` directory that strictly rely on `find_package(vclib)` instead of `FetchContent`.
-3. **Test `find_package` in CI:**
-   - Create or update a GitHub Actions workflow to build and install VCLib, and then compile the newly created standalone examples to ensure the installation process and `find_package` integration work flawlessly.
-4. **Extend to External and Render Modules:**
+- [x] **2. Create Standalone Examples for `find_package`:**
+   - Add new standalone examples in the `examples/standalone` directory that test both `find_package(vclib)` and `FetchContent`.
+- [x] **3. Test `find_package` in CI:**
+   - Update the GitHub Actions workflow (`StandaloneExamples.yml`) with a matrix to test both `find_package` (installing the library first) and `FetchContent`.
+- [ ] **4. Extend to External and Render Modules:**
    - Once the core module works perfectly via `find_package`, extend the installation and export logic to the `external` and `render` modules.
 
 ### Phase 2: Expand Artifact Generation
-4. **Generalize Python Wheel Building:**
+- [ ] **5. Generalize Python Wheel Building:**
    - Update the Python bindings workflow (or prepare the logic for the release workflow) to build wheels for **all alive Python versions** (e.g., 3.9, 3.10, 3.11, 3.12, 3.13) across the required OS/arch matrix.
-5. **Create C++ Precompiled Archives Workflow:**
+- [ ] **6. Create C++ Precompiled Archives Workflow:**
    - Implement the logic to build the C++ library and create install archives (.zip / .tar.gz).
    - Create two variations: **Core-Only** (just the core module) and **Full** (core + external + render).
-6. **Package Documentation:**
+- [ ] **7. Package Documentation:**
    - Ensure the documentation workflow can export the generated HTML documentation as a `.zip` artifact.
 
 ### Phase 3: The `CreateRelease` Workflow
-7. **Orchestrate the `CreateRelease` GitHub Action:**
+- [ ] **8. Orchestrate the `CreateRelease` GitHub Action:**
    - Create a new workflow `.github/workflows/CreateRelease.yml` with a `workflow_dispatch` trigger, accepting the `version` as an input.
    - **Step 1: Run Checks:** Execute all existing tests (Core, External, Render, ClangFormat) to ensure the codebase is stable.
    - **Step 2: Build Artifacts:** 

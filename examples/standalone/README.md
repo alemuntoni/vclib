@@ -1,88 +1,41 @@
-# VCLib Standalone Examples
+# VCLib Standalone Examples & Testing
 
-These are independent CMake projects that demonstrate how to use VCLib as a dependency
-in your own projects. Each example is completely self-contained and can be built
-separately from the main VCLib repository.
+This directory contains the infrastructure for testing VCLib as an external dependency, as well as a ready-to-use template project for new users.
 
-## Purpose
+## 1. Automated Integration Tests
 
-These examples serve two purposes:
+The root `CMakeLists.txt` in this directory is a unified project designed to test how VCLib is consumed by external projects. Instead of duplicating the example source code, it dynamically compiles the `main.cpp` files from the original `../core/` examples.
 
-1. **Documentation**: They show real-world usage patterns for VCLib's API
-2. **Integration Testing**: They verify that VCLib can be consumed via `FetchContent`
-   and that the resulting build works correctly
+### Configuration Modes
 
-## Building
+You can configure this project to test two different integration methods:
 
-Each example is a standalone CMake project. To build any example:
-
+#### `find_package` (Default)
+Tests the consumption of VCLib through an installed version on the system.
 ```bash
-cd examples/standalone/001-basic-mesh-creation
 mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build . --config Release
-./standalone_001_basic_mesh_creation
+cmake .. -DCMAKE_PREFIX_PATH=/path/to/your/vclib/install
+cmake --build .
+ctest --output-on-failure
 ```
 
-## Examples List
-
-| # | Example | Description |
-|---|---------|-------------|
-| 001 | `basic-mesh-creation` | Creating basic mesh structures (icosahedron, point cloud, polymesh) |
-| 002 | `mesh-io` | Loading and saving meshes in various formats (OBJ, PLY, STL, OFF) |
-
-## Using FetchContent
-
-All examples use CMake's `FetchContent` to download VCLib at configure time:
-
-```cmake
-include(FetchContent)
-
-# Set VCLib options BEFORE calling FetchContent_Declare
-set(VCLIB_BUILD_MODULE_EXTERNAL OFF CACHE STRING "" FORCE)
-set(VCLIB_BUILD_MODULE_RENDER OFF CACHE STRING "" FORCE)
-set(VCLIB_BUILD_MODULE_BINDINGS OFF CACHE STRING "" FORCE)
-
-FetchContent_Declare(
-    vclib
-    GIT_REPOSITORY https://github.com/cnr-isti-vclab/vclib.git
-    GIT_TAG        origin/main  # Or a specific tag/branch
-)
-
-FetchContent_MakeAvailable(vclib)
-
-add_executable(my_project main.cpp)
-target_link_libraries(my_project PRIVATE vclib::vclib)
+#### `FetchContent`
+Tests the consumption of VCLib by downloading and embedding the repository at configure time.
+```bash
+mkdir build && cd build
+cmake .. -DVCLIB_USE_FETCHCONTENT=ON
+cmake --build .
+ctest --output-on-failure
 ```
 
-### Configurable Options
+## 2. Template Project (`template-project`)
 
-You can control which modules are built by setting these variables before
-`FetchContent_MakeAvailable()`:
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `VCLIB_BUILD_MODULE_EXTERNAL` | OFF | Build external module (Embree, CGAL, etc.) |
-| `VCLIB_BUILD_MODULE_RENDER` | OFF | Build render module |
-| `VCLIB_BUILD_MODULE_BINDINGS` | OFF | Build Python bindings |
-| `VCLIB_EXCLUDE_EXAMPLES_AND_TESTS_TARGETS` | ON | Exclude examples/tests from build |
-| `VCLIB_BUILD_CORE_WITH_3RDPARTY_IO_LIBRARIES` | ON | Include 3rdparty IO libraries (for file I/O) |
-
-### Specifying a Specific Version
-
-To use a specific release version instead of the latest main branch:
-
-```cmake
-FetchContent_Declare(
-    vclib
-    GIT_REPOSITORY https://github.com/cnr-isti-vclab/vclib.git
-    GIT_TAG        v0.1.0  # Use a specific tag
-)
-```
+If you are looking for a quick, ready-to-use boilerplate to start a new project with VCLib, check out the `template-project` directory. 
+It contains a minimal self-contained `CMakeLists.txt` and a `main.cpp` that demonstrate how to fetch VCLib via `FetchContent` and create a basic mesh. You can copy this folder anywhere on your computer and start coding immediately!
 
 ## CI Testing
 
-These examples are automatically built and tested on all supported platforms via GitHub Actions:
+These tests are automatically executed on all supported platforms via GitHub Actions:
 - **Ubuntu** (x86_64 and ARM)
 - **macOS** (Intel and Apple Silicon)
 - **Windows** (x86_64)

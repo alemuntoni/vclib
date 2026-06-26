@@ -11,6 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest', 'ubuntu-24.04-arm', 'macos-15-intel', 'macos-latest', 'windows-2022']
+        integration_mode: ['find_package', 'FetchContent']
     steps:
     - uses: actions/checkout@v6
       with:
@@ -42,76 +43,46 @@ jobs:
     - name: Ccache
       uses: hendrikmuhs/ccache-action@v1.2.23
       with:
-        key: standalone-${{ matrix.os }}-${{ github.ref_name }}
+        key: standalone-${{ matrix.os }}-${{ matrix.integration_mode }}-${{ github.ref_name }}
 
-    - name: Discover standalone examples
-      id: discover
+    - name: Build and Install VCLib
+      if: matrix.integration_mode == 'find_package'
       shell: bash
       run: |
-        EXAMPLES_DIR="examples/standalone"
-        if [ ! -d "$EXAMPLES_DIR" ]; then
-          echo "No standalone examples directory found!"
-          exit 1
-        fi
+        # In find_package mode, we must first build and install VCLib
+        cmake -S . -B build-vclib --preset=vclib-core-install
+        cmake --build build-vclib
+        cmake --install build-vclib --prefix "${{ github.workspace }}/install-vclib"
 
-        # Find all directories containing a CMakeLists.txt
-        EXAMPLES=()
-        for dir in "$EXAMPLES_DIR"/*/; do
-          if [ -f "${dir}CMakeLists.txt" ]; then
-            EXAMPLES+=("$(basename "$dir")")
-          fi
-        done
-
-        if [ ${#EXAMPLES[@]} -eq 0 ]; then
-          echo "No standalone examples found!"
-          exit 1
-        fi
-
-        echo "Found ${#EXAMPLES[@]} example(s): ${EXAMPLES[*]}"
-        echo "examples=${EXAMPLES[*]}" >> $GITHUB_OUTPUT
-
-    - name: Build and run all standalone examples
+    - name: Configure Standalone Examples
       shell: bash
       run: |
-        EXAMPLES_DIR="examples/standalone"
+        EXTRA_ARGS=""
+        if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
+          EXTRA_ARGS="-DVCLIB_USE_FETCHCONTENT=ON"
+        else
+          EXTRA_ARGS="-DVCLIB_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
+        fi
+        
+        cmake -S examples/standalone -B examples/standalone/build \
+          -G Ninja \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+          $EXTRA_ARGS
 
-        for example in ${{ steps.discover.outputs.examples }}; do
-          echo ""
-          echo "=============================================="
-          echo "Building and running: $example"
-          echo "=============================================="
+    - name: Build Standalone Examples
+      run: cmake --build examples/standalone/build
 
-          EXAMPLE_PATH="${EXAMPLES_DIR}/${example}"
-          BUILD_DIR="${EXAMPLE_PATH}/build"
+    - name: Run Tests
+      working-directory: examples/standalone/build
+      run: ctest --output-on-failure
 
-          # Clean previous build to ensure fresh configuration
-          rm -rf "$BUILD_DIR"
-          mkdir -p "$BUILD_DIR"
-
-          # Configure with Ninja generator (consistent across all platforms)
-          cmake -S "$EXAMPLE_PATH" -B "$BUILD_DIR" \
-            -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-
-          # Build
-          cmake --build "$BUILD_DIR"
-
-          # The executable name: add .exe on Windows (MSVC produces .exe)
-          EXECUTABLE="standalone-${example}"
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            EXECUTABLE="${EXECUTABLE}.exe"
-          fi
-
-          # Run
-          echo "Running ${EXECUTABLE}..."
-          "$BUILD_DIR/${EXECUTABLE}"
-
-          if [ $? -eq 0 ]; then
-            echo "✓ $example passed"
-          else
-            echo "✗ $example failed!"
-            exit 1
-          fi
-        done
+    - name: Build Template Project
+      if: matrix.integration_mode == 'FetchContent'
+      shell: bash
+      run: |
+        # Quick check that the template project is valid and builds
+        # Note: this will fetch VCLib from origin/main
+        cmake -S examples/standalone/template-project -B examples/standalone/template-project/build -G Ninja
+        cmake --build examples/standalone/template-project/build

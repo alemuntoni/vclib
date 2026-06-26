@@ -1,7 +1,7 @@
 /*****************************************************************************
- * VCLib Standalone Example 001: Basic Mesh Creation
+ * VCLib Standalone Template Project
  *
- * This standalone example demonstrates how to create basic mesh structures
+ * This standalone template project demonstrates how to create basic mesh structures
  * using VCLib when included via FetchContent.
  *
  * It creates:
