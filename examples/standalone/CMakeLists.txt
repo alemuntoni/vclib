@@ -1,3 +1,10 @@
+# VCLib - Visual Computing Library
+# Copyright (C) 2021-2026 Visual Computing Lab, ISTI - CNR.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at https://mozilla.org/MPL/2.0/.
+
 cmake_minimum_required(VERSION 3.24)
 project(vclib-standalone-examples LANGUAGES CXX)
 
@@ -43,12 +50,6 @@ target_compile_definitions(vclib-standalone-examples-common INTERFACE
     VCLIB_EXTERNAL_RESULTS_PATH="${VCLIB_ASSETS_PATH}/results/external"
 )
 
-if (NOT VCLIB_USE_FETCHCONTENT)
-    # As requested by the user, add the embedded Eigen version when using find_package
-    target_include_directories(vclib-standalone-examples-common INTERFACE
-        "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty/eigen-5.0.1"
-    )
-endif()
 
 # Function to add a standalone example linking to the original source code
 function(add_standalone_example module name)
@@ -71,7 +72,12 @@ function(add_standalone_example module name)
     add_test(NAME run-${TARGET_NAME} COMMAND ${TARGET_NAME})
 endfunction()
 
-# Add a few manual examples to test for now
-add_standalone_example(core 000-mesh-io)
-add_standalone_example(core 001-mesh-basics)
-add_standalone_example(core 002-mesh-iteration)
+# Add all core examples automatically
+file(GLOB CORE_EXAMPLE_DIRS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/../core" "${CMAKE_CURRENT_SOURCE_DIR}/../core/*")
+foreach(dir IN LISTS CORE_EXAMPLE_DIRS)
+    if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../core/${dir}")
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../core/${dir}/main.cpp")
+            add_standalone_example(core "${dir}")
+        endif()
+    endif()
+endforeach()
