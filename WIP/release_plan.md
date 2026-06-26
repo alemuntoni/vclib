@@ -29,14 +29,18 @@ The repository contains several GitHub Actions workflows in `.github/workflows`:
 
 To reach the final goal of a fully automated `CreateRelease` workflow, we should proceed with the following incremental steps:
 
-### Phase 1: CMake Configuration & `find_package` Support
-1. **Add `install(EXPORT)` to CMakeLists.txt:** 
-   - Modify the root `CMakeLists.txt` and the module-specific `CMakeLists.txt` (`core`, `external`, `render`) to define installation targets.
-   - Create a `cmake/vclibConfig.cmake.in` file to configure the package for `find_package`.
+### Phase 1: CMake Configuration & `find_package` Support (Focus on Core First)
+1. **Add `install(EXPORT)` to CMakeLists.txt (Core Module):** 
+   - Modify the root `CMakeLists.txt` and `3rdparty/CMakeLists.txt` to conditionally export the `core` module and its 3rdparty dependencies.
+   - Ensure `vclib-core` remains strictly *header-only* (e.g., forcing `tinygltf` into header-only mode, and disabling strict TBB/Qt linking during CMake installation).
+   - Create a CMake preset (e.g. `vclib-core-install`) for building and installing the standalone core module.
+   - Create a `cmake/vclibConfig.cmake.in` file to configure the package for `find_package(vclib)`.
 2. **Create Standalone Examples for `find_package`:**
    - Add new standalone examples in the `examples/standalone` directory that strictly rely on `find_package(vclib)` instead of `FetchContent`.
 3. **Test `find_package` in CI:**
    - Create or update a GitHub Actions workflow to build and install VCLib, and then compile the newly created standalone examples to ensure the installation process and `find_package` integration work flawlessly.
+4. **Extend to External and Render Modules:**
+   - Once the core module works perfectly via `find_package`, extend the installation and export logic to the `external` and `render` modules.
 
 ### Phase 2: Expand Artifact Generation
 4. **Generalize Python Wheel Building:**
