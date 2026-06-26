@@ -20,12 +20,22 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
-#define VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
+$input v_color, v_texcoord1
 
-uniform vec4 u_pointsSettings;
+#include <vclib/bgfx/shaders_common.sh>
+#include <vclib/bgfx/screenspace/primitives/uniforms/screenspace_points_uniforms.sh>
 
-#define u_pointsWidth u_pointsSettings.x
-#define u_pointsGeneralColor uintABGRToVec4Color(floatBitsToUint(u_pointsSettings.y))
+void main()
+{
+    vec4 color = v_color;
 
-#endif // VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
+#if !POINTS_SHAPE_SQUARE
+    // Circle shape discards fragments outside the unit disk.
+    vec2 uv = v_texcoord1 * 2.0 - vec2(1.0, 1.0);
+    if (length(uv) > 1.0) {
+        discard;
+    }
+#endif
+
+    gl_FragColor = color;
+}

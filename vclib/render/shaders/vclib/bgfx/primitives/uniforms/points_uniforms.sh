@@ -20,12 +20,15 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
-#define VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
+#ifndef VCL_BGFX_PRIMITIVES_UNIFORMS_POINTS_UNIFORMS_SH
+#define VCL_BGFX_PRIMITIVES_UNIFORMS_POINTS_UNIFORMS_SH
+
+#include <vclib/bgfx/shaders_common.sh>
 
 uniform vec4 u_pointsSettings;
 
 #define u_pointsWidth u_pointsSettings.x
 #define u_pointsGeneralColor uintABGRToVec4Color(floatBitsToUint(u_pointsSettings.y))
+#define u_depthOffset u_pointsSettings.z
 
-#endif // VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
+#endif // VCL_BGFX_PRIMITIVES_UNIFORMS_POINTS_UNIFORMS_SH

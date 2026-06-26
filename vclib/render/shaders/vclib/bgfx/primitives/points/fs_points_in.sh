@@ -20,12 +20,28 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
-#define VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
+$input v_normal, v_texcoord1, v_color
 
-uniform vec4 u_pointsSettings;
+#include <vclib/bgfx/drawable/uniforms/directional_light_uniforms.sh>
+#include <vclib/bgfx/primitives/uniforms/points_uniforms.sh>
+#include <vclib/bgfx/shaders_common.sh>
 
-#define u_pointsWidth u_pointsSettings.x
-#define u_pointsGeneralColor uintABGRToVec4Color(floatBitsToUint(u_pointsSettings.y))
+void main()
+{
+    vec4 color = v_color;
 
-#endif // VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
+#if !POINTS_SHAPE_SQUARE
+    // circle mode (if outside of the circle, discard)
+    vec2 uv = v_texcoord1 * 2.0 - vec2(1.0, 1.0);
+    if (length(uv) > 1.0) {
+        discard;
+    }
+#endif
+
+    vec4 light = vec4(1.0, 1.0, 1.0, 1.0);
+#if POINTS_SHADING_PER_VERTEX
+    light = computeLight(u_lightDir, u_lightColor, v_normal);
+#endif
+
+    gl_FragColor = light * color;
+}

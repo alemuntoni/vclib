@@ -20,12 +20,9 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
-#define VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
+// per vertex color, none shading
 
-uniform vec4 u_pointsSettings;
+#define POINTS_COLOR_PER_VERTEX 1
+#define POINTS_SHADING_PER_VERTEX 0
 
-#define u_pointsWidth u_pointsSettings.x
-#define u_pointsGeneralColor uintABGRToVec4Color(floatBitsToUint(u_pointsSettings.y))
-
-#endif // VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_SH
+#include "vs_points_in.sh"

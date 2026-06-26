@@ -20,26 +20,9 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-$input v_color, v_texcoord1
+// no shading, square shape
 
-#include <vclib/bgfx/shaders_common.sh>
-#include <vclib/bgfx/screenspace/primitives/uniforms/screenspace_points_uniforms.sh>
+#define POINTS_SHADING_PER_VERTEX 0
+#define POINTS_SHAPE_SQUARE 1
 
-void main()
-{
-    vec4 color = u_pointsGeneralColor;
-
-    if (usePerPointColor()) {
-        color = v_color;
-    }
-
-    // Circle shape discards fragments outside the unit disk.
-    if (!useQuadShape()) {
-        vec2 uv = v_texcoord1 * 2.0 - vec2(1.0, 1.0);
-        if (length(uv) > 1.0) {
-            discard;
-        }
-    }
-
-    gl_FragColor = color;
-}
+#include "fs_points_in.sh"

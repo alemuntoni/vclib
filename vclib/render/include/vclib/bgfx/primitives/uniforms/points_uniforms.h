@@ -20,11 +20,10 @@
  * (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
  ****************************************************************************/
 
-#ifndef VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_H
-#define VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_H
+#ifndef VCL_BGFX_PRIMITIVES_UNIFORMS_POINTS_UNIFORMS_H
+#define VCL_BGFX_PRIMITIVES_UNIFORMS_POINTS_UNIFORMS_H
 
 #include <vclib/bgfx/uniform.h>
-
 #include <vclib/space/core.h>
 
 #include <array>
@@ -32,18 +31,25 @@
 
 namespace vcl {
 
-class ScreenSpacePointsUniforms
+/**
+ * @brief Manages the uniform variables required by the Points shaders.
+ *
+ * This utility class is responsible for packing points rendering settings
+ * (such as width and general color) into a vec4 uniform and binding it
+ * to the bgfx rendering context.
+ */
+class PointsUniforms
 {
     // .x = point width in pixels
     // .y = general color
-    // .z = unused
+    // .z = depth offset
     // .w = unused
     inline static std::array<float, 4> sPointsSettings =
         {1.0f, 0.0f, 0.0f, 0.0f};
     inline static Uniform sPointsSettingsUniform;
 
 public:
-    ScreenSpacePointsUniforms() = delete;
+    PointsUniforms() = delete;
 
     /**
      * @brief Sets the width of the points.
@@ -62,14 +68,23 @@ public:
     }
 
     /**
+     * @brief Sets the depth offset for points.
+     * @param depthOffset The depth offset value.
+     */
+    static void setDepthOffset(float depthOffset)
+    {
+        sPointsSettings[2] = depthOffset;
+    }
+
+    /**
      * @brief Binds the uniform to the current bgfx context.
      *
      * Lazily initializes the bgfx uniform handle if it hasn't been created yet.
      */
     static void bind()
     {
-        // lazy initialization
-        // to avoid creating uniforms before bgfx is initialized
+        // Lazy initialization to avoid creating uniforms before bgfx is
+        // initialized.
         if (!sPointsSettingsUniform.isValid())
             sPointsSettingsUniform =
                 Uniform("u_pointsSettings", bgfx::UniformType::Vec4);
@@ -79,4 +94,4 @@ public:
 
 } // namespace vcl
 
-#endif // VCL_BGFX_SCREENSPACE_PRIMITIVES_UNIFORMS_SCREENSPACE_POINTS_UNIFORMS_H
+#endif // VCL_BGFX_PRIMITIVES_UNIFORMS_POINTS_UNIFORMS_H
