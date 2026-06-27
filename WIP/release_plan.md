@@ -39,20 +39,25 @@ To reach the final goal of a fully automated `CreateRelease` workflow, we should
    - Add new standalone examples in the `examples/standalone` directory that test both `find_package(vclib)` and `FetchContent`.
 - [x] **3. Test `find_package` in CI:**
    - Update the GitHub Actions workflow (`StandaloneExamples.yml`) with a matrix to test both `find_package` (installing the library first) and `FetchContent`.
-- [ ] **4. Extend to External and Render Modules:**
-   - Once the core module works perfectly via `find_package`, extend the installation and export logic to the `external` and `render` modules.
+- [x] **4. FetchContent Support for External Module in Standalone Examples:**
+   - Standalone CMake configuration updated to support testing the `external` module alongside `core`.
+   - Dynamic dependency checking implemented for external standalone examples via `requirements.cmake`.
+   - `StandaloneExamples.yml` workflow expanded to build and test the `external` module standalone using `FetchContent` across the OS matrix.
+- [ ] **5. Extend `find_package` to External and Render Modules:**
+   - Extend the installation and export logic to the `external` and `render` modules.
+   - Once implemented, remove the `FATAL_ERROR` barrier in standalone examples and update the `StandaloneExamples.yml` matrix to remove the `exclude` rule for `external` + `find_package`.
 
 ### Phase 2: Expand Artifact Generation
-- [ ] **5. Generalize Python Wheel Building:**
+- [ ] **6. Generalize Python Wheel Building:**
    - Update the Python bindings workflow (or prepare the logic for the release workflow) to build wheels for **all alive Python versions** (e.g., 3.9, 3.10, 3.11, 3.12, 3.13) across the required OS/arch matrix.
-- [ ] **6. Create C++ Precompiled Archives Workflow:**
+- [ ] **7. Create C++ Precompiled Archives Workflow:**
    - Implement the logic to build the C++ library and create install archives (.zip / .tar.gz).
    - Create two variations: **Core-Only** (just the core module) and **Full** (core + external + render).
-- [ ] **7. Package Documentation:**
+- [ ] **8. Package Documentation:**
    - Ensure the documentation workflow can export the generated HTML documentation as a `.zip` artifact.
 
 ### Phase 3: The `CreateRelease` Workflow
-- [ ] **8. Orchestrate the `CreateRelease` GitHub Action:**
+- [ ] **9. Orchestrate the `CreateRelease` GitHub Action:**
    - Create a new workflow `.github/workflows/CreateRelease.yml` with a `workflow_dispatch` trigger, accepting the `version` as an input.
    - **Step 1: Run Checks:** Execute all existing tests (Core, External, Render, ClangFormat) to ensure the codebase is stable.
    - **Step 2: Build Artifacts:** 
