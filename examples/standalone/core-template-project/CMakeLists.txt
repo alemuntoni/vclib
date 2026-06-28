@@ -18,7 +18,7 @@
 #############################################################################
 
 cmake_minimum_required(VERSION 3.24)
-project(standalone-vclib-template LANGUAGES CXX)
+project(standalone-vclib-core-template LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -28,12 +28,6 @@ include(FetchContent)
 
 # Alteratively, if VCLib is installed on your system, you can use find_package:
 # find_package(vclib REQUIRED)
-
-# Set VCLib options BEFORE calling FetchContent_Declare
-set(VCLIB_BUILD_MODULE_EXTERNAL OFF CACHE STRING "" FORCE)
-set(VCLIB_BUILD_MODULE_RENDER OFF CACHE STRING "" FORCE)
-set(VCLIB_BUILD_MODULE_BINDINGS OFF CACHE STRING "" FORCE)
-set(VCLIB_EXCLUDE_EXAMPLES_AND_TESTS_TARGETS ON CACHE STRING "" FORCE)
 
 FetchContent_Declare(
     vclib
