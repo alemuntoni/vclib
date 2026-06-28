@@ -39,13 +39,13 @@ To reach the final goal of a fully automated `CreateRelease` workflow, we should
    - Add new standalone examples in the `examples/standalone` directory that test both `find_package(vclib)` and `FetchContent`.
 - [x] **3. Test `find_package` in CI:**
    - Update the GitHub Actions workflow (`StandaloneExamples.yml`) with a matrix to test both `find_package` (installing the library first) and `FetchContent`.
-- [x] **4. FetchContent Support for External Module in Standalone Examples:**
-   - Standalone CMake configuration updated to support testing the `external` module alongside `core`.
-   - Dynamic dependency checking implemented for external standalone examples via `requirements.cmake`.
-   - `StandaloneExamples.yml` workflow expanded to build and test the `external` module standalone using `FetchContent` across the OS matrix.
+- [x] **4. FetchContent Support for External and Render Modules in Standalone Examples:**
+   - Standalone CMake configuration updated to support testing the `external` and `render` modules alongside `core`.
+   - Dynamic dependency checking implemented for external and render standalone examples via `requirements.cmake`.
+   - `StandaloneExamples.yml` workflow expanded to build and test the `external` and `render` modules standalone using `FetchContent` across the OS matrix.
 - [ ] **5. Extend `find_package` to External and Render Modules:**
    - Extend the installation and export logic to the `external` and `render` modules.
-   - Once implemented, remove the `FATAL_ERROR` barrier in standalone examples and update the `StandaloneExamples.yml` matrix to remove the `exclude` rule for `external` + `find_package`.
+   - Once implemented, remove the `FATAL_ERROR` barriers in standalone examples and update the `StandaloneExamples.yml` matrix to remove the `exclude` rules for `external` and `render` + `find_package`.
 
 ### Phase 2: Expand Artifact Generation
 - [ ] **6. Generalize Python Wheel Building:**
