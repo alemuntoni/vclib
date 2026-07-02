@@ -135,6 +135,7 @@ if(VCLIB_BUILD_MODULE_RENDER)
             "Allow use of downloaded BGFX source"
             ON
         )
+        option(VCLIB_ALLOW_INSTALL_BGFX "Allow install bgfx source" ON)
         include(bgfx.cmake)
     endif()
 
@@ -146,10 +147,12 @@ if(VCLIB_BUILD_MODULE_RENDER)
     ### GLFW
     option(VCLIB_ALLOW_SYSTEM_GLFW "Allow use of system-provided GLFW" ON)
     option(VCLIB_ALLOW_DOWNLOAD_GLFW "Allow use of downloaded GLFW source" ON)
+    option(VCLIB_ALLOW_INSTALL_GLFW "Allow install GLFW source" ON)
     include(glfw.cmake)
 
     ### ImGui
     option(VCLIB_ALLOW_DOWNLOAD_IMGUI "Allow use of downloaded ImGui source" ON)
+    option(VCLIB_ALLOW_INSTALL_IMGUI "Allow install ImGui source" ON)
     include(imgui.cmake)
 endif()
 

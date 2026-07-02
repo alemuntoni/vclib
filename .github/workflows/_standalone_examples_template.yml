@@ -18,11 +18,6 @@ jobs:
         os: ['ubuntu-latest', 'ubuntu-24.04-arm', 'macos-15-intel', 'macos-latest', 'windows-2022']
         module: ['core', 'external', 'render']
         integration_mode: ['${{ inputs.integration_mode }}']
-        exclude:
-          - module: 'external'
-            integration_mode: 'find_package'
-          - module: 'render'
-            integration_mode: 'find_package'
     steps:
     - uses: actions/checkout@v7
       with:
@@ -84,7 +79,12 @@ jobs:
       shell: bash
       run: |
         # In find_package mode, we must first build and install VCLib
-        cmake -S . -B build-vclib --preset=vclib-core-install
+        if [ "${{ matrix.module }}" == "core" ]; then
+          PRESET="vclib-core-install"
+        else
+          PRESET="vclib-all-install"
+        fi
+        cmake -S . -B build-vclib --preset=$PRESET
         cmake --build build-vclib
         cmake --install build-vclib --prefix "${{ github.workspace }}/install-vclib"
 

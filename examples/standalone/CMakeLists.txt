@@ -21,19 +21,6 @@ option(VCLIB_STANDALONE_BUILD_CORE "Build standalone core examples" ON)
 option(VCLIB_STANDALONE_BUILD_EXTERNAL "Build standalone external examples" OFF)
 option(VCLIB_STANDALONE_BUILD_RENDER "Build standalone render examples" OFF)
 
-if(VCLIB_STANDALONE_BUILD_EXTERNAL AND NOT VCLIB_USE_FETCHCONTENT)
-    message(
-        FATAL_ERROR
-        "Building standalone external examples is currently only supported with FetchContent. Please set VCLIB_USE_FETCHCONTENT=ON"
-    )
-endif()
-
-if(VCLIB_STANDALONE_BUILD_RENDER AND NOT VCLIB_USE_FETCHCONTENT)
-    message(
-        FATAL_ERROR
-        "Building standalone render examples is currently only supported with FetchContent. Please set VCLIB_USE_FETCHCONTENT=ON"
-    )
-endif()
 
 if(VCLIB_USE_FETCHCONTENT)
     message(STATUS "VCLib Standalone: Using FetchContent")
@@ -135,12 +122,12 @@ if(VCLIB_STANDALONE_BUILD_EXTERNAL)
 endif()
 
 if(VCLIB_STANDALONE_BUILD_RENDER)
-    if(TARGET vclib-3rd-qt)
+    if(TARGET vclib-3rd-qt OR TARGET vclib::vclib-3rd-qt)
         target_compile_definitions(
             vclib-standalone-examples-common
             INTERFACE VCLIB_RENDER_EXAMPLES_WITH_QT
         )
-    elseif(TARGET vclib-3rd-glfw)
+    elseif(TARGET vclib-3rd-glfw OR TARGET vclib::vclib-3rd-glfw)
         target_compile_definitions(
             vclib-standalone-examples-common
             INTERFACE VCLIB_RENDER_EXAMPLES_WITH_GLFW

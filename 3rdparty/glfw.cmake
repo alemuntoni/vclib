@@ -25,11 +25,16 @@ elseif(VCLIB_ALLOW_DOWNLOAD_GLFW)
         endif()
     endif()
 
+    set(GLFW_EXCLUDE_FROM_ALL_OPTION "")
+    if (NOT VCLIB_ALLOW_INSTALL_GLFW)
+        set(GLFW_EXCLUDE_FROM_ALL_OPTION EXCLUDE_FROM_ALL)
+    endif()
+
     FetchContent_Declare(
         glfw3
         GIT_REPOSITORY https://github.com/glfw/glfw.git
         GIT_TAG 3.4
-        EXCLUDE_FROM_ALL
+        ${GLFW_EXCLUDE_FROM_ALL_OPTION}
     )
 
     FetchContent_MakeAvailable(glfw3)

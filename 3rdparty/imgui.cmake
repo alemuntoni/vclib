@@ -10,12 +10,17 @@ if(VCLIB_ALLOW_DOWNLOAD_IMGUI)
 
     set(IMGUI_VERSION 1.92.0)
 
+    set(IMGUI_EXCLUDE_FROM_ALL_OPTION "")
+    if (NOT VCLIB_ALLOW_INSTALL_IMGUI)
+        set(IMGUI_EXCLUDE_FROM_ALL_OPTION EXCLUDE_FROM_ALL)
+    endif()
+
     # ImGui (glfw + bgfx)
     FetchContent_Declare(
         imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
         GIT_TAG v${IMGUI_VERSION}
-        EXCLUDE_FROM_ALL
+        ${IMGUI_EXCLUDE_FROM_ALL_OPTION}
     )
     FetchContent_MakeAvailable(imgui)
 
@@ -63,4 +68,29 @@ if(VCLIB_ALLOW_DOWNLOAD_IMGUI)
     list(APPEND VCLIB_RENDER_3RDPARTY_LIBRARIES vclib-3rd-imgui)
 
     target_compile_definitions(vclib-3rd-imgui INTERFACE VCLIB_WITH_IMGUI)
+
+    if(VCLIB_ALLOW_INSTALL_IMGUI)
+        install(
+            FILES
+                ${imgui_SOURCE_DIR}/imgui.h
+                ${imgui_SOURCE_DIR}/imgui_internal.h
+                ${imgui_SOURCE_DIR}/imstb_rectpack.h
+                ${imgui_SOURCE_DIR}/imstb_textedit.h
+                ${imgui_SOURCE_DIR}/imstb_truetype.h
+                ${imgui_SOURCE_DIR}/imconfig.h
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
+        install(
+            DIRECTORY ${imgui_SOURCE_DIR}/backends/
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            FILES_MATCHING
+            PATTERN "imgui_impl_*.h"
+        )
+        install(
+            DIRECTORY ${imgui_SOURCE_DIR}/misc/cpp/
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            FILES_MATCHING
+            PATTERN "*.h"
+        )
+    endif()
 endif()
