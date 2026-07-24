@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QCheckBox" name="crossSectionEnabledCheckBox">
      <property name="text">
-      <string>Enable Cross Section</string>
+      <string/>
      </property>
     </widget>
    </item>

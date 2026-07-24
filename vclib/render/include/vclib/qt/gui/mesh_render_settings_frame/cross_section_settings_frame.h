@@ -26,6 +26,7 @@
 #include <vclib/qt/gui/float_range_slider.h>
 #include <vclib/render/settings/cross_section_settings.h>
 
+#include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QFrame>
 
@@ -63,6 +64,8 @@ public:
      const CrossSectionSettings& crossSectionSettings() const;
 
      void setCrossSectionSettings(const CrossSectionSettings& settings);
+
+     QCheckBox* visibilityCheckBox() const;
 
 signals:
     void crossSectionSettingsUpdated();

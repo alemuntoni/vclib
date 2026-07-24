@@ -14,8 +14,10 @@
 #include <vclib/qt/gui/mesh_render_settings_frame/surface_frame.h>
 #include <vclib/qt/gui/mesh_render_settings_frame/wireframe_frame.h>
 
+#include <QCheckBox>
 #include <QColorDialog>
-#include <QStandardItemModel>
+#include <QLabel>
+#include <QTabBar>
 
 namespace vcl::qt {
 
@@ -24,21 +26,35 @@ MeshRenderSettingsFrame::MeshRenderSettingsFrame(QWidget* parent) :
 {
     mUI->setupUi(this);
 
-    auto* pointsFrame = new PointsFrame(mMRS, this);
-    mUI->tabWidget->addTab(pointsFrame, "Points");
-    mFrames.push_back(pointsFrame);
+    mUI->tabWidget->tabBar()->setExpanding(false);
 
-    auto* surfaceFrame = new SurfaceFrame(mMRS, this);
-    mUI->tabWidget->addTab(surfaceFrame, "Surface");
-    mFrames.push_back(surfaceFrame);
+    auto addTabWithCheckbox = [this](int index, QWidget* frame, QCheckBox* origCb, const QString& title) {
+        mUI->tabWidget->addTab(frame, title);
+        QCheckBox* tabCb = new QCheckBox();
+        tabCb->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        mUI->tabWidget->tabBar()->setTabButton(index, QTabBar::LeftSide, tabCb);
 
-    auto* wireframeFrame = new WireframeFrame(mMRS, this);
-    mUI->tabWidget->addTab(wireframeFrame, "Wireframe");
-    mFrames.push_back(wireframeFrame);
+        origCb->hide();
 
-    auto* edgesFrame = new EdgesFrame(mMRS, this);
-    mUI->tabWidget->addTab(edgesFrame, "Edges");
-    mFrames.push_back(edgesFrame);
+        connect(origCb, &QCheckBox::toggled, tabCb, [tabCb](bool checked) {
+            if (tabCb->isChecked() != checked) tabCb->setChecked(checked);
+        });
+        connect(tabCb, &QCheckBox::toggled, origCb, [origCb](bool checked) {
+            if (origCb->isChecked() != checked) origCb->setChecked(checked);
+        });
+    };
+
+    auto setupGenericTab = [&](int                             index,
+                               GenericMeshRenderSettingsFrame* frame,
+                               const QString&                  title) {
+        addTabWithCheckbox(index, frame, frame->visibilityCheckBox(), title);
+        mFrames.push_back(frame);
+    };
+
+    setupGenericTab(0, new PointsFrame(mMRS, this), "Points");
+    setupGenericTab(1, new SurfaceFrame(mMRS, this), "Surface");
+    setupGenericTab(2, new WireframeFrame(mMRS, this), "Wireframe");
+    setupGenericTab(3, new EdgesFrame(mMRS, this), "Edges");
 
     for (auto* frame : mFrames) {
         connect(
@@ -49,7 +65,11 @@ MeshRenderSettingsFrame::MeshRenderSettingsFrame(QWidget* parent) :
     }
 
     mCrossSectionFrame = new CrossSectionSettingsFrame(this);
-    mUI->tabWidget->addTab(mCrossSectionFrame, "Cross Section");
+    addTabWithCheckbox(
+        4,
+        mCrossSectionFrame,
+        mCrossSectionFrame->visibilityCheckBox(),
+        "Cross Section");
 
     connect(
         mCrossSectionFrame,

@@ -122,6 +122,11 @@ const CrossSectionSettings& CrossSectionSettingsFrame::crossSectionSettings()
     return mCSS;
 }
 
+QCheckBox* CrossSectionSettingsFrame::visibilityCheckBox() const
+{
+    return mUI->crossSectionEnabledCheckBox;
+}
+
 void CrossSectionSettingsFrame::setCrossSectionSettings(
     const CrossSectionSettings& settings)
 {
