@@ -8,6 +8,8 @@
 #ifndef VCL_RENDER_INPUT_BINDING_MAP_H
 #define VCL_RENDER_INPUT_BINDING_MAP_H
 
+#include <vclib/render/concepts/settings.h>
+
 #include <map>
 #include <optional>
 

@@ -10,16 +10,15 @@
 
 #include "editor.h"
 
+#include <vclib/render/settings/mesh_selector_editor_settings.h>
+
 namespace vcl {
 
 template<typename ViewerDrawer>
 class MeshSelectorEditor : public Editor<ViewerDrawer>
 {
 public:
-    enum class MeshSelectorAction { SELECT_MESH };
-    using MouseMap = BindingMap<
-        std::pair<MouseButton::Enum, KeyModifiers>,
-        MeshSelectorAction>;
+    using MouseMap = MeshSelectorEditorSettings::MouseMap;
 
 private:
     using Base = Editor<ViewerDrawer>;
@@ -27,12 +26,7 @@ private:
     // a callback function called when an object is selected
     std::function<void(uint)> mOnObjectSelectedFunction = nullptr;
 
-    EditorSettings mSettings;
-
-    MouseMap mMouseBindings = {
-        {{MouseButton::RIGHT, {KeyModifier::NO_MODIFIER}},
-         MeshSelectorAction::SELECT_MESH}
-    };
+    MeshSelectorEditorSettings mSettings;
 
 public:
     void setOnObjectSelectedFunction(const std::function<void(uint)>& f)
@@ -40,9 +34,9 @@ public:
         mOnObjectSelectedFunction = f;
     }
 
-    MouseMap& mouseBindings() { return mMouseBindings; }
+    MouseMap& mouseBindings() { return mSettings.mouseBindings; }
 
-    const MouseMap& mouseBindings() const { return mMouseBindings; }
+    const MouseMap& mouseBindings() const { return mSettings.mouseBindings; }
 
     // Editor implementation
 
@@ -75,7 +69,7 @@ public:
         if (block)
             return true;
 
-        auto action = mMouseBindings.action({button, modifiers});
+        auto action = mSettings.mouseBindings.action({button, modifiers});
         if (action.has_value() &&
             action.value() == MeshSelectorAction::SELECT_MESH) {
             auto callback = [&](uint id) {

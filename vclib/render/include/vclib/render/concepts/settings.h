@@ -8,9 +8,17 @@
 #ifndef VCL_RENDER_CONCEPTS_SETTINGS_H
 #define VCL_RENDER_CONCEPTS_SETTINGS_H
 
+#include <vclib/base.h>
+
 #include <nlohmann/json.hpp>
 
 namespace vcl {
+
+template<typename T>
+inline std::vector<T> availableActions()
+{
+    return std::vector<T>();
+}
 
 /**
  * @brief Concept that checks if a type T provides settings serialization
@@ -24,6 +32,13 @@ concept HasSettings =
     requires (T t, nlohmann::json& j, const nlohmann::json& cj) {
         { t.loadSettings(cj) };
         { t.saveSettings(j) };
+    };
+
+template<typename T>
+concept ActionConcept =
+    Stringifiable<T> && requires (T obj, const std::string& str) {
+        { fromString<T>(str) } -> std::convertible_to<T>;
+        { availableActions<T>() } -> std::convertible_to<std::vector<T>>;
     };
 
 } // namespace vcl

@@ -8,6 +8,10 @@
 #ifndef VCL_RENDER_SELECTION_SELECTION_MODE_H
 #define VCL_RENDER_SELECTION_SELECTION_MODE_H
 
+#include <vclib/render/concepts/settings.h>
+
+#include <vclib/base.h>
+
 #include <variant>
 
 namespace vcl {
@@ -33,10 +37,12 @@ enum class SelectionAtomicAction {
           ///< No selection box is needed or used. Also known as "clear" or
           ///< "deselect all".
 
-    INVERT ///< Toggle the selection state of every primitive of the specified
-           ///< type. Selected primitives become deselected and vice versa. No
-           ///< selection box is needed or used. Useful for quickly selecting
-           ///< everything except what is currently chosen.
+    INVERT, ///< Toggle the selection state of every primitive of the specified
+            ///< type. Selected primitives become deselected and vice versa. No
+            ///< selection box is needed or used. Useful for quickly selecting
+            ///< everything except what is currently chosen.
+
+    COUNT
 };
 
 /**
@@ -56,10 +62,12 @@ enum class SelectionDragAction {
          ///< box are appended to the selection set. Typically triggered with a
          ///< modifier key (e.g. Ctrl+drag).
 
-    SUBTRACT ///< Remove primitives inside the selection box from the existing
-             ///< selection. Primitives that fall within the box are
-             ///< deselected; others remain unaffected. Typically triggered
-             ///< with a modifier key (e.g. Ctrl+Shift+drag).
+    SUBTRACT, ///< Remove primitives inside the selection box from the existing
+              ///< selection. Primitives that fall within the box are
+              ///< deselected; others remain unaffected. Typically triggered
+              ///< with a modifier key (e.g. Ctrl+Shift+drag).
+
+    COUNT
 };
 
 /**

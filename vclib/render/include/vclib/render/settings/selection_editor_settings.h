@@ -41,7 +41,8 @@ struct SelectionEditorSettings : public EditorSettings
             const auto& jSel = j["SelectionEditor"];
             onlyVisible       = jSel.value("onlyVisible", onlyVisible);
             selectionBoxColor = jSel.value("selectionBoxColor", selectionBoxColor);
-            editMode          = static_cast<EditMode>(jSel.value("editMode", static_cast<int>(editMode)));
+            editMode = static_cast<EditMode>(
+                jSel.value("editMode", static_cast<int>(editMode)));
         }
     }
 
