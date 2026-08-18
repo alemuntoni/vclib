@@ -205,6 +205,12 @@ MeshViewer::MeshViewer(QWidget* parent) :
             // Ignore parse errors
         }
     }
+
+    mSettingsData.addTab(
+        "Viewer",
+        std::make_shared<
+            ViewerSettingsTabImpl<ViewerType>>(
+            viewer(), "Viewer Settings"));
 }
 
 void MeshViewer::setupSettingsButton()
@@ -538,9 +544,11 @@ void MeshViewer::openSettings()
     SettingsDialog dialog(mSettingsData, this);
     
     connect(&dialog, &SettingsDialog::applied, this, [&]() {
-        for (auto& tab : mSettingsData.tabs()) {
-            tab->applySettings();
-            tab->updateToolbarFrames(mUI->toolBar);
+        for (auto& [category, tabs] : mSettingsData.categories()) {
+            for (auto& tab : tabs) {
+                tab->applySettings();
+                tab->updateToolbarFrames(mUI->toolBar);
+            }
         }
         viewer().update();
     });

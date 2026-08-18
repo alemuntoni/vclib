@@ -93,6 +93,68 @@ public:
     }
 };
 
+template<typename ViewerType, typename SettingsFrameType = void>
+class ViewerSettingsTabImpl : public SettingsDialogTab
+{
+    ViewerType& mViewer;
+    QString     mName;
+    using SettingsType = std::remove_cvref_t<
+        decltype(std::declval<ViewerType>().viewerSettings())>;
+    std::unique_ptr<SettingsType> mTempSettings;
+
+public:
+    ViewerSettingsTabImpl(
+        ViewerType&    viewer,
+        const QString& name) : mViewer(viewer), mName(name)
+    {
+    }
+
+    QString name() const override { return mName; }
+
+    QWidget* createWidget(QWidget* parent) override
+    {
+        mTempSettings = std::make_unique<SettingsType>(mViewer.viewerSettings());
+        QWidget* mainWidget = new QWidget(parent);
+        QVBoxLayout* layout = new QVBoxLayout(mainWidget);
+        layout->setContentsMargins(0, 0, 0, 0);
+
+        if constexpr (!std::is_same_v<SettingsFrameType, void>) {
+            layout->addWidget(new SettingsFrameType(*mTempSettings, mainWidget));
+        }
+
+        layout->addWidget(new GenericSettingsWidget<SettingsType>(*mTempSettings, mainWidget));
+        
+        return mainWidget;
+    }
+
+    void applySettings() override
+    {
+        if (mTempSettings) {
+            mViewer.setViewerSettings(*mTempSettings);
+            // Non c'è refreshSettings() per il viewer in astratto, ma facciamo requestUpdate
+            mViewer.requestUpdate();
+        }
+    }
+
+    void saveSettings(nlohmann::json& j) const override
+    {
+        if (mTempSettings) {
+            if constexpr (vcl::HasSettings<SettingsType>) {
+                mTempSettings->saveSettings(j);
+            }
+        }
+    }
+
+    void updateToolbarFrames(QToolBar* toolbar) override
+    {
+        if constexpr (!std::is_same_v<SettingsFrameType, void>) {
+            for (auto* f : toolbar->findChildren<SettingsFrameType*>()) {
+                f->updateGUI();
+            }
+        }
+    }
+};
+
 } // namespace vcl::qt
 
 #endif // VCL_QT_GUI_SETTINGS_DIALOG_TAB_H

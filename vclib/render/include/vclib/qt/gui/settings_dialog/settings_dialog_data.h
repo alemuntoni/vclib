@@ -10,23 +10,25 @@
 
 #include "settings_dialog_tab.h"
 
+#include <QString>
+#include <map>
 #include <vector>
 #include <memory>
 
 namespace vcl::qt {
 
 class SettingsDialogData {
-    std::vector<std::shared_ptr<SettingsDialogTab>> mTabs;
+    std::map<QString, std::vector<std::shared_ptr<SettingsDialogTab>>> mCategories;
 
 public:
     SettingsDialogData() = default;
 
-    void addTab(std::shared_ptr<SettingsDialogTab> tab) {
-        mTabs.push_back(tab);
+    void addTab(const QString& category, std::shared_ptr<SettingsDialogTab> tab) {
+        mCategories[category].push_back(tab);
     }
 
-    const std::vector<std::shared_ptr<SettingsDialogTab>>& tabs() const {
-        return mTabs;
+    const std::map<QString, std::vector<std::shared_ptr<SettingsDialogTab>>>& categories() const {
+        return mCategories;
     }
 };
 

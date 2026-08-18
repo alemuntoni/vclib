@@ -210,11 +210,9 @@ public:
         if (j.contains("ViewerSettings")) {
             mViewerSettings.loadSettings(j);
         }
-        if (j.contains("Editors")) {
-            for (auto& editor : mEditors) {
-                if (editor)
-                    editor->loadSettings(j["Editors"]);
-            }
+        for (auto& editor : mEditors) {
+            if (editor)
+                editor->loadSettings(j);
         }
     }
 
@@ -223,7 +221,7 @@ public:
         mViewerSettings.saveSettings(j);
         for (const auto& editor : mEditors) {
             if (editor)
-                editor->saveSettings(j["Editors"]);
+                editor->saveSettings(j);
         }
     }
 
@@ -254,10 +252,8 @@ public:
         editor->setDrawableObjectVector(mDrawList);
         editor->setActive(active);
         
-        if (j.contains("Editors")) {
-            editor->loadSettings(j["Editors"]);
-            editor->refreshSettings();
-        }
+        editor->loadSettings(j);
+        editor->refreshSettings();
         
         return editor;
     }

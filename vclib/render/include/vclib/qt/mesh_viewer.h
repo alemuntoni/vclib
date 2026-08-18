@@ -223,6 +223,7 @@ public:
             !std::is_same_v<SettingsFrame, void> ||
             vcl::HasInputBindings<SettingsType>) {
             mSettingsData.addTab(
+                "Editors",
                 std::make_shared<
                     EditorSettingsTabImpl<EditorT<ViewerType>, SettingsFrame>>(
                     editor, QString::fromStdString(editor->name())));

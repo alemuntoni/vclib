@@ -30,14 +30,31 @@ SettingsDialog::SettingsDialog(
 {
     mUI->setupUi(this);
 
-    // Populate Editors tab
-    for (const auto& tab : mData.tabs()) {
-        QWidget*     page   = new QWidget();
-        QVBoxLayout* layout = new QVBoxLayout(page);
-        layout->addWidget(tab->createWidget(page));
-        layout->addStretch();
+    // Populate categories and tabs
+    for (const auto& [category, tabs] : mData.categories()) {
+        mUI->categoryList->addItem(category);
 
-        mUI->editorsTabWidget->addTab(page, tab->name());
+        QWidget* categoryPage = new QWidget();
+        QVBoxLayout* categoryLayout = new QVBoxLayout(categoryPage);
+        categoryLayout->setContentsMargins(0, 0, 0, 0);
+
+        QTabWidget* tabWidget = new QTabWidget(categoryPage);
+        categoryLayout->addWidget(tabWidget);
+
+        for (const auto& tab : tabs) {
+            QWidget*     page   = new QWidget();
+            QVBoxLayout* layout = new QVBoxLayout(page);
+            layout->addWidget(tab->createWidget(page));
+            layout->addStretch();
+
+            tabWidget->addTab(page, tab->name());
+        }
+
+        mUI->stackedWidget->addWidget(categoryPage);
+    }
+
+    if (mUI->categoryList->count() > 0) {
+        mUI->categoryList->setCurrentRow(0);
     }
 
     // Sync QListWidget selection to QStackedWidget page
@@ -75,8 +92,10 @@ void SettingsDialog::onApplyClicked()
 void SettingsDialog::onSaveDefaultsClicked()
 {
     nlohmann::json j;
-    for (const auto& tab : mData.tabs()) {
-        tab->saveSettings(j["Editors"]);
+    for (const auto& [category, tabs] : mData.categories()) {
+        for (const auto& tab : tabs) {
+            tab->saveSettings(j);
+        }
     }
 
     std::filesystem::path configDir = vcl::appConfigDirectory("vclib");
