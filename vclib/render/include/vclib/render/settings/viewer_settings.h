@@ -108,6 +108,13 @@ struct ViewerSettings : public TrackballSettings
     }
 
     ViewerGlobalActionMap globalActionMap;
+
+    template <typename Visitor>
+    void visitInputBindings(Visitor&& visitor, const std::vector<std::string>& availableCallbacks = {})
+    {
+        TrackballSettings::visitInputBindings(visitor, availableCallbacks);
+        visitor("Global Actions", globalActionMap, availableCallbacks);
+    }
 };
 
 } // namespace vcl

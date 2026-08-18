@@ -8,29 +8,82 @@
 #ifndef VCL_RENDER_SETTINGS_TRACKBALL_SETTINGS_H
 #define VCL_RENDER_SETTINGS_TRACKBALL_SETTINGS_H
 
+#include <vclib/render/concepts/settings.h>
 #include <vclib/render/input.h>
 #include <vclib/render/viewer/trackball.h>
 
 namespace vcl {
+
+inline std::string toString(TrackballMotionType motion)
+{
+    switch (motion) {
+    case TrackballMotionType::ARC: return "Arcball Rotation";
+    case TrackballMotionType::PAN: return "Pan";
+    case TrackballMotionType::ZMOVE: return "Z-Move";
+    case TrackballMotionType::ROLL: return "Roll";
+    case TrackballMotionType::SCALE: return "Scale";
+    case TrackballMotionType::FOV: return "Field of View";
+    case TrackballMotionType::FOCUS: return "Focus";
+    case TrackballMotionType::DIR_LIGHT_ARC: return "Directional Light Arc";
+    default: return "Unknown";
+    }
+}
+
+inline void fromString(const std::string& str, TrackballMotionType& out)
+{
+    if (str == "Arcball Rotation") out = TrackballMotionType::ARC;
+    else if (str == "Pan") out = TrackballMotionType::PAN;
+    else if (str == "Z-Move") out = TrackballMotionType::ZMOVE;
+    else if (str == "Roll") out = TrackballMotionType::ROLL;
+    else if (str == "Scale") out = TrackballMotionType::SCALE;
+    else if (str == "Field of View") out = TrackballMotionType::FOV;
+    else if (str == "Focus") out = TrackballMotionType::FOCUS;
+    else if (str == "Directional Light Arc")
+        out = TrackballMotionType::DIR_LIGHT_ARC;
+    else out = TrackballMotionType::MOTION_COUNT;
+}
+
+template<>
+inline std::vector<TrackballMotionType> availableActions()
+{
+    return {
+        TrackballMotionType::ARC,
+        TrackballMotionType::PAN,
+        TrackballMotionType::ZMOVE,
+        TrackballMotionType::ROLL,
+        TrackballMotionType::SCALE,
+        TrackballMotionType::FOV,
+        TrackballMotionType::FOCUS,
+        TrackballMotionType::DIR_LIGHT_ARC
+    };
+}
 
 /**
  * @brief Contains the settings and bindings for the trackball.
  */
 struct TrackballSettings
 {
-    using ScrollAxis = unsigned char;
-
     using DragMotionMap = BindingMap<
         std::pair<MouseButton::Enum, KeyModifiers>,
         TrackballMotionType>;
-    using ScrollAtomicMap =
-        BindingMap<std::pair<KeyModifiers, ScrollAxis>, TrackballMotionType>;
+    using ScrollAtomicMap = BindingMap<
+        std::pair<ScrollAxis::Enum, KeyModifiers>,
+        TrackballMotionType>;
     using KeyAtomicMap =
         BindingMap<std::pair<Key::Enum, KeyModifiers>, std::string>;
 
     DragMotionMap   dragMotionMap   = defaultDragMotionMap();
     ScrollAtomicMap scrollAtomicMap = defaultScrollMotionMap();
     KeyAtomicMap    keyAtomicMap    = defaultKeyAtomicMap();
+
+    template <typename Visitor>
+    void visitInputBindings(Visitor&& visitor, const std::vector<std::string>& availableCallbacks = {})
+    {
+        visitor("Drag Motions", dragMotionMap);
+        visitor("Scroll Actions", scrollAtomicMap);
+        visitor("Key Actions", keyAtomicMap, availableCallbacks);
+    }
+
 
 private:
     static DragMotionMap defaultDragMotionMap()
@@ -53,14 +106,15 @@ private:
     static ScrollAtomicMap defaultScrollMotionMap()
     {
         using enum KeyModifier::Enum;
+        using enum ScrollAxis::Enum;
         using enum TrackballMotionType;
 
         return ScrollAtomicMap {
-            {{{NO_MODIFIER}, 1}, SCALE},
-            {{{CONTROL}, 1},     ROLL },
-            {{{SHIFT}, 1},       FOV  },
+            {{VERTICAL, {NO_MODIFIER}}, SCALE},
+            {{VERTICAL, {CONTROL}},     ROLL },
+            {{VERTICAL, {SHIFT}},       FOV  },
 #ifdef __APPLE__
-            {{{SHIFT}, 0},       FOV  },
+            {{HORIZONTAL, {SHIFT}},     FOV  },
 #endif
         };
     }

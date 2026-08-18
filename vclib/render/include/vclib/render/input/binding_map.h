@@ -33,13 +33,15 @@ namespace vcl {
  * modifiers).
  * @tparam Action The type representing the action triggered by the input.
  */
-template<typename Input, typename Action>
+template<typename Input, ActionConcept Action>
 class BindingMap
 {
-private:
     std::map<Input, Action> mMap;
 
 public:
+    using InputType = Input;
+    using ActionType = Action;
+
     /**
      * @brief Default constructor.
      */

@@ -124,6 +124,14 @@ struct Key
     };
 };
 
+struct ScrollAxis
+{
+    enum Enum {
+        HORIZONTAL = 0,
+        VERTICAL   = 1,
+    };
+};
+
 inline bool isModifierKey(Key::Enum key)
 {
     return key == Key::SHIFT_KEY || key == Key::CONTROL_KEY ||
@@ -327,6 +335,53 @@ inline void fromString(const std::string& str, Key::Enum& out)
         out = Key::SCROLL_LOCK;
     else
         out = Key::UNKNOWN;
+}
+
+inline std::string toString(const std::pair<MouseButton::Enum, KeyModifiers>& p)
+{
+    std::string mods = toString(p.second);
+    if (mods.empty())
+        return toString(p.first);
+    return mods + "+" + toString(p.first);
+}
+
+inline std::string toString(const std::pair<Key::Enum, KeyModifiers>& p)
+{
+    std::string mods = toString(p.second);
+    if (mods.empty())
+        return toString(p.first);
+    return mods + "+" + toString(p.first);
+}
+
+inline std::string toString(const std::pair<ScrollAxis::Enum, KeyModifiers>& p)
+{
+    using enum ScrollAxis::Enum;
+    std::string mods = toString(p.second);
+    std::string axis = p.first == HORIZONTAL ? "Scroll X" : "Scroll Y";
+    if (mods.empty())
+        return axis;
+    return mods + "+" + axis;
+}
+
+inline void fromString(
+    const std::string& /*str*/,
+    std::pair<MouseButton::Enum, KeyModifiers>& /*out*/)
+{
+    // Not implemented yet
+}
+
+inline void fromString(
+    const std::string& /*str*/,
+    std::pair<Key::Enum, KeyModifiers>& /*out*/)
+{
+    // Not implemented yet
+}
+
+inline void fromString(
+    const std::string& /*str*/,
+    std::pair<ScrollAxis::Enum, KeyModifiers>& /*out*/)
+{
+    // Not implemented yet
 }
 
 } // namespace vcl
