@@ -26,7 +26,7 @@ struct ViewerSettings : public TrackballSettings
      * @brief Global actions registered by the viewer or editors.
      */
     using ViewerGlobalActionMap =
-        BindingMap<std::pair<Key::Enum, KeyModifiers>, std::string>;
+        InputActionBindingMap<std::pair<Key::Enum, KeyModifiers>, std::string>;
 
     /**
      * @brief The tone mapping operators available when rendering.

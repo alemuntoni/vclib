@@ -34,7 +34,7 @@ namespace vcl {
  * @tparam Action The type representing the action triggered by the input.
  */
 template<typename Input, ActionConcept Action>
-class BindingMap
+class InputActionBindingMap
 {
     std::map<Input, Action> mMap;
 
@@ -45,14 +45,14 @@ public:
     /**
      * @brief Default constructor.
      */
-    BindingMap() = default;
+    InputActionBindingMap() = default;
 
     /**
      * @brief Constructor with an initializer list of bindings.
      *
      * @param[in] init: Initializer list of input-action pairs.
      */
-    BindingMap(std::initializer_list<std::pair<const Input, Action>> init) :
+    InputActionBindingMap(std::initializer_list<std::pair<const Input, Action>> init) :
             mMap(init)
     {
     }

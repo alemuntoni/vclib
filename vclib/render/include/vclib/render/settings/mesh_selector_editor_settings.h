@@ -8,7 +8,7 @@
 #ifndef VCL_RENDER_SETTINGS_MESH_SELECTOR_EDITOR_SETTINGS_H
 #define VCL_RENDER_SETTINGS_MESH_SELECTOR_EDITOR_SETTINGS_H
 
-#include <vclib/render/input/binding_map.h>
+#include <vclib/render/input/input_action_binding_map.h>
 #include <vclib/render/input/input.h>
 #include <vclib/render/settings/editor_settings.h>
 
@@ -42,7 +42,7 @@ inline std::vector<MeshSelectorAction> availableActions()
 
 struct MeshSelectorEditorSettings : public EditorSettings
 {
-    using MouseMap = BindingMap<
+    using MouseMap = InputActionBindingMap<
         std::pair<MouseButton::Enum, KeyModifiers>,
         MeshSelectorAction>;
 

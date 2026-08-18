@@ -8,7 +8,7 @@
 #ifndef VCL_RENDER_SETTINGS_SELECTION_EDITOR_SETTINGS_H
 #define VCL_RENDER_SETTINGS_SELECTION_EDITOR_SETTINGS_H
 
-#include <vclib/render/input/binding_map.h>
+#include <vclib/render/input/input_action_binding_map.h>
 #include <vclib/render/input/input.h>
 #include <vclib/render/selection/selection_mode.h>
 #include <vclib/render/settings/editor_settings.h>
@@ -21,9 +21,10 @@ namespace vcl {
 
 struct SelectionEditorSettings : public EditorSettings
 {
-    using KeyMap =
-        BindingMap<std::pair<Key::Enum, KeyModifiers>, SelectionAtomicAction>;
-    using MouseMap = BindingMap<
+    using KeyMap = InputActionBindingMap<
+        std::pair<Key::Enum, KeyModifiers>,
+        SelectionAtomicAction>;
+    using MouseMap = InputActionBindingMap<
         std::pair<MouseButton::Enum, KeyModifiers>,
         SelectionDragAction>;
 

@@ -63,21 +63,23 @@ inline std::vector<TrackballMotionType> availableActions()
  */
 struct TrackballSettings
 {
-    using DragMotionMap = BindingMap<
+    using DragMotionMap = InputActionBindingMap<
         std::pair<MouseButton::Enum, KeyModifiers>,
         TrackballMotionType>;
-    using ScrollAtomicMap = BindingMap<
+    using ScrollAtomicMap = InputActionBindingMap<
         std::pair<ScrollAxis::Enum, KeyModifiers>,
         TrackballMotionType>;
     using KeyAtomicMap =
-        BindingMap<std::pair<Key::Enum, KeyModifiers>, std::string>;
+        InputActionBindingMap<std::pair<Key::Enum, KeyModifiers>, std::string>;
 
     DragMotionMap   dragMotionMap   = defaultDragMotionMap();
     ScrollAtomicMap scrollAtomicMap = defaultScrollMotionMap();
     KeyAtomicMap    keyAtomicMap    = defaultKeyAtomicMap();
 
-    template <typename Visitor>
-    void visitInputBindings(Visitor&& visitor, const std::vector<std::string>& availableCallbacks = {})
+    template<typename Visitor>
+    void visitInputBindings(
+        Visitor&&                       visitor,
+        const std::vector<std::string>& availableCallbacks = {})
     {
         visitor("Drag Motions", dragMotionMap);
         visitor("Scroll Actions", scrollAtomicMap);
