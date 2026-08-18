@@ -41,9 +41,38 @@ enum class SelectionAtomicAction {
             ///< type. Selected primitives become deselected and vice versa. No
             ///< selection box is needed or used. Useful for quickly selecting
             ///< everything except what is currently chosen.
-
-    COUNT
 };
+
+inline std::string toString(SelectionAtomicAction action)
+{
+    switch (action) {
+    case SelectionAtomicAction::ALL: return "Select All";
+    case SelectionAtomicAction::NONE: return "Select None";
+    case SelectionAtomicAction::INVERT: return "Invert Selection";
+    default: return "Unknown";
+    }
+}
+
+inline void fromString(const std::string& str, SelectionAtomicAction& out)
+{
+    if (str == "Select All") out = SelectionAtomicAction::ALL;
+    else if (str == "Select None") out = SelectionAtomicAction::NONE;
+    else if (str == "Invert Selection") out = SelectionAtomicAction::INVERT;
+    else {
+        throw std::invalid_argument(
+            "SelectionAtomicAction fromString failed to parse: '" + str + "'");
+    }
+}
+
+template<>
+inline std::vector<SelectionAtomicAction> availableActions()
+{
+    return {
+        SelectionAtomicAction::ALL,
+        SelectionAtomicAction::NONE,
+        SelectionAtomicAction::INVERT
+    };
+}
 
 /**
  * @brief Box-based selection operations.
@@ -66,9 +95,38 @@ enum class SelectionDragAction {
               ///< selection. Primitives that fall within the box are
               ///< deselected; others remain unaffected. Typically triggered
               ///< with a modifier key (e.g. Ctrl+Shift+drag).
-
-    COUNT
 };
+
+inline std::string toString(SelectionDragAction action)
+{
+    switch (action) {
+    case SelectionDragAction::REGULAR: return "Regular Selection";
+    case SelectionDragAction::ADD: return "Add to Selection";
+    case SelectionDragAction::SUBTRACT: return "Subtract from Selection";
+    default: return "Unknown";
+    }
+}
+
+inline void fromString(const std::string& str, SelectionDragAction& out)
+{
+    if (str == "Regular Selection") out = SelectionDragAction::REGULAR;
+    else if (str == "Add to Selection") out = SelectionDragAction::ADD;
+    else if (str == "Subtract from Selection") out = SelectionDragAction::SUBTRACT;
+    else {
+        throw std::invalid_argument(
+            "SelectionDragAction fromString failed to parse: '" + str + "'");
+    }
+}
+
+template<>
+inline std::vector<SelectionDragAction> availableActions()
+{
+    return {
+        SelectionDragAction::REGULAR,
+        SelectionDragAction::ADD,
+        SelectionDragAction::SUBTRACT
+    };
+}
 
 /**
  * @brief Describes a single selection operation.

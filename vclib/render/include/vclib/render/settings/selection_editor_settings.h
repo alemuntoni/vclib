@@ -35,6 +35,14 @@ struct SelectionEditorSettings : public EditorSettings
     KeyMap   keyBindings   = defaultKeyMap();
     MouseMap mouseBindings = defaultMouseMap();
 
+    template <typename Visitor>
+    void visitInputBindings(Visitor&& visitor)
+    {
+        visitor("Keyboard Actions", keyBindings);
+        visitor("Mouse Actions", mouseBindings);
+    }
+
+
     void loadSettings(const nlohmann::json& j)
     {
         if (j.contains("SelectionEditor")) {

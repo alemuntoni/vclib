@@ -37,8 +37,27 @@ concept HasSettings =
 template<typename T>
 concept ActionConcept =
     Stringifiable<T> && requires (T obj, const std::string& str) {
-        { fromString<T>(str) } -> std::convertible_to<T>;
+        requires (requires { { fromString<T>(str) } -> std::convertible_to<T>; } || 
+                  requires { fromString(str, obj); });
         { availableActions<T>() } -> std::convertible_to<std::vector<T>>;
+    };
+
+namespace detail {
+    constexpr auto dummyVisitor = [](auto&&...) {};
+    using DummyVisitorType = decltype(dummyVisitor);
+}
+
+/**
+ * @brief Concept that checks if a type T exposes input bindings
+ * through a visitInputBindings method.
+ */
+template<typename T>
+concept HasInputBindings =
+    requires (T s, detail::DummyVisitorType v) {
+        { s.visitInputBindings(v) };
+    } ||
+    requires (T s, detail::DummyVisitorType v) {
+        { s.visitInputBindings(v, std::vector<std::string>{}) };
     };
 
 } // namespace vcl

@@ -14,19 +14,7 @@
 
 namespace vcl {
 
-enum class MeshSelectorAction { SELECT_MESH, COUNT };
-
-struct MeshSelectorEditorSettings : public EditorSettings
-{
-    using MouseMap = BindingMap<
-        std::pair<MouseButton::Enum, KeyModifiers>,
-        MeshSelectorAction>;
-
-    MouseMap mouseBindings = {
-        {{MouseButton::RIGHT, {KeyModifier::NO_MODIFIER}},
-         MeshSelectorAction::SELECT_MESH}
-    };
-};
+enum class MeshSelectorAction { SELECT_MESH };
 
 inline std::string toString(MeshSelectorAction action)
 {
@@ -40,8 +28,10 @@ inline void fromString(const std::string& str, MeshSelectorAction& out)
 {
     if (str == "Select Mesh" || str == "SELECT_MESH")
         out = MeshSelectorAction::SELECT_MESH;
-    else
-        out = MeshSelectorAction::COUNT;
+    else {
+        throw std::invalid_argument(
+            "MeshSelectorAction fromString failed to parse: '" + str + "'");
+    }
 }
 
 template<>
@@ -49,6 +39,24 @@ inline std::vector<MeshSelectorAction> availableActions()
 {
     return {MeshSelectorAction::SELECT_MESH};
 }
+
+struct MeshSelectorEditorSettings : public EditorSettings
+{
+    using MouseMap = BindingMap<
+        std::pair<MouseButton::Enum, KeyModifiers>,
+        MeshSelectorAction>;
+
+    MouseMap mouseBindings = {
+        {{MouseButton::RIGHT, {KeyModifier::NO_MODIFIER}},
+         MeshSelectorAction::SELECT_MESH}
+    };
+
+    template <typename Visitor>
+    void visitInputBindings(Visitor&& visitor)
+    {
+        visitor("Mouse Actions", mouseBindings);
+    }
+};
 
 } // namespace vcl
 
