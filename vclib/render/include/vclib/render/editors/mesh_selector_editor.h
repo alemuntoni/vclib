@@ -53,9 +53,9 @@ public:
 
     std::string name() const override { return "Mesh Selector"; }
 
-    EditorSettings& settings() override { return mSettings; }
+    MeshSelectorEditorSettings& settings() override { return mSettings; }
 
-    const EditorSettings& settings() const override { return mSettings; }
+    const MeshSelectorEditorSettings& settings() const override { return mSettings; }
 
     void draw(uint viewId) override {}
 

@@ -212,14 +212,20 @@ public:
             });
         }
 
-        // Store editor for settings dialog if it has a settings frame
-        using SettingsFrame = typename EditorFrameTraits<EditorT, ViewerType>::SettingsFrameType;
-        if constexpr (!std::is_same_v<SettingsFrame, void>) {
+        // Store editor for settings dialog if it has a settings frame or input
+        // bindings
+        using SettingsFrame =
+            typename EditorFrameTraits<EditorT, ViewerType>::SettingsFrameType;
+        using SettingsType =
+            std::remove_reference_t<decltype(editor->settings())>;
+
+        if constexpr (
+            !std::is_same_v<SettingsFrame, void> ||
+            vcl::HasInputBindings<SettingsType>) {
             mSettingsData.addTab(
-                std::make_shared<EditorSettingsTabImpl<EditorT<ViewerType>, SettingsFrame>>(
-                    editor, QString::fromStdString(editor->name())
-                )
-            );
+                std::make_shared<
+                    EditorSettingsTabImpl<EditorT<ViewerType>, SettingsFrame>>(
+                    editor, QString::fromStdString(editor->name())));
         }
 
         using ToolbarFrameType =

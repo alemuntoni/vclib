@@ -8,6 +8,7 @@
 #ifndef VCL_QT_GUI_SETTINGS_DIALOG_TAB_H
 #define VCL_QT_GUI_SETTINGS_DIALOG_TAB_H
 
+#include <vclib/qt/gui/settings_dialog/generic_settings_widget.h>
 #include <vclib/render/concepts/settings.h>
 
 #include <nlohmann/json.hpp>
@@ -52,7 +53,17 @@ public:
     QWidget* createWidget(QWidget* parent) override
     {
         mTempSettings = std::make_unique<SettingsType>(mEditor->settings());
-        return new SettingsFrameType(*mTempSettings, parent);
+        QWidget* mainWidget = new QWidget(parent);
+        QVBoxLayout* layout = new QVBoxLayout(mainWidget);
+        layout->setContentsMargins(0, 0, 0, 0);
+
+        if constexpr (!std::is_same_v<SettingsFrameType, void>) {
+            layout->addWidget(new SettingsFrameType(*mTempSettings, mainWidget));
+        }
+
+        layout->addWidget(new GenericSettingsWidget<SettingsType>(*mTempSettings, mainWidget));
+        
+        return mainWidget;
     }
 
     void applySettings() override
@@ -74,8 +85,10 @@ public:
 
     void updateToolbarFrames(QToolBar* toolbar) override
     {
-        for (auto* f : toolbar->findChildren<SettingsFrameType*>()) {
-            f->updateGUI();
+        if constexpr (!std::is_same_v<SettingsFrameType, void>) {
+            for (auto* f : toolbar->findChildren<SettingsFrameType*>()) {
+                f->updateGUI();
+            }
         }
     }
 };
