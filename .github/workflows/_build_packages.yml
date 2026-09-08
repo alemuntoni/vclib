@@ -68,9 +68,67 @@ jobs:
         cmake --build build-vclib
         cmake --install build-vclib --prefix "${{ github.workspace }}/install-vclib"
 
+    - name: Build VCLib Installer (Windows NSIS)
+      if: matrix.package_type == 'all' && runner.os == 'Windows'
+      shell: bash
+      run: |
+        cpack --config build-vclib/CPackConfig.cmake -B packages
+        mkdir -p dist_installer
+        cp packages/*.exe dist_installer/
+
     - name: Upload VCLib Package
       uses: actions/upload-artifact@v7
       with:
         name: vclib-package-${{ matrix.package_type }}-${{ runner.os }}-${{ runner.arch }}
         path: install-vclib
         include-hidden-files: true
+
+    - name: Upload VCLib Installer (Windows NSIS)
+      if: matrix.package_type == 'all' && runner.os == 'Windows'
+      uses: actions/upload-artifact@v7
+      with:
+        name: vclib-installer-${{ runner.os }}-${{ runner.arch }}
+        path: dist_installer/*
+
+  build_vclib_deb:
+    name: Build VCLib DEB Package (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-26.04', 'ubuntu-26.04-arm']
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
+        ref: ${{ inputs.ref }}
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake ninja-build libtbb-dev libembree-dev libgmp-dev libmpfr-dev
+        sudo apt-get install -y freeglut3-dev libgl1-mesa-dev libxi-dev libxinerama-dev libxcursor-dev libxrandr-dev libwayland-dev wayland-protocols libxkbcommon-dev mesa-vulkan-drivers
+        sudo apt-get install -y libeigen3-dev libboost-dev libcgal-dev libglfw3-dev qt6-base-dev
+
+    - name: Ccache
+      uses: hendrikmuhs/ccache-action@v1.2.23
+      with:
+        key: deb-${{ matrix.os }}
+        max-size: 1G
+
+    - name: Build and Package VCLib DEB
+      shell: bash
+      run: |
+        cmake -S . -B build-deb --preset=vclib-all-install \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        cmake --build build-deb
+        cpack --config build-deb/CPackConfig.cmake -G DEB -B packages
+        mkdir -p dist_installer
+        cp packages/*.deb dist_installer/
+
+    - name: Upload VCLib DEB Package
+      uses: actions/upload-artifact@v7
+      with:
+        name: vclib-installer-${{ runner.os }}-${{ runner.arch }}
+        path: dist_installer/*
+
