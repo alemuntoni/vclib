@@ -7,10 +7,16 @@ on:
         required: false
         type: string
         description: "The commit SHA or ref to checkout. Defaults to the workflow trigger ref."
+      target:
+        required: false
+        type: string
+        default: 'all'
+        description: "The target packages to build: 'all', 'archive', or 'installer'."
 
 jobs:
   build_vclib_packages:
     name: Build VCLib Package (${{ matrix.os }}, ${{ matrix.package_type }})
+    if: inputs.target != 'installer'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -36,9 +42,9 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install cmake ninja-build libtbb-dev
-        sudo apt-get install libembree-dev
-        sudo apt-get install freeglut3-dev libgl1-mesa-dev libxi-dev libxinerama-dev libxcursor-dev libxrandr-dev libgmp-dev libmpfr-dev libwayland-dev wayland-protocols libxkbcommon-dev mesa-vulkan-drivers
+        sudo apt-get install -y cmake ninja-build libtbb-dev
+        sudo apt-get install -y libembree-dev
+        sudo apt-get install -y freeglut3-dev libgl1-mesa-dev libxi-dev libxinerama-dev libxcursor-dev libxrandr-dev libgmp-dev libmpfr-dev libwayland-dev wayland-protocols libxkbcommon-dev mesa-vulkan-drivers
 
     - name: Install dependencies
       if: runner.os == 'macOS'
@@ -68,14 +74,6 @@ jobs:
         cmake --build build-vclib
         cmake --install build-vclib --prefix "${{ github.workspace }}/install-vclib"
 
-    - name: Build VCLib Installer (Windows NSIS)
-      if: matrix.package_type == 'all' && runner.os == 'Windows'
-      shell: bash
-      run: |
-        cpack --config build-vclib/CPackConfig.cmake -B packages
-        mkdir -p dist_installer
-        cp packages/*.exe dist_installer/
-
     - name: Upload VCLib Package
       uses: actions/upload-artifact@v7
       with:
@@ -83,8 +81,46 @@ jobs:
         path: install-vclib
         include-hidden-files: true
 
+  build_vclib_nsis:
+    name: Build VCLib NSIS Package (Windows)
+    if: inputs.target != 'archive'
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
+        ref: ${{ inputs.ref }}
+
+    - name: Setup MSVC
+      uses: TheMrMilchmann/setup-msvc-dev@v4
+      with:
+        arch: x64
+
+    - name: Install Qt
+      uses: ./.github/actions/install-qt
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        choco install -y cmake ninja nsis
+
+    - name: Ccache
+      uses: hendrikmuhs/ccache-action@v1.2.23
+      with:
+        key: nsis-windows
+        max-size: 1G
+
+    - name: Build and Package VCLib NSIS
+      shell: bash
+      run: |
+        cmake -S . -B build-nsis --preset=vclib-all-install \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        cmake --build build-nsis
+        cpack --config build-nsis/CPackConfig.cmake -G NSIS -B packages
+        mkdir -p dist_installer
+        cp packages/*.exe dist_installer/
+
     - name: Upload VCLib Installer (Windows NSIS)
-      if: matrix.package_type == 'all' && runner.os == 'Windows'
       uses: actions/upload-artifact@v7
       with:
         name: vclib-installer-${{ runner.os }}-${{ runner.arch }}
@@ -92,6 +128,7 @@ jobs:
 
   build_vclib_deb:
     name: Build VCLib DEB Package (${{ matrix.os }})
+    if: inputs.target != 'archive'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -131,4 +168,3 @@ jobs:
       with:
         name: vclib-installer-${{ runner.os }}-${{ runner.arch }}
         path: dist_installer/*
-

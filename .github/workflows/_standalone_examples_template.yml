@@ -6,14 +6,15 @@ on:
       integration_mode:
         required: true
         type: string
-        description: "Integration mode: 'find_package' or 'FetchContent'"
+        description: "Integration mode: 'archive', 'installer', or 'FetchContent'"
 
 jobs:
   build_vclib_packages:
-    if: inputs.integration_mode == 'find_package'
+    if: inputs.integration_mode == 'archive' || inputs.integration_mode == 'installer'
     uses: ./.github/workflows/_build_packages.yml
     with:
       ref: ${{ github.ref }}
+      target: ${{ inputs.integration_mode }}
 
   build_and_run_standalone_examples:
     needs: [build_vclib_packages]
@@ -26,6 +27,11 @@ jobs:
         os: ['ubuntu-26.04', 'ubuntu-26.04-arm', 'macos-26-intel', 'macos-latest', 'windows-latest']
         module: ['core', 'external', 'render']
         integration_mode: ['${{ inputs.integration_mode }}']
+        exclude:
+          - os: 'macos-26-intel'
+            integration_mode: 'installer'
+          - os: 'macos-latest'
+            integration_mode: 'installer'
     steps:
     - uses: actions/checkout@v7
       with:
@@ -38,19 +44,19 @@ jobs:
         arch: x64
 
     - name: Install Qt
-      if: matrix.module == 'render'
+      if: matrix.module == 'render' && (runner.os != 'Linux' || matrix.integration_mode != 'installer')
       uses: ./.github/actions/install-qt
 
     - name: Install dependencies
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install cmake ninja-build libtbb-dev
+        sudo apt-get install -y cmake ninja-build libtbb-dev
         if [ "${{ matrix.module }}" == "external" ]; then
-          sudo apt-get install libembree-dev libgmp-dev libmpfr-dev
+          sudo apt-get install -y libembree-dev libgmp-dev libmpfr-dev
         fi
         if [ "${{ matrix.module }}" == "render" ]; then
-          sudo apt-get install freeglut3-dev libgl1-mesa-dev libxi-dev libxinerama-dev libxcursor-dev libxrandr-dev libgmp-dev libmpfr-dev libwayland-dev wayland-protocols libxkbcommon-dev mesa-vulkan-drivers
+          sudo apt-get install -y freeglut3-dev libgl1-mesa-dev libxi-dev libxinerama-dev libxcursor-dev libxrandr-dev libgmp-dev libmpfr-dev libwayland-dev wayland-protocols libxkbcommon-dev mesa-vulkan-drivers
         fi
 
     - name: Install dependencies
@@ -74,20 +80,53 @@ jobs:
         key: standalone-${{ matrix.os }}-${{ matrix.integration_mode }}-${{ matrix.module }}
         max-size: 1G
 
-    - name: Download VCLib Package
-      if: matrix.integration_mode == 'find_package'
+    - name: Download VCLib Archive Package
+      if: matrix.integration_mode == 'archive'
       uses: actions/download-artifact@v8
       with:
         name: vclib-package-${{ matrix.module == 'core' && 'core' || 'all' }}-${{ runner.os }}-${{ runner.arch }}
         path: install-vclib
-    
-    - name: VCLib Package Permissions
-      if: runner.os == 'Linux' || runner.os == 'macOS'
+
+    - name: VCLib Archive Package Permissions
+      if: matrix.integration_mode == 'archive' && (runner.os == 'Linux' || runner.os == 'macOS')
       shell: bash
       run: |
         if [ -d "install-vclib/bin" ]; then
           chmod -R +x install-vclib/bin/*
         fi
+
+    - name: Download VCLib Installer Package
+      if: matrix.integration_mode == 'installer'
+      uses: actions/download-artifact@v8
+      with:
+        name: vclib-installer-${{ runner.os }}-${{ runner.arch }}
+        path: installer-vclib
+
+    - name: Install VCLib DEB Package
+      if: matrix.integration_mode == 'installer' && runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ./installer-vclib/*.deb
+
+    - name: Install VCLib NSIS Package
+      if: matrix.integration_mode == 'installer' && runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $installer = (Get-Item installer-vclib/*.exe | Select-Object -First 1).FullName
+        Start-Process $installer -ArgumentList "/S" -Wait
+        # Locate the installed vclib bin directory and add it to GITHUB_PATH
+        $vclibBin = Get-ChildItem "C:\Program Files", "C:\Program Files (x86)" -Directory -Filter "vclib*" -ErrorAction SilentlyContinue |
+                    ForEach-Object { Join-Path $_.FullName "bin" } |
+                    Where-Object { Test-Path $_ } |
+                    Select-Object -First 1
+        if ($vclibBin) {
+          echo "Found VCLib bin at $vclibBin"
+          echo $vclibBin | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+        } else {
+          Write-Error "Could not find VCLib bin directory!"
+          exit 1
+        }
 
     - name: Configure Standalone Examples
       shell: bash
@@ -95,10 +134,12 @@ jobs:
         EXTRA_ARGS=""
         if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
           EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=ON"
+        elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
+          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF"
         else
           EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
         fi
-        
+
         if [ "${{ matrix.module }}" == "core" ]; then
           EXTRA_ARGS="$EXTRA_ARGS -DVCLIB_STANDALONE_BUILD_CORE=ON -DVCLIB_STANDALONE_BUILD_EXTERNAL=OFF -DVCLIB_STANDALONE_BUILD_RENDER=OFF"
         elif [ "${{ matrix.module }}" == "external" ]; then
@@ -106,7 +147,7 @@ jobs:
         elif [ "${{ matrix.module }}" == "render" ]; then
           EXTRA_ARGS="$EXTRA_ARGS -DVCLIB_STANDALONE_BUILD_CORE=OFF -DVCLIB_STANDALONE_BUILD_EXTERNAL=OFF -DVCLIB_STANDALONE_BUILD_RENDER=ON -DVCLIB_RENDER_BACKEND=bgfx"
         fi
-        
+
         cmake -S examples/standalone -B examples/standalone/build \
           -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
@@ -123,8 +164,13 @@ jobs:
       run: |
         if [ "${{ matrix.module }}" != "render" ]; then
           if [ "$RUNNER_OS" == "Windows" ] && [ "${{ matrix.module }}" == "external" ]; then
-            if [ "${{ matrix.integration_mode }}" == "find_package" ]; then
+            if [ "${{ matrix.integration_mode }}" == "archive" ]; then
               export PATH="${{ github.workspace }}/install-vclib/bin:$PATH"
+            elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
+              VCLIB_BIN=$(ls -d "/c/Program Files"/vclib*/bin 2>/dev/null | head -n 1)
+              if [ -n "$VCLIB_BIN" ]; then
+                export PATH="$VCLIB_BIN:$PATH"
+              fi
             elif [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
               if [ -d "_deps" ]; then
                 export PATH=$(find "$PWD/_deps" -name "*.dll" -exec dirname {} \; | sort -u | tr '\n' ':')$PATH
@@ -143,6 +189,8 @@ jobs:
         EXTRA_ARGS=""
         if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
           EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=ON"
+        elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
+          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF"
         else
           EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
         fi
@@ -162,6 +210,8 @@ jobs:
         EXTRA_ARGS=""
         if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
           EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=ON"
+        elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
+          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF"
         else
           EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
         fi
@@ -180,6 +230,8 @@ jobs:
         EXTRA_ARGS=""
         if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
           EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=ON"
+        elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
+          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF"
         else
           EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
         fi
@@ -198,6 +250,8 @@ jobs:
         EXTRA_ARGS=""
         if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
           EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=ON"
+        elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
+          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF"
         else
           EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
         fi

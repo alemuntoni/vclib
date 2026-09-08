@@ -72,7 +72,7 @@ if(@VCLIB_INSTALL_MODULE_RENDER@)
         find_package(Wayland QUIET)
     endif()
     if("vclib-3rd-bgfx" IN_LIST VCLIB_CONFIG_RENDER_3RDPARTY_LIBRARIES)
-        find_package(bgfx QUIET)
+        find_package(bgfx QUIET PATHS "${CMAKE_CURRENT_LIST_DIR}/../bgfx")
     endif()
     if(
         "@VCLIB_USED_SYSTEM_GLFW@"

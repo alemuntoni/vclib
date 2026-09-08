@@ -1,0 +1,10 @@
+name: Standalone Examples - Installer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  StandaloneExamples-Installer:
+    uses: ./.github/workflows/_standalone_examples_template.yml
+    with:
+      integration_mode: 'installer'

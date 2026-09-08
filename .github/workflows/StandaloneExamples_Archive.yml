@@ -1,0 +1,10 @@
+name: Standalone Examples - Archive
+
+on:
+  workflow_dispatch:
+
+jobs:
+  StandaloneExamples-Archive:
+    uses: ./.github/workflows/_standalone_examples_template.yml
+    with:
+      integration_mode: 'archive'
