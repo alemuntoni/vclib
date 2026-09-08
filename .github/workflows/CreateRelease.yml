@@ -11,7 +11,7 @@ on:
 jobs:
   prepare_release:
     name: Prepare Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       new_sha: ${{ steps.commit.outputs.commit_long_sha || github.sha }}
     steps:
@@ -76,7 +76,7 @@ jobs:
   create_release:
     needs: [prepare_release, test_core, test_external, test_render, build_packages, build_wheels, build_docs]
     name: Create Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
     - name: Download Artifacts
       uses: actions/download-artifact@v8
