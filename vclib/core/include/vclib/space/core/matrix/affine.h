@@ -8,6 +8,10 @@
 #ifndef VCL_SPACE_CORE_MATRIX_AFFINE_H
 #define VCL_SPACE_CORE_MATRIX_AFFINE_H
 
+#ifndef EIGEN_MAX_ALIGN_BYTES
+#define EIGEN_MAX_ALIGN_BYTES 16
+#endif
+
 #include <Eigen/Core>
 
 namespace vcl {

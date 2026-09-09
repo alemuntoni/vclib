@@ -28,6 +28,8 @@ else()
     )
 endif()
 
+target_compile_definitions(vclib-3rd-eigen INTERFACE EIGEN_MAX_ALIGN_BYTES=16)
+
 list(APPEND VCLIB_CORE_3RDPARTY_LIBRARIES vclib-3rd-eigen)
 
 # Install
