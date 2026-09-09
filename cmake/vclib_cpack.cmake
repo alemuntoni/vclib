@@ -31,6 +31,7 @@ if(WIN32)
 
     # NSIS specific settings
     set(CPACK_PACKAGE_FILE_NAME "vclib-${PROJECT_VERSION}-windows-x86_64")
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY "VCLib")
     set(CPACK_NSIS_DISPLAY_NAME "VCLib")
     set(CPACK_NSIS_PACKAGE_NAME "VCLib")
     set(CPACK_NSIS_HELP_LINK "https://alemuntoni.github.io/vclib")
