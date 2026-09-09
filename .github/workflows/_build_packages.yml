@@ -224,7 +224,7 @@ jobs:
       matrix:
         os: ['ubuntu-26.04', 'ubuntu-26.04-arm']
     container:
-      image: fedora:40
+      image: fedora:41
     steps:
     - name: Install git and tar
       run: dnf install -y git tar unzip
