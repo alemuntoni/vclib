@@ -57,7 +57,9 @@ else() # Linux
     # Debian package settings
     set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
     set(CPACK_DEBIAN_PACKAGE_NAME "vclib")
-    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Alessandro Muntoni <alessandro.muntoni@cnr.it>")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER
+        "Alessandro Muntoni <alessandro.muntoni@cnr.it>"
+    )
     set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
     set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
     set(CPACK_DEBIAN_PACKAGE_DEPENDS

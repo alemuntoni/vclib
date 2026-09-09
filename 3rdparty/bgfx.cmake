@@ -149,12 +149,15 @@ if(TARGET vclib-3rd-bgfx)
         # On non-x86_64 architectures (e.g. ARM64) this is a foreign-architecture binary
         # that breaks dpkg-shlibdeps during DEB packaging. Furthermore, DirectX shader
         # compilation is not used on Linux by VCLib.
-        install(CODE [[
+        install(
+            CODE
+                [[
             file(GLOB_RECURSE _DXCOMPILER_FILES "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/*libdxcompiler.so*")
             foreach(_F IN LISTS _DXCOMPILER_FILES)
                 message(STATUS "Removing unneeded DirectX shader compiler library: ${_F}")
                 file(REMOVE "${_F}")
             endforeach()
-        ]])
+        ]]
+        )
     endif()
 endif()
