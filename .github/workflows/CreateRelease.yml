@@ -127,12 +127,13 @@ jobs:
           fi
         done
         
-        # Process Installers (.deb, .rpm, and .exe)
+        # Process Installers (.deb, .rpm, .exe and .msi)
         for inst_dir in artifacts/vclib-installer-*; do
           if [ -d "$inst_dir" ]; then
             cp "$inst_dir"/*.deb release_assets/ 2>/dev/null || true
             cp "$inst_dir"/*.rpm release_assets/ 2>/dev/null || true
             cp "$inst_dir"/*.exe release_assets/ 2>/dev/null || true
+            cp "$inst_dir"/*.msi release_assets/ 2>/dev/null || true
           fi
         done
 

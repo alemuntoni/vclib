@@ -123,7 +123,53 @@ jobs:
     - name: Upload VCLib Installer (Windows NSIS)
       uses: actions/upload-artifact@v7
       with:
-        name: vclib-installer-${{ runner.os }}-${{ runner.arch }}
+        name: vclib-installer-nsis-${{ runner.os }}-${{ runner.arch }}
+        path: dist_installer/*
+
+  build_vclib_msi:
+    name: Build VCLib MSI Package (Windows)
+    if: inputs.target != 'archive'
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
+        ref: ${{ inputs.ref }}
+
+    - name: Setup MSVC
+      uses: TheMrMilchmann/setup-msvc-dev@v4
+      with:
+        arch: x64
+
+    - name: Install Qt
+      uses: ./.github/actions/install-qt
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        choco install -y cmake ninja wixtoolset
+
+    - name: Ccache
+      uses: hendrikmuhs/ccache-action@v1.2.23
+      with:
+        key: msi-windows
+        max-size: 1G
+
+    - name: Build and Package VCLib MSI
+      shell: bash
+      run: |
+        export PATH="/c/Program Files (x86)/WiX Toolset v3.14/bin:/c/Program Files (x86)/WiX Toolset v3.11/bin:$PATH"
+        cmake -S . -B build-msi --preset=vclib-all-install \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        cmake --build build-msi
+        cpack --config build-msi/CPackConfig.cmake -G WIX -B packages
+        mkdir -p dist_installer
+        cp packages/*.msi dist_installer/
+
+    - name: Upload VCLib Installer (Windows MSI)
+      uses: actions/upload-artifact@v7
+      with:
+        name: vclib-installer-msi-${{ runner.os }}-${{ runner.arch }}
         path: dist_installer/*
 
   build_vclib_deb:
@@ -166,7 +212,7 @@ jobs:
     - name: Upload VCLib DEB Package
       uses: actions/upload-artifact@v7
       with:
-        name: vclib-installer-${{ runner.os }}-${{ runner.arch }}
+        name: vclib-installer-deb-${{ runner.os }}-${{ runner.arch }}
         path: dist_installer/*
 
   build_vclib_rpm:
@@ -204,5 +250,5 @@ jobs:
     - name: Upload VCLib RPM Package
       uses: actions/upload-artifact@v7
       with:
-        name: vclib-installer-${{ runner.os }}-${{ runner.arch }}
+        name: vclib-installer-rpm-${{ runner.os }}-${{ runner.arch }}
         path: dist_installer/*

@@ -40,6 +40,10 @@ if(WIN32)
     set(CPACK_NSIS_MODIFY_PATH ON)
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
 
+    # WIX specific settings
+    set(CPACK_WIX_UPGRADE_GUID "B6539080-945B-4EB3-A6BE-0D4C44E7293A")
+    set(CPACK_WIX_PRODUCT_DESC "Visual Computing Library")
+
 elseif(APPLE)
     # macOS packaging will be handled via Homebrew Tap
     return()
