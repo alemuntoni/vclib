@@ -14,8 +14,8 @@ on:
         description: "The target packages to build: 'all', 'archive', or 'installer'."
 
 jobs:
-  build_vclib_packages:
-    name: Build VCLib Package (${{ matrix.os }}, ${{ matrix.package_type }})
+  build_vclib_archives:
+    name: Build VCLib Archives (${{ matrix.os }}, ${{ matrix.package_type }})
     if: inputs.target != 'installer'
     runs-on: ${{ matrix.os }}
     strategy:
