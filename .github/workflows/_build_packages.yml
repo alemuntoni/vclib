@@ -54,7 +54,7 @@ jobs:
         choco install -y cmake ninja
 
     - name: Ccache
-      uses: hendrikmuhs/ccache-action@v1.2.23
+      uses: hendrikmuhs/ccache-action@v1.2.24
       with:
         key: package-${{ matrix.os }}-${{ matrix.package_type }}
         max-size: 1G
