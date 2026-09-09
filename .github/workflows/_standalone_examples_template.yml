@@ -116,7 +116,7 @@ jobs:
         $installer = (Get-Item installer-vclib/*.exe | Select-Object -First 1).FullName
         Start-Process $installer -ArgumentList "/S" -Wait
         # Locate the installed vclib bin directory and add it to GITHUB_PATH
-        $vclibBin = Get-ChildItem "C:\Program Files", "C:\Program Files (x86)" -Directory -Filter "vclib*" -ErrorAction SilentlyContinue |
+        $vclibBin = Get-ChildItem "C:\Program Files", "C:\Program Files (x86)" -Directory -Filter "VCLib*" -ErrorAction SilentlyContinue |
                     ForEach-Object { Join-Path $_.FullName "bin" } |
                     Where-Object { Test-Path $_ } |
                     Select-Object -First 1
@@ -167,7 +167,7 @@ jobs:
             if [ "${{ matrix.integration_mode }}" == "archive" ]; then
               export PATH="${{ github.workspace }}/install-vclib/bin:$PATH"
             elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
-              VCLIB_BIN=$(ls -d "/c/Program Files"/vclib*/bin 2>/dev/null | head -n 1)
+              VCLIB_BIN=$(ls -d "/c/Program Files"/[Vv][Cc][Ll]ib*/bin 2>/dev/null | head -n 1)
               if [ -n "$VCLIB_BIN" ]; then
                 export PATH="$VCLIB_BIN:$PATH"
               fi
