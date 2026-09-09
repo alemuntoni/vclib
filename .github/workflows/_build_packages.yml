@@ -168,3 +168,41 @@ jobs:
       with:
         name: vclib-installer-${{ runner.os }}-${{ runner.arch }}
         path: dist_installer/*
+
+  build_vclib_rpm:
+    name: Build VCLib RPM Package (${{ matrix.os }})
+    if: inputs.target != 'archive'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-26.04', 'ubuntu-26.04-arm']
+    container:
+      image: fedora:40
+    steps:
+    - name: Install git and tar
+      run: dnf install -y git tar unzip
+
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
+        ref: ${{ inputs.ref }}
+
+    - name: Install dependencies
+      run: |
+        dnf install -y gcc gcc-c++ cmake ninja-build tbb-devel embree-devel gmp-devel mpfr-devel eigen3-devel boost-devel CGAL-devel glfw-devel qt6-qtbase-devel freeglut-devel mesa-libGL-devel libXi-devel libXinerama-devel libXcursor-devel libXrandr-devel wayland-devel wayland-protocols-devel libxkbcommon-devel rpm-build perl
+
+    - name: Build and Package VCLib RPM
+      shell: bash
+      run: |
+        cmake -S . -B build-rpm --preset=vclib-all-install
+        cmake --build build-rpm
+        cpack --config build-rpm/CPackConfig.cmake -G RPM -B packages
+        mkdir -p dist_installer
+        cp packages/*.rpm dist_installer/
+
+    - name: Upload VCLib RPM Package
+      uses: actions/upload-artifact@v7
+      with:
+        name: vclib-installer-${{ runner.os }}-${{ runner.arch }}
+        path: dist_installer/*

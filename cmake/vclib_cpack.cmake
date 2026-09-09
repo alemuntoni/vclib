@@ -66,6 +66,18 @@ else() # Linux
     set(CPACK_DEBIAN_PACKAGE_DEPENDS
         "libeigen3-dev, libboost-dev, libcgal-dev, libglfw3-dev, libtbb-dev, libembree-dev, libgmp-dev, libmpfr-dev, qt6-base-dev, libgl1-mesa-dev, libwayland-dev, libxkbcommon-dev"
     )
+
+    # RPM package settings
+    set(CPACK_RPM_PACKAGE_NAME "vclib")
+    set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
+        set(CPACK_RPM_PACKAGE_ARCHITECTURE "x86_64")
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
+        set(CPACK_RPM_PACKAGE_ARCHITECTURE "aarch64")
+    endif()
+    set(CPACK_RPM_PACKAGE_REQUIRES
+        "eigen3-devel, boost-devel, CGAL-devel, glfw-devel, tbb-devel, embree-devel, gmp-devel, mpfr-devel, qt6-qtbase-devel, freeglut-devel, mesa-libGL-devel, libXi-devel, libXinerama-devel, libXcursor-devel, libXrandr-devel, wayland-devel, wayland-protocols-devel, libxkbcommon-devel"
+    )
 endif()
 
 include(CPack)
