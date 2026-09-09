@@ -9,16 +9,7 @@ on:
         description: "Integration mode: 'archive', 'installer', or 'FetchContent'"
 
 jobs:
-  build_vclib_packages:
-    if: inputs.integration_mode == 'archive' || inputs.integration_mode == 'installer'
-    uses: ./.github/workflows/_build_packages.yml
-    with:
-      ref: ${{ github.ref }}
-      target: ${{ inputs.integration_mode }}
-
   build_and_run_standalone_examples:
-    needs: [build_vclib_packages]
-    if: ${{ !failure() && !cancelled() }}
     name: Standalone Examples (${{ matrix.os }}, ${{ matrix.module }}, ${{ matrix.integration_mode }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -129,24 +120,29 @@ jobs:
           exit 1
         }
 
+    - name: Set CMake Arguments
+      shell: bash
+      run: |
+        ARGS=""
+        if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
+          ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=ON"
+        elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
+          ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF"
+        else
+          ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
+        fi
+        echo "BASE_CMAKE_ARGS=$ARGS" >> $GITHUB_ENV
+
     - name: Configure Standalone Examples
       shell: bash
       run: |
         EXTRA_ARGS=""
-        if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=ON"
-        elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF"
-        else
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
-        fi
-
         if [ "${{ matrix.module }}" == "core" ]; then
-          EXTRA_ARGS="$EXTRA_ARGS -DVCLIB_STANDALONE_BUILD_CORE=ON -DVCLIB_STANDALONE_BUILD_EXTERNAL=OFF -DVCLIB_STANDALONE_BUILD_RENDER=OFF"
+          EXTRA_ARGS="-DVCLIB_STANDALONE_BUILD_CORE=ON -DVCLIB_STANDALONE_BUILD_EXTERNAL=OFF -DVCLIB_STANDALONE_BUILD_RENDER=OFF"
         elif [ "${{ matrix.module }}" == "external" ]; then
-          EXTRA_ARGS="$EXTRA_ARGS -DVCLIB_STANDALONE_BUILD_CORE=OFF -DVCLIB_STANDALONE_BUILD_EXTERNAL=ON -DVCLIB_STANDALONE_BUILD_RENDER=OFF"
+          EXTRA_ARGS="-DVCLIB_STANDALONE_BUILD_CORE=OFF -DVCLIB_STANDALONE_BUILD_EXTERNAL=ON -DVCLIB_STANDALONE_BUILD_RENDER=OFF"
         elif [ "${{ matrix.module }}" == "render" ]; then
-          EXTRA_ARGS="$EXTRA_ARGS -DVCLIB_STANDALONE_BUILD_CORE=OFF -DVCLIB_STANDALONE_BUILD_EXTERNAL=OFF -DVCLIB_STANDALONE_BUILD_RENDER=ON -DVCLIB_RENDER_BACKEND=bgfx"
+          EXTRA_ARGS="-DVCLIB_STANDALONE_BUILD_CORE=OFF -DVCLIB_STANDALONE_BUILD_EXTERNAL=OFF -DVCLIB_STANDALONE_BUILD_RENDER=ON -DVCLIB_RENDER_BACKEND=bgfx"
         fi
 
         cmake -S examples/standalone -B examples/standalone/build \
@@ -154,6 +150,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+          $BASE_CMAKE_ARGS \
           $EXTRA_ARGS
 
     - name: Build Standalone Examples
@@ -187,79 +184,46 @@ jobs:
       if: matrix.module == 'core'
       shell: bash
       run: |
-        EXTRA_ARGS=""
-        if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=ON"
-        elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF"
-        else
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
-        fi
-
         cmake -S examples/standalone/core-template-project -B examples/standalone/core-template-project/build \
           -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-          $EXTRA_ARGS
+          $BASE_CMAKE_ARGS
         cmake --build examples/standalone/core-template-project/build
 
     - name: Build Template Project (External)
       if: matrix.module == 'external'
       shell: bash
       run: |
-        EXTRA_ARGS=""
-        if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=ON"
-        elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF"
-        else
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
-        fi
         cmake -S examples/standalone/external-template-project -B examples/standalone/external-template-project/build \
           -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-          $EXTRA_ARGS
+          $BASE_CMAKE_ARGS
         cmake --build examples/standalone/external-template-project/build
 
     - name: Build Template Project (Render - Custom Shader)
       if: matrix.module == 'render'
       shell: bash
       run: |
-        EXTRA_ARGS=""
-        if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=ON"
-        elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF"
-        else
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
-        fi
         cmake -S examples/standalone/render-template-project-custom-shader -B examples/standalone/render-template-project-custom-shader/build \
           -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-          $EXTRA_ARGS
+          $BASE_CMAKE_ARGS
         cmake --build examples/standalone/render-template-project-custom-shader/build
 
     - name: Build Template Project (Render - Mesh Viewer)
       if: matrix.module == 'render'
       shell: bash
       run: |
-        EXTRA_ARGS=""
-        if [ "${{ matrix.integration_mode }}" == "FetchContent" ]; then
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=ON"
-        elif [ "${{ matrix.integration_mode }}" == "installer" ]; then
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF"
-        else
-          EXTRA_ARGS="-DVCLIB_STANDALONE_USE_FETCHCONTENT=OFF -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install-vclib"
-        fi
         cmake -S examples/standalone/render-template-project-mesh-viewer -B examples/standalone/render-template-project-mesh-viewer/build  \
           -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-          $EXTRA_ARGS
+          $BASE_CMAKE_ARGS
         cmake --build examples/standalone/render-template-project-mesh-viewer/build
