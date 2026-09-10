@@ -60,7 +60,7 @@ jobs:
         choco install -y cmake ninja
 
     - name: Ccache
-      uses: hendrikmuhs/ccache-action@v1.2.23
+      uses: hendrikmuhs/ccache-action@v1.2.24
       with:
         key: package-${{ matrix.os }}-${{ matrix.package_type }}
         max-size: 1G
@@ -105,7 +105,7 @@ jobs:
         choco install -y cmake ninja nsis
 
     - name: Ccache
-      uses: hendrikmuhs/ccache-action@v1.2.23
+      uses: hendrikmuhs/ccache-action@v1.2.24
       with:
         key: nsis-windows
         max-size: 1G
@@ -150,7 +150,7 @@ jobs:
         choco install -y cmake ninja wixtoolset
 
     - name: Ccache
-      uses: hendrikmuhs/ccache-action@v1.2.23
+      uses: hendrikmuhs/ccache-action@v1.2.24
       with:
         key: msi-windows
         max-size: 1G
@@ -194,7 +194,7 @@ jobs:
         sudo apt-get install -y libeigen3-dev libboost-dev libcgal-dev libglfw3-dev qt6-base-dev
 
     - name: Ccache
-      uses: hendrikmuhs/ccache-action@v1.2.23
+      uses: hendrikmuhs/ccache-action@v1.2.24
       with:
         key: deb-${{ matrix.os }}
         max-size: 1G
