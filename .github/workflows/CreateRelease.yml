@@ -158,6 +158,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   update-homebrew:
+    name: Update Homebrew formula
     needs: [create_release]
     runs-on: ubuntu-latest
     steps:
@@ -167,7 +168,7 @@ jobs:
           formula-name: vclib
           formula-path: Formula/vclib.rb
           homebrew-tap: alemuntoni/homebrew-vclib
-          download-url: https://github.com/alemuntoni/vclib/archive/refs/tags/v${{ github.event.inputs.version }}.tar.gz # to be removed
+          tag-name: v${{ github.event.inputs.version }}
           commit-message: "Bump vclib formula to v${{ github.event.inputs.version }}"
           create-pullrequest: true
         env:
