@@ -184,46 +184,46 @@ jobs:
       if: matrix.module == 'core'
       shell: bash
       run: |
-        cmake -S examples/standalone/core-template-project -B examples/standalone/core-template-project/build \
+        cmake -S examples/standalone/core-template-project -B b-c \
           -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
           $BASE_CMAKE_ARGS
-        cmake --build examples/standalone/core-template-project/build
+        cmake --build b-c
 
     - name: Build Template Project (External)
       if: matrix.module == 'external'
       shell: bash
       run: |
-        cmake -S examples/standalone/external-template-project -B examples/standalone/external-template-project/build \
+        cmake -S examples/standalone/external-template-project -B b-e \
           -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
           $BASE_CMAKE_ARGS
-        cmake --build examples/standalone/external-template-project/build
+        cmake --build b-e
 
     - name: Build Template Project (Render - Custom Shader)
       if: matrix.module == 'render'
       shell: bash
       run: |
-        cmake -S examples/standalone/render-template-project-custom-shader -B examples/standalone/render-template-project-custom-shader/build \
+        cmake -S examples/standalone/render-template-project-custom-shader -B b-rc \
           -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
           $BASE_CMAKE_ARGS
-        cmake --build examples/standalone/render-template-project-custom-shader/build
+        cmake --build b-rc
 
     - name: Build Template Project (Render - Mesh Viewer)
       if: matrix.module == 'render'
       shell: bash
       run: |
-        cmake -S examples/standalone/render-template-project-mesh-viewer -B examples/standalone/render-template-project-mesh-viewer/build  \
+        cmake -S examples/standalone/render-template-project-mesh-viewer -B b-rm \
           -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
           $BASE_CMAKE_ARGS
-        cmake --build examples/standalone/render-template-project-mesh-viewer/build
+        cmake --build b-rm
