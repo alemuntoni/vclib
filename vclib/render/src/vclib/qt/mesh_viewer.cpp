@@ -193,6 +193,27 @@ MeshViewer::MeshViewer(QWidget* parent, const std::string& settingsFilePath) :
         this,
         &MeshViewer::openSettings);
 
+    connect(
+        mUI->actionShow_Right_Area,
+        &QAction::toggled,
+        mUI->rightArea,
+        &QWidget::setVisible);
+    connect(
+        mUI->actionShow_Logger,
+        &QAction::toggled,
+        mUI->logger,
+        &QWidget::setVisible);
+    connect(
+        mUI->actionShow_Settings_Frame,
+        &QAction::toggled,
+        mUI->meshRenderSettingsFrame,
+        &QWidget::setVisible);
+    connect(
+        mUI->actionShow_Draw_Vector_Tree,
+        &QAction::toggled,
+        mUI->drawVectorTree,
+        &QWidget::setVisible);
+
     // Load default global settings
     nlohmann::json j;
     std::string    filePath = mSettingsFilePath;
@@ -217,8 +238,9 @@ MeshViewer::MeshViewer(QWidget* parent, const std::string& settingsFilePath) :
     mDefaultMeshRenderSettings.setAllCapabilities(true);
     mDefaultMeshRenderSettings.setDefaultSettingsFromCapability();
     if (j.contains("MeshRenderSettings")) {
-        mDefaultMeshRenderSettings =
+        MeshRenderSettings parsedSettings =
             j.at("MeshRenderSettings").get<MeshRenderSettings>();
+        mDefaultMeshRenderSettings.updateIfCapable(parsedSettings);
     }
 
     mSettingsData.addTab(std::make_shared<ViewerSettingsTabImpl>(this));
@@ -311,6 +333,24 @@ void MeshViewer::setViewerSettings(const ViewerSettings& settings)
 const ViewerSettings& MeshViewer::viewerSettings() const
 {
     return mViewerSettingsFrame->viewerSettings();
+}
+
+/**
+ * @brief Sets the visibility of the right area (which contains the drawable
+ * object tree, render settings, and logger).
+ * @param visible True to show the right area, false to hide it.
+ */
+void MeshViewer::setRightAreaVisible(bool visible)
+{
+    mUI->actionShow_Right_Area->setChecked(visible);
+}
+
+/**
+ * @brief Returns true if the right area is currently visible.
+ */
+bool MeshViewer::isRightAreaVisible() const
+{
+    return mUI->actionShow_Right_Area->isChecked();
 }
 
 void MeshViewer::fitScene()
