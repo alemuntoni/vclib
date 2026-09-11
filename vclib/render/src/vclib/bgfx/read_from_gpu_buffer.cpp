@@ -85,6 +85,7 @@ ReadFromGPUBuffer::ReadFromGPUBuffer(
             wideIsLarger ? maxTex : uint(double(size.x()) * ratio),
             wideIsLarger ? uint(double(size.y()) * ratio) : maxTex};
     }
+    mSize = size;
 
     // Determine blit texture size and format
     bgfx::TextureFormat::Enum blitFormat;
