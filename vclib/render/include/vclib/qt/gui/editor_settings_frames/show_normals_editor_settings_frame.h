@@ -36,6 +36,7 @@ public:
 
 signals:
     void settingsUpdated();
+    void contentUpdated();
 
 private slots:
     void editModeChanged(int index);

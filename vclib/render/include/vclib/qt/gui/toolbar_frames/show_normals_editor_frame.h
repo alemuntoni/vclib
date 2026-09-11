@@ -47,6 +47,9 @@ public:
                 mShowNormalsEditor->settings());
 
         connect(sf, SIGNAL(settingsUpdated()), this, SLOT(refreshSettings()));
+        connect(sf, &ShowNormalsEditorSettingsFrame::contentUpdated, this, [this]() {
+            refreshContent();
+        });
 
         mShowNormalsEditor->setOnStateUpdatedCallback([this, editorButton]() {
             editorButton->setChecked(mShowNormalsEditor->isActive());
@@ -59,6 +62,13 @@ private slots:
     {
         if (mShowNormalsEditor) {
             mShowNormalsEditor->refreshSettings();
+        }
+    }
+
+    void refreshContent()
+    {
+        if (mShowNormalsEditor) {
+            mShowNormalsEditor->refresh();
         }
     }
 };
