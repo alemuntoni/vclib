@@ -236,9 +236,8 @@ public:
         const Point2i&     point,
         CallbackReadBuffer callback = nullptr)
     {
-        if (!Context::instance().supportsReadback() // feature unsupported
-            || mReadRequest != std::nullopt         // read already requested
-            || point.x() < 0 || point.y() < 0       // point out of bounds
+        if (mReadRequest != std::nullopt      // read already requested
+            || point.x() < 0 || point.y() < 0 // point out of bounds
             || point.x() >= mSize.x() || point.y() >= mSize.y()) {
             return false;
         }
@@ -260,8 +259,7 @@ public:
      */
     bool onScreenshot(const std::string& filename, uint multiplier = 1)
     {
-        if (!Context::instance().supportsReadback() // feature unsupported
-            || mReadRequest != std::nullopt) {      // read already requested
+        if (mReadRequest != std::nullopt) { // read already requested
             return false;
         }
 
@@ -302,8 +300,7 @@ public:
      */
     bool onScreenshot(vcl::Image& image, uint multiplier = 1)
     {
-        if (!Context::instance().supportsReadback() // feature unsupported
-            || mReadRequest != std::nullopt) {      // read already requested
+        if (mReadRequest != std::nullopt) { // read already requested
             return false;
         }
 
@@ -344,9 +341,8 @@ public:
         const Point2i&     point,
         CallbackReadBuffer callback = nullptr)
     {
-        if (!Context::instance().supportsReadback() // feature unsupported
-            || mReadRequest != std::nullopt         // read already requested
-            || point.x() < 0 || point.y() < 0       // point out of bounds
+        if (mReadRequest != std::nullopt      // read already requested
+            || point.x() < 0 || point.y() < 0 // point out of bounds
             || point.x() >= mSize.x() || point.y() >= mSize.y()) {
             return false;
         }

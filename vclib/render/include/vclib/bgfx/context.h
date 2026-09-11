@@ -101,8 +101,6 @@ public:
 
     const bgfx::Caps& capabilites() const;
 
-    bool supportsReadback() const;
-
     bool supportsCompute() const;
 
     /**
