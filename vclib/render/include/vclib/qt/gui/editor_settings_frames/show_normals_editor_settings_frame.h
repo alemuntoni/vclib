@@ -19,6 +19,9 @@ namespace Ui {
 class ShowNormalsEditorSettingsFrame;
 } // namespace Ui
 
+/**
+ * @brief Frame that contains the settings for the ShowNormalsEditor.
+ */
 class ShowNormalsEditorSettingsFrame : public QFrame
 {
     Q_OBJECT

@@ -16,6 +16,11 @@
 
 namespace vcl::qt {
 
+/**
+ * @brief Frame that allows the user to interact with a ShowNormalsEditor.
+ *
+ * @tparam ViewerType: the type of the viewer.
+ */
 template<typename ViewerType>
 class ShowNormalsEditorFrame : public GenericEditorFrame
 {

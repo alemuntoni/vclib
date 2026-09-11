@@ -16,6 +16,9 @@
 
 namespace vcl {
 
+/**
+ * @brief Settings for the ShowNormalsEditor.
+ */
 struct ShowNormalsEditorSettings : public EditorSettings
 {
     bool  showVertexNormals = true;

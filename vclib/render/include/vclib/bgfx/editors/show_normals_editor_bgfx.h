@@ -13,10 +13,17 @@
 #include <vclib/render/editors/editor.h>
 #include <vclib/render/settings/show_normals_editor_settings.h>
 
+#include <vclib/algorithms/core.h>
+
 #include <nlohmann/json.hpp>
 
 namespace vcl {
 
+/**
+ * @brief Editor that draws the normals of the visible objects using BGFX.
+ *
+ * @tparam ViewerDrawer: the type of the viewer drawer.
+ */
 template<typename ViewerDrawer>
 class ShowNormalsEditorBGFX : public Editor<ViewerDrawer>
 {
@@ -155,6 +162,7 @@ private:
             uint                      vCount = provider.vertexCount();
             vcl::Matrix44d            T      = provider.transformMatrix();
 
+            // Compute normals and lines for each vertex
             for (uint i = 0; i < vCount; ++i) {
                 vcl::Point3d pos = provider.vertexPosition(i);
                 vcl::Point3d n   = provider.vertexNormal(i);
@@ -190,6 +198,7 @@ private:
             uint                      fCount = provider.faceCount();
             vcl::Matrix44d            T      = provider.transformMatrix();
 
+            // Compute normals and lines for each face
             for (uint i = 0; i < fCount; ++i) {
                 vcl::Point3d barycenter = provider.faceBarycenter(i);
                 vcl::Point3d n          = provider.faceNormal(i);
