@@ -11,6 +11,7 @@
 #include "abstract_mesh_provider.h"
 
 #include <vclib/mesh/elem_algorithms/selection.h>
+#include <vclib/mesh/elem_algorithms/polygon/geometry.h>
 #include <vclib/mesh/requirements/mesh_requirements.h>
 
 #include <vclib/algorithms/core.h>
@@ -70,6 +71,15 @@ public:
             }
         }
         return pos;
+    }
+
+    Point3d faceBarycenter(uint faceId) const override
+    {
+        if constexpr (HasFaces<MeshType>) {
+            return vcl::faceBarycenter(getMesh().face(faceId))
+                .template cast<double>();
+        }
+        return Point3d();
     }
 
     std::pair<Point3d, Point3d> edgePositions(uint edgeId) const override

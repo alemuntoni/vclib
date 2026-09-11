@@ -35,6 +35,7 @@ public:
     virtual std::vector<Point3d>        facePositions(uint faceId) const  = 0;
     virtual std::pair<Point3d, Point3d> edgePositions(uint edgeId) const  = 0;
     virtual Point3d                     vertexPosition(uint vertId) const = 0;
+    virtual Point3d                     faceBarycenter(uint faceId) const = 0;
 
     virtual Box3d boundingBox() const            = 0;
     virtual Box3d transformedBoundingBox() const = 0;
