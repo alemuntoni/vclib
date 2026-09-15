@@ -235,12 +235,25 @@ public:
 
     /* Transform */
 
+    bool hasTransformMatrix() const override
+    {
+        return HasTransformMatrix<MeshType>;
+    }
+
     Matrix44d transformMatrix() const override
     {
         if constexpr (HasTransformMatrix<MeshType>) {
             return getMesh().transformMatrix().template cast<double>();
         }
         return Matrix44d::Identity();
+    }
+
+    void setTransformMatrix(const Matrix44d& m) override
+    {
+        if constexpr (HasTransformMatrix<MeshType>) {
+            getMesh().transformMatrix() =
+                m.template cast<typename MeshType::ScalarType>();
+        }
     }
 
     /* Appearance / Materials */
