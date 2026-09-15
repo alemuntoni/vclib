@@ -55,7 +55,7 @@ public:
     uint selectedDrawableObject() const;
 
     void update(); // todo: rename this to refresh
-    void updateSelectionCounters();
+    void updateMeshInfoItems();
 
     // function to set the selected item
     bool setSelectedItem(uint i);

@@ -295,8 +295,8 @@ public:
         }
 
         if (mMRB.selectionReadback(*this)) {
-            if (mOnSelectionUpdated) {
-                mOnSelectionUpdated();
+            if (mOnMeshUpdated) {
+                mOnMeshUpdated();
             }
         }
     }

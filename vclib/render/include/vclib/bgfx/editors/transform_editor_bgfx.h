@@ -180,6 +180,12 @@ public:
     {
         if (mTransformInProgress && button == vcl::MouseButton::LEFT) {
             mTransformInProgress = false;
+
+            auto mesh = findMesh(mCurrentObjId);
+            if (mesh) {
+                mesh->notifyMeshUpdated();
+            }
+
             mCurrentObjId        = USHORT_NULL;
             return true;
         }

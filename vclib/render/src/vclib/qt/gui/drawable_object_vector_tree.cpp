@@ -92,7 +92,7 @@ void DrawableObjectVectorTree::update()
     }
 }
 
-void DrawableObjectVectorTree::updateSelectionCounters()
+void DrawableObjectVectorTree::updateMeshInfoItems()
 {
     for (int i = 0; i < mUI->treeWidget->topLevelItemCount(); ++i) {
         auto item =

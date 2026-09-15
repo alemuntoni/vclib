@@ -33,7 +33,7 @@ class AbstractDrawableMesh : public vcl::DrawableObject
 protected:
     MeshRenderSettings mMRS;
 
-    std::function<void()> mOnSelectionUpdated;
+    std::function<void()> mOnMeshUpdated;
 
 public:
     using MatIt = std::vector<Material>::const_iterator;
@@ -71,9 +71,15 @@ public:
 
     virtual void setFaceSelectionBitVector(const vcl::BitVector<true>&) {}
 
-    void setOnSelectionUpdatedCallback(std::function<void()> cb)
+    void setOnMeshUpdatedCallback(std::function<void()> cb)
     {
-        mOnSelectionUpdated = std::move(cb);
+        mOnMeshUpdated = std::move(cb);
+    }
+
+    void notifyMeshUpdated() const
+    {
+        if (mOnMeshUpdated)
+            mOnMeshUpdated();
     }
 
     virtual bool isSelectionReadbackPending() const { return false; }
