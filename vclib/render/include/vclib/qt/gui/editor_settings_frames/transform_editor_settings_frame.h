@@ -10,6 +10,8 @@
 
 #include <vclib/render/editors/transform_editor.h>
 
+#include <vclib/qt/gui/editor_settings_frames/edit_mode_settings_frame.h>
+
 #include <QFrame>
 #include <QComboBox>
 
@@ -21,6 +23,7 @@ class TransformEditorSettingsFrame : public QFrame
 
     TransformEditorSettings& mSettings;
     QComboBox* mModeComboBox;
+    EditModeSettingsFrame* mEditModeFrame;
 
 public:
     explicit TransformEditorSettingsFrame(
@@ -35,6 +38,7 @@ signals:
 
 private slots:
     void onModeChanged(int index);
+    void onEditModeChanged(int index);
     void onResetDefaultClicked();
 };
 

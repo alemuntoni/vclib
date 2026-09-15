@@ -135,6 +135,11 @@ public:
         return mProvider;
     }
 
+    AbstractMeshProvider& meshProvider() override
+    {
+        return mProvider;
+    }
+
     // DrawableObject implementation
 
     void init() override { bindTextures(); }

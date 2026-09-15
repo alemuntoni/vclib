@@ -66,6 +66,31 @@ private:
     {
         vcl::TransformEditorSettings& sts = mEditor->settings();
 
+        // Edit mode
+        static const char* editModeNames[] = {
+            "None", "Selected Object", "Visible Objects", "All Objects"};
+        int currentEditMode = vcl::toUnderlying(sts.editMode);
+        ImGui::Text("Apply to:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(130);
+        if (ImGui::BeginCombo("##TransformEditMode", editModeNames[currentEditMode])) {
+            for (int n = 0; n < IM_ARRAYSIZE(editModeNames); n++) {
+                bool selected = (n == currentEditMode);
+                if (n == 0 || n == 3)
+                    ImGui::BeginDisabled();
+                if (ImGui::Selectable(editModeNames[n], selected)) {
+                    sts.editMode =
+                        static_cast<vcl::EditorSettings::EditMode>(n);
+                    mEditor->refreshSettings();
+                }
+                if (n == 0 || n == 3)
+                    ImGui::EndDisabled();
+                if (selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
         static const char* modeNames[] = {
             "Translate", "Rotate", "Scale"};
         int currentMode = static_cast<int>(sts.mode);
@@ -83,6 +108,13 @@ private:
                     ImGui::SetItemDefaultFocus();
             }
             ImGui::EndCombo();
+        }
+        
+        ImGui::Separator();
+        
+        if (ImGui::Button("Reset Default", ImVec2(-1, 0))) {
+            sts.resetDefaults();
+            mEditor->refreshSettings();
         }
     }
     

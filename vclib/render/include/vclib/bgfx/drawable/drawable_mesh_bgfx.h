@@ -114,6 +114,11 @@ public:
         return mProvider;
     }
 
+    AbstractMeshProvider& meshProvider() override
+    {
+        return mProvider;
+    }
+
     void computeSelection(const SelectionParameters& params) override
     {
         if (!isVisible()) {

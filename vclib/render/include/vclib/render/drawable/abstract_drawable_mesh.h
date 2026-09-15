@@ -59,6 +59,8 @@ public:
 
     virtual const AbstractMeshProvider& meshProvider() const = 0;
 
+    virtual AbstractMeshProvider& meshProvider() = 0;
+
     virtual void computeSelection(const SelectionParameters& params) {}
 
     virtual vcl::BitVector<true> vertexSelectionBitVector() const { return {}; }
