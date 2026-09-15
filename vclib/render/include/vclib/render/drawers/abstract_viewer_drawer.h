@@ -451,6 +451,16 @@ public:
         }
     }
 
+    void onDrawId(uint viewId) override
+    {
+        Base::onDrawId(viewId);
+
+        for (const auto& editor : mEditors) {
+            if (editor->isActive())
+                editor->drawId(viewId);
+        }
+    }
+
     void onDraw(uint viewId) override
     {
         Base::onDraw(viewId);

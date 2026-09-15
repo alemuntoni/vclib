@@ -158,6 +158,16 @@ public:
     virtual void draw(uint viewId) {}
 
     /**
+     * @brief Draws the pickable objects of the editor for the given view into the ID buffer.
+     *
+     * This function is called at every frame by the viewer when the editor is
+     * active, during the ID rendering pass.
+     *
+     * @param[in] viewId: the identifier of the view to draw into.
+     */
+    virtual void drawId(uint viewId) {}
+
+    /**
      * @brief Called when a keyboard key is pressed.
      *
      * Subclasses may override this function to handle key press events.
