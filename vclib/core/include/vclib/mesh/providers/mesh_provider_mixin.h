@@ -276,6 +276,18 @@ public:
     }
 
 private:
+    MeshType& getMesh()
+    {
+        // If the CRTP Derived class is also the MeshType, we can cast directly
+        // to it. Otherwise, we cast to Derived and use its mesh() method.
+        if constexpr (std::is_base_of_v<MeshType, Derived>) {
+            return *static_cast<Derived*>(this);
+        }
+        else {
+            return static_cast<Derived*>(this)->mesh();
+        }
+    }
+
     const MeshType& getMesh() const
     {
         // If the CRTP Derived class is also the MeshType, we can cast directly
