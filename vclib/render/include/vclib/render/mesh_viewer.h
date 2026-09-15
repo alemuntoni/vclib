@@ -71,6 +71,7 @@ inline void pushDefaultEditors(MeshViewerConcept auto& viewer)
     viewer.template pushEditor<InfoEditor>();
     viewer.template pushEditor<SelectionEditor>();
     viewer.template pushEditor<ShowNormalsEditor>();
+    viewer.template pushEditor<TransformEditor>();
 }
 
 template<MeshConcept... MeshTypes>
