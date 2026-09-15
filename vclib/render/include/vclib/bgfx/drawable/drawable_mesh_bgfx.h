@@ -33,7 +33,7 @@ class DrawableMeshBGFX : public AbstractDrawableMesh, public MeshType
 protected:
     MeshRenderBuffers<MeshType>     mMRB;
     MeshProviderReference<MeshType> mProvider {
-        static_cast<const MeshType&>(*this)};
+        static_cast<MeshType&>(*this)};
 
 public:
     DrawableMeshBGFX() = default;

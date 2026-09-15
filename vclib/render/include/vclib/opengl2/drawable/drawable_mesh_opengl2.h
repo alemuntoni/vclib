@@ -71,7 +71,7 @@ class DrawableMeshOpenGL2 : public AbstractDrawableMesh, public MeshType
 
     MeshRenderVectors<MeshType>     mMRD;
     MeshProviderReference<MeshType> mProvider {
-        static_cast<const MeshType&>(*this)};
+        static_cast<MeshType&>(*this)};
 
     std::vector<uint> mTextID;
 
