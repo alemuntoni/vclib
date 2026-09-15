@@ -57,7 +57,12 @@ void initAbstractDrawableMesh(pybind11::module& m)
 
     c.def(
         "mesh_provider",
-        &vcl::AbstractDrawableMesh::meshProvider,
+        py::overload_cast<>(&vcl::AbstractDrawableMesh::meshProvider),
+        py::return_value_policy::reference_internal);
+
+    c.def(
+        "mesh_provider",
+        py::overload_cast<>(&vcl::AbstractDrawableMesh::meshProvider, py::const_),
         py::return_value_policy::reference_internal);
 }
 
