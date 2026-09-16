@@ -11,8 +11,11 @@
 #include <vclib/render/drawable/abstract_drawable_mesh.h>
 #include <vclib/render/editors/editor.h>
 #include <vclib/render/settings/transform_editor_settings.h>
+#include <vclib/render/undo_redo/transform_undo_redo_action.h>
 
 #include <vclib/algorithms/core.h>
+
+#include <vector>
 
 namespace vcl {
 
@@ -28,12 +31,13 @@ class TransformEditorBGFX : public Editor<ViewerDrawer>
     using Base = Editor<ViewerDrawer>;
     TransformEditorSettings mSettings;
 
-    bool      mTransformInProgress = false;
-    Point2d   mStartMousePos;
-    Point3d   mAnchorPoint3D;
-    double    mAnchorDepth  = 0.0;
-    ushort    mCurrentObjId = USHORT_NULL;
-    Matrix44d mStartTransform;
+    bool    mTransformInProgress = false;
+    Point2d mStartMousePos;
+    Point3d mAnchorPoint3D;
+    double  mAnchorDepth  = 0.0;
+    ushort  mCurrentObjId = USHORT_NULL;
+
+    std::vector<TransformUndoRedoAction::MeshState> mPreTransformStates;
 
 public:
     TransformEditorBGFX() = default;
@@ -120,18 +124,20 @@ public:
                     return;
                 }
 
+                auto dl = this->drawList();
                 if (mSettings.editMode ==
                     EditorSettings::EditMode::CURRENT_OBJECT) {
-                    if (objId != this->drawList()->selectedObjectId()) {
+                    if (objId != dl->selectedObjectId()) {
                         mTransformInProgress = false;
                         return;
                     }
                 }
 
-                mCurrentObjId   = objId;
-                mStartTransform = provider.transformMatrix();
-                mAnchorPoint3D  = mesh->boundingBox().center();
-                mAnchorDepth    = project(mAnchorPoint3D).z();
+                mCurrentObjId  = objId;
+                mAnchorPoint3D = mesh->boundingBox().center();
+                mAnchorDepth   = project(mAnchorPoint3D).z();
+
+                savePreTransformStates(mCurrentObjId);
             });
 
         // Consume the event so we don't start rotating the trackball
@@ -169,7 +175,15 @@ public:
         translation(1, 3)     = delta.y();
         translation(2, 3)     = delta.z();
 
-        mesh->meshProvider().setTransformMatrix(translation * mStartTransform);
+        for (auto& state : mPreTransformStates) {
+            if (auto lock = state.obj.lock()) {
+                if (auto* m = dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
+                    m->meshProvider().setTransformMatrix(
+                        translation * state.transformMatrix);
+                }
+            }
+        }
+
         this->viewerUpdate();
 
         return true;
@@ -184,10 +198,16 @@ public:
         if (mTransformInProgress && button == vcl::MouseButton::LEFT) {
             mTransformInProgress = false;
 
-            auto mesh = findMesh(mCurrentObjId);
-            if (mesh) {
-                mesh->notifyMeshUpdated();
+            for (auto& state : mPreTransformStates) {
+                if (auto lock = state.obj.lock()) {
+                    if (auto* mesh =
+                            dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
+                        mesh->notifyMeshUpdated();
+                    }
+                }
             }
+
+            finalizeTransformAction();
 
             mCurrentObjId = USHORT_NULL;
             return true;
@@ -228,6 +248,49 @@ private:
         Point3d screenPos(x, size.y() - y, z);
 
         return unprojectScreenPosition(screenPos, pv, viewport, false);
+    }
+
+    void savePreTransformStates(ushort activeObjId)
+    {
+        mPreTransformStates.clear();
+        auto dl = Base::drawList();
+
+        if (activeObjId != USHORT_NULL && activeObjId < dl->size()) {
+            auto el = dl->at(activeObjId);
+            if (auto p = dynamic_cast<AbstractDrawableMesh*>(el.get())) {
+                if (p->meshProvider().hasTransformMatrix()) {
+                    TransformUndoRedoAction::MeshState state;
+                    state.obj             = el;
+                    state.transformMatrix = p->meshProvider().transformMatrix();
+                    mPreTransformStates.push_back(std::move(state));
+                }
+            }
+        }
+    }
+
+    void finalizeTransformAction()
+    {
+        bool changed = false;
+        for (auto& state : mPreTransformStates) {
+            if (auto lock = state.obj.lock()) {
+                if (auto* mesh =
+                        dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
+                    if (state.transformMatrix !=
+                        mesh->meshProvider().transformMatrix()) {
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (changed) {
+            auto action = std::make_unique<TransformUndoRedoAction>(
+                std::move(mPreTransformStates));
+            Base::pushUndoRedoAction(std::move(action));
+            Base::viewerUpdate();
+        }
+        mPreTransformStates.clear();
     }
 };
 
