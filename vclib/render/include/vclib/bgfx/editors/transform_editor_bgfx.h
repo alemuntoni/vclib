@@ -8,6 +8,9 @@
 #ifndef VCL_BGFX_EDITORS_TRANSFORM_EDITOR_BGFX_H
 #define VCL_BGFX_EDITORS_TRANSFORM_EDITOR_BGFX_H
 
+#include "transform_editor/scale_gizmo_bgfx.h"
+#include "transform_editor/translate_gizmo_bgfx.h"
+
 #include <vclib/render/drawable/abstract_drawable_mesh.h>
 #include <vclib/render/editors/editor.h>
 #include <vclib/render/settings/transform_editor_settings.h>
@@ -33,11 +36,13 @@ class TransformEditorBGFX : public Editor<ViewerDrawer>
 
     bool    mTransformInProgress = false;
     Point2d mStartMousePos;
-    Point3d mAnchorPoint3D;
     double  mAnchorDepth  = 0.0;
     ushort  mCurrentObjId = USHORT_NULL;
 
     std::vector<TransformUndoRedoAction::MeshState> mPreTransformStates;
+
+    TranslateGizmoBGFX mTranslateGizmo;
+    ScaleGizmoBGFX     mScaleGizmo;
 
 public:
     TransformEditorBGFX() = default;
@@ -61,6 +66,8 @@ public:
         mSettings.saveSettings(j);
     }
 
+    void refreshSettings() override { Base::viewerUpdate(); }
+
     void setActive(bool active) override
     {
         Base::setActive(active);
@@ -75,14 +82,68 @@ public:
     {
         if (!Base::isActive())
             return;
-        // Gizmos drawing will go here
+
+        auto   dl         = this->drawList();
+        ushort selectedId = dl->selectedObjectId();
+        if (selectedId == USHORT_NULL || selectedId >= dl->size())
+            return;
+
+        auto mesh = findMesh(selectedId);
+        if (!mesh || !mesh->isVisible())
+            return;
+
+        vcl::Matrix44f model =
+            mesh->meshProvider().transformMatrix().template cast<float>();
+
+        vcl::Box3d     bbox     = mesh->meshProvider().boundingBox();
+        vcl::Matrix44f scaleMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixScale(scaleMat, bbox.size().cast<float>());
+        vcl::Matrix44f transMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixTranslation(
+            transMat, bbox.center().cast<float>());
+
+        vcl::Matrix44f gizmoTransform = model * transMat * scaleMat;
+
+        if (mSettings.mode == TransformEditorSettings::Mode::TRANSLATE) {
+            mTranslateGizmo.draw(viewId, gizmoTransform);
+        }
+        else if (mSettings.mode == TransformEditorSettings::Mode::SCALE) {
+            mScaleGizmo.draw(viewId, gizmoTransform);
+        }
     }
 
     void drawId(uint viewId) override
     {
         if (!Base::isActive())
             return;
-        // Gizmos ID drawing will go here
+
+        auto   dl         = this->drawList();
+        ushort selectedId = dl->selectedObjectId();
+        if (selectedId == USHORT_NULL || selectedId >= dl->size())
+            return;
+
+        auto mesh = findMesh(selectedId);
+        if (!mesh || !mesh->isVisible())
+            return;
+
+        vcl::Matrix44f model =
+            mesh->meshProvider().transformMatrix().template cast<float>();
+
+        vcl::Box3d     bbox     = mesh->meshProvider().boundingBox();
+        vcl::Matrix44f scaleMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixScale(scaleMat, bbox.size().cast<float>());
+        vcl::Matrix44f transMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixTranslation(
+            transMat, bbox.center().cast<float>());
+
+        vcl::Matrix44f gizmoTransform = model * transMat * scaleMat;
+
+        if (mSettings.mode == TransformEditorSettings::Mode::TRANSLATE) {
+            mTranslateGizmo.drawId(viewId, gizmoTransform);
+        }
+        else if (mSettings.mode == TransformEditorSettings::Mode::SCALE) {
+            mScaleGizmo.drawId(viewId, gizmoTransform);
+        }
     }
 
     bool onMousePress(
@@ -95,7 +156,8 @@ public:
             return false;
         }
 
-        if (mSettings.mode != TransformEditorSettings::Mode::TRANSLATE) {
+        if (mSettings.mode != TransformEditorSettings::Mode::TRANSLATE &&
+            mSettings.mode != TransformEditorSettings::Mode::SCALE) {
             return false;
         }
 
@@ -104,7 +166,9 @@ public:
         mCurrentObjId        = USHORT_NULL;
 
         this->viewerReadElementIdRequest(
-            x, y, [this, x, y](ushort objId, ushort, uint) {
+            x,
+            y,
+            [this, x, y](ushort objId, ushort elemId, uint primitiveId) {
                 if (!mTransformInProgress)
                     return; // aborted
                 if (objId == USHORT_NULL) {
@@ -112,33 +176,67 @@ public:
                     return;
                 }
 
+                auto   dl         = this->drawList();
+                ushort selectedId = dl->selectedObjectId();
+
+                if (objId == 0xFFFE) {
+                    if (selectedId != USHORT_NULL && selectedId < dl->size()) {
+                        mCurrentObjId = selectedId;
+                        auto mesh     = findMesh(mCurrentObjId);
+                        if (mesh) {
+                            if (mSettings.mode ==
+                                TransformEditorSettings::Mode::SCALE) {
+                                mScaleGizmo.calculateAnchor(
+                                    elemId, primitiveId, mesh);
+                                mAnchorDepth =
+                                    project(
+                                        mScaleGizmo.anchorPointInWorld(mesh))
+                                        .z();
+                                savePreTransformStates(mCurrentObjId);
+                            }
+                        }
+                        else {
+                            mTransformInProgress = false;
+                        }
+                    }
+                    else {
+                        mTransformInProgress = false;
+                    }
+                    return;
+                }
+
+                // Clicked on a mesh directly
                 auto mesh = findMesh(objId);
                 if (!mesh) {
                     mTransformInProgress = false;
                     return;
                 }
 
-                auto& provider = mesh->meshProvider();
-                if (!provider.hasTransformMatrix()) {
-                    mTransformInProgress = false;
-                    return;
-                }
-
-                auto dl = this->drawList();
                 if (mSettings.editMode ==
                     EditorSettings::EditMode::CURRENT_OBJECT) {
-                    if (objId != dl->selectedObjectId()) {
+                    if (objId != selectedId) {
                         mTransformInProgress = false;
                         return;
                     }
                 }
 
-                mCurrentObjId  = objId;
-                mAnchorPoint3D = mesh->boundingBox().center();
-                mAnchorDepth   = project(mAnchorPoint3D).z();
+                if (mSettings.mode == TransformEditorSettings::Mode::SCALE) {
+                    // Cannot start scale by clicking on the mesh itself
+                    mTransformInProgress = false;
+                    return;
+                }
 
-                savePreTransformStates(mCurrentObjId);
-            });
+                // Translate mode logic
+                mCurrentObjId = objId;
+                if (mSettings.mode ==
+                    TransformEditorSettings::Mode::TRANSLATE) {
+                    mTranslateGizmo.calculateAnchor(mesh);
+                    mAnchorDepth =
+                        project(mTranslateGizmo.anchorPointInWorld(mesh)).z();
+                    savePreTransformStates(mCurrentObjId);
+                }
+            },
+            3);
 
         // Consume the event so we don't start rotating the trackball
         return true;
@@ -163,106 +261,91 @@ public:
         Point3d newPoint3D = unproject(x, y, mAnchorDepth);
         Point3d oldPoint3D =
             unproject(mStartMousePos.x(), mStartMousePos.y(), mAnchorDepth);
-        Matrix44d view = this->viewerViewMatrix().template cast<double>();
-        Matrix44d proj = this->viewerProjectionMatrix().template cast<double>();
-        Matrix44d inv  = (proj * view).inverse();
 
-        Point3d delta = newPoint3D - oldPoint3D;
-
-        // Compute translation matrix
-        Matrix44d translation = Matrix44d::Identity();
-        translation(0, 3)     = delta.x();
-        translation(1, 3)     = delta.y();
-        translation(2, 3)     = delta.z();
-
-        for (auto& state : mPreTransformStates) {
-            if (auto lock = state.obj.lock()) {
-                if (auto* m = dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
-                    m->meshProvider().setTransformMatrix(
-                        translation * state.transformMatrix);
+        if (mSettings.mode == TransformEditorSettings::Mode::TRANSLATE) {
+            for (auto& state : mPreTransformStates) {
+                if (auto lock = state.obj.lock()) {
+                    if (auto* m =
+                            dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
+                        Matrix44d newTrans =
+                            mTranslateGizmo.calculateNewTransform(
+                                newPoint3D, oldPoint3D, state.transformMatrix);
+                        m->meshProvider().setTransformMatrix(newTrans);
+                    }
+                }
+            }
+        }
+        else if (mSettings.mode == TransformEditorSettings::Mode::SCALE) {
+            for (auto& state : mPreTransformStates) {
+                if (auto lock = state.obj.lock()) {
+                    if (auto* m =
+                            dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
+                        Matrix44d newTrans = mScaleGizmo.calculateNewTransform(
+                            newPoint3D, oldPoint3D, state.transformMatrix);
+                        m->meshProvider().setTransformMatrix(newTrans);
+                    }
                 }
             }
         }
 
-        this->viewerUpdate();
+        Base::viewerUpdate();
 
         return true;
     }
 
     bool onMouseRelease(
-        vcl::MouseButton::Enum   button,
-        double                   x,
-        double                   y,
+        vcl::MouseButton::Enum button,
+        double,
+        double,
         const vcl::KeyModifiers& modifiers) override
     {
-        if (mTransformInProgress && button == vcl::MouseButton::LEFT) {
+        if (!mTransformInProgress || button != vcl::MouseButton::LEFT)
+            return false;
+
+        if (mCurrentObjId == USHORT_NULL) {
             mTransformInProgress = false;
-
-            for (auto& state : mPreTransformStates) {
-                if (auto lock = state.obj.lock()) {
-                    if (auto* mesh =
-                            dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
-                        mesh->notifyMeshUpdated();
-                    }
-                }
-            }
-
-            finalizeTransformAction();
-
-            mCurrentObjId = USHORT_NULL;
             return true;
         }
-        return false;
+
+        mTransformInProgress = false;
+
+        auto dl = this->drawList();
+        finalizeTransformAction();
+
+        return true;
     }
 
 private:
     std::shared_ptr<AbstractDrawableMesh> findMesh(ushort objId) const
     {
-        return std::dynamic_pointer_cast<AbstractDrawableMesh>(
-            this->drawList()->at(objId));
-    }
+        auto dl = this->drawList();
+        if (!dl || objId >= dl->size())
+            return nullptr;
 
-    Point3d project(const Point3d& pt) const
-    {
-        Matrix44d view = this->viewerViewMatrix().template cast<double>();
-        Matrix44d proj = this->viewerProjectionMatrix().template cast<double>();
-        Matrix44d pv   = proj * view;
-        auto      size = this->viewerCanvasSize();
-
-        Point4d viewport(0.0, 0.0, size.x(), size.y());
-        Point3d res = projectScreenPosition(pt, pv, viewport, false);
-
-        res.y() = size.y() - res.y();
-
-        return res;
-    }
-
-    Point3d unproject(double x, double y, double z) const
-    {
-        Matrix44d view = this->viewerViewMatrix().template cast<double>();
-        Matrix44d proj = this->viewerProjectionMatrix().template cast<double>();
-        Matrix44d pv   = proj * view;
-        auto      size = this->viewerCanvasSize();
-
-        Point4d viewport(0.0, 0.0, size.x(), size.y());
-        Point3d screenPos(x, size.y() - y, z);
-
-        return unprojectScreenPosition(screenPos, pv, viewport, false);
+        return std::dynamic_pointer_cast<AbstractDrawableMesh>(dl->at(objId));
     }
 
     void savePreTransformStates(ushort activeObjId)
     {
         mPreTransformStates.clear();
-        auto dl = Base::drawList();
 
-        if (activeObjId != USHORT_NULL && activeObjId < dl->size()) {
-            auto el = dl->at(activeObjId);
-            if (auto p = dynamic_cast<AbstractDrawableMesh*>(el.get())) {
-                if (p->meshProvider().hasTransformMatrix()) {
-                    TransformUndoRedoAction::MeshState state;
-                    state.obj             = el;
-                    state.transformMatrix = p->meshProvider().transformMatrix();
-                    mPreTransformStates.push_back(std::move(state));
+        auto dl = this->drawList();
+        if (!dl)
+            return;
+
+        if (mSettings.editMode == EditorSettings::EditMode::CURRENT_OBJECT ||
+            mSettings.editMode == EditorSettings::EditMode::VISIBLE_OBJECTS) {
+            auto mesh = findMesh(activeObjId);
+            if (mesh) {
+                mPreTransformStates.push_back(
+                    {mesh, mesh->meshProvider().transformMatrix()});
+            }
+        }
+        else if (mSettings.editMode == EditorSettings::EditMode::ALL_OBJECTS) {
+            for (uint i = 0; i < dl->size(); ++i) {
+                if (auto mesh = findMesh(i)) {
+                    mPreTransformStates.push_back(
+                        {mesh, mesh->meshProvider().transformMatrix()});
                 }
             }
         }
@@ -270,13 +353,15 @@ private:
 
     void finalizeTransformAction()
     {
+        if (mPreTransformStates.empty())
+            return;
+
         bool changed = false;
-        for (auto& state : mPreTransformStates) {
+        for (const auto& state : mPreTransformStates) {
             if (auto lock = state.obj.lock()) {
-                if (auto* mesh =
-                        dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
-                    if (state.transformMatrix !=
-                        mesh->meshProvider().transformMatrix()) {
+                if (auto* m = dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
+                    if (m->meshProvider().transformMatrix() !=
+                        state.transformMatrix) {
                         changed = true;
                         break;
                     }
@@ -291,6 +376,30 @@ private:
             Base::viewerUpdate();
         }
         mPreTransformStates.clear();
+    }
+
+    vcl::Point3d unproject(double x, double y, double depth) const
+    {
+        Matrix44d view = this->viewerViewMatrix().template cast<double>();
+        Matrix44d proj = this->viewerProjectionMatrix().template cast<double>();
+        Matrix44d pv   = proj * view;
+        auto      size = this->viewerCanvasSize();
+
+        Point4d viewport(0.0, 0.0, size.x(), size.y());
+        Point3d screenPos(x, size.y() - y, depth);
+
+        return unprojectScreenPosition(screenPos, pv, viewport, false);
+    }
+
+    vcl::Point3d project(const vcl::Point3d& p) const
+    {
+        Matrix44d view = this->viewerViewMatrix().template cast<double>();
+        Matrix44d proj = this->viewerProjectionMatrix().template cast<double>();
+        Matrix44d pv   = proj * view;
+        auto      size = this->viewerCanvasSize();
+
+        Point4d viewport(0.0, 0.0, size.x(), size.y());
+        return projectScreenPosition(p, pv, viewport, false);
     }
 };
 
