@@ -12,6 +12,8 @@
 #include <vclib/render/editors/editor.h>
 #include <vclib/render/settings/transform_editor_settings.h>
 
+#include <vclib/algorithms/core.h>
+
 namespace vcl {
 
 /**
@@ -118,7 +120,8 @@ public:
                     return;
                 }
 
-                if (mSettings.editMode == EditorSettings::EditMode::CURRENT_OBJECT) {
+                if (mSettings.editMode ==
+                    EditorSettings::EditMode::CURRENT_OBJECT) {
                     if (objId != this->drawList()->selectedObjectId()) {
                         mTransformInProgress = false;
                         return;
@@ -186,7 +189,7 @@ public:
                 mesh->notifyMeshUpdated();
             }
 
-            mCurrentObjId        = USHORT_NULL;
+            mCurrentObjId = USHORT_NULL;
             return true;
         }
         return false;
@@ -203,36 +206,28 @@ private:
     {
         Matrix44d view = this->viewerViewMatrix().template cast<double>();
         Matrix44d proj = this->viewerProjectionMatrix().template cast<double>();
+        Matrix44d pv   = proj * view;
         auto      size = this->viewerCanvasSize();
 
-        Point4d p(pt.x(), pt.y(), pt.z(), 1.0);
-        p = proj * (view * p);
-        if (p.w() != 0.0)
-            p /= p.w();
+        Point4d viewport(0.0, 0.0, size.x(), size.y());
+        Point3d res = projectScreenPosition(pt, pv, viewport, false);
 
-        return Point3d(
-            (p.x() + 1.0) * 0.5 * size.x(),
-            (1.0 - p.y()) * 0.5 * size.y(),
-            p.z());
+        res.y() = size.y() - res.y();
+
+        return res;
     }
 
     Point3d unproject(double x, double y, double z) const
     {
         Matrix44d view = this->viewerViewMatrix().template cast<double>();
         Matrix44d proj = this->viewerProjectionMatrix().template cast<double>();
+        Matrix44d pv   = proj * view;
         auto      size = this->viewerCanvasSize();
 
-        Point4d p(
-            (x / size.x()) * 2.0 - 1.0,
-            (1.0 - (y / size.y())) * 2.0 - 1.0,
-            z,
-            1.0);
+        Point4d viewport(0.0, 0.0, size.x(), size.y());
+        Point3d screenPos(x, size.y() - y, z);
 
-        Matrix44d inv = (proj * view).inverse();
-        Point4d   res = inv * p;
-        if (res.w() != 0.0)
-            res /= res.w();
-        return res.head<3>();
+        return unprojectScreenPosition(screenPos, pv, viewport, false);
     }
 };
 
