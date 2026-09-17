@@ -8,6 +8,7 @@
 #ifndef VCL_BGFX_EDITORS_TRANSFORM_EDITOR_BGFX_H
 #define VCL_BGFX_EDITORS_TRANSFORM_EDITOR_BGFX_H
 
+#include "transform_editor/rotate_gizmo_bgfx.h"
 #include "transform_editor/scale_gizmo_bgfx.h"
 #include "transform_editor/translate_gizmo_bgfx.h"
 
@@ -43,6 +44,7 @@ class TransformEditorBGFX : public Editor<ViewerDrawer>
 
     TranslateGizmoBGFX mTranslateGizmo;
     ScaleGizmoBGFX     mScaleGizmo;
+    RotateGizmoBGFX    mRotateGizmo;
 
 public:
     TransformEditorBGFX() = default;
@@ -110,6 +112,13 @@ public:
         else if (mSettings.mode == TransformEditorSettings::Mode::SCALE) {
             mScaleGizmo.draw(viewId, gizmoTransform);
         }
+        else if (mSettings.mode == TransformEditorSettings::Mode::ROTATE) {
+            vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
+            float r = bbox.diagonal() / 2.0f;
+            vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
+            vcl::Matrix44f rotGizmoTransform = model * transMat * rotScaleMat;
+            mRotateGizmo.draw(viewId, rotGizmoTransform);
+        }
     }
 
     void drawId(uint viewId) override
@@ -144,6 +153,13 @@ public:
         else if (mSettings.mode == TransformEditorSettings::Mode::SCALE) {
             mScaleGizmo.drawId(viewId, gizmoTransform);
         }
+        else if (mSettings.mode == TransformEditorSettings::Mode::ROTATE) {
+            vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
+            float r = bbox.diagonal() / 2.0f;
+            vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
+            vcl::Matrix44f rotGizmoTransform = model * transMat * rotScaleMat;
+            mRotateGizmo.drawId(viewId, rotGizmoTransform);
+        }
     }
 
     bool onMousePress(
@@ -157,7 +173,8 @@ public:
         }
 
         if (mSettings.mode != TransformEditorSettings::Mode::TRANSLATE &&
-            mSettings.mode != TransformEditorSettings::Mode::SCALE) {
+            mSettings.mode != TransformEditorSettings::Mode::SCALE &&
+            mSettings.mode != TransformEditorSettings::Mode::ROTATE) {
             return false;
         }
 
@@ -194,6 +211,16 @@ public:
                                         .z();
                                 savePreTransformStates(mCurrentObjId);
                             }
+                            else if (mSettings.mode ==
+                                     TransformEditorSettings::Mode::ROTATE) {
+                                mRotateGizmo.calculateAnchor(
+                                    elemId, primitiveId, mesh);
+                                mAnchorDepth =
+                                    project(
+                                        mRotateGizmo.anchorPointInWorld(mesh))
+                                        .z();
+                                savePreTransformStates(mCurrentObjId);
+                            }
                         }
                         else {
                             mTransformInProgress = false;
@@ -220,8 +247,9 @@ public:
                     }
                 }
 
-                if (mSettings.mode == TransformEditorSettings::Mode::SCALE) {
-                    // Cannot start scale by clicking on the mesh itself
+                if (mSettings.mode == TransformEditorSettings::Mode::SCALE ||
+                    mSettings.mode == TransformEditorSettings::Mode::ROTATE) {
+                    // Cannot start scale or rotate by clicking on the mesh itself
                     mTransformInProgress = false;
                     return;
                 }
@@ -271,6 +299,7 @@ public:
                             mTranslateGizmo.calculateNewTransform(
                                 newPoint3D, oldPoint3D, state.transformMatrix);
                         m->meshProvider().setTransformMatrix(newTrans);
+                        m->notifyMeshUpdated();
                     }
                 }
             }
@@ -283,6 +312,20 @@ public:
                         Matrix44d newTrans = mScaleGizmo.calculateNewTransform(
                             newPoint3D, oldPoint3D, state.transformMatrix);
                         m->meshProvider().setTransformMatrix(newTrans);
+                        m->notifyMeshUpdated();
+                    }
+                }
+            }
+        }
+        else if (mSettings.mode == TransformEditorSettings::Mode::ROTATE) {
+            for (auto& state : mPreTransformStates) {
+                if (auto lock = state.obj.lock()) {
+                    if (auto* m =
+                            dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
+                        Matrix44d newTrans = mRotateGizmo.calculateNewTransform(
+                            newPoint3D, oldPoint3D, state.transformMatrix);
+                        m->meshProvider().setTransformMatrix(newTrans);
+                        m->notifyMeshUpdated();
                     }
                 }
             }
