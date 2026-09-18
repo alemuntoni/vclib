@@ -346,12 +346,16 @@ public:
             }
         }
         else if (mActiveTransform == ActiveTransform::ROTATE) {
+            Matrix44d invView =
+                this->viewerViewMatrix().inverse().template cast<double>();
+            Point3d viewNormal = invView.col(2).head<3>().normalized();
+
             for (auto& state : mPreTransformStates) {
                 if (auto lock = state.obj.lock()) {
                     if (auto* m =
                             dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
-                        Matrix44d newTrans = mRotateGizmo.calculateNewTransform(
-                            newPoint3D, oldPoint3D, state.transformMatrix);
+                        Matrix44d newTrans = mRotateGizmo.calculateNewTransformArcball(
+                            newPoint3D, viewNormal, state.transformMatrix);
                         m->meshProvider().setTransformMatrix(newTrans);
                         m->notifyMeshUpdated();
                     }

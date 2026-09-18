@@ -27,6 +27,10 @@ class RotateGizmoBGFX
     Point3d mLocalAnchorPoint;
     double  mRadius = 1.0;
 
+    double mTotalAngle = 0.0;
+    bool mIsFirstFrame = true;
+    Point3d mLastMousePos3D;
+
 public:
     RotateGizmoBGFX() = default;
 
@@ -127,6 +131,8 @@ public:
         mRadius        = sizes.norm() / 2.0;
 
         mLocalAnchorPoint = center;
+        mTotalAngle       = 0.0;
+        mIsFirstFrame     = true;
     }
 
     vcl::Point3d anchorPointInWorld(
@@ -136,65 +142,109 @@ public:
         return mLocalAnchorPoint * mesh->meshProvider().transformMatrix();
     }
 
-    vcl::Matrix44d calculateNewTransform(
+    Point3d pointOnArcballLocal(
+        const Point3d& localP,
+        const Point3d& localC,
+        const Point3d& localViewNormal,
+        double         radius) const
+    {
+        Point3d V = localP - localC;
+        // Ensure V is orthogonal to the view normal
+        V = V - V.dot(localViewNormal) * localViewNormal;
+
+        double h = V.norm();
+        double z = 0.0;
+
+        if (h < (M_SQRT1_2 * radius)) {
+            z = std::sqrt(std::max(0.0, radius * radius - h * h));
+        }
+        else {
+            z = (radius * radius) / (2.0 * std::max(h, 1e-6));
+        }
+
+        return localC + V + localViewNormal * z;
+    }
+
+    Matrix44d calculateNewTransformArcball(
         const Point3d&        newPoint3D,
-        const Point3d&        oldPoint3D,
+        const Point3d&        viewNormalWorld,
         const vcl::Matrix44d& originalMatrix)
     {
+        if (mIsFirstFrame) {
+            mLastMousePos3D = newPoint3D;
+            mIsFirstFrame   = false;
+            return originalMatrix;
+        }
+
         Matrix44d invModel = originalMatrix.inverse();
 
-        Point3d localNew = newPoint3D * invModel;
-        Point3d localOld = oldPoint3D * invModel;
+        Point3d localC      = mLocalAnchorPoint;
+        Point3d centerWorld = localC * originalMatrix;
 
-        Point3d vNew = localNew - mLocalAnchorPoint;
-        Point3d vOld = localOld - mLocalAnchorPoint;
+        // Convert world view normal to local space direction
+        Point3d localViewNormal =
+            (Point3d(centerWorld + viewNormalWorld) * invModel - localC).normalized();
 
-        // Project the vectors onto the plane of rotation
-        // If element == 0 (Red, rotate around X), plane is YZ. Normal = (1,0,0)
-        // If element == 1 (Green, rotate around Y), plane is XZ. Normal =
-        // (0,1,0) If element == 2 (Blue, rotate around Z), plane is XY. Normal
-        // = (0,0,1)
-        Point3d normal = Point3d::Zero();
-        if (mGizmoElementClicked == 0)
-            normal.x() = 1.0;
-        else if (mGizmoElementClicked == 1)
-            normal.y() = 1.0;
-        else if (mGizmoElementClicked == 2)
-            normal.z() = 1.0;
+        Point3d localNew  = newPoint3D * invModel;
+        Point3d localPrev = mLastMousePos3D * invModel;
 
-        // Project vOld and vNew on the plane defined by normal
-        Point3d pOld = vOld - (vOld.dot(normal)) * normal;
-        Point3d pNew = vNew - (vNew.dot(normal)) * normal;
+        Point3d pCurr =
+            pointOnArcballLocal(localNew, localC, localViewNormal, mRadius);
+        Point3d pPrev =
+            pointOnArcballLocal(localPrev, localC, localViewNormal, mRadius);
 
-        pOld.normalize();
-        pNew.normalize();
+        Point3d vCurr = pCurr - localC;
+        Point3d vPrev = pPrev - localC;
 
-        // Cross product gives the direction of rotation (parallel to normal)
-        Point3d cross    = pOld.cross(pNew);
-        double  sinAngle = cross.dot(normal);
-        double  cosAngle = pOld.dot(pNew);
-        double  angle    = std::atan2(sinAngle, cosAngle);
+        if (vCurr.norm() > 1e-6 && vPrev.norm() > 1e-6) {
+            vCurr.normalize();
+            vPrev.normalize();
+
+            Eigen::Quaterniond q =
+                Eigen::Quaterniond::FromTwoVectors(vPrev, vCurr);
+
+            double deltaAngle = 0.0;
+
+            if (mGizmoElementClicked == 0) { // X
+                double norm = std::sqrt(q.w() * q.w() + q.x() * q.x());
+                if (norm > 1e-6)
+                    deltaAngle = 2.0 * std::atan2(q.x(), q.w());
+            }
+            else if (mGizmoElementClicked == 1) { // Y
+                double norm = std::sqrt(q.w() * q.w() + q.y() * q.y());
+                if (norm > 1e-6)
+                    deltaAngle = 2.0 * std::atan2(q.y(), q.w());
+            }
+            else if (mGizmoElementClicked == 2) { // Z
+                double norm = std::sqrt(q.w() * q.w() + q.z() * q.z());
+                if (norm > 1e-6)
+                    deltaAngle = 2.0 * std::atan2(q.z(), q.w());
+            }
+
+            mTotalAngle += deltaAngle;
+        }
+
+        mLastMousePos3D = newPoint3D;
 
         Matrix44d rotationMat = Matrix44d::Identity();
         if (mGizmoElementClicked == 0) {
             vcl::setTransformMatrixRotation(
-                rotationMat, Point3d(1, 0, 0), angle);
+                rotationMat, Point3d(1, 0, 0), mTotalAngle);
         }
         else if (mGizmoElementClicked == 1) {
             vcl::setTransformMatrixRotation(
-                rotationMat, Point3d(0, 1, 0), angle);
+                rotationMat, Point3d(0, 1, 0), mTotalAngle);
         }
         else if (mGizmoElementClicked == 2) {
             vcl::setTransformMatrixRotation(
-                rotationMat, Point3d(0, 0, 1), angle);
+                rotationMat, Point3d(0, 0, 1), mTotalAngle);
         }
 
         Matrix44d Tanchor = Matrix44d::Identity();
-        vcl::setTransformMatrixTranslation(Tanchor, mLocalAnchorPoint);
+        vcl::setTransformMatrixTranslation(Tanchor, localC);
 
         Matrix44d TanchorInv = Matrix44d::Identity();
-        vcl::setTransformMatrixTranslation(
-            TanchorInv, Point3d(-mLocalAnchorPoint));
+        vcl::setTransformMatrixTranslation(TanchorInv, Point3d(-localC));
 
         return originalMatrix * Tanchor * rotationMat * TanchorInv;
     }
