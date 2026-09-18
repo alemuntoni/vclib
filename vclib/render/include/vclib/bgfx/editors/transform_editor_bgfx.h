@@ -46,13 +46,7 @@ class TransformEditorBGFX : public Editor<ViewerDrawer>
     ScaleGizmoBGFX     mScaleGizmo;
     RotateGizmoBGFX    mRotateGizmo;
 
-    enum class ActiveTransform
-    {
-        NONE,
-        TRANSLATE,
-        ROTATE,
-        SCALE
-    };
+    enum class ActiveTransform { NONE, TRANSLATE, ROTATE, SCALE };
     ActiveTransform mActiveTransform = ActiveTransform::NONE;
 
 public:
@@ -113,17 +107,19 @@ public:
         vcl::setTransformMatrixTranslation(
             transMat, bbox.center().cast<float>());
 
-        vcl::Matrix44f gizmoTransform = model * transMat * scaleMat;
+        vcl::Matrix44f baseTransform  = model * transMat;
+        vcl::Matrix44f gizmoTransform = baseTransform * scaleMat;
 
         if (mSettings.enableTranslate) {
-            mTranslateGizmo.draw(viewId, gizmoTransform);
+            mTranslateGizmo.draw(
+                viewId, baseTransform, this->viewerViewMatrix());
         }
         if (mSettings.enableScale) {
             mScaleGizmo.draw(viewId, gizmoTransform);
         }
         if (mSettings.enableRotate) {
             vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
-            float r = bbox.diagonal() / 2.0f;
+            float          r           = bbox.diagonal() / 2.0f;
             vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
             vcl::Matrix44f rotGizmoTransform = model * transMat * rotScaleMat;
             mRotateGizmo.draw(viewId, rotGizmoTransform);
@@ -154,17 +150,19 @@ public:
         vcl::setTransformMatrixTranslation(
             transMat, bbox.center().cast<float>());
 
-        vcl::Matrix44f gizmoTransform = model * transMat * scaleMat;
+        vcl::Matrix44f baseTransform  = model * transMat;
+        vcl::Matrix44f gizmoTransform = baseTransform * scaleMat;
 
         if (mSettings.enableTranslate) {
-            mTranslateGizmo.drawId(viewId, gizmoTransform);
+            mTranslateGizmo.drawId(
+                viewId, baseTransform, this->viewerViewMatrix());
         }
         if (mSettings.enableScale) {
             mScaleGizmo.drawId(viewId, gizmoTransform);
         }
         if (mSettings.enableRotate) {
             vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
-            float r = bbox.diagonal() / 2.0f;
+            float          r           = bbox.diagonal() / 2.0f;
             vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
             vcl::Matrix44f rotGizmoTransform = model * transMat * rotScaleMat;
             mRotateGizmo.drawId(viewId, rotGizmoTransform);
@@ -181,8 +179,7 @@ public:
             return false;
         }
 
-        if (!mSettings.enableTranslate &&
-            !mSettings.enableScale &&
+        if (!mSettings.enableTranslate && !mSettings.enableScale &&
             !mSettings.enableRotate) {
             return false;
         }
@@ -219,7 +216,8 @@ public:
                                         mScaleGizmo.anchorPointInWorld(mesh))
                                         .z();
                                 savePreTransformStates(mCurrentObjId);
-                            } else {
+                            }
+                            else {
                                 mTransformInProgress = false;
                                 return;
                             }
@@ -248,7 +246,8 @@ public:
                                         mRotateGizmo.anchorPointInWorld(mesh))
                                         .z();
                                 savePreTransformStates(mCurrentObjId);
-                            } else {
+                            }
+                            else {
                                 mTransformInProgress = false;
                                 return;
                             }
@@ -284,9 +283,11 @@ public:
                         mActiveTransform = ActiveTransform::TRANSLATE;
                         mTranslateGizmo.calculateAnchor(mesh);
                         mAnchorDepth =
-                            project(mTranslateGizmo.anchorPointInWorld(mesh)).z();
+                            project(mTranslateGizmo.anchorPointInWorld(mesh))
+                                .z();
                         savePreTransformStates(mCurrentObjId);
-                    } else {
+                    }
+                    else {
                         mTransformInProgress = false;
                         return;
                     }
@@ -354,8 +355,9 @@ public:
                 if (auto lock = state.obj.lock()) {
                     if (auto* m =
                             dynamic_cast<AbstractDrawableMesh*>(lock.get())) {
-                        Matrix44d newTrans = mRotateGizmo.calculateNewTransformArcball(
-                            newPoint3D, viewNormal, state.transformMatrix);
+                        Matrix44d newTrans =
+                            mRotateGizmo.calculateNewTransformArcball(
+                                newPoint3D, viewNormal, state.transformMatrix);
                         m->meshProvider().setTransformMatrix(newTrans);
                         m->notifyMeshUpdated();
                     }
@@ -383,7 +385,7 @@ public:
         }
 
         mTransformInProgress = false;
-        mActiveTransform = ActiveTransform::NONE;
+        mActiveTransform     = ActiveTransform::NONE;
 
         auto dl = this->drawList();
         finalizeTransformAction();

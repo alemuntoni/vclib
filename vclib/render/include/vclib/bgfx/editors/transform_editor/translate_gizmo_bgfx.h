@@ -9,27 +9,93 @@
 #define VCL_BGFX_EDITORS_TRANSFORM_EDITOR_TRANSLATE_GIZMO_BGFX_H
 
 #include <vclib/algorithms/core.h>
+#include <vclib/algorithms/mesh.h>
+#include <vclib/bgfx/shapes/cone_shape.h>
+#include <vclib/bgfx/shapes/cylinder_shape.h>
+#include <vclib/meshes.h>
 #include <vclib/render/drawable/abstract_drawable_mesh.h>
+
+#include <memory>
 
 namespace vcl {
 
 class TranslateGizmoBGFX
 {
-    // For now, no visual primitives.
-    // In Step 6 or later, we can add the 3-axis arrows here.
+    std::unique_ptr<CylinderShape> mCylinder;
+    std::unique_ptr<ConeShape>     mCone;
 
     // We can store states if needed
     vcl::Point3d mAnchorPoint3D = vcl::Point3d::Zero();
 
 public:
-    TranslateGizmoBGFX() = default;
-
-    void draw(uint /*viewId*/, const vcl::Matrix44f& /*gizmoTransform*/)
+    TranslateGizmoBGFX()
     {
-        // No visualization yet
+        // Cylinders and cones are natively along Y.
+        // We want the cylinder to go from Y=0 to Y=1 (it natively goes from
+        // -0.5 to 0.5).
+        vcl::Matrix44d cylOffset = vcl::Matrix44d::Identity();
+        vcl::setTransformMatrixTranslation(cylOffset, vcl::Point3d(0, 0.5, 0));
+        mCylinder = std::make_unique<CylinderShape>(0.01, 1.0, 16, cylOffset);
+
+        // Cone for the tip, from Y=1.0 to Y=1.2 (it natively goes from -0.1 to
+        // 0.1).
+        vcl::Matrix44d coneOffset = vcl::Matrix44d::Identity();
+        vcl::setTransformMatrixTranslation(coneOffset, vcl::Point3d(0, 1.1, 0));
+        mCone = std::make_unique<ConeShape>(0.03, 0.0, 0.2, 16, coneOffset);
     }
 
-    void drawId(uint /*viewId*/, const vcl::Matrix44f& /*gizmoTransform*/)
+    void draw(
+        uint                  viewId,
+        const vcl::Matrix44f& baseTransform,
+        const vcl::Matrix44f& viewMatrix)
+    {
+        vcl::Point3f centerWorld =
+            vcl::Point3f(0.0f, 0.0f, 0.0f) * baseTransform;
+        vcl::Point3f centerView = centerWorld * viewMatrix;
+
+        vcl::Point3f col0(viewMatrix(0, 0), viewMatrix(1, 0), viewMatrix(2, 0));
+        float        viewScale = std::max(0.0001f, col0.norm());
+
+        float depth       = std::max(0.1f, std::abs(centerView.z()));
+        float visualScale = (depth / viewScale) * 0.15f;
+
+        vcl::Matrix44f noScaleBase = baseTransform;
+        noScaleBase.block<3, 1>(0, 0).normalize();
+        noScaleBase.block<3, 1>(0, 1).normalize();
+        noScaleBase.block<3, 1>(0, 2).normalize();
+
+        vcl::Matrix44f scaleMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixScale(
+            scaleMat, vcl::Point3f(visualScale, visualScale, visualScale));
+
+        vcl::Matrix44f gizmoTransform = noScaleBase * scaleMat;
+
+        // X Axis (Red) -> Rotate Y to X (around Z by -90 deg)
+        vcl::Matrix44f rotX = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixRotation(
+            rotX, vcl::Point3f(0, 0, 1), float(-M_PI / 2.0));
+        vcl::Matrix44f xTransform = gizmoTransform * rotX;
+        mCylinder->draw(viewId, vcl::Color::Red, xTransform);
+        mCone->draw(viewId, vcl::Color::Red, xTransform);
+
+        // Y Axis (Green) -> Already along Y
+        vcl::Matrix44f yTransform = gizmoTransform;
+        mCylinder->draw(viewId, vcl::Color::Green, yTransform);
+        mCone->draw(viewId, vcl::Color::Green, yTransform);
+
+        // Z Axis (Blue) -> Rotate Y to Z (around X by +90 deg)
+        vcl::Matrix44f rotZ = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixRotation(
+            rotZ, vcl::Point3f(1, 0, 0), float(M_PI / 2.0));
+        vcl::Matrix44f zTransform = gizmoTransform * rotZ;
+        mCylinder->draw(viewId, vcl::Color::Blue, zTransform);
+        mCone->draw(viewId, vcl::Color::Blue, zTransform);
+    }
+
+    void drawId(
+        uint /*viewId*/,
+        const vcl::Matrix44f& /*baseTransform*/,
+        const vcl::Matrix44f& /*viewMatrix*/)
     {
         // No pickable visualization yet (the user picks the mesh directly for
         // translation currently)

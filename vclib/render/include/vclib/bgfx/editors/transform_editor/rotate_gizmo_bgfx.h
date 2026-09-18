@@ -8,10 +8,11 @@
 #ifndef VCL_BGFX_EDITORS_TRANSFORM_EDITOR_ROTATE_GIZMO_BGFX_H
 #define VCL_BGFX_EDITORS_TRANSFORM_EDITOR_ROTATE_GIZMO_BGFX_H
 
-#include <vclib/algorithms/core/create.h>
 #include <vclib/bgfx/primitives/lines.h>
 #include <vclib/bgfx/primitives/points.h>
 #include <vclib/render/drawable/abstract_drawable_mesh.h>
+
+#include <vclib/algorithms/core.h>
 #include <vclib/space/core.h>
 
 namespace vcl {
@@ -21,24 +22,17 @@ class RotateGizmoBGFX
     Lines  mCircles[3];
     Points mHandles;
 
-    bool mIsInitialized = false;
-
     uint    mGizmoElementClicked = USHORT_NULL;
     Point3d mLocalAnchorPoint;
     double  mRadius = 1.0;
 
-    double mTotalAngle = 0.0;
-    bool mIsFirstFrame = true;
+    double  mTotalAngle   = 0.0;
+    bool    mIsFirstFrame = true;
     Point3d mLastMousePos3D;
 
 public:
-    RotateGizmoBGFX() = default;
-
-    void init()
+    RotateGizmoBGFX()
     {
-        if (mIsInitialized)
-            return;
-
         auto circle2d = createCircle<Polygon2f>(128, 1.0f);
 
         std::vector<Point3f> ptsX, ptsY, ptsZ;
@@ -89,13 +83,10 @@ public:
         mHandles.setColorSetting(Points::ColorSetting::PER_VERTEX);
         mHandles.setDepthOffset(
             0.001f); // Slightly offset to avoid z-fighting with the circles
-
-        mIsInitialized = true;
     }
 
     void draw(uint viewId, const vcl::Matrix44f& gizmoTransform)
     {
-        init();
         bgfx::setTransform(gizmoTransform.data());
         mCircles[0].draw(viewId);
 
@@ -113,7 +104,6 @@ public:
 
     void drawId(uint viewId, const vcl::Matrix44f& gizmoTransform)
     {
-        init();
         uint32_t baseId = (0xFFFD << 16);
         bgfx::setTransform(gizmoTransform.data());
         mHandles.drawId(viewId, baseId);
@@ -183,7 +173,8 @@ public:
 
         // Convert world view normal to local space direction
         Point3d localViewNormal =
-            (Point3d(centerWorld + viewNormalWorld) * invModel - localC).normalized();
+            (Point3d(centerWorld + viewNormalWorld) * invModel - localC)
+                .normalized();
 
         Point3d localNew  = newPoint3D * invModel;
         Point3d localPrev = mLastMousePos3D * invModel;

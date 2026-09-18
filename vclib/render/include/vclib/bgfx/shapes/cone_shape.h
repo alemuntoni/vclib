@@ -16,25 +16,29 @@ namespace vcl {
 /**
  * @brief A basic 3D cone shape.
  *
- * Creates a cone mesh with the base at Z=0 and apex at Z=1,
+ * Creates a cone mesh with the base at Y=-height/2 and apex at Y=height/2,
  * with a default base radius of 1.
  */
 class ConeShape : public Shape
 {
 public:
-    ConeShape() : Shape(vcl::createCone<vcl::TriMesh>(1.0, 0.0, 1.0)) {}
+    ConeShape() : ConeShape(1.0, 0.0, 1.0) {}
 
     ConeShape(
-        double radiusBottom,
-        double radiusTop,
-        double height,
-        uint   subdivisions = 36) :
-            Shape(
-                vcl::createCone<vcl::TriMesh>(
-                    radiusBottom,
-                    radiusTop,
-                    height,
-                    subdivisions))
+        double                radiusBottom,
+        double                radiusTop,
+        double                height,
+        uint                  subdivisions = 36,
+        const vcl::Matrix44d& offset       = vcl::Matrix44d::Identity()) :
+            Shape([&]() {
+                auto mesh = vcl::createCone<vcl::TriMesh>(
+                    radiusBottom, radiusTop, height, subdivisions);
+                if (offset != vcl::Matrix44d::Identity()) {
+                    vcl::applyTransformMatrix(mesh, offset);
+                    vcl::updatePerVertexNormals(mesh);
+                }
+                return mesh;
+            }())
     {
     }
 };

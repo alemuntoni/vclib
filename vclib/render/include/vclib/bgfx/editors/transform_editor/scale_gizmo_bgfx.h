@@ -22,7 +22,6 @@ class ScaleGizmoBGFX
     vcl::Points mScaleCorners;
     vcl::Points mScaleEdgeCenters;
     vcl::Points mScaleFaceCenters;
-    bool        mGizmoInitialized = false;
 
     ushort       mGizmoTypeClicked    = USHORT_NULL;
     uint         mGizmoElementClicked = UINT_NULL;
@@ -64,14 +63,8 @@ class ScaleGizmoBGFX
     };
 
 public:
-    ScaleGizmoBGFX() = default;
-
-    void init()
+    ScaleGizmoBGFX()
     {
-        if (mGizmoInitialized)
-            return;
-        mGizmoInitialized = true;
-
         mScaleCorners.setVertices(sCorners);
         mScaleCorners.setWidth(10.0f);
         mScaleCorners.setGeneralColor(vcl::Color::White);
@@ -135,7 +128,6 @@ public:
 
     void draw(uint viewId, const vcl::Matrix44f& gizmoTransform)
     {
-        init();
         bgfx::setTransform(gizmoTransform.data());
         mBBoxEdges.draw(viewId);
 
@@ -151,7 +143,6 @@ public:
 
     void drawId(uint viewId, const vcl::Matrix44f& gizmoTransform)
     {
-        init();
         uint32_t cornerId     = (0xFFFE << 16) | 0;
         uint32_t edgeCenterId = (0xFFFE << 16) | 1;
         uint32_t faceCenterId = (0xFFFE << 16) | 2;
@@ -267,7 +258,8 @@ public:
     }
 
 private:
-    static double safeRatio(double n, double d) {
+    static double safeRatio(double n, double d)
+    {
         return std::abs(d) > 1e-6 ? std::max(0.01, n / d) : 1.0;
     }
 };
