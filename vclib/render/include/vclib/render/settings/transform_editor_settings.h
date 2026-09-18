@@ -16,21 +16,25 @@ namespace vcl {
 
 struct TransformEditorSettings : public EditorSettings
 {
-    enum class Mode
-    {
-        TRANSLATE,
-        ROTATE,
-        SCALE
-    };
+    bool enableTranslate = false;
+    bool enableRotate    = false;
+    bool enableScale     = false;
 
-    Mode mode = Mode::TRANSLATE;
+    /**
+     * @brief Checks if any of the transform operations (translate, rotate,
+     * scale) is enabled.
+     * @return true if at least one operation is enabled, false otherwise.
+     */
+    bool isAnyTransformEnabled() const
+    {
+        return enableTranslate || enableRotate || enableScale;
+    }
 
     /**
      * @brief Resets the settings to their default values.
      */
     void resetDefaults()
     {
-        mode = Mode::TRANSLATE;
     }
 
     /**
@@ -39,9 +43,6 @@ struct TransformEditorSettings : public EditorSettings
      */
     void loadSettings(const nlohmann::json& j)
     {
-        if (j.contains("mode")) {
-            mode = static_cast<Mode>(j["mode"].get<int>());
-        }
     }
 
     /**
@@ -50,7 +51,6 @@ struct TransformEditorSettings : public EditorSettings
      */
     void saveSettings(nlohmann::json& j) const
     {
-        j["mode"] = static_cast<int>(mode);
     }
 };
 

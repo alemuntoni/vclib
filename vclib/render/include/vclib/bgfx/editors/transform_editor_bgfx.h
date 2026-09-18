@@ -46,6 +46,15 @@ class TransformEditorBGFX : public Editor<ViewerDrawer>
     ScaleGizmoBGFX     mScaleGizmo;
     RotateGizmoBGFX    mRotateGizmo;
 
+    enum class ActiveTransform
+    {
+        NONE,
+        TRANSLATE,
+        ROTATE,
+        SCALE
+    };
+    ActiveTransform mActiveTransform = ActiveTransform::NONE;
+
 public:
     TransformEditorBGFX() = default;
 
@@ -106,13 +115,13 @@ public:
 
         vcl::Matrix44f gizmoTransform = model * transMat * scaleMat;
 
-        if (mSettings.mode == TransformEditorSettings::Mode::TRANSLATE) {
+        if (mSettings.enableTranslate) {
             mTranslateGizmo.draw(viewId, gizmoTransform);
         }
-        else if (mSettings.mode == TransformEditorSettings::Mode::SCALE) {
+        if (mSettings.enableScale) {
             mScaleGizmo.draw(viewId, gizmoTransform);
         }
-        else if (mSettings.mode == TransformEditorSettings::Mode::ROTATE) {
+        if (mSettings.enableRotate) {
             vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
             float r = bbox.diagonal() / 2.0f;
             vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
@@ -147,13 +156,13 @@ public:
 
         vcl::Matrix44f gizmoTransform = model * transMat * scaleMat;
 
-        if (mSettings.mode == TransformEditorSettings::Mode::TRANSLATE) {
+        if (mSettings.enableTranslate) {
             mTranslateGizmo.drawId(viewId, gizmoTransform);
         }
-        else if (mSettings.mode == TransformEditorSettings::Mode::SCALE) {
+        if (mSettings.enableScale) {
             mScaleGizmo.drawId(viewId, gizmoTransform);
         }
-        else if (mSettings.mode == TransformEditorSettings::Mode::ROTATE) {
+        if (mSettings.enableRotate) {
             vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
             float r = bbox.diagonal() / 2.0f;
             vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
@@ -172,9 +181,9 @@ public:
             return false;
         }
 
-        if (mSettings.mode != TransformEditorSettings::Mode::TRANSLATE &&
-            mSettings.mode != TransformEditorSettings::Mode::SCALE &&
-            mSettings.mode != TransformEditorSettings::Mode::ROTATE) {
+        if (!mSettings.enableTranslate &&
+            !mSettings.enableScale &&
+            !mSettings.enableRotate) {
             return false;
         }
 
@@ -196,13 +205,13 @@ public:
                 auto   dl         = this->drawList();
                 ushort selectedId = dl->selectedObjectId();
 
-                if (objId == 0xFFFE) {
+                if (objId == 0xFFFE) { // Scale Gizmo
                     if (selectedId != USHORT_NULL && selectedId < dl->size()) {
                         mCurrentObjId = selectedId;
                         auto mesh     = findMesh(mCurrentObjId);
                         if (mesh) {
-                            if (mSettings.mode ==
-                                TransformEditorSettings::Mode::SCALE) {
+                            if (mSettings.enableScale) {
+                                mActiveTransform = ActiveTransform::SCALE;
                                 mScaleGizmo.calculateAnchor(
                                     elemId, primitiveId, mesh);
                                 mAnchorDepth =
@@ -210,9 +219,28 @@ public:
                                         mScaleGizmo.anchorPointInWorld(mesh))
                                         .z();
                                 savePreTransformStates(mCurrentObjId);
+                            } else {
+                                mTransformInProgress = false;
+                                return;
                             }
-                            else if (mSettings.mode ==
-                                     TransformEditorSettings::Mode::ROTATE) {
+                        }
+                        else {
+                            mTransformInProgress = false;
+                            return;
+                        }
+                    }
+                    else {
+                        mTransformInProgress = false;
+                        return;
+                    }
+                }
+                else if (objId == 0xFFFD) { // Rotate Gizmo
+                    if (selectedId != USHORT_NULL && selectedId < dl->size()) {
+                        mCurrentObjId = selectedId;
+                        auto mesh     = findMesh(mCurrentObjId);
+                        if (mesh) {
+                            if (mSettings.enableRotate) {
+                                mActiveTransform = ActiveTransform::ROTATE;
                                 mRotateGizmo.calculateAnchor(
                                     elemId, primitiveId, mesh);
                                 mAnchorDepth =
@@ -220,48 +248,48 @@ public:
                                         mRotateGizmo.anchorPointInWorld(mesh))
                                         .z();
                                 savePreTransformStates(mCurrentObjId);
+                            } else {
+                                mTransformInProgress = false;
+                                return;
                             }
                         }
                         else {
                             mTransformInProgress = false;
+                            return;
                         }
                     }
                     else {
                         mTransformInProgress = false;
-                    }
-                    return;
-                }
-
-                // Clicked on a mesh directly
-                auto mesh = findMesh(objId);
-                if (!mesh) {
-                    mTransformInProgress = false;
-                    return;
-                }
-
-                if (mSettings.editMode ==
-                    EditorSettings::EditMode::CURRENT_OBJECT) {
-                    if (objId != selectedId) {
-                        mTransformInProgress = false;
                         return;
                     }
                 }
+                else { // Clicked on mesh or background
+                    auto mesh = findMesh(objId);
+                    if (!mesh) {
+                        mTransformInProgress = false;
+                        return;
+                    }
 
-                if (mSettings.mode == TransformEditorSettings::Mode::SCALE ||
-                    mSettings.mode == TransformEditorSettings::Mode::ROTATE) {
-                    // Cannot start scale or rotate by clicking on the mesh itself
-                    mTransformInProgress = false;
-                    return;
-                }
+                    if (mSettings.editMode ==
+                        EditorSettings::EditMode::CURRENT_OBJECT) {
+                        if (objId != selectedId) {
+                            mTransformInProgress = false;
+                            return;
+                        }
+                    }
 
-                // Translate mode logic
-                mCurrentObjId = objId;
-                if (mSettings.mode ==
-                    TransformEditorSettings::Mode::TRANSLATE) {
-                    mTranslateGizmo.calculateAnchor(mesh);
-                    mAnchorDepth =
-                        project(mTranslateGizmo.anchorPointInWorld(mesh)).z();
-                    savePreTransformStates(mCurrentObjId);
+                    // Translate mode logic
+                    mCurrentObjId = objId;
+                    if (mSettings.enableTranslate) {
+                        mActiveTransform = ActiveTransform::TRANSLATE;
+                        mTranslateGizmo.calculateAnchor(mesh);
+                        mAnchorDepth =
+                            project(mTranslateGizmo.anchorPointInWorld(mesh)).z();
+                        savePreTransformStates(mCurrentObjId);
+                    } else {
+                        mTransformInProgress = false;
+                        return;
+                    }
                 }
             },
             3);
@@ -290,7 +318,7 @@ public:
         Point3d oldPoint3D =
             unproject(mStartMousePos.x(), mStartMousePos.y(), mAnchorDepth);
 
-        if (mSettings.mode == TransformEditorSettings::Mode::TRANSLATE) {
+        if (mActiveTransform == ActiveTransform::TRANSLATE) {
             for (auto& state : mPreTransformStates) {
                 if (auto lock = state.obj.lock()) {
                     if (auto* m =
@@ -304,7 +332,7 @@ public:
                 }
             }
         }
-        else if (mSettings.mode == TransformEditorSettings::Mode::SCALE) {
+        else if (mActiveTransform == ActiveTransform::SCALE) {
             for (auto& state : mPreTransformStates) {
                 if (auto lock = state.obj.lock()) {
                     if (auto* m =
@@ -317,7 +345,7 @@ public:
                 }
             }
         }
-        else if (mSettings.mode == TransformEditorSettings::Mode::ROTATE) {
+        else if (mActiveTransform == ActiveTransform::ROTATE) {
             for (auto& state : mPreTransformStates) {
                 if (auto lock = state.obj.lock()) {
                     if (auto* m =
@@ -351,6 +379,7 @@ public:
         }
 
         mTransformInProgress = false;
+        mActiveTransform = ActiveTransform::NONE;
 
         auto dl = this->drawList();
         finalizeTransformAction();

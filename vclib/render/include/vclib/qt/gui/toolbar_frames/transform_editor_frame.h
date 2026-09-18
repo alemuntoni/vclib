@@ -30,26 +30,49 @@ public:
     {
         mEditor = ptr;
 
+        auto& settings = mEditor->settings();
+
         QIcon ic(":/icons/bbox.png"); // Using bbox icon as placeholder
 
-        QPushButton* editorButton = Base::addButton(ic);
-        editorButton->setToolTip("Transform Object");
+        QPushButton* translateBtn = Base::addButton(ic);
+        translateBtn->setToolTip("Translate Object");
 
-        connect(editorButton, &QPushButton::clicked, this, [this]() {
-            if (mEditor) {
-                mEditor->setActive(!mEditor->isActive());
-            }
-        });
+        QPushButton* rotateBtn = Base::addButton(ic);
+        rotateBtn->setToolTip("Rotate Object");
+
+        QPushButton* scaleBtn = Base::addButton(ic);
+        scaleBtn->setToolTip("Scale Object");
+
+        auto onTranslateClicked = [&](bool checked) {
+            settings.enableTranslate = checked;
+            mEditor->setActive(settings.isAnyTransformEnabled());
+        };
+
+        auto onRotateClicked = [&](bool checked) {
+            settings.enableRotate = checked;
+            mEditor->setActive(settings.isAnyTransformEnabled());
+        };
+
+        auto onScaleClicked = [&](bool checked) {
+            settings.enableScale = checked;
+            mEditor->setActive(settings.isAnyTransformEnabled());
+        };
+
+        connect(translateBtn, &QPushButton::clicked, this, onTranslateClicked);
+        connect(rotateBtn, &QPushButton::clicked, this, onRotateClicked);
+        connect(scaleBtn, &QPushButton::clicked, this, onScaleClicked);
 
         TransformEditorSettingsFrame* sf =
-            Base::setSettingsFrame<TransformEditorSettingsFrame>(
-                mEditor->settings());
+            Base::setSettingsFrame<TransformEditorSettingsFrame>(settings);
 
         connect(sf, SIGNAL(settingsUpdated()), this, SLOT(refreshSettings()));
 
-        mEditor->setOnStateUpdatedCallback([this, editorButton]() {
-            editorButton->setChecked(mEditor->isActive());
-        });
+        mEditor->setOnStateUpdatedCallback(
+            [this, translateBtn, rotateBtn, scaleBtn]() {
+                translateBtn->setChecked(mEditor->settings().enableTranslate);
+                rotateBtn->setChecked(mEditor->settings().enableRotate);
+                scaleBtn->setChecked(mEditor->settings().enableScale);
+            });
     }
 
 private slots:

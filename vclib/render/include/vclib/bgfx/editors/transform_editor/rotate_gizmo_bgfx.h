@@ -110,8 +110,7 @@ public:
     void drawId(uint viewId, const vcl::Matrix44f& gizmoTransform)
     {
         init();
-        // The object id is fixed, element id is the vertex index
-        uint32_t baseId = (0xFFFE << 16);
+        uint32_t baseId = (0xFFFD << 16);
         bgfx::setTransform(gizmoTransform.data());
         mHandles.drawId(viewId, baseId);
     }

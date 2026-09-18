@@ -12,8 +12,8 @@
 
 #include <vclib/qt/gui/editor_settings_frames/edit_mode_settings_frame.h>
 
-#include <QFrame>
 #include <QComboBox>
+#include <QFrame>
 
 namespace vcl::qt {
 
@@ -22,8 +22,7 @@ class TransformEditorSettingsFrame : public QFrame
     Q_OBJECT
 
     TransformEditorSettings& mSettings;
-    QComboBox* mModeComboBox;
-    EditModeSettingsFrame* mEditModeFrame;
+    EditModeSettingsFrame*   mEditModeFrame;
 
 public:
     explicit TransformEditorSettingsFrame(
@@ -37,7 +36,6 @@ signals:
     void settingsUpdated();
 
 private slots:
-    void onModeChanged(int index);
     void onEditModeChanged(int index);
     void onResetDefaultClicked();
 };

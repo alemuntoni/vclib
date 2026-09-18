@@ -40,14 +40,41 @@ public:
         if (!mEditor)
             return;
 
-        bool active = mEditor->isActive();
+        vcl::TransformEditorSettings& sts = mEditor->settings();
 
-        if (ImGui::Button(active ? "[TRS]" : " TRS ")) {
-            active = !active;
-            mEditor->setActive(active);
+        bool tEna = sts.enableTranslate;
+        bool rEna = sts.enableRotate;
+        bool sEna = sts.enableScale;
+
+        if (ImGui::Button(tEna ? "[T]" : " T ")) {
+            tEna                = !tEna;
+            sts.enableTranslate = tEna;
+            mEditor->setActive(sts.isAnyTransformEnabled());
             mEditor->refreshSettings();
         }
-        
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+            ImGui::SetTooltip("Translate Object");
+
+        ImGui::SameLine(0, 2);
+        if (ImGui::Button(rEna ? "[R]" : " R ")) {
+            rEna             = !rEna;
+            sts.enableRotate = rEna;
+            mEditor->setActive(sts.isAnyTransformEnabled());
+            mEditor->refreshSettings();
+        }
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+            ImGui::SetTooltip("Rotate Object");
+
+        ImGui::SameLine(0, 2);
+        if (ImGui::Button(sEna ? "[S]" : " S ")) {
+            sEna            = !sEna;
+            sts.enableScale = sEna;
+            mEditor->setActive(sts.isAnyTransformEnabled());
+            mEditor->refreshSettings();
+        }
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+            ImGui::SetTooltip("Scale Object");
+
         ImGui::SameLine(0, 2);
         if (ImGui::Button("v##TransformSettings")) {
             ImGui::OpenPopup("##TransformSettingsPopup");
@@ -60,7 +87,7 @@ public:
             ImGui::EndPopup();
         }
     }
-    
+
 private:
     void drawTransformSettings()
     {
@@ -73,7 +100,8 @@ private:
         ImGui::Text("Apply to:");
         ImGui::SameLine();
         ImGui::SetNextItemWidth(130);
-        if (ImGui::BeginCombo("##TransformEditMode", editModeNames[currentEditMode])) {
+        if (ImGui::BeginCombo(
+                "##TransformEditMode", editModeNames[currentEditMode])) {
             for (int n = 0; n < IM_ARRAYSIZE(editModeNames); n++) {
                 bool selected = (n == currentEditMode);
                 if (n == 0 || n == 3)
@@ -91,34 +119,13 @@ private:
             ImGui::EndCombo();
         }
 
-        static const char* modeNames[] = {
-            "Translate", "Rotate", "Scale"};
-        int currentMode = static_cast<int>(sts.mode);
-        ImGui::Text("Mode:");
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(100);
-        if (ImGui::BeginCombo("##TransformMode", modeNames[currentMode])) {
-            for (int n = 0; n < IM_ARRAYSIZE(modeNames); n++) {
-                bool selected = (n == currentMode);
-                if (ImGui::Selectable(modeNames[n], selected)) {
-                    sts.mode = static_cast<vcl::TransformEditorSettings::Mode>(n);
-                    mEditor->refreshSettings();
-                }
-                if (selected)
-                    ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
-        
         ImGui::Separator();
-        
+
         if (ImGui::Button("Reset Default", ImVec2(-1, 0))) {
             sts.resetDefaults();
             mEditor->refreshSettings();
         }
     }
-    
-
 };
 
 template<typename ViewerType>
