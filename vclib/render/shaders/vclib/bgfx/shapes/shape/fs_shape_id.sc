@@ -5,13 +5,17 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at https://mozilla.org/MPL/2.0/.
 
-#ifndef VCL_BGFX_DRAWABLE_DRAWABLE_AXIS_UNIFORMS_SH
-#define VCL_BGFX_DRAWABLE_DRAWABLE_AXIS_UNIFORMS_SH
+$input v_position
 
+#include <vclib/bgfx/shapes/shape/uniforms.sh>
 #include <vclib/bgfx/shaders_common.sh>
 
-#include <vclib/bgfx/drawable/uniforms/directional_light_uniforms.sh>
-
-uniform vec4 u_axisColor;
-
-#endif // VCL_BGFX_DRAWABLE_DRAWABLE_AXIS_UNIFORMS_SH
+void main()
+{
+    // Target 0: Object ID (16 bit) + Element Type (16 bit)
+    // (already combined in u_shapeId)
+    gl_FragData[0] = u_shapeId;
+    
+    // Target 1: Element ID (32 bit) - Always 0 for shapes
+    gl_FragData[1] = uintABGRToVec4Color(0u);
+}
