@@ -38,11 +38,7 @@ public:
         double           radius,
         uint             subdivisions = 36) :
             Shape(
-                vcl::createCylinder<vcl::TriMesh>(
-                    p1,
-                    p2,
-                    radius,
-                    subdivisions))
+                vcl::createCylinder<vcl::TriMesh>(p1, p2, radius, subdivisions))
     {
     }
 };
