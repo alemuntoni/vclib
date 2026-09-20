@@ -30,18 +30,17 @@ class TranslateGizmoBGFX
 public:
     TranslateGizmoBGFX()
     {
-        // Cylinders and cones are natively along Y.
-        // We want the cylinder to go from Y=0 to Y=1 (it natively goes from
-        // -0.5 to 0.5).
-        vcl::Matrix44d cylOffset = vcl::Matrix44d::Identity();
-        vcl::setTransformMatrixTranslation(cylOffset, vcl::Point3d(0, 0.5, 0));
-        mCylinder = std::make_unique<CylinderShape>(0.01, 1.0, 16, cylOffset);
+        // Cylinder from Y=0 to Y=1
+        mCylinder = std::make_unique<CylinderShape>(
+            vcl::Point3d(0.0, 0.0, 0.0), vcl::Point3d(0.0, 1.0, 0.0), 0.01, 16);
 
-        // Cone for the tip, from Y=1.0 to Y=1.2 (it natively goes from -0.1 to
-        // 0.1).
-        vcl::Matrix44d coneOffset = vcl::Matrix44d::Identity();
-        vcl::setTransformMatrixTranslation(coneOffset, vcl::Point3d(0, 1.1, 0));
-        mCone = std::make_unique<ConeShape>(0.03, 0.0, 0.2, 16, coneOffset);
+        // Cone for the tip, from Y=1.0 to Y=1.2
+        mCone = std::make_unique<ConeShape>(
+            vcl::Point3d(0.0, 1.0, 0.0),
+            vcl::Point3d(0.0, 1.2, 0.0),
+            0.03,
+            0.0,
+            16);
     }
 
     void draw(

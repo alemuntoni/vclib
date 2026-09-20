@@ -8,8 +8,9 @@
 #ifndef VCL_BGFX_SHAPES_CONE_SHAPE_H
 #define VCL_BGFX_SHAPES_CONE_SHAPE_H
 
-#include <vclib/algorithms/mesh.h>
 #include <vclib/bgfx/shapes/shape.h>
+
+#include <vclib/algorithms/mesh.h>
 
 namespace vcl {
 
@@ -25,20 +26,16 @@ public:
     ConeShape() : ConeShape(1.0, 0.0, 1.0) {}
 
     ConeShape(
-        double                radiusBottom,
-        double                radiusTop,
-        double                height,
-        uint                  subdivisions = 36,
-        const vcl::Matrix44d& offset       = vcl::Matrix44d::Identity()) :
-            Shape([&]() {
-                auto mesh = vcl::createCone<vcl::TriMesh>(
-                    radiusBottom, radiusTop, height, subdivisions);
-                if (offset != vcl::Matrix44d::Identity()) {
-                    vcl::applyTransformMatrix(mesh, offset);
-                    vcl::updatePerVertexNormals(mesh);
-                }
-                return mesh;
-            }())
+        double radiusBottom,
+        double radiusTop,
+        double height,
+        uint   subdivisions = 36) :
+            Shape(
+                vcl::createCone<vcl::TriMesh>(
+                    radiusBottom,
+                    radiusTop,
+                    height,
+                    subdivisions))
     {
     }
 

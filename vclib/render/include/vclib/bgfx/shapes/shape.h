@@ -14,6 +14,7 @@
 #include <vclib/bgfx/drawable/mesh/mesh_render_buffers.h>
 #include <vclib/bgfx/shapes/uniforms/shape_uniforms.h>
 
+#include <vclib/algorithms/mesh.h>
 #include <vclib/meshes.h>
 #include <vclib/space/core.h>
 
@@ -42,8 +43,10 @@ public:
     /**
      * @brief Constructs a Shape from a given TriMesh.
      */
-    Shape(const vcl::TriMesh& mesh)
+    Shape(vcl::TriMesh mesh)
     {
+        vcl::updatePerVertexNormals(mesh);
+
         using MRI              = MeshRenderInfo;
         MRI::BuffersBitSet btf = {
             MRI::Buffers::VERTICES,

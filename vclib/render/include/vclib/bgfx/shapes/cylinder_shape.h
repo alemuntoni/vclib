@@ -8,8 +8,9 @@
 #ifndef VCL_BGFX_SHAPES_CYLINDER_SHAPE_H
 #define VCL_BGFX_SHAPES_CYLINDER_SHAPE_H
 
-#include <vclib/algorithms/mesh/create.h>
 #include <vclib/bgfx/shapes/shape.h>
+
+#include <vclib/algorithms/mesh.h>
 
 namespace vcl {
 
@@ -24,20 +25,9 @@ class CylinderShape : public Shape
 public:
     CylinderShape() : CylinderShape(1.0, 1.0) {}
 
-    CylinderShape(
-        double                radius,
-        double                height,
-        uint                  subdivisions = 36,
-        const vcl::Matrix44d& offset       = vcl::Matrix44d::Identity()) :
-            Shape([&]() {
-                auto mesh = vcl::createCylinder<vcl::TriMesh>(
-                    radius, height, subdivisions);
-                if (offset != vcl::Matrix44d::Identity()) {
-                    vcl::applyTransformMatrix(mesh, offset);
-                    vcl::updatePerVertexNormals(mesh);
-                }
-                return mesh;
-            }())
+    CylinderShape(double radius, double height, uint subdivisions = 36) :
+            Shape(
+                vcl::createCylinder<vcl::TriMesh>(radius, height, subdivisions))
     {
     }
 
