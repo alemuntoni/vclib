@@ -141,11 +141,11 @@ public:
         mScaleFaceCenters.draw(viewId);
     }
 
-    void drawId(uint viewId, const vcl::Matrix44f& gizmoTransform)
+    void drawId(uint viewId, const vcl::Matrix44f& gizmoTransform, ushort meshId)
     {
-        uint32_t cornerId     = (0xFFFE << 16) | 0;
-        uint32_t edgeCenterId = (0xFFFE << 16) | 1;
-        uint32_t faceCenterId = (0xFFFE << 16) | 2;
+        uint32_t cornerId     = (0xFFFE << 16) | ((0 << 14) | meshId);
+        uint32_t edgeCenterId = (0xFFFE << 16) | ((1 << 14) | meshId);
+        uint32_t faceCenterId = (0xFFFE << 16) | ((2 << 14) | meshId);
 
         bgfx::setTransform(gizmoTransform.data());
         mScaleCorners.drawId(viewId, cornerId);

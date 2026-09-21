@@ -88,41 +88,35 @@ public:
         if (!Base::isActive())
             return;
 
-        auto   dl         = this->drawList();
-        ushort selectedId = dl->selectedObjectId();
-        if (selectedId == USHORT_NULL || selectedId >= dl->size())
+        auto dl = this->drawList();
+        if (!dl)
             return;
 
-        auto mesh = findMesh(selectedId);
-        if (!mesh || !mesh->isVisible())
-            return;
-
-        vcl::Matrix44f model =
-            mesh->meshProvider().transformMatrix().template cast<float>();
-
-        vcl::Box3d     bbox     = mesh->meshProvider().boundingBox();
-        vcl::Matrix44f scaleMat = vcl::Matrix44f::Identity();
-        vcl::setTransformMatrixScale(scaleMat, bbox.size().cast<float>());
-        vcl::Matrix44f transMat = vcl::Matrix44f::Identity();
-        vcl::setTransformMatrixTranslation(
-            transMat, bbox.center().cast<float>());
-
-        vcl::Matrix44f baseTransform  = model * transMat;
-        vcl::Matrix44f gizmoTransform = baseTransform * scaleMat;
-
-        if (mSettings.enableTranslate) {
-            mTranslateGizmo.draw(
-                viewId, baseTransform, this->viewerViewMatrix());
+        if (mSettings.editMode == EditorSettings::EditMode::CURRENT_OBJECT) {
+            ushort selectedId = dl->selectedObjectId();
+            if (selectedId != USHORT_NULL && selectedId < dl->size()) {
+                if (auto mesh = findMesh(selectedId)) {
+                    if (mesh->isVisible()) {
+                        drawGizmoForMesh(viewId, mesh);
+                    }
+                }
+            }
         }
-        if (mSettings.enableScale) {
-            mScaleGizmo.draw(viewId, gizmoTransform);
+        else if (mSettings.editMode == EditorSettings::EditMode::VISIBLE_OBJECTS) {
+            for (uint i = 0; i < dl->size(); ++i) {
+                if (auto mesh = findMesh(i)) {
+                    if (mesh->isVisible()) {
+                        drawGizmoForMesh(viewId, mesh);
+                    }
+                }
+            }
         }
-        if (mSettings.enableRotate) {
-            vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
-            float          r           = bbox.diagonal() / 2.0f;
-            vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
-            vcl::Matrix44f rotGizmoTransform = model * transMat * rotScaleMat;
-            mRotateGizmo.draw(viewId, rotGizmoTransform);
+        else if (mSettings.editMode == EditorSettings::EditMode::ALL_OBJECTS) {
+            for (uint i = 0; i < dl->size(); ++i) {
+                if (auto mesh = findMesh(i)) {
+                    drawGizmoForMesh(viewId, mesh);
+                }
+            }
         }
     }
 
@@ -131,41 +125,35 @@ public:
         if (!Base::isActive())
             return;
 
-        auto   dl         = this->drawList();
-        ushort selectedId = dl->selectedObjectId();
-        if (selectedId == USHORT_NULL || selectedId >= dl->size())
+        auto dl = this->drawList();
+        if (!dl)
             return;
 
-        auto mesh = findMesh(selectedId);
-        if (!mesh || !mesh->isVisible())
-            return;
-
-        vcl::Matrix44f model =
-            mesh->meshProvider().transformMatrix().template cast<float>();
-
-        vcl::Box3d     bbox     = mesh->meshProvider().boundingBox();
-        vcl::Matrix44f scaleMat = vcl::Matrix44f::Identity();
-        vcl::setTransformMatrixScale(scaleMat, bbox.size().cast<float>());
-        vcl::Matrix44f transMat = vcl::Matrix44f::Identity();
-        vcl::setTransformMatrixTranslation(
-            transMat, bbox.center().cast<float>());
-
-        vcl::Matrix44f baseTransform  = model * transMat;
-        vcl::Matrix44f gizmoTransform = baseTransform * scaleMat;
-
-        if (mSettings.enableTranslate) {
-            mTranslateGizmo.drawId(
-                viewId, baseTransform, this->viewerViewMatrix());
+        if (mSettings.editMode == EditorSettings::EditMode::CURRENT_OBJECT) {
+            ushort selectedId = dl->selectedObjectId();
+            if (selectedId != USHORT_NULL && selectedId < dl->size()) {
+                if (auto mesh = findMesh(selectedId)) {
+                    if (mesh->isVisible()) {
+                        drawGizmoIdForMesh(viewId, selectedId, mesh);
+                    }
+                }
+            }
         }
-        if (mSettings.enableScale) {
-            mScaleGizmo.drawId(viewId, gizmoTransform);
+        else if (mSettings.editMode == EditorSettings::EditMode::VISIBLE_OBJECTS) {
+            for (uint i = 0; i < dl->size(); ++i) {
+                if (auto mesh = findMesh(i)) {
+                    if (mesh->isVisible()) {
+                        drawGizmoIdForMesh(viewId, i, mesh);
+                    }
+                }
+            }
         }
-        if (mSettings.enableRotate) {
-            vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
-            float          r           = bbox.diagonal() / 2.0f;
-            vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
-            vcl::Matrix44f rotGizmoTransform = model * transMat * rotScaleMat;
-            mRotateGizmo.drawId(viewId, rotGizmoTransform);
+        else if (mSettings.editMode == EditorSettings::EditMode::ALL_OBJECTS) {
+            for (uint i = 0; i < dl->size(); ++i) {
+                if (auto mesh = findMesh(i)) {
+                    drawGizmoIdForMesh(viewId, i, mesh);
+                }
+            }
         }
     }
 
@@ -203,14 +191,16 @@ public:
                 ushort selectedId = dl->selectedObjectId();
 
                 if (objId == 0xFFFE) { // Scale Gizmo
-                    if (selectedId != USHORT_NULL && selectedId < dl->size()) {
-                        mCurrentObjId = selectedId;
+                    ushort meshId = elemId & 0x3FFF;
+                    ushort type   = elemId >> 14;
+                    if (meshId < dl->size()) {
+                        mCurrentObjId = meshId;
                         auto mesh     = findMesh(mCurrentObjId);
                         if (mesh) {
                             if (mSettings.enableScale) {
                                 mActiveTransform = ActiveTransform::SCALE;
                                 mScaleGizmo.calculateAnchor(
-                                    elemId, primitiveId, mesh);
+                                    type, primitiveId, mesh);
                                 mAnchorDepth =
                                     project(
                                         mScaleGizmo.anchorPointInWorld(mesh))
@@ -233,8 +223,9 @@ public:
                     }
                 }
                 else if (objId == 0xFFFD) { // Rotate Gizmo
-                    if (selectedId != USHORT_NULL && selectedId < dl->size()) {
-                        mCurrentObjId = selectedId;
+                    ushort meshId = elemId;
+                    if (meshId < dl->size()) {
+                        mCurrentObjId = meshId;
                         auto mesh     = findMesh(mCurrentObjId);
                         if (mesh) {
                             if (mSettings.enableRotate) {
@@ -401,6 +392,73 @@ private:
             return nullptr;
 
         return std::dynamic_pointer_cast<AbstractDrawableMesh>(dl->at(objId));
+    }
+
+    void drawGizmoForMesh(
+        uint                                         viewId,
+        const std::shared_ptr<AbstractDrawableMesh>& mesh)
+    {
+        vcl::Matrix44f model =
+            mesh->meshProvider().transformMatrix().template cast<float>();
+
+        vcl::Box3d     bbox     = mesh->meshProvider().boundingBox();
+        vcl::Matrix44f scaleMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixScale(scaleMat, bbox.size().cast<float>());
+        vcl::Matrix44f transMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixTranslation(
+            transMat, bbox.center().cast<float>());
+
+        vcl::Matrix44f baseTransform  = model * transMat;
+        vcl::Matrix44f gizmoTransform = baseTransform * scaleMat;
+
+        if (mSettings.enableTranslate) {
+            mTranslateGizmo.draw(
+                viewId, baseTransform, this->viewerViewMatrix());
+        }
+        if (mSettings.enableScale) {
+            mScaleGizmo.draw(viewId, gizmoTransform);
+        }
+        if (mSettings.enableRotate) {
+            vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
+            float          r           = bbox.diagonal() / 2.0f;
+            vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
+            vcl::Matrix44f rotGizmoTransform = model * transMat * rotScaleMat;
+            mRotateGizmo.draw(viewId, rotGizmoTransform);
+        }
+    }
+
+    void drawGizmoIdForMesh(
+        uint                                         viewId,
+        ushort                                       meshId,
+        const std::shared_ptr<AbstractDrawableMesh>& mesh)
+    {
+        vcl::Matrix44f model =
+            mesh->meshProvider().transformMatrix().template cast<float>();
+
+        vcl::Box3d     bbox     = mesh->meshProvider().boundingBox();
+        vcl::Matrix44f scaleMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixScale(scaleMat, bbox.size().cast<float>());
+        vcl::Matrix44f transMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixTranslation(
+            transMat, bbox.center().cast<float>());
+
+        vcl::Matrix44f baseTransform  = model * transMat;
+        vcl::Matrix44f gizmoTransform = baseTransform * scaleMat;
+
+        if (mSettings.enableTranslate) {
+            mTranslateGizmo.drawId(
+                viewId, baseTransform, this->viewerViewMatrix(), meshId);
+        }
+        if (mSettings.enableScale) {
+            mScaleGizmo.drawId(viewId, gizmoTransform, meshId);
+        }
+        if (mSettings.enableRotate) {
+            vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
+            float          r           = bbox.diagonal() / 2.0f;
+            vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
+            vcl::Matrix44f rotGizmoTransform = model * transMat * rotScaleMat;
+            mRotateGizmo.drawId(viewId, rotGizmoTransform, meshId);
+        }
     }
 
     void savePreTransformStates(ushort activeObjId)

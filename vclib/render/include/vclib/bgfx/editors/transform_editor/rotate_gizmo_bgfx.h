@@ -102,9 +102,9 @@ public:
         mHandles.draw(viewId);
     }
 
-    void drawId(uint viewId, const vcl::Matrix44f& gizmoTransform)
+    void drawId(uint viewId, const vcl::Matrix44f& gizmoTransform, ushort meshId)
     {
-        uint32_t baseId = (0xFFFD << 16);
+        uint32_t baseId = (0xFFFD << 16) | meshId;
         bgfx::setTransform(gizmoTransform.data());
         mHandles.drawId(viewId, baseId);
     }

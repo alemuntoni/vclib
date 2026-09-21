@@ -95,7 +95,8 @@ public:
     void drawId(
         uint /*viewId*/,
         const vcl::Matrix44f& /*baseTransform*/,
-        const vcl::Matrix44f& /*viewMatrix*/)
+        const vcl::Matrix44f& /*viewMatrix*/,
+        ushort /*meshId*/)
     {
         // No pickable visualization yet (the user picks the mesh directly for
         // translation currently)
