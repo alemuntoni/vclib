@@ -38,6 +38,10 @@ class Shape
     MeshRenderBuffers<vcl::TriMesh> mBuffers;
 
 public:
+    static const uint64_t DEFAULT_DRAW_STATE =
+        0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
+        BGFX_STATE_DEPTH_TEST_LEQUAL | BGFX_STATE_MSAA;
+
     Shape() = default;
 
     /**
@@ -48,6 +52,9 @@ public:
         vcl::updatePerVertexNormals(mesh);
 
         using MRI              = MeshRenderInfo;
+
+        vcl::updatePerVertexNormals(mesh);
+
         MRI::BuffersBitSet btf = {
             MRI::Buffers::VERTICES,
             MRI::Buffers::VERT_NORMALS,
@@ -79,19 +86,23 @@ public:
 
     /**
      * @brief Draws the shape with the specified transform and color.
+     *
+     * @param[in] viewId: The view ID for the BGFX draw call.
+     * @param[in] color: The color to draw the shape with.
+     * @param[in] transform: The transformation matrix to apply to the shape
+     * (default is identity).
+     * @param[in] state: The BGFX render state flags (default is
+     * DEFAULT_DRAW_STATE).
      */
     void draw(
         uint             viewId,
         const Color&     color,
-        const Matrix44f& transform = Matrix44f::Identity())
+        const Matrix44f& transform = Matrix44f::Identity(),
+        uint64_t         state     = DEFAULT_DRAW_STATE)
     {
         using enum VertFragProgram;
 
         ProgramManager& pm = Context::instance().programManager();
-
-        uint64_t state = 0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A |
-                         BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LEQUAL |
-                         BGFX_STATE_MSAA;
 
         ShapeUniforms::setColor(color);
         ShapeUniforms::bind();
