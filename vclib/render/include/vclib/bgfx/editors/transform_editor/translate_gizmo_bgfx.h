@@ -15,33 +15,34 @@
 #include <vclib/meshes.h>
 #include <vclib/render/drawable/abstract_drawable_mesh.h>
 
-#include <memory>
-
 namespace vcl {
 
 class TranslateGizmoBGFX
 {
-    std::unique_ptr<CylinderShape> mCylinder;
-    std::unique_ptr<ConeShape>     mCone;
+    // Cylinder from Y=0 to Y=1
+    CylinderShape mCylinder = CylinderShape(
+        vcl::Point3d(0.0, 0.0, 0.0),
+        vcl::Point3d(0.0, 1.0, 0.0),
+        0.01,
+        16);
+
+    // Cone for the tip, from Y=1.0 to Y=1.2
+    ConeShape mCone = ConeShape(
+        vcl::Point3d(0.0, 1.0, 0.0),
+        vcl::Point3d(0.0, 1.2, 0.0),
+        0.03,
+        0.0,
+        16);
 
     // We can store states if needed
     vcl::Point3d mAnchorPoint3D = vcl::Point3d::Zero();
 
-public:
-    TranslateGizmoBGFX()
-    {
-        // Cylinder from Y=0 to Y=1
-        mCylinder = std::make_unique<CylinderShape>(
-            vcl::Point3d(0.0, 0.0, 0.0), vcl::Point3d(0.0, 1.0, 0.0), 0.01, 16);
+    static const uint64_t DRAW_STATE =
+        0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
+        BGFX_STATE_DEPTH_TEST_ALWAYS | BGFX_STATE_CULL_CW;
 
-        // Cone for the tip, from Y=1.0 to Y=1.2
-        mCone = std::make_unique<ConeShape>(
-            vcl::Point3d(0.0, 1.0, 0.0),
-            vcl::Point3d(0.0, 1.2, 0.0),
-            0.03,
-            0.0,
-            16);
-    }
+public:
+    TranslateGizmoBGFX() = default;
 
     void draw(
         uint                  viewId,
@@ -74,21 +75,21 @@ public:
         vcl::setTransformMatrixRotation(
             rotX, vcl::Point3f(0, 0, 1), float(-M_PI / 2.0));
         vcl::Matrix44f xTransform = gizmoTransform * rotX;
-        mCylinder->draw(viewId, vcl::Color::Red, xTransform);
-        mCone->draw(viewId, vcl::Color::Red, xTransform);
+        mCylinder.draw(viewId, vcl::Color::Red, xTransform, DRAW_STATE);
+        mCone.draw(viewId, vcl::Color::Red, xTransform, DRAW_STATE);
 
         // Y Axis (Green) -> Already along Y
         vcl::Matrix44f yTransform = gizmoTransform;
-        mCylinder->draw(viewId, vcl::Color::Green, yTransform);
-        mCone->draw(viewId, vcl::Color::Green, yTransform);
+        mCylinder.draw(viewId, vcl::Color::Green, yTransform, DRAW_STATE);
+        mCone.draw(viewId, vcl::Color::Green, yTransform, DRAW_STATE);
 
         // Z Axis (Blue) -> Rotate Y to Z (around X by +90 deg)
         vcl::Matrix44f rotZ = vcl::Matrix44f::Identity();
         vcl::setTransformMatrixRotation(
             rotZ, vcl::Point3f(1, 0, 0), float(M_PI / 2.0));
         vcl::Matrix44f zTransform = gizmoTransform * rotZ;
-        mCylinder->draw(viewId, vcl::Color::Blue, zTransform);
-        mCone->draw(viewId, vcl::Color::Blue, zTransform);
+        mCylinder.draw(viewId, vcl::Color::Blue, zTransform, DRAW_STATE);
+        mCone.draw(viewId, vcl::Color::Blue, zTransform, DRAW_STATE);
     }
 
     void drawId(
