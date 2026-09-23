@@ -53,6 +53,13 @@ int loadGltfPrimitiveMaterial(
         double anisotropyRotation = 0.0;
         int anisotropyTextureId = -1;
 
+        double clearcoat = 0.0;
+        double clearcoatRoughness = 0.0;
+        double clearcoatNormalScale = 1.0;
+        int clearcoatTextureId = -1;
+        int clearcoatRoughnessTextureId = -1;
+        int clearcoatNormalTextureId = -1;
+
         const tinygltf::Material& mat = model.materials[p.material];
 
         std::string matName = mat.name;
@@ -138,6 +145,46 @@ int loadGltfPrimitiveMaterial(
                 }
             }
         }
+        // clearcoat
+        if(mat.extensions.contains("KHR_materials_clearcoat")) {
+            const auto& clearcoatExt = mat.extensions.at("KHR_materials_clearcoat");
+
+            if (clearcoatExt.Has("clearcoatFactor"))
+                clearcoat = clearcoatExt
+                    .Get("clearcoatFactor")
+                    .GetNumberAsDouble();
+
+            if (clearcoatExt.Has("clearcoatRoughnessFactor"))
+                clearcoatRoughness = clearcoatExt
+                    .Get("clearcoatRoughnessFactor")
+                    .GetNumberAsDouble();
+
+            if (clearcoatExt.Has("clearcoatTexture")) {
+                clearcoatTextureId = clearcoatExt
+                    .Get("clearcoatTexture")
+                    .Get("index")
+                    .GetNumberAsInt();
+            }
+
+            if (clearcoatExt.Has("clearcoatRoughnessTexture")) {
+                clearcoatRoughnessTextureId = clearcoatExt
+                    .Get("clearcoatRoughnessTexture")
+                    .Get("index")
+                    .GetNumberAsInt();
+            }
+
+            if (clearcoatExt.Has("clearcoatNormalTexture")) {
+                const auto& clearcoatNormalTexture = clearcoatExt
+                    .Get("clearcoatNormalTexture");
+                clearcoatNormalTextureId = clearcoatNormalTexture
+                    .Get("index")
+                    .GetNumberAsInt();
+                if(clearcoatNormalTexture.Has("scale"))
+                    clearcoatNormalScale = clearcoatNormalTexture
+                        .Get("scale")
+                        .GetNumberAsDouble();
+            }
+        }
 
         // function to load a texture in a material
         auto loadTextureInMaterial = [&](Material&             mat,
@@ -202,18 +249,21 @@ int loadGltfPrimitiveMaterial(
 
         if constexpr (HasMaterials<MeshType>) {
             Material mat;
-            mat.name()               = matName;
-            mat.baseColor()          = baseColor;
-            mat.metallic()           = metallic;
-            mat.roughness()          = roughness;
-            mat.emissiveColor()      = emissiveColor;
-            mat.alphaMode()          = alphaMode;
-            mat.alphaCutoff()        = alphaCutoff;
-            mat.doubleSided()        = doubleSided;
-            mat.normalScale()        = normalScale;
-            mat.occlusionStrength()  = occlusionStrength;
-            mat.anisotropyStrength() = anisotropyStrength;
-            mat.anisotropyRotation() = anisotropyRotation;
+            mat.name()                 = matName;
+            mat.baseColor()            = baseColor;
+            mat.metallic()             = metallic;
+            mat.roughness()            = roughness;
+            mat.emissiveColor()        = emissiveColor;
+            mat.alphaMode()            = alphaMode;
+            mat.alphaCutoff()          = alphaCutoff;
+            mat.doubleSided()          = doubleSided;
+            mat.normalScale()          = normalScale;
+            mat.occlusionStrength()    = occlusionStrength;
+            mat.anisotropyStrength()   = anisotropyStrength;
+            mat.anisotropyRotation()   = anisotropyRotation;
+            mat.clearcoat()            = clearcoat;
+            mat.clearcoatRoughness()   = clearcoatRoughness;
+            mat.clearcoatNormalScale() = clearcoatNormalScale;
             loadTextureInMaterial(
                 mat, baseColorTextureId, Material::TextureType::BASE_COLOR);
             loadTextureInMaterial(
@@ -228,6 +278,12 @@ int loadGltfPrimitiveMaterial(
                 mat, emissiveTextureId, Material::TextureType::EMISSIVE);
             loadTextureInMaterial(
                 mat, anisotropyTextureId, Material::TextureType::ANISOTROPY);
+            loadTextureInMaterial(
+                mat, clearcoatTextureId, Material::TextureType::CLEARCOAT);
+            loadTextureInMaterial(
+                mat, clearcoatRoughnessTextureId, Material::TextureType::CLEARCOAT_ROUGHNESS);
+            loadTextureInMaterial(
+                mat, clearcoatNormalTextureId, Material::TextureType::CLEARCOAT_NORMAL);
             m.pushMaterial(mat);
             idx = m.materialCount() - 1; // index of the added material
             if constexpr (HasColor<MeshType>) {

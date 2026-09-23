@@ -18,7 +18,8 @@ TEST_CASE("PBR Rendering")
         "MetalRoughSpheres/MetalRoughSpheres.gltf",
         "CompareAmbientOcclusion/CompareAmbientOcclusion.gltf",
         "NormalTangentMirrorTest/NormalTangentMirrorTest.gltf",
-        "AnisotropyRotationTest/AnisotropyRotationTest.gltf"
+        "AnisotropyRotationTest/AnisotropyRotationTest.gltf",
+        "ClearcoatWicker/ClearcoatWicker.gltf"
     };
     std::vector<float> angles = {0.0f, 3.14159265f / 4.0f};
 

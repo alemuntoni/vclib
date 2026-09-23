@@ -43,6 +43,12 @@ class MaterialUniforms
 
     static inline std::array<float, 4> sAnisotropyPack = {0.0, 0.0, 0.0, 0.0};
 
+    static inline std::array<float, 4> sClearcoatPack = {
+        0.0, // clearcoat factor
+        0.0, // clearcoat roughness factor
+        1.0, // clearcoat normal scale
+        0.0};
+
     static inline StaticUniform sBaseColorUniform {
         "u_baseColorFactor",
         bgfx::UniformType::Vec4};
@@ -54,6 +60,9 @@ class MaterialUniforms
         bgfx::UniformType::Vec4};
     static inline StaticUniform sAnisotropyPackUniform {
         "u_anisotropyPack",
+        bgfx::UniformType::Vec4};
+    static inline StaticUniform sClearcoatPackUniform {
+        "u_clearcoatPack",
         bgfx::UniformType::Vec4};
 
 public:
@@ -81,6 +90,10 @@ public:
         sFactorsPack[2] = m.metallic();
         sFactorsPack[3] = m.normalScale();
 
+        sClearcoatPack[0] = m.clearcoat();
+        sClearcoatPack[1] = m.clearcoatRoughness();
+        sClearcoatPack[2] = m.clearcoatNormalScale();
+
         sEmissiveAlphaCutoffPack[0] = m.emissiveColor().redF();
         sEmissiveAlphaCutoffPack[1] = m.emissiveColor().greenF();
         sEmissiveAlphaCutoffPack[2] = m.emissiveColor().blueF();
@@ -95,6 +108,7 @@ public:
         sFactorsPackUniform.bind(sFactorsPack.data());
         sEmissiveAlphaCutoffPackUniform.bind(sEmissiveAlphaCutoffPack.data());
         sAnisotropyPackUniform.bind(sAnisotropyPack.data());
+        sClearcoatPackUniform.bind(sClearcoatPack.data());
     }
 };
 

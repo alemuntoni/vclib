@@ -23,6 +23,8 @@ int main(int argc, char** argv)
         DAMAGED_HELMET,
         ANISOTROPY_ROTATION_TEST,
         CARBON_FIBRE,
+        CLEARCOAT_CAR_PAINT,
+        CLEARCOAT_WICKER,
         COUNT_EXAMPLES
     };
 
@@ -33,9 +35,11 @@ int main(int argc, char** argv)
         "/gltf/CompareAmbientOcclusion/CompareAmbientOcclusion.gltf",
         "/gltf/DamagedHelmet/DamagedHelmet.gltf",
         "/gltf/AnisotropyRotationTest/AnisotropyRotationTest.gltf",
-        "/gltf/CarbonFibre/CarbonFibre.gltf"};
+        "/gltf/CarbonFibre/CarbonFibre.gltf",
+        "/gltf/ClearCoatCarPaint/ClearCoatCarPaint.gltf",
+        "/gltf/ClearcoatWicker/ClearcoatWicker.gltf"};
 
-    uint selectedExample = CARBON_FIBRE;
+    uint selectedExample = CLEARCOAT_CAR_PAINT;
 
     enum PanoramasExamples {
         COLOSSEUM_HDR,
@@ -44,6 +48,7 @@ int main(int argc, char** argv)
         UFFIZI_EXR,
         UFFIZI_HDR,
         UFFIZI_KTX,
+        ST_PETER_EXR,
         COUNT_PANORAMAS
     };
 
@@ -53,7 +58,8 @@ int main(int argc, char** argv)
         "/panoramas/pisa.hdr",
         "/panoramas/uffizi.exr",
         "/panoramas/uffizi.hdr",
-        "/panoramas/uffizi.ktx"};
+        "/panoramas/uffizi.ktx",
+        "/panoramas/st_peter.exr"};
 
     uint selectedPanorama = COLOSSEUM_HDR;
 
@@ -79,6 +85,15 @@ int main(int argc, char** argv)
         }
         else if (type == ANISOTROPY) {
             typeName = "anisotropy";
+        }
+        else if (type == CLEARCOAT) {
+            typeName = "clearcoat";
+        }
+        else if (type == CLEARCOAT_ROUGHNESS) {
+            typeName = "clearcoatRoughness";
+        }
+        else if (type == CLEARCOAT_NORMAL) {
+            typeName = "clearcoatNormal";
         }
 
         std::cout << "  " << typeName << "Texture: ";
@@ -116,12 +131,20 @@ int main(int argc, char** argv)
                       << std::endl;
             std::cout << "  anisotropyRotation: " << mat.anisotropyRotation()
                       << std::endl;
+            std::cout << "  clearcoat: " << mat.clearcoat() << std::endl;
+            std::cout << "  clearcoatRoughness: " << mat.clearcoatRoughness()
+                      << std::endl;
+            std::cout << "  clearcoatNormalScale: " << mat.clearcoatNormalScale()
+                      << std::endl;
             printTextureInfo(mat, BASE_COLOR);
             printTextureInfo(mat, METALLIC_ROUGHNESS);
             printTextureInfo(mat, NORMAL);
             printTextureInfo(mat, OCCLUSION);
             printTextureInfo(mat, EMISSIVE);
             printTextureInfo(mat, ANISOTROPY);
+            printTextureInfo(mat, CLEARCOAT);
+            printTextureInfo(mat, CLEARCOAT_ROUGHNESS);
+            printTextureInfo(mat, CLEARCOAT_NORMAL);
             std::cout << "  ------------------------" << std::endl;
         }
         std::cout << "------------------------" << std::endl;
