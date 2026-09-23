@@ -38,17 +38,23 @@ class MeshProviderReference :
         public MeshProviderMixin<MeshProviderReference<MeshType>, MeshType>
 {
 private:
-    const MeshType* mMesh;
+    MeshType* mMesh;
 
 public:
     /**
      * @brief Constructor that takes a reference to an existing mesh.
      * @param mesh The mesh to reference.
      */
-    MeshProviderReference(const MeshType& mesh) : mMesh(&mesh) {}
+    MeshProviderReference(MeshType& mesh) : mMesh(&mesh) {}
 
     /**
      * @brief Returns a reference to the referenced mesh.
+     * Required by MeshProviderMixin to access mesh elements.
+     */
+    MeshType& mesh() { return *mMesh; }
+
+    /**
+     * @brief Returns a const reference to the referenced mesh.
      * Required by MeshProviderMixin to access mesh elements.
      */
     const MeshType& mesh() const { return *mMesh; }

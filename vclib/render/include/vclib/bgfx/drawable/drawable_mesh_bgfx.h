@@ -33,7 +33,7 @@ class DrawableMeshBGFX : public AbstractDrawableMesh, public MeshType
 protected:
     MeshRenderBuffers<MeshType>     mMRB;
     MeshProviderReference<MeshType> mProvider {
-        static_cast<const MeshType&>(*this)};
+        static_cast<MeshType&>(*this)};
 
 public:
     DrawableMeshBGFX() = default;
@@ -110,6 +110,11 @@ public:
     }
 
     const AbstractMeshProvider& meshProvider() const override
+    {
+        return mProvider;
+    }
+
+    AbstractMeshProvider& meshProvider() override
     {
         return mProvider;
     }
@@ -290,18 +295,14 @@ public:
         }
 
         if (mMRB.selectionReadback(*this)) {
-            if (mOnSelectionUpdated) {
-                mOnSelectionUpdated();
+            if (mOnMeshUpdated) {
+                mOnMeshUpdated();
             }
         }
     }
 
     void drawId(const DrawObjectSettings& settings) override
     {
-        using enum VertFragProgram;
-
-        ProgramManager& pm = Context::instance().programManager();
-
         uint64_t state =
             0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
             BGFX_STATE_DEPTH_TEST_LEQUAL |
@@ -318,25 +319,27 @@ public:
             mMRB.bindVertexBuffers(mMRS);
             mMRB.bindIndexBuffers(mMRS);
             mMRB.bindTriToPolyBuffer();
-            DrawableMeshUniforms::setMeshId(settings.objectId);
+            DrawableMeshUniforms::setMeshId(
+                settings.objectId | vcl::ElemId::FACE);
             DrawableMeshUniforms::setFirstChunkIndex(0);
             bindUniforms();
 
             bgfx::setState(state);
             bgfx::setTransform(model.data());
 
-            bgfx::submit(
-                settings.viewId, pm.getProgram<DRAWABLE_MESH_SURFACE_ID>());
+            bgfx::submit(settings.viewId, surfaceIdProgramSelector());
         }
 
         if (mMRS.isEdges(MRI::Edges::VISIBLE)) {
             bgfx::setTransform(model.data());
-            mMRB.drawEdgeLinesId(settings.viewId, settings.objectId);
+            mMRB.drawEdgeLinesId(
+                settings.viewId, settings.objectId | vcl::ElemId::EDGE);
         }
 
         if (mMRS.isPoints(MRI::Points::VISIBLE)) {
             bgfx::setTransform(model.data());
-            mMRB.drawPointsId(settings.viewId, settings.objectId);
+            mMRB.drawPointsId(
+                settings.viewId, settings.objectId | vcl::ElemId::VERTEX);
         }
     }
 
@@ -472,6 +475,27 @@ protected:
 
         ProgramManager& pm = Context::instance().programManager();
         return pm.getProgram(VertFragProgram(program));
+    }
+
+    /**
+     * @brief Selects the correct shader program for surface ID rendering.
+     *
+     * It chooses between trivial and non-trivial ID mapping based on the
+     * mesh render buffers configuration, ensuring correct mapping from
+     * primitive ID to face ID when rendering the mesh.
+     *
+     * @return The appropriate BGFX program handle.
+     */
+    bgfx::ProgramHandle surfaceIdProgramSelector() const
+    {
+        ProgramManager& pm = Context::instance().programManager();
+
+        if (mMRB.isMappingTrivial())
+            return pm.getProgram<
+                VertFragProgram::DRAWABLE_MESH_SURFACE_ID_MAPPING_TRIVIAL_ON>();
+        else
+            return pm.getProgram<
+                VertFragProgram::DRAWABLE_MESH_SURFACE_ID_MAPPING_TRIVIAL_OFF>();
     }
 };
 

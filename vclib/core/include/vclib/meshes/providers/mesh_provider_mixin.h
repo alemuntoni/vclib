@@ -232,12 +232,25 @@ public:
 
     /* Transform */
 
+    bool hasTransformMatrix() const override
+    {
+        return HasTransformMatrix<MeshType>;
+    }
+
     Matrix44d transformMatrix() const override
     {
         if constexpr (HasTransformMatrix<MeshType>) {
             return getMesh().transformMatrix().template cast<double>();
         }
         return Matrix44d::Identity();
+    }
+
+    void setTransformMatrix(const Matrix44d& m) override
+    {
+        if constexpr (HasTransformMatrix<MeshType>) {
+            getMesh().transformMatrix() =
+                m.template cast<typename MeshType::ScalarType>();
+        }
     }
 
     /* Appearance / Materials */
@@ -260,6 +273,18 @@ public:
     }
 
 private:
+    MeshType& getMesh()
+    {
+        // If the CRTP Derived class is also the MeshType, we can cast directly
+        // to it. Otherwise, we cast to Derived and use its mesh() method.
+        if constexpr (std::is_base_of_v<MeshType, Derived>) {
+            return *static_cast<Derived*>(this);
+        }
+        else {
+            return static_cast<Derived*>(this)->mesh();
+        }
+    }
+
     const MeshType& getMesh() const
     {
         // If the CRTP Derived class is also the MeshType, we can cast directly

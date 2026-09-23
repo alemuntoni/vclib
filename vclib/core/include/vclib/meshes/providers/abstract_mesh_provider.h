@@ -68,7 +68,9 @@ public:
     virtual uint selectedEdgeCount() const   = 0;
 
     /* Transform */
-    virtual Matrix44d transformMatrix() const = 0;
+    virtual bool      hasTransformMatrix() const             = 0;
+    virtual Matrix44d transformMatrix() const                = 0;
+    virtual void      setTransformMatrix(const Matrix44d& m) = 0;
 
     /* Appearance / Materials */
     virtual View<MatIt>  materials() const                           = 0;

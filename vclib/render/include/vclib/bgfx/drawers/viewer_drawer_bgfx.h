@@ -114,6 +114,8 @@ public:
         setViewTransform(viewId);
 
         Base::drawableObjectVector().drawId(settings);
+
+        Base::onDrawId(viewId);
     }
 
     bool onKeyPress(Key::Enum key, const KeyModifiers& modifiers) override

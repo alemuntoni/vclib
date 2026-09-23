@@ -17,13 +17,13 @@ namespace vcl {
 /**
  * @brief A basic 3D cylinder shape.
  *
- * Creates a cylinder mesh extending from 0 to 1 along the Z axis,
+ * Creates a cylinder mesh extending from -height/2 to height/2 along the Y axis,
  * with a default radius of 1.
  */
 class CylinderShape : public Shape
 {
 public:
-    CylinderShape() : Shape(vcl::createCylinder<vcl::TriMesh>(1.0, 1.0)) {}
+    CylinderShape() : CylinderShape(1.0, 1.0) {}
 
     CylinderShape(double radius, double height, uint subdivisions = 36) :
             Shape(

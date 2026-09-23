@@ -10,9 +10,11 @@
 
 #include "toolbar_frames/axis_frame.h"
 #include "toolbar_frames/bounding_box_editor_frame.h"
+#include "toolbar_frames/info_editor_frame.h"
 #include "toolbar_frames/not_editing_frame.h"
 #include "toolbar_frames/selection_editor_frame.h"
 #include "toolbar_frames/show_normals_editor_frame.h"
 #include "toolbar_frames/trackball_frame.h"
+#include "toolbar_frames/transform_editor_frame.h"
 
 #endif // VCL_QT_GUI_TOOLBAR_FRAMES_H
