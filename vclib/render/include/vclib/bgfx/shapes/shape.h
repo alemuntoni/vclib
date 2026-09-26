@@ -49,9 +49,7 @@ public:
      */
     Shape(vcl::TriMesh mesh)
     {
-        vcl::updatePerVertexNormals(mesh);
-
-        using MRI              = MeshRenderInfo;
+        using MRI = MeshRenderInfo;
 
         vcl::updatePerVertexNormals(mesh);
 
