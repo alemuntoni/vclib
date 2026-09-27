@@ -151,6 +151,10 @@ public:
         }
 
         updateBuffers({MRI::Buffers::VERT_SELECTION});
+
+        if (mOnSelectionUpdated) {
+            mOnSelectionUpdated();
+        }
     }
 
     vcl::BitVector<true> faceSelectionBitVector() const override
@@ -180,6 +184,10 @@ public:
             }
 
             updateBuffers({MRI::Buffers::FACE_SELECTION});
+
+            if (mOnSelectionUpdated) {
+                mOnSelectionUpdated();
+            }
         }
     }
 
