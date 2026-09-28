@@ -7,9 +7,16 @@
 
 #include <iostream>
 
+#include <vclib/mesh_v2/parallel_vectors_tuple.h>
+
 int main()
 {
-    // left empty for tests
+    vcl::meshv2::ParallelVectorsTuple<int, float, std::pair<int, double>> vt;
+
+    vt.enable<0>();
+    vt.enable<2>();
+
+    vt.resize(10);
 
     return 0;
 }
