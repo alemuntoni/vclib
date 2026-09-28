@@ -47,7 +47,8 @@ public:
     void draw(
         uint                  viewId,
         const vcl::Matrix44f& baseTransform,
-        const vcl::Matrix44f& viewMatrix)
+        const vcl::Matrix44f& viewMatrix,
+        const vcl::Matrix44f& projMatrix)
     {
         vcl::Point3f centerWorld =
             vcl::Point3f(0.0f, 0.0f, 0.0f) * baseTransform;
@@ -56,8 +57,15 @@ public:
         vcl::Point3f col0(viewMatrix(0, 0), viewMatrix(1, 0), viewMatrix(2, 0));
         float        viewScale = std::max(0.0001f, col0.norm());
 
-        float depth       = std::max(0.1f, std::abs(centerView.z()));
-        float visualScale = (depth / viewScale) * 0.15f;
+        float projScale = 1.0f / std::max(0.0001f, std::abs(projMatrix(1, 1)));
+        float visualScale = 0.15f;
+        if (projMatrix(3, 3) == 1.0f) {
+            visualScale = (projScale / viewScale) * 0.15f;
+        }
+        else {
+            float depth = std::max(0.1f, std::abs(centerView.z()));
+            visualScale = (depth * projScale / viewScale) * 0.15f;
+        }
 
         vcl::Matrix44f noScaleBase = baseTransform;
         noScaleBase.block<3, 1>(0, 0).normalize();
@@ -96,6 +104,7 @@ public:
         uint /*viewId*/,
         const vcl::Matrix44f& /*baseTransform*/,
         const vcl::Matrix44f& /*viewMatrix*/,
+        const vcl::Matrix44f& /*projMatrix*/,
         ushort /*meshId*/)
     {
         // No pickable visualization yet (the user picks the mesh directly for

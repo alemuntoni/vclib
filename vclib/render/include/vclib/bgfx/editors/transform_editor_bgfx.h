@@ -102,7 +102,8 @@ public:
                 }
             }
         }
-        else if (mSettings.editMode == EditorSettings::EditMode::VISIBLE_OBJECTS) {
+        else if (
+            mSettings.editMode == EditorSettings::EditMode::VISIBLE_OBJECTS) {
             for (uint i = 0; i < dl->size(); ++i) {
                 if (auto mesh = findMesh(i)) {
                     if (mesh->isVisible()) {
@@ -139,7 +140,8 @@ public:
                 }
             }
         }
-        else if (mSettings.editMode == EditorSettings::EditMode::VISIBLE_OBJECTS) {
+        else if (
+            mSettings.editMode == EditorSettings::EditMode::VISIBLE_OBJECTS) {
             for (uint i = 0; i < dl->size(); ++i) {
                 if (auto mesh = findMesh(i)) {
                     if (mesh->isVisible()) {
@@ -413,7 +415,10 @@ private:
 
         if (mSettings.enableTranslate) {
             mTranslateGizmo.draw(
-                viewId, baseTransform, this->viewerViewMatrix());
+                viewId,
+                baseTransform,
+                this->viewerViewMatrix(),
+                this->viewerProjectionMatrix());
         }
         if (mSettings.enableScale) {
             mScaleGizmo.draw(viewId, gizmoTransform);
@@ -447,7 +452,11 @@ private:
 
         if (mSettings.enableTranslate) {
             mTranslateGizmo.drawId(
-                viewId, baseTransform, this->viewerViewMatrix(), meshId);
+                viewId,
+                baseTransform,
+                this->viewerViewMatrix(),
+                this->viewerProjectionMatrix(),
+                meshId);
         }
         if (mSettings.enableScale) {
             mScaleGizmo.drawId(viewId, gizmoTransform, meshId);
