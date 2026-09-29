@@ -224,6 +224,37 @@ public:
                         return;
                     }
                 }
+                else if (objId == 0xFFFC) { // Translate Gizmo
+                    ushort meshId = elemId & 0x3FFF;
+                    ushort axisId = elemId >> 14;
+                    if (meshId < dl->size()) {
+                        mCurrentObjId = meshId;
+                        auto mesh     = findMesh(mCurrentObjId);
+                        if (mesh) {
+                            if (mSettings.enableTranslate) {
+                                mActiveTransform = ActiveTransform::TRANSLATE;
+                                mTranslateGizmo.calculateAnchor(mesh, axisId);
+                                mAnchorDepth =
+                                    project(
+                                        mTranslateGizmo.anchorPointInWorld(mesh))
+                                        .z();
+                                savePreTransformStates(mCurrentObjId);
+                            }
+                            else {
+                                mTransformInProgress = false;
+                                return;
+                            }
+                        }
+                        else {
+                            mTransformInProgress = false;
+                            return;
+                        }
+                    }
+                    else {
+                        mTransformInProgress = false;
+                        return;
+                    }
+                }
                 else if (objId == 0xFFFD) { // Rotate Gizmo
                     ushort meshId = elemId;
                     if (meshId < dl->size()) {
@@ -274,7 +305,7 @@ public:
                     mCurrentObjId = objId;
                     if (mSettings.enableTranslate) {
                         mActiveTransform = ActiveTransform::TRANSLATE;
-                        mTranslateGizmo.calculateAnchor(mesh);
+                        mTranslateGizmo.calculateAnchor(mesh, USHORT_NULL);
                         mAnchorDepth =
                             project(mTranslateGizmo.anchorPointInWorld(mesh))
                                 .z();

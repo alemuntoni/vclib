@@ -23,23 +23,29 @@ class TranslateGizmoBGFX
     CylinderShape mCylinder = CylinderShape(
         vcl::Point3d(0.0, 0.0, 0.0),
         vcl::Point3d(0.0, 1.0, 0.0),
-        0.01,
+        0.025, // increased radius for easier picking
         16);
 
     // Cone for the tip, from Y=1.0 to Y=1.2
     ConeShape mCone = ConeShape(
         vcl::Point3d(0.0, 1.0, 0.0),
-        vcl::Point3d(0.0, 1.2, 0.0),
-        0.03,
+        vcl::Point3d(0.0, 1.25, 0.0),
+        0.06, // increased radius for easier picking
         0.0,
         16);
 
     // We can store states if needed
     vcl::Point3d mAnchorPoint3D = vcl::Point3d::Zero();
+    ushort       mGizmoAxisClicked = USHORT_NULL;
 
     static const uint64_t DRAW_STATE =
         0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
         BGFX_STATE_DEPTH_TEST_ALWAYS | BGFX_STATE_CULL_CW;
+
+    static const uint64_t DRAW_ID_STATE =
+        0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
+        BGFX_STATE_DEPTH_TEST_ALWAYS |
+        BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_ONE, BGFX_STATE_BLEND_ZERO);
 
 public:
     TranslateGizmoBGFX() = default;
@@ -58,13 +64,13 @@ public:
         float        viewScale = std::max(0.0001f, col0.norm());
 
         float projScale = 1.0f / std::max(0.0001f, std::abs(projMatrix(1, 1)));
-        float visualScale = 0.15f;
+        float visualScale = 0.25f;
         if (projMatrix(3, 3) == 1.0f) {
-            visualScale = (projScale / viewScale) * 0.15f;
+            visualScale = (projScale / viewScale) * 0.25f;
         }
         else {
             float depth = std::max(0.1f, std::abs(centerView.z()));
-            visualScale = (depth * projScale / viewScale) * 0.15f;
+            visualScale = (depth * projScale / viewScale) * 0.25f;
         }
 
         vcl::Matrix44f noScaleBase = baseTransform;
@@ -101,19 +107,72 @@ public:
     }
 
     void drawId(
-        uint /*viewId*/,
-        const vcl::Matrix44f& /*baseTransform*/,
-        const vcl::Matrix44f& /*viewMatrix*/,
-        const vcl::Matrix44f& /*projMatrix*/,
-        ushort /*meshId*/)
+        uint                  viewId,
+        const vcl::Matrix44f& baseTransform,
+        const vcl::Matrix44f& viewMatrix,
+        const vcl::Matrix44f& projMatrix,
+        ushort                meshId)
     {
-        // No pickable visualization yet (the user picks the mesh directly for
-        // translation currently)
+        vcl::Point3f centerWorld =
+            vcl::Point3f(0.0f, 0.0f, 0.0f) * baseTransform;
+        vcl::Point3f centerView = centerWorld * viewMatrix;
+
+        vcl::Point3f col0(viewMatrix(0, 0), viewMatrix(1, 0), viewMatrix(2, 0));
+        float        viewScale = std::max(0.0001f, col0.norm());
+
+        float projScale = 1.0f / std::max(0.0001f, std::abs(projMatrix(1, 1)));
+        float visualScale = 0.25f;
+        if (projMatrix(3, 3) == 1.0f) {
+            visualScale = (projScale / viewScale) * 0.25f;
+        }
+        else {
+            float depth = std::max(0.1f, std::abs(centerView.z()));
+            visualScale = (depth * projScale / viewScale) * 0.25f;
+        }
+
+        vcl::Matrix44f noScaleBase = baseTransform;
+        noScaleBase.block<3, 1>(0, 0).normalize();
+        noScaleBase.block<3, 1>(0, 1).normalize();
+        noScaleBase.block<3, 1>(0, 2).normalize();
+
+        vcl::Matrix44f scaleMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixScale(
+            scaleMat, vcl::Point3f(visualScale, visualScale, visualScale));
+
+        vcl::Matrix44f gizmoTransform = noScaleBase * scaleMat;
+
+        uint32_t xId = (0xFFFC << 16) | ((0 << 14) | meshId);
+        uint32_t yId = (0xFFFC << 16) | ((1 << 14) | meshId);
+        uint32_t zId = (0xFFFC << 16) | ((2 << 14) | meshId);
+
+        // X Axis -> Rotate Y to X (around Z by -90 deg)
+        vcl::Matrix44f rotX = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixRotation(
+            rotX, vcl::Point3f(0, 0, 1), float(-M_PI / 2.0));
+        vcl::Matrix44f xTransform = gizmoTransform * rotX;
+        mCylinder.drawId(viewId, xId, xTransform, DRAW_ID_STATE);
+        mCone.drawId(viewId, xId, xTransform, DRAW_ID_STATE);
+
+        // Y Axis -> Already along Y
+        vcl::Matrix44f yTransform = gizmoTransform;
+        mCylinder.drawId(viewId, yId, yTransform, DRAW_ID_STATE);
+        mCone.drawId(viewId, yId, yTransform, DRAW_ID_STATE);
+
+        // Z Axis -> Rotate Y to Z (around X by +90 deg)
+        vcl::Matrix44f rotZ = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixRotation(
+            rotZ, vcl::Point3f(1, 0, 0), float(M_PI / 2.0));
+        vcl::Matrix44f zTransform = gizmoTransform * rotZ;
+        mCylinder.drawId(viewId, zId, zTransform, DRAW_ID_STATE);
+        mCone.drawId(viewId, zId, zTransform, DRAW_ID_STATE);
     }
 
-    void calculateAnchor(std::shared_ptr<AbstractDrawableMesh> mesh)
+    void calculateAnchor(
+        std::shared_ptr<AbstractDrawableMesh> mesh,
+        ushort                                axisId = USHORT_NULL)
     {
-        mAnchorPoint3D = mesh->meshProvider().boundingBox().center();
+        mGizmoAxisClicked = axisId;
+        mAnchorPoint3D    = mesh->meshProvider().boundingBox().center();
         // The actual depth will be calculated in the parent using this point
     }
 
@@ -131,6 +190,24 @@ public:
         const vcl::Matrix44d& originalMatrix)
     {
         Point3d delta = newPoint3D - oldPoint3D;
+
+        if (mGizmoAxisClicked != USHORT_NULL) {
+            Point3d localAxis(0, 0, 0);
+            if (mGizmoAxisClicked == 0)
+                localAxis = Point3d(1, 0, 0);
+            else if (mGizmoAxisClicked == 1)
+                localAxis = Point3d(0, 1, 0);
+            else if (mGizmoAxisClicked == 2)
+                localAxis = Point3d(0, 0, 1);
+
+            Point3d worldAxis = Point3d(localAxis * originalMatrix) -
+                                Point3d(Point3d(0, 0, 0) * originalMatrix);
+
+            if (worldAxis.norm() > 1e-6) {
+                worldAxis.normalize();
+                delta = worldAxis * delta.dot(worldAxis);
+            }
+        }
 
         Matrix44d translation = Matrix44d::Identity();
         vcl::setTransformMatrixTranslation(translation, delta);
