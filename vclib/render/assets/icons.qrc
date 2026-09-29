@@ -8,5 +8,8 @@
         <file alias="not_editing.png">icons/not_editing.png</file>
         <file alias="show_normals.png">icons/show_normals.png</file>
         <file alias="settings.png">icons/settings.png</file>
+        <file alias="translate.png">icons/translate.png</file>
+        <file alias="rotate.png">icons/rotate.png</file>
+        <file alias="scale.png">icons/scale.png</file>
     </qresource>
 </RCC>

@@ -32,15 +32,16 @@ public:
 
         auto& settings = mEditor->settings();
 
-        QIcon ic(":/icons/bbox.png"); // Using bbox icon as placeholder
-
-        QPushButton* translateBtn = Base::addButton(ic);
+        QIcon translateIcon(":/icons/translate.png");
+        QPushButton* translateBtn = Base::addButton(translateIcon);
         translateBtn->setToolTip("Translate Object");
 
-        QPushButton* rotateBtn = Base::addButton(ic);
+        QIcon rotateIcon(":/icons/rotate.png");
+        QPushButton* rotateBtn = Base::addButton(rotateIcon);
         rotateBtn->setToolTip("Rotate Object");
 
-        QPushButton* scaleBtn = Base::addButton(ic);
+        QIcon scaleIcon(":/icons/scale.png");
+        QPushButton* scaleBtn = Base::addButton(scaleIcon);
         scaleBtn->setToolTip("Scale Object");
 
         auto onTranslateClicked = [&](bool checked) {
