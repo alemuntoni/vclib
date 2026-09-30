@@ -256,7 +256,8 @@ public:
                     }
                 }
                 else if (objId == 0xFFFD) { // Rotate Gizmo
-                    ushort meshId = elemId;
+                    ushort meshId = elemId & 0x3FFF;
+                    ushort axisId = elemId >> 14;
                     if (meshId < dl->size()) {
                         mCurrentObjId = meshId;
                         auto mesh     = findMesh(mCurrentObjId);
@@ -264,8 +265,7 @@ public:
                             if (mSettings.enableRotate) {
                                 mActiveTransform = ActiveTransform::ROTATE;
                                 mRotateGizmo.calculateAnchor(
-                                    elemId,
-                                    primitiveId,
+                                    axisId,
                                     mesh,
                                     this->viewerViewMatrix().template cast<float>(),
                                     this->viewerProjectionMatrix().template cast<float>());

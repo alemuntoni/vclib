@@ -9,7 +9,8 @@
 #define VCL_BGFX_EDITORS_TRANSFORM_EDITOR_ROTATE_GIZMO_BGFX_H
 
 #include <vclib/bgfx/primitives/lines.h>
-#include <vclib/bgfx/primitives/points.h>
+#include <vclib/bgfx/shapes/cone_shape.h>
+#include <vclib/bgfx/shapes/cube_shape.h>
 #include <vclib/render/drawable/abstract_drawable_mesh.h>
 
 #include <vclib/algorithms/core.h>
@@ -20,7 +21,23 @@ namespace vcl {
 class RotateGizmoBGFX
 {
     Lines  mCircles[3];
-    Points mHandles;
+    CubeShape mHandleCenter = CubeShape(
+        vcl::Point3d(-0.025, -0.025, -0.025),
+        vcl::Point3d(0.025, 0.025, 0.025));
+
+    ConeShape mHandleCone1 = ConeShape(
+        vcl::Point3d(0.0, 0.0, 0.05),
+        vcl::Point3d(0.0, 0.0, 0.1),
+        0.025,
+        0.0,
+        16);
+
+    ConeShape mHandleCone2 = ConeShape(
+        vcl::Point3d(0.0, 0.0, -0.05),
+        vcl::Point3d(0.0, 0.0, -0.1),
+        0.025,
+        0.0,
+        16);
 
     uint    mGizmoElementClicked = USHORT_NULL;
     Point3d mLocalAnchorPoint;
@@ -34,6 +51,10 @@ class RotateGizmoBGFX
     static const uint64_t DRAW_STATE =
         0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
         BGFX_STATE_DEPTH_TEST_ALWAYS | BGFX_STATE_BLEND_ALPHA;
+
+    static const uint64_t DRAW_HANDLE_STATE =
+        0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
+        BGFX_STATE_CULL_CW | BGFX_STATE_BLEND_ALPHA;
 
     static const uint64_t DRAW_ID_STATE =
         0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
@@ -76,25 +97,6 @@ public:
         mCircles[2].setIndices(indices);
         mCircles[2].setGeneralColor(Color::Blue);
 
-        std::vector<Point3f> handles = {
-            Point3f(
-                0.0f, 1.0f, 0.0f), // Red handle (rotate around X), placed at +Y
-            Point3f(
-                0.0f,
-                0.0f,
-                1.0f), // Green handle (rotate around Y), placed at +Z
-            Point3f(
-                1.0f, 0.0f, 0.0f) // Blue handle (rotate around Z), placed at +X
-        };
-        std::vector<Color> handleColors = {
-            Color::Red, Color::Green, Color::Blue};
-
-        mHandles.setVertices(handles);
-        mHandles.setVertexColors(handleColors);
-        mHandles.setWidth(20.0f); // Make handles visible
-        mHandles.setColorSetting(Points::ColorSetting::PER_VERTEX);
-        mHandles.setDepthOffset(
-            0.001f); // Slightly offset to avoid z-fighting with the circles
     }
 
     void draw(
@@ -115,9 +117,9 @@ public:
         bgfx::setTransform(gizmoTransform.data());
         mCircles[2].draw(viewId, DRAW_STATE);
 
-        bgfx::setTransform(gizmoTransform.data());
-
-        mHandles.draw(viewId, DRAW_STATE);
+        drawHandle(viewId, gizmoTransform, 0, DRAW_HANDLE_STATE);
+        drawHandle(viewId, gizmoTransform, 1, DRAW_HANDLE_STATE);
+        drawHandle(viewId, gizmoTransform, 2, DRAW_HANDLE_STATE);
     }
 
     void drawId(
@@ -130,19 +132,22 @@ public:
         vcl::Matrix44f gizmoTransform =
             getGizmoTransform(baseTransform, viewMatrix, projMatrix);
 
-        uint32_t baseId = (0xFFFD << 16) | meshId;
-        bgfx::setTransform(gizmoTransform.data());
-        mHandles.drawId(viewId, baseId, DRAW_ID_STATE);
+        uint32_t xId = (0xFFFD << 16) | ((0 << 14) | meshId);
+        uint32_t yId = (0xFFFD << 16) | ((1 << 14) | meshId);
+        uint32_t zId = (0xFFFD << 16) | ((2 << 14) | meshId);
+
+        drawHandle(viewId, gizmoTransform, 0, DRAW_ID_STATE, xId);
+        drawHandle(viewId, gizmoTransform, 1, DRAW_ID_STATE, yId);
+        drawHandle(viewId, gizmoTransform, 2, DRAW_ID_STATE, zId);
     }
 
     void calculateAnchor(
-        ushort                                elemId,
-        uint                                  primitiveId,
+        ushort                                axisId,
         std::shared_ptr<AbstractDrawableMesh> mesh,
         const vcl::Matrix44f&                 viewMatrix,
         const vcl::Matrix44f&                 projMatrix)
     {
-        mGizmoElementClicked = primitiveId; // 0, 1, or 2
+        mGizmoElementClicked = axisId; // 0, 1, or 2
 
         Point3d center = mesh->meshProvider().boundingBox().center();
 
@@ -276,6 +281,56 @@ public:
     }
 
 private:
+    void drawHandle(
+        uint                  viewId,
+        const vcl::Matrix44f& gizmoTransform,
+        int                   axis,
+        uint64_t              state,
+        uint                  id = UINT_NULL)
+    {
+        vcl::Matrix44f localTransform = vcl::Matrix44f::Identity();
+        float          offset         = 1.15f;
+        vcl::Color color = vcl::Color::Red;
+
+        if (axis == 0) { // Red handle (X rotation, YZ circle)
+            vcl::setTransformMatrixTranslation(
+                localTransform, vcl::Point3f(0.0f, offset, 0.0f));
+        }
+        else if (axis == 1) { // Green handle (Y rotation, XZ circle)
+            color = vcl::Color::Green;
+            vcl::Matrix44f rot = vcl::Matrix44f::Identity();
+            vcl::setTransformMatrixRotation(
+                rot, vcl::Point3f(0, 1, 0), float(M_PI / 2.0));
+            vcl::Matrix44f trans = vcl::Matrix44f::Identity();
+            vcl::setTransformMatrixTranslation(
+                trans, vcl::Point3f(0.0f, 0.0f, offset));
+            localTransform = trans * rot;
+        }
+        else if (axis == 2) { // Blue handle (Z rotation, XY circle)
+            color = vcl::Color::Blue;
+            vcl::Matrix44f rot = vcl::Matrix44f::Identity();
+            vcl::setTransformMatrixRotation(
+                rot, vcl::Point3f(1, 0, 0), float(-M_PI / 2.0));
+            vcl::Matrix44f trans = vcl::Matrix44f::Identity();
+            vcl::setTransformMatrixTranslation(
+                trans, vcl::Point3f(offset, 0.0f, 0.0f));
+            localTransform = trans * rot;
+        }
+
+        vcl::Matrix44f finalTransform = gizmoTransform * localTransform;
+
+        if (id == UINT_NULL) {
+            mHandleCenter.draw(viewId, color, finalTransform, state);
+            mHandleCone1.draw(viewId, color, finalTransform, state);
+            mHandleCone2.draw(viewId, color, finalTransform, state);
+        }
+        else {
+            mHandleCenter.drawId(viewId, id, finalTransform, state);
+            mHandleCone1.drawId(viewId, id, finalTransform, state);
+            mHandleCone2.drawId(viewId, id, finalTransform, state);
+        }
+    }
+
     vcl::Matrix44f getGizmoTransform(
         const vcl::Matrix44f& baseTransform,
         const vcl::Matrix44f& viewMatrix,
