@@ -30,6 +30,15 @@ class RotateGizmoBGFX
     bool    mIsFirstFrame = true;
     Point3d mLastMousePos3D;
 
+    static const uint64_t DRAW_STATE =
+        0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
+        BGFX_STATE_DEPTH_TEST_ALWAYS | BGFX_STATE_BLEND_ALPHA;
+
+    static const uint64_t DRAW_ID_STATE =
+        0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
+        BGFX_STATE_DEPTH_TEST_ALWAYS |
+        BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_ONE, BGFX_STATE_BLEND_ZERO);
+
 public:
     RotateGizmoBGFX()
     {
@@ -88,25 +97,24 @@ public:
     void draw(uint viewId, const vcl::Matrix44f& gizmoTransform)
     {
         bgfx::setTransform(gizmoTransform.data());
-        mCircles[0].draw(viewId);
+        mCircles[0].draw(viewId, DRAW_STATE);
 
         bgfx::setTransform(gizmoTransform.data());
-        mCircles[1].draw(viewId);
+        mCircles[1].draw(viewId, DRAW_STATE);
 
         bgfx::setTransform(gizmoTransform.data());
-        mCircles[2].draw(viewId);
+        mCircles[2].draw(viewId, DRAW_STATE);
 
         bgfx::setTransform(gizmoTransform.data());
-        // Temporarily disable depth testing for handles if you want them always
-        // on top? For now, let bgfx state handle it.
-        mHandles.draw(viewId);
+
+        mHandles.draw(viewId, DRAW_STATE);
     }
 
     void drawId(uint viewId, const vcl::Matrix44f& gizmoTransform, ushort meshId)
     {
         uint32_t baseId = (0xFFFD << 16) | meshId;
         bgfx::setTransform(gizmoTransform.data());
-        mHandles.drawId(viewId, baseId);
+        mHandles.drawId(viewId, baseId, DRAW_ID_STATE);
     }
 
     void calculateAnchor(
