@@ -26,9 +26,10 @@ class RotateGizmoBGFX
     Point3d mLocalAnchorPoint;
     double  mRadius = 1.0;
 
-    double  mTotalAngle   = 0.0;
-    bool    mIsFirstFrame = true;
-    Point3d mLastMousePos3D;
+    double    mTotalAngle   = 0.0;
+    bool      mIsFirstFrame = true;
+    Point3d   mLastMousePos3D;
+    Matrix44d mStartNoScaleBase = Matrix44d::Identity();
 
     static const uint64_t DRAW_STATE =
         0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
@@ -38,6 +39,8 @@ class RotateGizmoBGFX
         0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z |
         BGFX_STATE_DEPTH_TEST_ALWAYS |
         BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_ONE, BGFX_STATE_BLEND_ZERO);
+
+    static constexpr float VISUAL_SCALE_FACTOR = 0.35f;
 
 public:
     RotateGizmoBGFX()
@@ -94,8 +97,15 @@ public:
             0.001f); // Slightly offset to avoid z-fighting with the circles
     }
 
-    void draw(uint viewId, const vcl::Matrix44f& gizmoTransform)
+    void draw(
+        uint                  viewId,
+        const vcl::Matrix44f& baseTransform,
+        const vcl::Matrix44f& viewMatrix,
+        const vcl::Matrix44f& projMatrix)
     {
+        vcl::Matrix44f gizmoTransform =
+            getGizmoTransform(baseTransform, viewMatrix, projMatrix);
+
         bgfx::setTransform(gizmoTransform.data());
         mCircles[0].draw(viewId, DRAW_STATE);
 
@@ -110,8 +120,16 @@ public:
         mHandles.draw(viewId, DRAW_STATE);
     }
 
-    void drawId(uint viewId, const vcl::Matrix44f& gizmoTransform, ushort meshId)
+    void drawId(
+        uint                  viewId,
+        const vcl::Matrix44f& baseTransform,
+        const vcl::Matrix44f& viewMatrix,
+        const vcl::Matrix44f& projMatrix,
+        ushort                meshId)
     {
+        vcl::Matrix44f gizmoTransform =
+            getGizmoTransform(baseTransform, viewMatrix, projMatrix);
+
         uint32_t baseId = (0xFFFD << 16) | meshId;
         bgfx::setTransform(gizmoTransform.data());
         mHandles.drawId(viewId, baseId, DRAW_ID_STATE);
@@ -120,13 +138,44 @@ public:
     void calculateAnchor(
         ushort                                elemId,
         uint                                  primitiveId,
-        std::shared_ptr<AbstractDrawableMesh> mesh)
+        std::shared_ptr<AbstractDrawableMesh> mesh,
+        const vcl::Matrix44f&                 viewMatrix,
+        const vcl::Matrix44f&                 projMatrix)
     {
         mGizmoElementClicked = primitiveId; // 0, 1, or 2
 
         Point3d center = mesh->meshProvider().boundingBox().center();
-        Point3d sizes  = mesh->meshProvider().boundingBox().size();
-        mRadius        = sizes.norm() / 2.0;
+
+        vcl::Matrix44f model =
+            mesh->meshProvider().transformMatrix().template cast<float>();
+        vcl::Matrix44f transMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixTranslation(transMat, center.cast<float>());
+        vcl::Matrix44f baseTransform = model * transMat;
+
+        vcl::Point3f centerWorld =
+            vcl::Point3f(0.0f, 0.0f, 0.0f) * baseTransform;
+        vcl::Point3f centerView = centerWorld * viewMatrix;
+
+        vcl::Point3f col0(viewMatrix(0, 0), viewMatrix(1, 0), viewMatrix(2, 0));
+        float        viewScale = std::max(0.0001f, col0.norm());
+
+        float projScale = 1.0f / std::max(0.0001f, std::abs(projMatrix(1, 1)));
+        float visualScale = VISUAL_SCALE_FACTOR;
+        if (projMatrix(3, 3) == 1.0f) {
+            visualScale = (projScale / viewScale) * VISUAL_SCALE_FACTOR;
+        }
+        else {
+            float depth = std::max(0.1f, std::abs(centerView.z()));
+            visualScale = (depth * projScale / viewScale) * VISUAL_SCALE_FACTOR;
+        }
+
+        mRadius = visualScale;
+
+        vcl::Matrix44d baseTransformD = baseTransform.template cast<double>();
+        mStartNoScaleBase             = baseTransformD;
+        mStartNoScaleBase.block<3, 1>(0, 0).normalize();
+        mStartNoScaleBase.block<3, 1>(0, 1).normalize();
+        mStartNoScaleBase.block<3, 1>(0, 2).normalize();
 
         mLocalAnchorPoint = center;
         mTotalAngle       = 0.0;
@@ -140,29 +189,6 @@ public:
         return mLocalAnchorPoint * mesh->meshProvider().transformMatrix();
     }
 
-    Point3d pointOnArcballLocal(
-        const Point3d& localP,
-        const Point3d& localC,
-        const Point3d& localViewNormal,
-        double         radius) const
-    {
-        Point3d V = localP - localC;
-        // Ensure V is orthogonal to the view normal
-        V = V - V.dot(localViewNormal) * localViewNormal;
-
-        double h = V.norm();
-        double z = 0.0;
-
-        if (h < (M_SQRT1_2 * radius)) {
-            z = std::sqrt(std::max(0.0, radius * radius - h * h));
-        }
-        else {
-            z = (radius * radius) / (2.0 * std::max(h, 1e-6));
-        }
-
-        return localC + V + localViewNormal * z;
-    }
-
     Matrix44d calculateNewTransformArcball(
         const Point3d&        newPoint3D,
         const Point3d&        viewNormalWorld,
@@ -174,18 +200,18 @@ public:
             return originalMatrix;
         }
 
-        Matrix44d invModel = originalMatrix.inverse();
+        Matrix44d invGizmo = mStartNoScaleBase.inverse();
 
-        Point3d localC      = mLocalAnchorPoint;
-        Point3d centerWorld = localC * originalMatrix;
+        Point3d localC      = Point3d(0, 0, 0);
+        Point3d centerWorld = localC * mStartNoScaleBase;
 
-        // Convert world view normal to local space direction
+        // Convert world view normal to gizmo space direction
         Point3d localViewNormal =
-            (Point3d(centerWorld + viewNormalWorld) * invModel - localC)
+            (Point3d(centerWorld + viewNormalWorld) * invGizmo - localC)
                 .normalized();
 
-        Point3d localNew  = newPoint3D * invModel;
-        Point3d localPrev = mLastMousePos3D * invModel;
+        Point3d localNew  = newPoint3D * invGizmo;
+        Point3d localPrev = mLastMousePos3D * invGizmo;
 
         Point3d pCurr =
             pointOnArcballLocal(localNew, localC, localViewNormal, mRadius);
@@ -240,12 +266,71 @@ public:
         }
 
         Matrix44d Tanchor = Matrix44d::Identity();
-        vcl::setTransformMatrixTranslation(Tanchor, localC);
+        vcl::setTransformMatrixTranslation(Tanchor, mLocalAnchorPoint);
 
         Matrix44d TanchorInv = Matrix44d::Identity();
-        vcl::setTransformMatrixTranslation(TanchorInv, Point3d(-localC));
+        vcl::setTransformMatrixTranslation(
+            TanchorInv, Point3d(-mLocalAnchorPoint));
 
         return originalMatrix * Tanchor * rotationMat * TanchorInv;
+    }
+
+private:
+    vcl::Matrix44f getGizmoTransform(
+        const vcl::Matrix44f& baseTransform,
+        const vcl::Matrix44f& viewMatrix,
+        const vcl::Matrix44f& projMatrix) const
+    {
+        vcl::Point3f centerWorld =
+            vcl::Point3f(0.0f, 0.0f, 0.0f) * baseTransform;
+        vcl::Point3f centerView = centerWorld * viewMatrix;
+
+        vcl::Point3f col0(viewMatrix(0, 0), viewMatrix(1, 0), viewMatrix(2, 0));
+        float        viewScale = std::max(0.0001f, col0.norm());
+
+        float projScale = 1.0f / std::max(0.0001f, std::abs(projMatrix(1, 1)));
+        float visualScale = VISUAL_SCALE_FACTOR;
+        if (projMatrix(3, 3) == 1.0f) {
+            visualScale = (projScale / viewScale) * VISUAL_SCALE_FACTOR;
+        }
+        else {
+            float depth = std::max(0.1f, std::abs(centerView.z()));
+            visualScale = (depth * projScale / viewScale) * VISUAL_SCALE_FACTOR;
+        }
+
+        vcl::Matrix44f noScaleBase = baseTransform;
+        noScaleBase.block<3, 1>(0, 0).normalize();
+        noScaleBase.block<3, 1>(0, 1).normalize();
+        noScaleBase.block<3, 1>(0, 2).normalize();
+
+        vcl::Matrix44f scaleMat = vcl::Matrix44f::Identity();
+        vcl::setTransformMatrixScale(
+            scaleMat, vcl::Point3f(visualScale, visualScale, visualScale));
+
+        return noScaleBase * scaleMat;
+    }
+
+    Point3d pointOnArcballLocal(
+        const Point3d& localP,
+        const Point3d& localC,
+        const Point3d& localViewNormal,
+        double         radius) const
+    {
+        Point3d V = localP - localC;
+        // Ensure V is orthogonal to the view normal
+        V = V - V.dot(localViewNormal) * localViewNormal;
+
+        double h = V.norm();
+        double z = 0.0;
+
+        if (h < (M_SQRT1_2 * radius)) {
+            z = std::sqrt(std::max(0.0, radius * radius - h * h));
+        }
+        else {
+            z = (radius * radius) / (2.0 * std::max(h, 1e-6));
+        }
+
+        return localC + V + localViewNormal * z;
     }
 };
 

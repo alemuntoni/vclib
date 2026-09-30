@@ -264,7 +264,11 @@ public:
                             if (mSettings.enableRotate) {
                                 mActiveTransform = ActiveTransform::ROTATE;
                                 mRotateGizmo.calculateAnchor(
-                                    elemId, primitiveId, mesh);
+                                    elemId,
+                                    primitiveId,
+                                    mesh,
+                                    this->viewerViewMatrix().template cast<float>(),
+                                    this->viewerProjectionMatrix().template cast<float>());
                                 mAnchorDepth =
                                     project(
                                         mRotateGizmo.anchorPointInWorld(mesh))
@@ -455,11 +459,11 @@ private:
             mScaleGizmo.draw(viewId, gizmoTransform);
         }
         if (mSettings.enableRotate) {
-            vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
-            float          r           = bbox.diagonal() / 2.0f;
-            vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
-            vcl::Matrix44f rotGizmoTransform = model * transMat * rotScaleMat;
-            mRotateGizmo.draw(viewId, rotGizmoTransform);
+            mRotateGizmo.draw(
+                viewId,
+                baseTransform,
+                this->viewerViewMatrix(),
+                this->viewerProjectionMatrix());
         }
     }
 
@@ -493,11 +497,12 @@ private:
             mScaleGizmo.drawId(viewId, gizmoTransform, meshId);
         }
         if (mSettings.enableRotate) {
-            vcl::Matrix44f rotScaleMat = vcl::Matrix44f::Identity();
-            float          r           = bbox.diagonal() / 2.0f;
-            vcl::setTransformMatrixScale(rotScaleMat, vcl::Point3f(r, r, r));
-            vcl::Matrix44f rotGizmoTransform = model * transMat * rotScaleMat;
-            mRotateGizmo.drawId(viewId, rotGizmoTransform, meshId);
+            mRotateGizmo.drawId(
+                viewId,
+                baseTransform,
+                this->viewerViewMatrix(),
+                this->viewerProjectionMatrix(),
+                meshId);
         }
     }
 

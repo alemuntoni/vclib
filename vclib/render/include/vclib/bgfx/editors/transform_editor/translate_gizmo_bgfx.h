@@ -47,6 +47,8 @@ class TranslateGizmoBGFX
         BGFX_STATE_DEPTH_TEST_ALWAYS |
         BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_ONE, BGFX_STATE_BLEND_ZERO);
 
+    static constexpr float VISUAL_SCALE_FACTOR = 0.25f;
+
 public:
     TranslateGizmoBGFX() = default;
 
@@ -64,13 +66,13 @@ public:
         float        viewScale = std::max(0.0001f, col0.norm());
 
         float projScale = 1.0f / std::max(0.0001f, std::abs(projMatrix(1, 1)));
-        float visualScale = 0.25f;
+        float visualScale = VISUAL_SCALE_FACTOR;
         if (projMatrix(3, 3) == 1.0f) {
-            visualScale = (projScale / viewScale) * 0.25f;
+            visualScale = (projScale / viewScale) * VISUAL_SCALE_FACTOR;
         }
         else {
             float depth = std::max(0.1f, std::abs(centerView.z()));
-            visualScale = (depth * projScale / viewScale) * 0.25f;
+            visualScale = (depth * projScale / viewScale) * VISUAL_SCALE_FACTOR;
         }
 
         vcl::Matrix44f noScaleBase = baseTransform;
@@ -121,13 +123,13 @@ public:
         float        viewScale = std::max(0.0001f, col0.norm());
 
         float projScale = 1.0f / std::max(0.0001f, std::abs(projMatrix(1, 1)));
-        float visualScale = 0.25f;
+        float visualScale = VISUAL_SCALE_FACTOR;
         if (projMatrix(3, 3) == 1.0f) {
-            visualScale = (projScale / viewScale) * 0.25f;
+            visualScale = (projScale / viewScale) * VISUAL_SCALE_FACTOR;
         }
         else {
             float depth = std::max(0.1f, std::abs(centerView.z()));
-            visualScale = (depth * projScale / viewScale) * 0.25f;
+            visualScale = (depth * projScale / viewScale) * VISUAL_SCALE_FACTOR;
         }
 
         vcl::Matrix44f noScaleBase = baseTransform;
