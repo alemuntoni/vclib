@@ -6,7 +6,7 @@
 # obtain one at https://mozilla.org/MPL/2.0/.
 
 ### Build settings
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 # In case of building shared libraries, on windows we need to export all symbols
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)

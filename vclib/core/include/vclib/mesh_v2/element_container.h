@@ -13,11 +13,8 @@
 namespace vcl::meshv2 {
 
 template<typename T>
-class ElementContainer {
-
-private:
-    std::vector<T> elements;
-
+class ElementContainer
+{
 };
 
 } // namespace vcl::meshv2
