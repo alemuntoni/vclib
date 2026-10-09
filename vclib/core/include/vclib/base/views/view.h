@@ -10,7 +10,7 @@
 
 #define ZIP_VIEW_INJECT_STD_VIEWS_NAMESPACE
 #if __has_include(<zip_view.hpp>)
-#include <zip_view.hpp>
+//#include <zip_view.hpp>
 #else
 // inclusion for usage of vclib without CMake - not ideal but necessary for
 // header only
