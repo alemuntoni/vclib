@@ -9,6 +9,7 @@
 #include <vclib/mesh_v2/components/base/base.h>
 #include <vclib/mesh_v2/components/base/component.h>
 #include <vclib/mesh_v2/element_container.h>
+#include <vclib/mesh_v2/element_proxy.h>
 #include <vclib/space/core.h>
 
 using namespace vcl;
@@ -19,11 +20,19 @@ namespace comp_test {
 template<typename P>
 struct Position : public meshv2::Component<meshv2::CompId::POSITION, P>
 {
+    decltype(auto) position(this auto&& self)
+    {
+        return self.container().template get<meshv2::CompId::POSITION>()[self.index()];
+    }
 };
 
 template<typename N>
 struct Normal : public meshv2::Component<meshv2::CompId::NORMAL, N>
 {
+    decltype(auto) normal(this auto&& self)
+    {
+        return self.container().template get<meshv2::CompId::NORMAL>()[self.index()];
+    }
 };
 
 using Position3f = Position<Point3f>;
@@ -48,18 +57,50 @@ int main()
 
     container.resize(10);
 
-    // get values trough COMP_ID!
-    auto& posVec = container.template get<meshv2::CompId::POSITION>();
-    posVec[0]    = Point3f(1.0f, 2.0f, 3.0f);
+    // ElementProxy to access the data of the container
+    using MyElementProxy = meshv2::ElementProxy<MyContainer, MyComponents>;
+    MyElementProxy element0(container, 0);
 
-    auto& normVec = container.template get<meshv2::CompId::NORMAL>();
-    normVec[0]    = Point3f(0.0f, 1.0f, 0.0f);
+    // Use the proxy to access and modify the data of the container
+    if (element0) {
+        element0.position() = Point3f(1.0f, 2.0f, 3.0f);
+        element0.normal()   = Point3f(0.0f, 1.0f, 0.0f);
 
-    std::cout << "Position 0: " << posVec[0].x() << ", " << posVec[0].y()
-              << ", " << posVec[0].z() << "\n";
-    std::cout << "Normal 0:   " << normVec[0].x() << ", " << normVec[0].y()
-              << ", " << normVec[0].z() << "\n";
+        std::cout << "Position of element 0 read from proxy: "
+                  << element0.position().x() << ", " << element0.position().y()
+                  << ", " << element0.position().z() << "\n";
+    }
+
+    // ConstElementProxy to access the data of the container in a const way
+    using MyConstProxy = meshv2::ElementProxy<const MyContainer, MyComponents>;
+    MyConstProxy constElement0 = element0;
+
+    const MyConstProxy& constElement01 = element0;
+
+    // constElement0.position() = Point3f(0.0f, 0.0f, 0.0f); // build error
+    // constElement01.position() = Point3f(0.0f, 0.0f, 0.0f); // build error
+
+    std::cout << "Position 0 (from ConstProxy): "
+              << constElement0.position().x() << ", "
+              << constElement0.position().y() << ", "
+              << constElement0.position().z() << "\n";
+
+    std::cout << "Position 0 (from const Proxy&): "
+              << constElement01.position().x() << ", "
+              << constElement01.position().y() << ", "
+              << constElement01.position().z() << "\n";
+
+    std::cout << "Normal 0:   " << element0.normal().x() << ", "
+              << element0.normal().y() << ", " 
+              << element0.normal().z() << "\n";
+              
+    std::cout << "element0 is valid: " << (element0 ? "yes" : "no") << "\n";
     std::cout << "Container size: " << container.size() << "\n";
+
+    // an invalid proxy (index out of bounds)
+    MyElementProxy invalidElement;
+    std::cout << "invalidElement is valid: " << (invalidElement ? "yes" : "no")
+              << "\n";
 
     return 0;
 }
