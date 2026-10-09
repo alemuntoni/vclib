@@ -26,6 +26,52 @@ struct Component
     static constexpr uint COMPONENT_ID = COMP_ID;
 };
 
+namespace detail {
+
+// Helper details for finding the index of a Component by COMP_ID in a list of
+// Components. It recursively checks each component's COMPONENT_ID against the
+// target COMP_ID, incrementing the CurrentIndex until a match is found or the
+// list is exhausted.
+template<uint COMP_ID, uint CurrentIndex, typename... Components>
+struct IndexOfCompIdImpl;
+
+template<uint COMP_ID, uint CurrentIndex, typename First, typename... Rest>
+struct IndexOfCompIdImpl<COMP_ID, CurrentIndex, First, Rest...>
+{
+    static constexpr uint value =
+        (First::COMPONENT_ID == COMP_ID) ?
+            CurrentIndex :
+            IndexOfCompIdImpl<COMP_ID, CurrentIndex + 1, Rest...>::value;
+};
+
+// Base case when the component is not found
+template<uint COMP_ID, uint CurrentIndex>
+struct IndexOfCompIdImpl<COMP_ID, CurrentIndex>
+{
+    static constexpr uint value = UINT_NULL;
+};
+
+} // namespace detail
+
+/**
+ * @brief Trait to find the index of a Component by its COMP_ID inside a
+ * TypeWrapper.
+ *
+ * Usage: IndexOfCompId<COMP_ID, TypeWrapper<...>>::value
+ */
+template <uint COMP_ID, typename ComponentListWrapper>
+struct IndexOfCompId;
+
+template<uint COMP_ID, typename... Components>
+struct IndexOfCompId<COMP_ID, vcl::TypeWrapper<Components...>>
+{
+    static constexpr uint value =
+        detail::IndexOfCompIdImpl<COMP_ID, 0, Components...>::value;
+    static_assert(
+        value != UINT_NULL,
+        "Component ID not found in the ComponentList");
+};
+
 // Trait to convert TypeWrapper<Components...> in a ParallelVectorsTuple
 template<typename ComponentListWrapper>
 struct ParallelVectorsTupleFromComponents;

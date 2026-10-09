@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vclib/mesh_v2/components/base/base.h>
 #include <vclib/mesh_v2/components/base/component.h>
+#include <vclib/mesh_v2/element_container.h>
 #include <vclib/space/core.h>
 
 using namespace vcl;
@@ -36,30 +37,29 @@ int main()
     using MyComponents =
         TypeWrapper<comp_test::Position3f, comp_test::Normal3f>;
 
-    // ParallelVectorTuple of components
-    using MyVectorTuple =
-        meshv2::ParallelVectorsTupleFromComponents<MyComponents>::type;
+    // A generic element container
+    using MyContainer = meshv2::ElementContainer<MyComponents>;
 
-    MyVectorTuple vt;
+    MyContainer container;
 
-    // enable the components we want to use
-    vt.template enable<0>();
-    vt.template enable<1>();
+    // enable components trough COMP_ID
+    container.template enable<meshv2::CompId::POSITION>();
+    container.template enable<meshv2::CompId::NORMAL>();
 
-    vt.resize(10);
+    container.resize(10);
 
-    // get the vectors using indices
-    auto& posVec = vt.template get<0>();
+    // get values trough COMP_ID!
+    auto& posVec = container.template get<meshv2::CompId::POSITION>();
     posVec[0]    = Point3f(1.0f, 2.0f, 3.0f);
 
-    auto& normVec = vt.template get<1>();
+    auto& normVec = container.template get<meshv2::CompId::NORMAL>();
     normVec[0]    = Point3f(0.0f, 1.0f, 0.0f);
 
     std::cout << "Position 0: " << posVec[0].x() << ", " << posVec[0].y()
               << ", " << posVec[0].z() << "\n";
     std::cout << "Normal 0:   " << normVec[0].x() << ", " << normVec[0].y()
               << ", " << normVec[0].z() << "\n";
-    std::cout << "Tuple size: " << vt.size() << "\n";
+    std::cout << "Container size: " << container.size() << "\n";
 
     return 0;
 }
