@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['ubuntu-22.04', 'ubuntu-22.04-arm', 'macos-26-intel', 'macos-latest', 'windows-latest']
+        os: ['ubuntu-22.04', 'ubuntu-24.04-arm', 'macos-26-intel', 'macos-latest', 'windows-latest']
     steps:
     - uses: actions/checkout@v7
       with:
@@ -46,6 +46,7 @@ jobs:
       run: |
         echo "CC=gcc-15" >> $GITHUB_ENV
         echo "CXX=g++-15" >> $GITHUB_ENV
+        echo "LDFLAGS=-static-libstdc++ -static-libgcc" >> $GITHUB_ENV
 
     - name: Install dependencies
       if: runner.os == 'Windows'
@@ -92,7 +93,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['ubuntu-26.04', 'ubuntu-26.04-arm', 'macos-26-intel', 'macos-latest', 'windows-latest']
+        os: ['ubuntu-22.04', 'ubuntu-24.04-arm', 'macos-26-intel', 'macos-latest', 'windows-latest']
     steps:
     - uses: actions/checkout@v7
       with:

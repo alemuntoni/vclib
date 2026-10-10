@@ -20,14 +20,9 @@
 namespace vcl {
 
 template<typename GridType, typename ValueType>
-class StaticGrid :
-        public AbstractGrid<
-            GridType,
-            ValueType,
-            StaticGrid<GridType, ValueType>>
+class StaticGrid : public AbstractGrid<GridType, ValueType>
 {
-    using AbsGrid =
-        AbstractGrid<GridType, ValueType, StaticGrid<GridType, ValueType>>;
+    using AbsGrid = AbstractGrid<GridType, ValueType>;
 
     using PairType       = std::pair<uint, ValueType>;
     using PairComparator = FirstElementPairComparator<PairType>;
@@ -63,7 +58,7 @@ public:
         const IntersectsCellFunction& intersects = nullptr) :
             AbsGrid(begin, end, intersects)
     {
-        AbsGrid::insert(begin, end);
+        this->insert(begin, end);
         build();
     }
 

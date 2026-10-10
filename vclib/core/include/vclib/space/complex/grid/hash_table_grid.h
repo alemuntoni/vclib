@@ -32,21 +32,14 @@ namespace vcl {
  * @ingroup space_complex
  */
 template<typename GridType, typename ValueType, bool AllowDuplicates = true>
-class HashTableGrid :
-        public AbstractGrid<
-            GridType,
-            ValueType,
-            HashTableGrid<GridType, ValueType, AllowDuplicates>>
+class HashTableGrid : public AbstractGrid<GridType, ValueType>
 {
     static_assert(
         AllowDuplicates || std::equality_comparable<ValueType>,
         "Not allowing duplicates in a Spatial Data Structures means that "
         "ValueType must implement operator==.");
 
-    using AbsGrid = AbstractGrid<
-        GridType,
-        ValueType,
-        HashTableGrid<GridType, ValueType, AllowDuplicates>>;
+    using AbsGrid = AbstractGrid<GridType, ValueType>;
 
     friend AbsGrid;
 
@@ -90,7 +83,7 @@ public:
         const IntersectsCellFunction& intersects = nullptr) :
             AbsGrid(begin, end, intersects)
     {
-        AbsGrid::insert(begin, end);
+        this->insert(begin, end);
     }
 
     template<Range Rng>
@@ -165,8 +158,8 @@ public:
 
     void eraseInSphere(const Sphere<typename GridType::ScalarType>& s)
     {
-        std::vector<ConstIterator> toDel = AbsGrid::valuesInSphere(s);
-        for (auto& it : toDel)
+        auto toDelVec = this->valuesInSphere(s);
+        for (auto& it : toDelVec)
             mMap.erase(it);
     }
 
