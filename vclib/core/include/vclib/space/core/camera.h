@@ -78,21 +78,13 @@ public:
 
     void reset() { *this = {}; }
 
-    PointType& center() { return mCenter; }
+    decltype(auto) center(this auto&& self) { return (self.mCenter); }
 
-    const PointType& center() const { return mCenter; }
+    decltype(auto) eye(this auto&& self) { return (self.mEye); }
 
-    PointType& eye() { return mEye; }
+    decltype(auto) up(this auto&& self) { return (self.mUp); }
 
-    const PointType& eye() const { return mEye; }
-
-    PointType& up() { return mUp; }
-
-    const PointType& up() const { return mUp; }
-
-    Scalar& fieldOfView() { return mFovDeg; }
-
-    const Scalar& fieldOfView() const { return mFovDeg; }
+    decltype(auto) fieldOfView(this auto&& self) { return (self.mFovDeg); }
 
     void setFieldOfViewAdaptingEyeDistance(const Scalar& fovDeg)
     {
@@ -103,25 +95,21 @@ public:
                                      std::tan((fovDeg / 2.0) / 180.0 * M_PI));
     }
 
-    ProjectionMode& projectionMode() { return mProjectionMode; }
+    decltype(auto) projectionMode(this auto&& self)
+    {
+        return (self.mProjectionMode);
+    }
 
-    ProjectionMode projectionMode() const { return mProjectionMode; }
+    decltype(auto) verticalHeight(this auto&& self)
+    {
+        return (self.mVerticalHeight);
+    }
 
-    Scalar& verticalHeight() { return mVerticalHeight; }
+    decltype(auto) aspectRatio(this auto&& self) { return (self.mAspect); }
 
-    const Scalar& verticalHeight() const { return mVerticalHeight; }
+    decltype(auto) nearPlane(this auto&& self) { return (self.mNear); }
 
-    Scalar& aspectRatio() { return mAspect; }
-
-    const Scalar& aspectRatio() const { return mAspect; }
-
-    Scalar& nearPlane() { return mNear; }
-
-    const Scalar& nearPlane() const { return mNear; }
-
-    Scalar& farPlane() { return mFar; }
-
-    const Scalar& farPlane() const { return mFar; }
+    decltype(auto) farPlane(this auto&& self) { return (self.mFar); }
 
     MatrixType viewMatrix() const
     {
