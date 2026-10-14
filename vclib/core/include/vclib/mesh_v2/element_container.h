@@ -209,7 +209,8 @@ public:
     // Iterators
     Iterator begin(bool jumpDeleted = true)
     {
-        return Iterator(*this, 0, jumpDeleted);
+        bool needJump = jumpDeleted && (size() != elementCount());
+        return Iterator(*this, 0, needJump);
     }
 
     Iterator end()
@@ -219,7 +220,8 @@ public:
 
     ConstIterator begin(bool jumpDeleted = true) const
     {
-        return ConstIterator(*this, 0, jumpDeleted);
+        bool needJump = jumpDeleted && (size() != elementCount());
+        return ConstIterator(*this, 0, needJump);
     }
 
     ConstIterator end() const

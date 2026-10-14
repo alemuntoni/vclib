@@ -50,7 +50,7 @@ private:
 
     void advanceForward()
     {
-        if (mJumpDeleted && mContainer) {
+        if (mContainer) {
             std::size_t sz = mContainer->size();
             const auto& bitFlagsVec = mContainer->template get<CompId::BIT_FLAGS>();
             while (mIndex < sz && bitFlagsVec[mIndex][comp::BitFlags::DELETED]) {
@@ -61,7 +61,7 @@ private:
 
     void advanceBackward()
     {
-        if (mJumpDeleted && mContainer) {
+        if (mContainer) {
             const auto& bitFlagsVec = mContainer->template get<CompId::BIT_FLAGS>();
             while (mIndex > 0 && bitFlagsVec[mIndex][comp::BitFlags::DELETED]) {
                 --mIndex;
@@ -75,7 +75,9 @@ public:
     ElementIterator(ContainerType& container, IndexType index, bool jumpDeleted = true) :
         mContainer(&container), mIndex(index), mJumpDeleted(jumpDeleted)
     {
-        advanceForward();
+        if (mJumpDeleted) [[unlikely]] {
+            advanceForward();
+        }
     }
 
     // Implicit conversion from mutable iterator to const iterator
@@ -103,7 +105,9 @@ public:
     ElementIterator& operator++()
     {
         ++mIndex;
-        advanceForward();
+        if (mJumpDeleted) [[unlikely]] {
+            advanceForward();
+        }
         return *this;
     }
 
@@ -117,7 +121,9 @@ public:
     ElementIterator& operator--()
     {
         --mIndex;
-        advanceBackward();
+        if (mJumpDeleted) [[unlikely]] {
+            advanceBackward();
+        }
         return *this;
     }
 
