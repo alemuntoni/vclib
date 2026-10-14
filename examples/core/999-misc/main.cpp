@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vclib/mesh_v2/components/base/base.h>
 #include <vclib/mesh_v2/components/base/component.h>
+#include <vclib/mesh_v2/components/bit_flags.h>
 #include <vclib/mesh_v2/element_container.h>
 #include <vclib/mesh_v2/element_proxy.h>
 #include <vclib/space/core.h>
@@ -42,9 +43,11 @@ using Normal3f   = Normal<Point3f>;
 
 int main()
 {
-    // TypeWrapper of components
-    using MyComponents =
-        TypeWrapper<comp_test::Position3f, comp_test::Normal3f>;
+    // TypeWrapper of components: BitFlags is MANDATORY!
+    using MyComponents = TypeWrapper<
+        meshv2::comp::BitFlags,
+        comp_test::Position3f,
+        comp_test::Normal3f>;
 
     // A generic element container
     using MyContainer = meshv2::ElementContainer<MyComponents>;
@@ -119,6 +122,47 @@ int main()
               << bigElement.position().x() << ", "
               << bigElement.position().y() << ", "
               << bigElement.position().z() << "\n";
+
+    // ==========================================
+    // Phase 4: BitFlags and Iterators with skip
+    // ==========================================
+    std::cout << "\n--- Testing Phase 4: BitFlags & Iterators ---\n";
+    MyContainer testContainer;
+    testContainer.template enable<meshv2::CompId::POSITION>();
+    testContainer.resize(5);
+
+    for (std::size_t i = 0; i < testContainer.size(); ++i) {
+        testContainer[i].position() = Point3f(static_cast<float>(i), 0.0f, 0.0f);
+    }
+
+    // Delete elements 1 and 3
+    testContainer[1].setDeleted(true);
+    testContainer.deleteElement(3);
+
+    std::cout << "Physical size: " << testContainer.size() << "\n";
+    std::cout << "Non-deleted count: " << testContainer.elementCount() << "\n";
+    std::cout << "Deleted count: " << testContainer.deletedElementCount() << "\n";
+
+    // Range-based for loop: automatically skips deleted elements (1 and 3)
+    std::cout << "Iterating over non-deleted elements (range-based for loop):\n";
+    for (auto elem : testContainer) {
+        std::cout << "  Visible element " << elem.index()
+                  << " pos.x = " << elem.position().x()
+                  << " deleted: " << (elem.deleted() ? "yes" : "no") << "\n";
+    }
+
+    // Iterator over ALL elements including deleted
+    std::cout << "Iterating over ALL elements (jumpDeleted = false):\n";
+    for (auto it = testContainer.begin(false); it != testContainer.end(); ++it) {
+        std::cout << "  Element " << it->index()
+                  << " pos.x = " << it->position().x()
+                  << " deleted: " << (it->deleted() ? "yes" : "no") << "\n";
+    }
+
+    // Undelete element 1
+    testContainer[1].setDeleted(false);
+    std::cout << "After undeleting element 1, non-deleted count: "
+              << testContainer.elementCount() << "\n";
 
     return 0;
 }

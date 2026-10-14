@@ -11,10 +11,12 @@
 #include <limits>
 #include <type_traits>
 #include <vclib/base.h>
+#include <vclib/mesh_v2/components/base/component.h>
+#include <vclib/mesh_v2/components/bit_flags.h>
 
 namespace vcl::meshv2 {
 
-template <typename ContainerType, typename ComponentListWrapper>
+template <typename ContainerType, typename ComponentListWrapper = typename std::remove_cv_t<ContainerType>::Components>
 class ElementProxy;
 
 /**
@@ -33,6 +35,10 @@ template<typename ContainerType, typename... Components>
 class ElementProxy<ContainerType, vcl::TypeWrapper<Components...>> :
         public Components...
 {
+    static_assert(
+        HasBitFlags<vcl::TypeWrapper<Components...>>::value,
+        "An Element must have the BitFlags component (vcl::meshv2::comp::BitFlags).");
+
 public:
     using IndexType = typename std::remove_cv_t<ContainerType>::IndexType;
 
@@ -61,7 +67,7 @@ public:
     // Methods accessed by the components (via "deducing this" self.container())
     ContainerType& container() { return *mContainer; }
     const ContainerType& container() const { return *mContainer; }
-    
+
     IndexType index() const { return mIndex; }
 
     /**

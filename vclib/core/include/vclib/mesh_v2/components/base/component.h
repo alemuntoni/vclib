@@ -10,6 +10,7 @@
 
 #include <vclib/base.h>
 
+#include <vclib/mesh_v2/components/base/base.h>
 #include <vclib/mesh_v2/parallel_vectors_tuple.h>
 
 namespace vcl::meshv2 {
@@ -52,6 +53,34 @@ struct IndexOfCompIdImpl<COMP_ID, CurrentIndex>
 };
 
 } // namespace detail
+
+/**
+ * @brief Trait to check if a component with the given COMP_ID is present in a
+ * TypeWrapper.
+ */
+template <uint COMP_ID, typename ComponentListWrapper>
+struct HasComponent;
+
+template<uint COMP_ID, typename... Components>
+struct HasComponent<COMP_ID, vcl::TypeWrapper<Components...>>
+{
+    static constexpr bool value =
+        detail::IndexOfCompIdImpl<COMP_ID, 0, Components...>::value != UINT_NULL;
+};
+
+/**
+ * @brief Trait to check if the BitFlags component (COMP_ID = CompId::BIT_FLAGS)
+ * is present in a TypeWrapper.
+ */
+template<typename ComponentListWrapper>
+struct HasBitFlags;
+
+template<typename... Components>
+struct HasBitFlags<vcl::TypeWrapper<Components...>>
+{
+    static constexpr bool value =
+        HasComponent<CompId::BIT_FLAGS, vcl::TypeWrapper<Components...>>::value;
+};
 
 /**
  * @brief Trait to find the index of a Component by its COMP_ID inside a
