@@ -8,6 +8,7 @@
 #ifndef VCL_MESH_V2_ELEMENT_CONTAINER_H
 #define VCL_MESH_V2_ELEMENT_CONTAINER_H
 
+#include <concepts>
 #include <vclib/base.h>
 
 #include <vclib/mesh_v2/components/base/component.h>
@@ -15,9 +16,13 @@
 
 namespace vcl::meshv2 {
 
-template<typename ComponentList>
+template<typename ComponentList, std::unsigned_integral Index = uint>
 class ElementContainer
 {
+public:
+    using IndexType = Index;
+
+private:
     using TupleType =
         typename ParallelVectorsTupleFromComponents<ComponentList>::type;
     TupleType mElemComponents;

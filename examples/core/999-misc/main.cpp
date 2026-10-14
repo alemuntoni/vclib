@@ -102,5 +102,23 @@ int main()
     std::cout << "invalidElement is valid: " << (invalidElement ? "yes" : "no")
               << "\n";
 
+    // Test IndexType deduction: default is uint
+    static_assert(std::is_same_v<MyElementProxy::IndexType, uint>);
+
+    // Test customized 64-bit container
+    using MyBigContainer = meshv2::ElementContainer<MyComponents, uint64_t>;
+    using MyBigElementProxy = meshv2::ElementProxy<MyBigContainer, MyComponents>;
+    static_assert(std::is_same_v<MyBigElementProxy::IndexType, uint64_t>);
+
+    MyBigContainer bigContainer;
+    bigContainer.template enable<meshv2::CompId::POSITION>();
+    bigContainer.resize(1);
+    MyBigElementProxy bigElement(bigContainer, 0);
+    bigElement.position() = Point3f(4.0f, 5.0f, 6.0f);
+    std::cout << "BigContainer (uint64_t index) Element 0 position: "
+              << bigElement.position().x() << ", "
+              << bigElement.position().y() << ", "
+              << bigElement.position().z() << "\n";
+
     return 0;
 }

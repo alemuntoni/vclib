@@ -8,6 +8,8 @@
 #ifndef VCL_MESH_V2_ELEMENT_PROXY_H
 #define VCL_MESH_V2_ELEMENT_PROXY_H
 
+#include <limits>
+#include <type_traits>
 #include <vclib/base.h>
 
 namespace vcl::meshv2 {
@@ -31,13 +33,17 @@ template<typename ContainerType, typename... Components>
 class ElementProxy<ContainerType, vcl::TypeWrapper<Components...>> :
         public Components...
 {
+public:
+    using IndexType = typename std::remove_cv_t<ContainerType>::IndexType;
+
+private:
     ContainerType* mContainer = nullptr;
-    uint mIndex = UINT_NULL;
+    IndexType mIndex = std::numeric_limits<IndexType>::max();
 
 public:
     ElementProxy() = default;
 
-    ElementProxy(ContainerType& container, uint index) :
+    ElementProxy(ContainerType& container, IndexType index) :
             mContainer(&container), mIndex(index)
     {
     }
@@ -56,15 +62,18 @@ public:
     ContainerType& container() { return *mContainer; }
     const ContainerType& container() const { return *mContainer; }
     
-    uint index() const { return mIndex; }
+    IndexType index() const { return mIndex; }
 
     /**
      * @brief Checks if this proxy points to a valid element.
      * A proxy is considered invalid if it points to a valid container and its
-     * index is UINT_NULL. This naturally represents missing topology references
-     * (e.g., boundary faces).
+     * index is the maximum value of IndexType (NULL index). This naturally
+     * represents missing topology references (e.g., boundary faces).
      */
-    bool isValid() const { return mContainer && mIndex != vcl::UINT_NULL; }
+    bool isValid() const
+    {
+        return mContainer && mIndex != std::numeric_limits<IndexType>::max();
+    }
     explicit operator bool() const { return isValid(); }
 };
 
