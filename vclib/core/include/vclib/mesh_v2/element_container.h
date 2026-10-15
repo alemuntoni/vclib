@@ -20,7 +20,10 @@
 
 namespace vcl::meshv2 {
 
-template<typename ComponentList, std::unsigned_integral Index = uint>
+template<
+    typename ComponentList,
+    std::unsigned_integral Index = uint,
+    typename ParentMesh          = void>
 class ElementContainer
 {
     static_assert(
@@ -31,6 +34,7 @@ class ElementContainer
 public:
     using Components     = ComponentList;
     using IndexType      = Index;
+    using MeshType       = ParentMesh;
     using ProxyType      = ElementProxy<ElementContainer>;
     using ConstProxyType = ElementProxy<const ElementContainer>;
     using Iterator       = ElementIterator<ElementContainer>;
@@ -41,12 +45,44 @@ private:
         typename ParallelVectorsTupleFromComponents<Components>::type;
     TupleType   mElemComponents;
     std::size_t mElemCount = 0; // Number of non-deleted elements
+    std::conditional_t<std::is_void_v<ParentMesh>, void*, ParentMesh*> mMesh =
+        nullptr;
 
 public:
     ElementContainer()
     {
         // BitFlags is mandatory and always enabled
         enable<CompId::BIT_FLAGS>();
+    }
+
+    void setMesh(auto* mesh) { mMesh = mesh; }
+
+    template<typename M = ParentMesh>
+    M& mesh()
+    {
+        assert(mMesh != nullptr && "Parent mesh pointer is null");
+        if constexpr (std::is_void_v<M>) {
+            static_assert(
+                !std::is_void_v<M>,
+                "ParentMesh type is void; please specify mesh type in mesh<MeshType>()");
+        }
+        else {
+            return *static_cast<M*>(mMesh);
+        }
+    }
+
+    template<typename M = ParentMesh>
+    const M& mesh() const
+    {
+        assert(mMesh != nullptr && "Parent mesh pointer is null");
+        if constexpr (std::is_void_v<M>) {
+            static_assert(
+                !std::is_void_v<M>,
+                "ParentMesh type is void; please specify mesh type in mesh<MeshType>()");
+        }
+        else {
+            return *static_cast<const M*>(mMesh);
+        }
     }
 
     /**

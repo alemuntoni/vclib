@@ -95,6 +95,14 @@ template<typename T>
 concept HasBitFlags = HasComponent<CompId::BIT_FLAGS, T>;
 
 /**
+ * @brief Concept that checks whether a type T (which can be a TypeWrapper of
+ * components, an ElementProxy, an ElementContainer, or a Mesh) has the
+ * VertexReferences component (COMP_ID = CompId::VERTEX_REFERENCES).
+ */
+template<typename T>
+concept HasVertexReferences = HasComponent<CompId::VERTEX_REFERENCES, T>;
+
+/**
  * @brief Trait to find the index of a Component by its COMP_ID inside a
  * TypeWrapper.
  *

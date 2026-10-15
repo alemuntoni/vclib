@@ -9,6 +9,7 @@
 #include <vclib/mesh_v2/components/base/base.h>
 #include <vclib/mesh_v2/components/base/component.h>
 #include <vclib/mesh_v2/components/bit_flags.h>
+#include <vclib/mesh_v2/components/vertex_references.h>
 #include <vclib/mesh_v2/element_container.h>
 #include <vclib/mesh_v2/element_proxy.h>
 #include <vclib/space/core.h>
@@ -170,6 +171,95 @@ int main()
     testContainer[1].setDeleted(false);
     std::cout << "After undeleting element 1, non-deleted count: "
               << testContainer.elementCount() << "\n";
+
+    // ==========================================
+    // Phase 5: TriangleVertexReferences & Mesh navigation
+    // ==========================================
+    std::cout << "\n--- Testing Phase 5: TriangleVertexReferences ---\n";
+
+    using VertexComponents = TypeWrapper<
+        meshv2::comp::BitFlags,
+        comp_test::Position3f,
+        comp_test::Normal3f>;
+
+    using FaceComponents = TypeWrapper<
+        meshv2::comp::BitFlags,
+        meshv2::comp::TriangleVertexReferences<uint>>;
+
+    static_assert(meshv2::HasVertexReferences<FaceComponents>);
+
+    struct ProtoMesh
+    {
+        using VertexContainer =
+            meshv2::ElementContainer<VertexComponents, uint, ProtoMesh>;
+        using FaceContainer =
+            meshv2::ElementContainer<FaceComponents, uint, ProtoMesh>;
+
+        VertexContainer verticesContainer;
+        FaceContainer   facesContainer;
+
+        ProtoMesh()
+        {
+            verticesContainer.setMesh(this);
+            facesContainer.setMesh(this);
+            verticesContainer.template enable<meshv2::CompId::POSITION>();
+            facesContainer.template enable<meshv2::CompId::VERTEX_REFERENCES>();
+        }
+
+        auto vertex(uint i) { return verticesContainer[i]; }
+        auto vertex(uint i) const { return verticesContainer[i]; }
+        auto face(uint i) { return facesContainer[i]; }
+        auto face(uint i) const { return facesContainer[i]; }
+    };
+
+    ProtoMesh protoMesh;
+    protoMesh.verticesContainer.resize(3);
+    protoMesh.facesContainer.resize(1);
+
+    protoMesh.vertex(0).position() = Point3f(1.0f, 0.0f, 0.0f);
+    protoMesh.vertex(1).position() = Point3f(0.0f, 1.0f, 0.0f);
+    protoMesh.vertex(2).position() = Point3f(0.0f, 0.0f, 1.0f);
+
+    auto f0 = protoMesh.face(0);
+    f0.setVertexIndices(0, 1, 2);
+
+    std::cout << "Face 0 vertex indices: "
+              << f0.vertexIndex(0) << ", "
+              << f0.vertexIndex(1) << ", "
+              << f0.vertexIndex(2) << "\n";
+
+    std::cout << "Face 0 vertex(0) position: "
+              << f0.vertex(0).position().x() << ", "
+              << f0.vertex(0).position().y() << ", "
+              << f0.vertex(0).position().z() << "\n";
+
+    std::cout << "Face 0 vertex(1) position: "
+              << f0.vertex(1).position().x() << ", "
+              << f0.vertex(1).position().y() << ", "
+              << f0.vertex(1).position().z() << "\n";
+
+    std::cout << "Iterating over face 0 vertices with face.vertices():\n";
+    for (auto v : f0.vertices()) {
+        std::cout << "  Vertex " << v.index()
+                  << " pos = (" << v.position().x()
+                  << ", " << v.position().y()
+                  << ", " << v.position().z() << ")\n";
+    }
+
+    std::cout << "f0.vertices()[2] position: "
+              << f0.vertices()[2].position().x() << ", "
+              << f0.vertices()[2].position().y() << ", "
+              << f0.vertices()[2].position().z() << "\n";
+
+    // Test const correctness on face.vertices()
+    const auto& constProtoMesh = protoMesh;
+    auto constF0 = constProtoMesh.face(0);
+    std::cout << "Const face 0 vertex(0) position: "
+              << constF0.vertex(0).position().x() << "\n";
+    for (auto v : constF0.vertices()) {
+        std::cout << "  Const Vertex " << v.index()
+                  << " pos.x = " << v.position().x() << "\n";
+    }
 
     return 0;
 }
