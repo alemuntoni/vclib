@@ -8,9 +8,9 @@
 #ifndef VCL_MESH_V2_COMPONENTS_BIT_FLAGS_H
 #define VCL_MESH_V2_COMPONENTS_BIT_FLAGS_H
 
-#include <vclib/mesh_v2/components/base/base.h>
-#include <vclib/mesh_v2/components/base/component.h>
-#include <vclib/space/core/bit_set.h>
+#include <vclib/mesh_v2/components/base/component_predicates.h>
+
+#include <vclib/space/core.h>
 
 #include <cassert>
 
@@ -82,6 +82,14 @@ public:
         self.bitFlags()[DELETED] = isD;
     }
 };
+
+/**
+ * @brief Concept that checks whether a type T (which can be a TypeWrapper of
+ * components, an ElementProxy, an ElementContainer, or a Mesh) has the
+ * BitFlags component (COMP_ID = CompId::BIT_FLAGS).
+ */
+template<typename T>
+concept HasBitFlags = HasComponent<CompId::BIT_FLAGS, T>;
 
 } // namespace vcl::meshv2::comp
 

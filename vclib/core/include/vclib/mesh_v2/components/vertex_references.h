@@ -8,6 +8,7 @@
 #ifndef VCL_MESH_V2_COMPONENTS_VERTEX_REFERENCES_H
 #define VCL_MESH_V2_COMPONENTS_VERTEX_REFERENCES_H
 
+#include <vclib/mesh_v2/components/base/component_predicates.h>
 #include <vclib/mesh_v2/components/base/container_component.h>
 
 #include <cassert>
@@ -82,6 +83,14 @@ public:
                std::views::transform([&m](auto idx) { return m.vertex(idx); });
     }
 };
+
+/**
+ * @brief Concept that checks whether a type T (which can be a TypeWrapper of
+ * components, an ElementProxy, an ElementContainer, or a Mesh) has the
+ * VertexReferences component (COMP_ID = CompId::VERTEX_REFERENCES).
+ */
+template<typename T>
+concept HasVertexReferences = HasComponent<CompId::VERTEX_REFERENCES, T>;
 
 } // namespace vcl::meshv2::comp
 

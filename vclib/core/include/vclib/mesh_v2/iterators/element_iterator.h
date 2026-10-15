@@ -10,7 +10,7 @@
 
 #include <vclib/base.h>
 #include <vclib/mesh_v2/components/bit_flags.h>
-#include <vclib/mesh_v2/element_proxy.h>
+#include <vclib/mesh_v2/elements/base/element_proxy.h>
 
 #include <compare>
 #include <iterator>

@@ -5,8 +5,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at https://mozilla.org/MPL/2.0/.
 
-#ifndef VCL_MESH_V2_ELEMENT_CONTAINER_H
-#define VCL_MESH_V2_ELEMENT_CONTAINER_H
+#ifndef VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H
+#define VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H
 
 #include <cassert>
 #include <concepts>
@@ -14,11 +14,21 @@
 
 #include <vclib/mesh_v2/components/base/component.h>
 #include <vclib/mesh_v2/components/bit_flags.h>
-#include <vclib/mesh_v2/element_proxy.h>
+#include <vclib/mesh_v2/elements/base/element_proxy.h>
 #include <vclib/mesh_v2/iterators/element_iterator.h>
 #include <vclib/mesh_v2/parallel_vectors_tuple.h>
 
 namespace vcl::meshv2 {
+
+// Trait to convert TypeWrapper<Components...> in a ParallelVectorsTuple
+template<typename ComponentListWrapper>
+struct ParallelVectorsTupleFromComponents;
+
+template<typename... Components>
+struct ParallelVectorsTupleFromComponents<vcl::TypeWrapper<Components...>>
+{
+    using type = ParallelVectorsTuple<typename Components::DataType...>;
+};
 
 template<
     typename ComponentList,
@@ -27,7 +37,7 @@ template<
 class ElementContainer
 {
     static_assert(
-        HasBitFlags<ComponentList>,
+        comp::HasBitFlags<ComponentList>,
         "An Element must have the BitFlags component "
         "(vcl::meshv2::comp::BitFlags).");
 
@@ -91,14 +101,14 @@ public:
     template<uint COMP_ID>
     auto& get()
     {
-        constexpr uint N = IndexOfCompId<COMP_ID, Components>::value;
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
         return mElemComponents.template get<N>();
     }
 
     template<uint COMP_ID>
     const auto& get() const
     {
-        constexpr uint N = IndexOfCompId<COMP_ID, Components>::value;
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
         return mElemComponents.template get<N>();
     }
 
@@ -108,7 +118,7 @@ public:
     template<uint COMP_ID>
     void enable()
     {
-        constexpr uint N = IndexOfCompId<COMP_ID, Components>::value;
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
         mElemComponents.template enable<N>();
     }
 
@@ -122,7 +132,7 @@ public:
         static_assert(
             COMP_ID != CompId::BIT_FLAGS,
             "BitFlags component cannot be disabled");
-        constexpr uint N = IndexOfCompId<COMP_ID, Components>::value;
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
         mElemComponents.template disable<N>();
     }
 
@@ -132,7 +142,7 @@ public:
     template<uint COMP_ID>
     bool isEnabled() const
     {
-        constexpr uint N = IndexOfCompId<COMP_ID, Components>::value;
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
         return mElemComponents.template isEnabled<N>();
     }
 
@@ -275,4 +285,4 @@ public:
 
 } // namespace vcl::meshv2
 
-#endif // VCL_MESH_V2_ELEMENT_CONTAINER_H
+#endif // VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H

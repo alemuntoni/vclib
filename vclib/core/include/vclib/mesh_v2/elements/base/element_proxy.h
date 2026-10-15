@@ -5,8 +5,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at https://mozilla.org/MPL/2.0/.
 
-#ifndef VCL_MESH_V2_ELEMENT_PROXY_H
-#define VCL_MESH_V2_ELEMENT_PROXY_H
+#ifndef VCL_MESH_V2_ELEMENTS_BASE_ELEMENT_PROXY_H
+#define VCL_MESH_V2_ELEMENTS_BASE_ELEMENT_PROXY_H
 
 #include <limits>
 #include <type_traits>
@@ -38,7 +38,7 @@ template<typename ContainerType, typename... Comps>
 class ElementProxy<ContainerType, vcl::TypeWrapper<Comps...>> : public Comps...
 {
     static_assert(
-        HasBitFlags<vcl::TypeWrapper<Comps...>>,
+        comp::HasBitFlags<vcl::TypeWrapper<Comps...>>,
         "An Element must have the BitFlags component "
         "(vcl::meshv2::comp::BitFlags).");
 
@@ -91,4 +91,4 @@ public:
 
 } // namespace vcl::meshv2
 
-#endif // VCL_MESH_V2_ELEMENT_PROXY_H
+#endif // VCL_MESH_V2_ELEMENTS_BASE_ELEMENT_PROXY_H

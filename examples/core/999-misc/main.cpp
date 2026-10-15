@@ -10,8 +10,8 @@
 #include <vclib/mesh_v2/components/base/component.h>
 #include <vclib/mesh_v2/components/bit_flags.h>
 #include <vclib/mesh_v2/components/vertex_references.h>
-#include <vclib/mesh_v2/element_container.h>
-#include <vclib/mesh_v2/element_proxy.h>
+#include <vclib/mesh_v2/containers/base/element_container.h>
+#include <vclib/mesh_v2/elements/base/element_proxy.h>
 #include <vclib/space/core.h>
 
 using namespace vcl;
@@ -110,11 +110,11 @@ int main()
     static_assert(std::is_same_v<MyElementProxy::IndexType, uint>);
 
     // Test C++20 Concepts
-    static_assert(meshv2::HasBitFlags<MyComponents>);
-    static_assert(meshv2::HasBitFlags<MyContainer>);
-    static_assert(meshv2::HasBitFlags<MyElementProxy>);
-    static_assert(meshv2::HasComponent<meshv2::CompId::POSITION, MyElementProxy>);
-    static_assert(meshv2::HasComponent<meshv2::CompId::NORMAL, MyContainer>);
+    static_assert(meshv2::comp::HasBitFlags<MyComponents>);
+    static_assert(meshv2::comp::HasBitFlags<MyContainer>);
+    static_assert(meshv2::comp::HasBitFlags<MyElementProxy>);
+    static_assert(meshv2::comp::HasComponent<meshv2::CompId::POSITION, MyElementProxy>);
+    static_assert(meshv2::comp::HasComponent<meshv2::CompId::NORMAL, MyContainer>);
 
     // Test customized 64-bit container
     using MyBigContainer = meshv2::ElementContainer<MyComponents, uint64_t>;
@@ -186,7 +186,7 @@ int main()
         meshv2::comp::BitFlags,
         meshv2::comp::TriangleVertexReferences<uint>>;
 
-    static_assert(meshv2::HasVertexReferences<FaceComponents>);
+    static_assert(meshv2::comp::HasVertexReferences<FaceComponents>);
 
     struct ProtoMesh
     {
