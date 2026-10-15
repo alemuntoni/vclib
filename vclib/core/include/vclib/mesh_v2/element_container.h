@@ -8,8 +8,8 @@
 #ifndef VCL_MESH_V2_ELEMENT_CONTAINER_H
 #define VCL_MESH_V2_ELEMENT_CONTAINER_H
 
-#include <concepts>
 #include <cassert>
+#include <concepts>
 #include <vclib/base.h>
 
 #include <vclib/mesh_v2/components/base/component.h>
@@ -24,8 +24,9 @@ template<typename ComponentList, std::unsigned_integral Index = uint>
 class ElementContainer
 {
     static_assert(
-        HasBitFlags<ComponentList>::value,
-        "An Element must have the BitFlags component (vcl::meshv2::comp::BitFlags).");
+        HasBitFlags<ComponentList>,
+        "An Element must have the BitFlags component "
+        "(vcl::meshv2::comp::BitFlags).");
 
 public:
     using Components     = ComponentList;
@@ -38,7 +39,7 @@ public:
 private:
     using TupleType =
         typename ParallelVectorsTupleFromComponents<Components>::type;
-    TupleType mElemComponents;
+    TupleType   mElemComponents;
     std::size_t mElemCount = 0; // Number of non-deleted elements
 
 public:
@@ -82,7 +83,9 @@ public:
     template<uint COMP_ID>
     void disable()
     {
-        static_assert(COMP_ID != CompId::BIT_FLAGS, "BitFlags component cannot be disabled");
+        static_assert(
+            COMP_ID != CompId::BIT_FLAGS,
+            "BitFlags component cannot be disabled");
         constexpr uint N = IndexOfCompId<COMP_ID, Components>::value;
         mElemComponents.template disable<N>();
     }
@@ -107,9 +110,11 @@ public:
     }
 
     /**
-     * @brief Returns the total number of elements in the container, including deleted ones.
+     * @brief Returns the total number of elements in the container, including
+     * deleted ones.
      */
     std::size_t size() const { return mElemComponents.size(); }
+
     std::size_t elementContainerSize() const { return mElemComponents.size(); }
 
     /**
@@ -162,8 +167,9 @@ public:
         mElemComponents.resize(newSize);
         if (newSize > oldSize) {
             mElemCount += (newSize - oldSize);
-        } else if (newSize < oldSize) {
-            mElemCount = 0;
+        }
+        else if (newSize < oldSize) {
+            mElemCount           = 0;
             const auto& flagsVec = get<CompId::BIT_FLAGS>();
             for (std::size_t i = 0; i < newSize; ++i) {
                 if (!flagsVec[i][comp::BitFlags::DELETED]) {
@@ -213,10 +219,7 @@ public:
         return Iterator(*this, 0, needJump);
     }
 
-    Iterator end()
-    {
-        return Iterator(*this, size(), false);
-    }
+    Iterator end() { return Iterator(*this, size(), false); }
 
     ConstIterator begin(bool jumpDeleted = true) const
     {
@@ -224,20 +227,14 @@ public:
         return ConstIterator(*this, 0, needJump);
     }
 
-    ConstIterator end() const
-    {
-        return ConstIterator(*this, size(), false);
-    }
+    ConstIterator end() const { return ConstIterator(*this, size(), false); }
 
     ConstIterator cbegin(bool jumpDeleted = true) const
     {
         return begin(jumpDeleted);
     }
 
-    ConstIterator cend() const
-    {
-        return end();
-    }
+    ConstIterator cend() const { return end(); }
 };
 
 } // namespace vcl::meshv2

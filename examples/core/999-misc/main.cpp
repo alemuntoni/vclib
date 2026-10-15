@@ -108,6 +108,13 @@ int main()
     // Test IndexType deduction: default is uint
     static_assert(std::is_same_v<MyElementProxy::IndexType, uint>);
 
+    // Test C++20 Concepts
+    static_assert(meshv2::HasBitFlags<MyComponents>);
+    static_assert(meshv2::HasBitFlags<MyContainer>);
+    static_assert(meshv2::HasBitFlags<MyElementProxy>);
+    static_assert(meshv2::HasComponent<meshv2::CompId::POSITION, MyElementProxy>);
+    static_assert(meshv2::HasComponent<meshv2::CompId::NORMAL, MyContainer>);
+
     // Test customized 64-bit container
     using MyBigContainer = meshv2::ElementContainer<MyComponents, uint64_t>;
     using MyBigElementProxy = meshv2::ElementProxy<MyBigContainer, MyComponents>;

@@ -52,35 +52,47 @@ struct IndexOfCompIdImpl<COMP_ID, CurrentIndex>
     static constexpr uint value = UINT_NULL;
 };
 
+// Helper to extract the inner Components type from a type T if present,
+// otherwise uses T directly.
+template<typename T>
+struct ComponentListHelper
+{
+    using type = std::remove_cvref_t<T>;
+};
+
+template<typename T>
+requires requires { typename std::remove_cvref_t<T>::Components; }
+struct ComponentListHelper<T>
+{
+    using type = typename std::remove_cvref_t<T>::Components;
+};
+
+template<uint COMP_ID, typename T>
+inline constexpr bool HasComponentImpl = false;
+
+template<uint COMP_ID, typename... Components>
+inline constexpr bool
+    HasComponentImpl<COMP_ID, vcl::TypeWrapper<Components...>> =
+        ((Components::COMPONENT_ID == COMP_ID) || ...);
+
 } // namespace detail
 
 /**
- * @brief Trait to check if a component with the given COMP_ID is present in a
- * TypeWrapper.
+ * @brief Concept that checks whether a type T (which can be a TypeWrapper of
+ * components, an ElementProxy, an ElementContainer, or a Mesh) contains a
+ * component with the given COMP_ID.
  */
-template <uint COMP_ID, typename ComponentListWrapper>
-struct HasComponent;
-
-template<uint COMP_ID, typename... Components>
-struct HasComponent<COMP_ID, vcl::TypeWrapper<Components...>>
-{
-    static constexpr bool value =
-        detail::IndexOfCompIdImpl<COMP_ID, 0, Components...>::value != UINT_NULL;
-};
+template<uint COMP_ID, typename T>
+concept HasComponent = detail::
+    HasComponentImpl<COMP_ID, typename detail::ComponentListHelper<T>::type>;
 
 /**
- * @brief Trait to check if the BitFlags component (COMP_ID = CompId::BIT_FLAGS)
- * is present in a TypeWrapper.
+ * @brief Concept that checks whether a type T (which can be a TypeWrapper of
+ * components, an ElementProxy, an ElementContainer, or a Mesh) has the
+ * BitFlags component (COMP_ID = CompId::BIT_FLAGS).
  */
-template<typename ComponentListWrapper>
-struct HasBitFlags;
-
-template<typename... Components>
-struct HasBitFlags<vcl::TypeWrapper<Components...>>
-{
-    static constexpr bool value =
-        HasComponent<CompId::BIT_FLAGS, vcl::TypeWrapper<Components...>>::value;
-};
+template<typename T>
+concept HasBitFlags = HasComponent<CompId::BIT_FLAGS, T>;
 
 /**
  * @brief Trait to find the index of a Component by its COMP_ID inside a
@@ -88,17 +100,18 @@ struct HasBitFlags<vcl::TypeWrapper<Components...>>
  *
  * Usage: IndexOfCompId<COMP_ID, TypeWrapper<...>>::value
  */
-template <uint COMP_ID, typename ComponentListWrapper>
+template<uint COMP_ID, typename ComponentListWrapper>
 struct IndexOfCompId;
 
 template<uint COMP_ID, typename... Components>
 struct IndexOfCompId<COMP_ID, vcl::TypeWrapper<Components...>>
 {
+    static_assert(
+        detail::HasComponentImpl<COMP_ID, vcl::TypeWrapper<Components...>>,
+        "Component ID not found in the ComponentList");
+
     static constexpr uint value =
         detail::IndexOfCompIdImpl<COMP_ID, 0, Components...>::value;
-    static_assert(
-        value != UINT_NULL,
-        "Component ID not found in the ComponentList");
 };
 
 // Trait to convert TypeWrapper<Components...> in a ParallelVectorsTuple

@@ -16,7 +16,10 @@
 
 namespace vcl::meshv2 {
 
-template <typename ContainerType, typename ComponentListWrapper = typename std::remove_cv_t<ContainerType>::Components>
+template<
+    typename ContainerType,
+    typename ComponentListWrapper =
+        typename std::remove_cv_t<ContainerType>::Components>
 class ElementProxy;
 
 /**
@@ -31,20 +34,21 @@ class ElementProxy;
  * It will provide all the member functions of the components in the
  * ComponentListWrapper.
  */
-template<typename ContainerType, typename... Components>
-class ElementProxy<ContainerType, vcl::TypeWrapper<Components...>> :
-        public Components...
+template<typename ContainerType, typename... Comps>
+class ElementProxy<ContainerType, vcl::TypeWrapper<Comps...>> : public Comps...
 {
     static_assert(
-        HasBitFlags<vcl::TypeWrapper<Components...>>::value,
-        "An Element must have the BitFlags component (vcl::meshv2::comp::BitFlags).");
+        HasBitFlags<vcl::TypeWrapper<Comps...>>,
+        "An Element must have the BitFlags component "
+        "(vcl::meshv2::comp::BitFlags).");
 
 public:
-    using IndexType = typename std::remove_cv_t<ContainerType>::IndexType;
+    using Components = vcl::TypeWrapper<Comps...>;
+    using IndexType  = typename std::remove_cv_t<ContainerType>::IndexType;
 
 private:
     ContainerType* mContainer = nullptr;
-    IndexType mIndex = std::numeric_limits<IndexType>::max();
+    IndexType      mIndex     = std::numeric_limits<IndexType>::max();
 
 public:
     ElementProxy() = default;
@@ -59,13 +63,14 @@ public:
     template<typename OtherContainerType>
     requires std::is_same_v<ContainerType, const OtherContainerType>
     ElementProxy(
-        const ElementProxy<OtherContainerType, vcl::TypeWrapper<Components...>>&
+        const ElementProxy<OtherContainerType, vcl::TypeWrapper<Comps...>>&
             other) : mContainer(&other.container()), mIndex(other.index())
     {
     }
 
     // Methods accessed by the components (via "deducing this" self.container())
     ContainerType& container() { return *mContainer; }
+
     const ContainerType& container() const { return *mContainer; }
 
     IndexType index() const { return mIndex; }
@@ -80,6 +85,7 @@ public:
     {
         return mContainer && mIndex != std::numeric_limits<IndexType>::max();
     }
+
     explicit operator bool() const { return isValid(); }
 };
 
