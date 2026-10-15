@@ -38,22 +38,21 @@ public:
 
     // --- Direct Index Access (works standalone without parent Mesh) ---
 
+    decltype(auto) vertexIndices(this auto&& self)
+    {
+        return Base::containerData(self);
+    }
+
     IndexType vertexIndex(this auto&& self, uint i)
     {
         assert(i < 3);
-        return self[i];
-    }
-
-    decltype(auto) vertexIndices(this auto&& self)
-    {
-        return self.container()
-            .template get<CompId::VERTEX_REFERENCES>()[self.index()];
+        return self.vertexIndices()[i];
     }
 
     void setVertexIndex(this auto&& self, uint i, IndexType vIdx)
     {
         assert(i < 3);
-        self[i] = vIdx;
+        self.vertexIndices()[i] = vIdx;
     }
 
     void setVertexIndices(
@@ -62,11 +61,10 @@ public:
         IndexType v1,
         IndexType v2)
     {
-        auto& refs = self.container()
-                         .template get<CompId::VERTEX_REFERENCES>()[self.index()];
-        refs[0] = v0;
-        refs[1] = v1;
-        refs[2] = v2;
+        auto& refs = self.vertexIndices();
+        refs[0]    = v0;
+        refs[1]    = v1;
+        refs[2]    = v2;
     }
 
     // --- Element Proxy Access (via Parent Mesh) ---
