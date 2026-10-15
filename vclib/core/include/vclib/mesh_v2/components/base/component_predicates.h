@@ -95,6 +95,35 @@ struct IndexOfCompId<COMP_ID, vcl::TypeWrapper<Components...>>
         detail::IndexOfCompIdImpl<COMP_ID, 0, Components...>::value;
 };
 
+/**
+ * @brief Checks if the given object (ElementProxy, ElementContainer, Mesh...)
+ * has the component COMPONENT_ID available (present and enabled).
+ *
+ * @tparam COMPONENT_ID The component ID to check.
+ * @param[in] obj The object to check.
+ * @return true if the object has the component and it is enabled, false otherwise.
+ *
+ * @ingroup base
+ */
+template<uint COMPONENT_ID, typename T>
+inline bool isComponentAvailableOn(const T& obj)
+{
+    if constexpr (HasComponent<COMPONENT_ID, T>) {
+        if constexpr (requires { obj.template isEnabled<COMPONENT_ID>(); }) {
+            return obj.template isEnabled<COMPONENT_ID>();
+        }
+        else if constexpr (requires { obj.container().template isEnabled<COMPONENT_ID>(); }) {
+            return obj.container().template isEnabled<COMPONENT_ID>();
+        }
+        else {
+            return true;
+        }
+    }
+    else {
+        return false;
+    }
+}
+
 } // namespace vcl::meshv2::comp
 
 #endif // VCL_MESH_V2_COMPONENTS_BASE_COMPONENT_PREDICATES_H

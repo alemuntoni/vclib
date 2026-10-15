@@ -9,6 +9,8 @@
 #include <vclib/mesh_v2/components/base/base.h>
 #include <vclib/mesh_v2/components/base/component.h>
 #include <vclib/mesh_v2/components/bit_flags.h>
+#include <vclib/mesh_v2/components/normal.h>
+#include <vclib/mesh_v2/components/position.h>
 #include <vclib/mesh_v2/components/vertex_references.h>
 #include <vclib/mesh_v2/containers/base/element_container.h>
 #include <vclib/mesh_v2/elements/base/element_proxy.h>
@@ -16,39 +18,13 @@
 
 using namespace vcl;
 
-// Fake test components
-namespace comp_test {
-
-template<typename P>
-struct Position : public meshv2::Component<meshv2::CompId::POSITION, P>
-{
-    decltype(auto) position(this auto&& self)
-    {
-        return self.container().template get<meshv2::CompId::POSITION>()[self.index()];
-    }
-};
-
-template<typename N>
-struct Normal : public meshv2::Component<meshv2::CompId::NORMAL, N>
-{
-    decltype(auto) normal(this auto&& self)
-    {
-        return self.container().template get<meshv2::CompId::NORMAL>()[self.index()];
-    }
-};
-
-using Position3f = Position<Point3f>;
-using Normal3f   = Normal<Point3f>;
-
-} // namespace comp_test
-
 int main()
 {
     // TypeWrapper of components: BitFlags is MANDATORY!
     using MyComponents = TypeWrapper<
         meshv2::comp::BitFlags,
-        comp_test::Position3f,
-        comp_test::Normal3f>;
+        meshv2::comp::Position3f,
+        meshv2::comp::Normal3f>;
 
     // A generic element container
     using MyContainer = meshv2::ElementContainer<MyComponents>;
@@ -113,8 +89,15 @@ int main()
     static_assert(meshv2::comp::HasBitFlags<MyComponents>);
     static_assert(meshv2::comp::HasBitFlags<MyContainer>);
     static_assert(meshv2::comp::HasBitFlags<MyElementProxy>);
-    static_assert(meshv2::comp::HasComponent<meshv2::CompId::POSITION, MyElementProxy>);
-    static_assert(meshv2::comp::HasComponent<meshv2::CompId::NORMAL, MyContainer>);
+    static_assert(meshv2::comp::HasPosition<MyComponents>);
+    static_assert(meshv2::comp::HasPosition<MyContainer>);
+    static_assert(meshv2::comp::HasPosition<MyElementProxy>);
+    static_assert(meshv2::comp::HasNormal<MyComponents>);
+    static_assert(meshv2::comp::HasNormal<MyContainer>);
+    static_assert(meshv2::comp::HasNormal<MyElementProxy>);
+
+    assert(meshv2::comp::isPositionAvailableOn(element0));
+    assert(meshv2::comp::isNormalAvailableOn(element0));
 
     // Test customized 64-bit container
     using MyBigContainer = meshv2::ElementContainer<MyComponents, uint64_t>;
@@ -179,8 +162,8 @@ int main()
 
     using VertexComponents = TypeWrapper<
         meshv2::comp::BitFlags,
-        comp_test::Position3f,
-        comp_test::Normal3f>;
+        meshv2::comp::Position3f,
+        meshv2::comp::Normal3f>;
 
     using FaceComponents = TypeWrapper<
         meshv2::comp::BitFlags,
