@@ -8,6 +8,7 @@
 #ifndef VCL_MESH_V2_ELEMENTS_BASE_ELEMENT_PROXY_H
 #define VCL_MESH_V2_ELEMENTS_BASE_ELEMENT_PROXY_H
 
+#include <concepts>
 #include <limits>
 #include <type_traits>
 #include <vclib/base.h>
@@ -15,6 +16,16 @@
 #include <vclib/mesh_v2/components/bit_flags.h>
 
 namespace vcl::meshv2 {
+
+template<
+    typename ComponentList,
+    typename ParentMesh,
+    std::unsigned_integral Index,
+    template<typename...> class Element>
+class ElementContainer;
+
+template<typename ContainerType>
+class ElementIterator;
 
 template<
     typename ContainerType,
@@ -50,7 +61,7 @@ private:
     ContainerType* mContainer = nullptr;
     IndexType      mIndex     = std::numeric_limits<IndexType>::max();
 
-public:
+protected:
     ElementProxy() = default;
 
     ElementProxy(ContainerType& container, IndexType index) :
@@ -64,15 +75,21 @@ public:
     requires std::is_same_v<ContainerType, const OtherContainerType>
     ElementProxy(
         const ElementProxy<OtherContainerType, vcl::TypeWrapper<Comps...>>&
-            other) : mContainer(&other.container()), mIndex(other.index())
+            other) : mContainer(other.mContainer), mIndex(other.mIndex)
     {
     }
 
-    // Methods accessed by the components (via "deducing this" self.container())
+public:
+    // Methods accessed by the components ("deducing this" self.container()).
+    // TODO: When C++26 variadic friends are fully supported on MSVC, move
+    // container() to protected so that ElementProxy is fully encapsulated.
     ContainerType& container() { return *mContainer; }
 
     const ContainerType& container() const { return *mContainer; }
 
+    /**
+     * @brief Returns the index of this element in the container.
+     */
     IndexType index() const { return mIndex; }
 
     /**
@@ -86,7 +103,50 @@ public:
         return mContainer && mIndex != std::numeric_limits<IndexType>::max();
     }
 
+    /**
+     * @brief Implicit conversion to bool to check if the proxy is valid.
+     */
     explicit operator bool() const { return isValid(); }
+
+    /**
+     * @brief Checks if the component with COMP_ID is enabled in the container.
+     */
+    template<uint COMP_ID>
+    bool isComponentEnabled() const
+    {
+        return mContainer && mContainer->template isEnabled<COMP_ID>();
+    }
+
+private:
+    /// friend classes declarations
+
+    template<typename, typename>
+    friend class ElementProxy;
+
+    template<typename, typename, std::unsigned_integral, template<typename...> class>
+    friend class ElementContainer;
+
+    template<typename>
+    friend class ElementIterator;
+
+    // TODO: When C++26 (P2893 Variadic Friends) is fully supported across all
+    // compilers (including MSVC), uncomment:
+    // friend Comps...;
+};
+
+/**
+ * @brief Concept that checks whether a type T is an Element proxy.
+ *
+ * An element proxy must have an ELEMENT_ID, an associated Components list,
+ * an IndexType, and member functions index() and isValid().
+ */
+template<typename T>
+concept ElementConcept = requires(T&& obj) {
+    { std::remove_cvref_t<T>::ELEMENT_ID } -> std::convertible_to<uint>;
+    typename std::remove_cvref_t<T>::Components;
+    typename std::remove_cvref_t<T>::IndexType;
+    { obj.index() } -> std::same_as<typename std::remove_cvref_t<T>::IndexType>;
+    { obj.isValid() } -> std::same_as<bool>;
 };
 
 } // namespace vcl::meshv2

@@ -33,7 +33,10 @@ public:
     using ContainerTraits = std::remove_cv_t<ContainerType>;
     using IndexType       = typename ContainerTraits::IndexType;
     using Components      = typename ContainerTraits::Components;
-    using ProxyType       = ElementProxy<ContainerType, Components>;
+    using ProxyType       = std::conditional_t<
+        std::is_const_v<ContainerType>,
+        typename ContainerTraits::ConstProxyType,
+        typename ContainerTraits::ProxyType>;
 
     // Modern C++ standard iterator traits
     using difference_type   = std::ptrdiff_t;

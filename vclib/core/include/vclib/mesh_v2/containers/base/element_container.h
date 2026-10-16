@@ -20,6 +20,8 @@
 
 namespace vcl::meshv2 {
 
+namespace detail {
+
 // Trait to convert TypeWrapper<Components...> in a ParallelVectorsTuple
 template<typename ComponentListWrapper>
 struct ParallelVectorsTupleFromComponents;
@@ -30,10 +32,13 @@ struct ParallelVectorsTupleFromComponents<vcl::TypeWrapper<Components...>>
     using type = ParallelVectorsTuple<typename Components::DataType...>;
 };
 
+} // namespace detail
+
 template<
     typename ComponentList,
-    std::unsigned_integral Index = uint,
-    typename ParentMesh          = void>
+    typename ParentMesh,
+    std::unsigned_integral Index        = uint,
+    template<typename...> class Element = ElementProxy>
 class ElementContainer
 {
     static_assert(
@@ -44,19 +49,19 @@ class ElementContainer
 public:
     using Components     = ComponentList;
     using IndexType      = Index;
-    using MeshType       = ParentMesh;
-    using ProxyType      = ElementProxy<ElementContainer>;
-    using ConstProxyType = ElementProxy<const ElementContainer>;
+    using ParentMeshType = ParentMesh;
+    using ProxyType      = Element<ElementContainer>;
+    using ConstProxyType = Element<const ElementContainer>;
     using Iterator       = ElementIterator<ElementContainer>;
     using ConstIterator  = ElementIterator<const ElementContainer>;
 
 private:
-    using TupleType =
-        typename ParallelVectorsTupleFromComponents<Components>::type;
-    TupleType   mElemComponents;
-    std::size_t mElemCount = 0; // Number of non-deleted elements
-    std::conditional_t<std::is_void_v<ParentMesh>, void*, ParentMesh*> mMesh =
-        nullptr;
+    using VectorTupleType =
+        detail::ParallelVectorsTupleFromComponents<Components>::type;
+
+    VectorTupleType mElemComponents;
+    std::size_t     mElemCount = 0; // Number of non-deleted elements
+    ParentMesh*     mMesh      = nullptr;
 
 public:
     ElementContainer()
@@ -65,34 +70,18 @@ public:
         enable<CompId::BIT_FLAGS>();
     }
 
-    void setMesh(auto* mesh) { mMesh = mesh; }
+    void setMesh(ParentMesh* mesh) { mMesh = mesh; }
 
-    template<typename M = ParentMesh>
-    M& mesh()
+    ParentMesh& mesh()
     {
         assert(mMesh != nullptr && "Parent mesh pointer is null");
-        if constexpr (std::is_void_v<M>) {
-            static_assert(
-                !std::is_void_v<M>,
-                "ParentMesh type is void; please specify mesh type in mesh<MeshType>()");
-        }
-        else {
-            return *static_cast<M*>(mMesh);
-        }
+        return *mMesh;
     }
 
-    template<typename M = ParentMesh>
-    const M& mesh() const
+    const ParentMesh& mesh() const
     {
         assert(mMesh != nullptr && "Parent mesh pointer is null");
-        if constexpr (std::is_void_v<M>) {
-            static_assert(
-                !std::is_void_v<M>,
-                "ParentMesh type is void; please specify mesh type in mesh<MeshType>()");
-        }
-        else {
-            return *static_cast<const M*>(mMesh);
-        }
+        return *mMesh;
     }
 
     /**
@@ -281,6 +270,16 @@ public:
     }
 
     ConstIterator cend() const { return end(); }
+
+    auto elements(bool jumpDeleted = true)
+    {
+        return vcl::View(begin(jumpDeleted), end());
+    }
+
+    auto elements(bool jumpDeleted = true) const
+    {
+        return vcl::View(begin(jumpDeleted), end());
+    }
 };
 
 } // namespace vcl::meshv2

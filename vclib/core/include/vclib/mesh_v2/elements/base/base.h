@@ -115,6 +115,6 @@ const std::string& elementEnumString()
     return str;
 }
 
-} // namespace vcl
+} // namespace vcl::meshv2
 
 #endif // VCL_MESH_V2_ELEMENTS_BASE_BASE_H

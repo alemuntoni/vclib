@@ -41,19 +41,32 @@ struct IndexOfCompIdImpl<COMP_ID, CurrentIndex>
     static constexpr uint value = UINT_NULL;
 };
 
+template<typename... Ts>
+vcl::TypeWrapper<Ts...> extractTypeWrapper(const vcl::TypeWrapper<Ts...>&);
+
 // Helper to extract the inner Components type from a type T if present,
+// or the underlying TypeWrapper if T inherits from TypeWrapper,
 // otherwise uses T directly.
 template<typename T>
 struct ComponentListHelper
 {
-    using type = std::remove_cvref_t<T>;
-};
+private:
+    static auto helper()
+    {
+        using RawT = std::remove_cvref_t<T>;
+        if constexpr (requires { typename RawT::Components; }) {
+            return typename RawT::Components{};
+        }
+        else if constexpr (requires { extractTypeWrapper(std::declval<RawT>()); }) {
+            return decltype(extractTypeWrapper(std::declval<RawT>())){};
+        }
+        else {
+            return RawT{};
+        }
+    }
 
-template<typename T>
-requires requires { typename std::remove_cvref_t<T>::Components; }
-struct ComponentListHelper<T>
-{
-    using type = typename std::remove_cvref_t<T>::Components;
+public:
+    using type = decltype(helper());
 };
 
 template<uint COMP_ID, typename T>
@@ -111,6 +124,9 @@ inline bool isComponentAvailableOn(const T& obj)
     if constexpr (HasComponent<COMPONENT_ID, T>) {
         if constexpr (requires { obj.template isEnabled<COMPONENT_ID>(); }) {
             return obj.template isEnabled<COMPONENT_ID>();
+        }
+        else if constexpr (requires { obj.template isComponentEnabled<COMPONENT_ID>(); }) {
+            return obj.template isComponentEnabled<COMPONENT_ID>();
         }
         else if constexpr (requires { obj.container().template isEnabled<COMPONENT_ID>(); }) {
             return obj.container().template isEnabled<COMPONENT_ID>();

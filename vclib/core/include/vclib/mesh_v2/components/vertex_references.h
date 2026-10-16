@@ -37,6 +37,11 @@ public:
     using IndexType                    = Index;
     static constexpr uint VERTEX_COUNT = 3;
 
+    uint vertexCount(this auto&& self)
+    {
+        return VERTEX_COUNT;
+    }
+
     // --- Direct Index Access (works standalone without parent Mesh) ---
 
     decltype(auto) vertexIndices(this auto&& self)
