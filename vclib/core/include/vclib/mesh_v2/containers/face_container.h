@@ -8,17 +8,18 @@
 #ifndef VCL_MESH_V2_CONTAINERS_FACE_CONTAINER_H
 #define VCL_MESH_V2_CONTAINERS_FACE_CONTAINER_H
 
-#include <vclib/base/views/view.h>
 #include <vclib/mesh_v2/components/base/component_predicates.h>
 #include <vclib/mesh_v2/containers/base/element_container.h>
 #include <vclib/mesh_v2/elements/face.h>
+
+#include <vclib/base.h>
 
 namespace vcl::meshv2 {
 
 /**
  * @brief FaceContainer stores the per-face data in a Structure of Arrays (SoA).
  *
- * It accepts the Face component list (satisfying FaceComponentsConcept),
+ * It accepts the Face component list (satisfying HasRequiredFaceComponents),
  * instantiates the underlying storage and exposes the Face element view.
  *
  * @tparam CompList The face components type (e.g. FaceComponents<BitFlags, TriangleVertexReferences<uint>>).
@@ -50,8 +51,23 @@ public:
     using ConstFace      = typename Base::ConstProxyType;
     using FaceType_      = Face;
     using ConstFaceType  = ConstFace;
+    using IndexType        = Index;
+    using ParentMeshType   = ParentMesh;
 
-    using Base::Base;
+    static constexpr uint ELEMENT_ID = ElemId::FACE;
+
+    template<typename NewParent>
+    using Rebind = FaceContainer<CompList, Index, NewParent>;
+
+    FaceContainer()
+    {
+        Base::template enable<CompId::VERTEX_REFERENCES>();
+    }
+
+    FaceContainer(ParentMesh* parent) : FaceContainer()
+    {
+        Base::setMesh(parent);
+    }
 
     Face face(Index i) { return Base::element(i); }
     ConstFace face(Index i) const { return Base::element(i); }
@@ -61,6 +77,9 @@ public:
     std::size_t deletedFaceCount() const { return Base::deletedElementCount(); }
 
     void resizeFaces(std::size_t n) { Base::resize(n); }
+
+    void deleteFace(Index i) { Base::deleteElement(i); }
+    void deleteFace(const Face& f) { Base::deleteElement(f.index()); }
 
     auto faces(bool jumpDeleted = true) { return Base::elements(jumpDeleted); }
 

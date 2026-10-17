@@ -14,7 +14,7 @@
 #include <vclib/mesh_v2/components/vertex_references.h>
 #include <vclib/mesh_v2/containers/face_container.h>
 #include <vclib/mesh_v2/containers/vertex_container.h>
-#include <vclib/mesh_v2/elements.h>
+#include <vclib/mesh_v2/mesh.h>
 
 using namespace vcl;
 
@@ -32,32 +32,12 @@ using MyFaceComponents = meshv2::FaceComponents<
     meshv2::comp::TriangleVertexReferences<uint>>;
 
 // =============================================================================
-// Step 2 & 3: ProtoMesh inherits directly from VertexContainer and FaceContainer
+// Step 2 & 3: Mesh definition from VertexContainer and FaceContainer
 // =============================================================================
 
-class ProtoMesh :
-    public meshv2::VertexContainer<MyVertexComponents, uint, ProtoMesh>,
-    public meshv2::FaceContainer<MyFaceComponents, uint, ProtoMesh>
-{
-public:
-    using VertexContainer = meshv2::VertexContainer<MyVertexComponents, uint, ProtoMesh>;
-    using FaceContainer   = meshv2::FaceContainer<MyFaceComponents, uint, ProtoMesh>;
-
-    using Vertex      = typename VertexContainer::Vertex;
-    using ConstVertex = typename VertexContainer::ConstVertex;
-    using Face        = typename FaceContainer::Face;
-    using ConstFace   = typename FaceContainer::ConstFace;
-
-    ProtoMesh()
-    {
-        VertexContainer::setMesh(this);
-        FaceContainer::setMesh(this);
-
-        VertexContainer::template enable<meshv2::CompId::POSITION>();
-        VertexContainer::template enable<meshv2::CompId::NORMAL>();
-        FaceContainer::template enable<meshv2::CompId::VERTEX_REFERENCES>();
-    }
-};
+using MyMesh = meshv2::Mesh<
+    meshv2::VertexContainer<MyVertexComponents>,
+    meshv2::FaceContainer<MyFaceComponents>>;
 
 int main()
 {
@@ -70,33 +50,43 @@ int main()
     static_assert(meshv2::HasRequiredFaceComponents<MyFaceComponents>);
 
     // The single element classes (Vertex and Face) satisfy concepts
-    static_assert(meshv2::ElementConcept<ProtoMesh::Vertex>);
-    static_assert(meshv2::ElementConcept<ProtoMesh::ConstVertex>);
-    static_assert(meshv2::ElementConcept<ProtoMesh::Face>);
-    static_assert(meshv2::ElementConcept<ProtoMesh::ConstFace>);
+    static_assert(meshv2::ElementConcept<MyMesh::Vertex>);
+    static_assert(meshv2::ElementConcept<MyMesh::ConstVertex>);
+    static_assert(meshv2::ElementConcept<MyMesh::Face>);
+    static_assert(meshv2::ElementConcept<MyMesh::ConstFace>);
 
-    static_assert(meshv2::VertexConcept<ProtoMesh::Vertex>);
-    static_assert(meshv2::VertexConcept<ProtoMesh::ConstVertex>);
-    static_assert(meshv2::FaceConcept<ProtoMesh::Face>);
-    static_assert(meshv2::FaceConcept<ProtoMesh::ConstFace>);
-    static_assert(meshv2::TriangleFaceConcept<ProtoMesh::Face>);
-    static_assert(meshv2::TriangleFaceConcept<ProtoMesh::ConstFace>);
+    static_assert(meshv2::VertexConcept<MyMesh::Vertex>);
+    static_assert(meshv2::VertexConcept<MyMesh::ConstVertex>);
+    static_assert(meshv2::FaceConcept<MyMesh::Face>);
+    static_assert(meshv2::FaceConcept<MyMesh::ConstFace>);
+    static_assert(meshv2::TriangleFaceConcept<MyMesh::Face>);
+    static_assert(meshv2::TriangleFaceConcept<MyMesh::ConstFace>);
 
     // Strong typing: Vertex and Face cannot be confused
-    static_assert(!meshv2::VertexConcept<ProtoMesh::Face>);
-    static_assert(!meshv2::FaceConcept<ProtoMesh::Vertex>);
+    static_assert(!meshv2::VertexConcept<MyMesh::Face>);
+    static_assert(!meshv2::FaceConcept<MyMesh::Vertex>);
+
+    // Mesh Concepts
+    static_assert(meshv2::HasVertices<MyMesh>);
+    static_assert(meshv2::HasFaces<MyMesh>);
+    static_assert(meshv2::HasTriangles<MyMesh>);
+    static_assert(meshv2::MeshConcept<MyMesh>);
 
     // =========================================================================
-    // Create and Populate ProtoMesh
+    // Create and Populate MyMesh
     // =========================================================================
 
-    ProtoMesh mesh;
+    MyMesh mesh;
+    // Position and VertexReferences are mandatory and auto-enabled!
+    // Optional components (like Normal) can be enabled explicitly:
+    mesh.enable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
+
     // Methods directly inherited from the containers!
     mesh.resizeVertices(4);
     mesh.resizeFaces(2);
 
     // 1. Setting vertex data via Vertex
-    mesh.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    mesh.vertex(0).position() = Point3f(0.0f, 0.0f, 1.0f);
     mesh.vertex(0).normal()   = Point3f(0.0f, 0.0f, 1.0f);
 
     mesh.vertex(1).position() = Point3f(1.0f, 0.0f, 0.0f);
@@ -115,7 +105,7 @@ int main()
     // Face 1: set using vertices
     mesh.face(1).setVertices(mesh.vertex(1), mesh.vertex(3), mesh.vertex(2));
 
-    std::cout << "--- ProtoMesh Created ---\n";
+    std::cout << "--- MyMesh Created ---\n";
     std::cout << "Vertices: " << mesh.vertexCount() << ", Faces: " << mesh.faceCount() << "\n\n";
 
     // =========================================================================
@@ -130,7 +120,7 @@ int main()
     }
 
     std::cout << "\nIterating over Face 1 vertices with face.vertices():\n";
-    for (ProtoMesh::Vertex v : mesh.face(1).vertices()) {
+    for (MyMesh::Vertex v : mesh.face(1).vertices()) {
         std::cout << "  Vertex " << v.index()
                   << " pos = " << v.position()
                   << " norm = " << v.normal() << "\n";
@@ -160,12 +150,13 @@ int main()
     // =========================================================================
 
     std::cout << "\n--- Deletion and Skip Test ---\n";
-    mesh.vertex(1).setDeleted(true);
+    mesh.deleteVertex(1);
 
     std::cout << "Marked vertex 1 as deleted.\n";
     std::cout << "  Physical container size: " << mesh.vertexContainerSize() << "\n";
     std::cout << "  Active (non-deleted) count: " << mesh.vertexCount() << "\n";
     std::cout << "  Deleted count: " << mesh.deletedVertexCount() << "\n";
+    std::cout << "  isCompact(): " << (mesh.isCompact() ? "yes" : "no") << "\n";
 
     std::cout << "Iterating over active vertices (vertex 1 automatically skipped):\n";
     for (auto v : mesh.vertices()) {
@@ -178,29 +169,27 @@ int main()
                   << " (deleted: " << (v.deleted() ? "yes" : "no") << ")\n";
     }
 
-    // Undelete vertex 1
-    mesh.vertex(1).setDeleted(false);
-    std::cout << "Undeleted vertex 1, active count: " << mesh.vertexCount() << "\n\n";
+    std::cout << "\n";
 
     // =========================================================================
     // Const Correctness
     // =========================================================================
 
     std::cout << "--- Const Correctness Test ---\n";
-    const ProtoMesh& constMesh = mesh;
+    const MyMesh& constMesh = mesh;
 
     // Access returns ConstVertex / ConstFace proxies
-    ProtoMesh::ConstVertex cv0 = constMesh.vertex(0);
+    MyMesh::ConstVertex cv0 = constMesh.vertex(0);
     std::cout << "Const Vertex 0 pos: " << cv0.position() << "\n";
     // cv0.position() = Point3f(0.0f, 0.0f, 0.0f); // Compile error as expected!
 
-    for (ProtoMesh::ConstVertex v : constMesh.face(0).vertices()) {
+    for (MyMesh::ConstVertex v : constMesh.face(0).vertices()) {
         std::cout << "  Const face vertex: " << v.index()
                   << " pos: " << v.position() << "\n";
     }
 
     // Conversion from mutable Vertex to ConstVertex
-    ProtoMesh::ConstVertex cvFromMutable = mesh.vertex(2);
+    MyMesh::ConstVertex cvFromMutable = mesh.vertex(2);
     std::cout << "ConstVertex converted from mutable Vertex: index "
               << cvFromMutable.index() << "\n\n";
 
@@ -209,11 +198,28 @@ int main()
     // =========================================================================
 
     std::cout << "--- Element Validity Test ---\n";
-    ProtoMesh::Vertex validV = mesh.vertex(0);
-    ProtoMesh::Vertex invalidV;
+    MyMesh::Vertex validV = mesh.vertex(0);
+    MyMesh::Vertex invalidV;
 
     std::cout << "validV isValid: " << (validV ? "valid" : "invalid") << "\n";
     std::cout << "invalidV isValid: " << (invalidV ? "valid" : "invalid") << "\n";
+
+    // =========================================================================
+    // Copy, Move, Swap Tests
+    // =========================================================================
+
+    std::cout << "\n--- Mesh Copy & Swap Tests ---\n";
+    MyMesh meshCopy = mesh;
+    std::cout << "Copied mesh face 0 vertex 0 pos: "
+              << meshCopy.face(0).vertex(0).position() << "\n";
+
+    MyMesh meshMoved = std::move(meshCopy);
+    std::cout << "Moved mesh face 0 vertex 0 pos: "
+              << meshMoved.face(0).vertex(0).position() << "\n";
+
+    MyMesh meshSwapped;
+    swap(meshMoved, meshSwapped);
+    std::cout << "Swapped mesh vertices: " << meshSwapped.vertexCount() << "\n";
 
     return 0;
 }

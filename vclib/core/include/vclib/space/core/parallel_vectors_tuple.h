@@ -5,8 +5,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at https://mozilla.org/MPL/2.0/.
 
-#ifndef VCL_MESH_V2_PARALLEL_VECTORS_TUPLE_H
-#define VCL_MESH_V2_PARALLEL_VECTORS_TUPLE_H
+#ifndef VCL_SPACE_CORE_PARALLEL_VECTORS_TUPLE_H
+#define VCL_SPACE_CORE_PARALLEL_VECTORS_TUPLE_H
 
 #include <vclib/base.h>
 
@@ -15,7 +15,7 @@
 #include <utility>
 #include <vector>
 
-namespace vcl::meshv2 {
+namespace vcl {
 
 /**
  * @brief A tuple of parallel vectors, where each vector stores a specific type.
@@ -178,9 +178,7 @@ public:
      */
     void clear()
     {
-        auto function = [](auto&... args) {
-            ((args.clear()), ...);
-        };
+        auto function = [](auto&... args) { ((args.clear()), ...); };
         std::apply(function, mVecTuple);
         mSize = 0;
     }
@@ -382,6 +380,6 @@ class ParallelVectorsTuple<TypeWrapper<Types...>> :
 {
 };
 
-} // namespace vcl::meshv2
+} // namespace vcl
 
-#endif // VCL_MESH_V2_PARALLEL_VECTORS_TUPLE_H
+#endif // VCL_SPACE_CORE_PARALLEL_VECTORS_TUPLE_H

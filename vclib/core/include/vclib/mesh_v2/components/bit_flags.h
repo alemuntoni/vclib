@@ -29,11 +29,13 @@ public:
     static constexpr uint FIRST_USER_BIT = 4;
     static constexpr uint USER_BIT_COUNT = sizeof(uint) * 8 - FIRST_USER_BIT;
 
+protected:
     decltype(auto) bitFlags(this auto&& self)
     {
         return self.container().template get<CompId::BIT_FLAGS>()[self.index()];
     }
 
+public:
     bool deleted(this auto&& self)
     {
         if (!self.isValid()) return false;
@@ -43,15 +45,6 @@ public:
     bool isDeleted(this auto&& self)
     {
         return self.deleted();
-    }
-
-    void setDeleted(this auto&& self, bool b = true)
-    {
-        if (b) {
-            self.container().deleteElement(self.index());
-        } else {
-            self.container().undeleteElement(self.index());
-        }
     }
 
     decltype(auto) selected(this auto&& self)

@@ -8,15 +8,16 @@
 #ifndef VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H
 #define VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H
 
-#include <cassert>
-#include <concepts>
-#include <vclib/base.h>
-
 #include <vclib/mesh_v2/components/base/component.h>
 #include <vclib/mesh_v2/components/bit_flags.h>
 #include <vclib/mesh_v2/elements/base/element_proxy.h>
 #include <vclib/mesh_v2/iterators/element_iterator.h>
-#include <vclib/mesh_v2/parallel_vectors_tuple.h>
+
+#include <vclib/base.h>
+#include <vclib/space/core.h>
+
+#include <cassert>
+#include <concepts>
 
 namespace vcl::meshv2 {
 
@@ -72,13 +73,13 @@ public:
 
     void setMesh(ParentMesh* mesh) { mMesh = mesh; }
 
-    ParentMesh& mesh()
+    decltype(auto) mesh() requires (!std::is_void_v<ParentMesh>)
     {
         assert(mMesh != nullptr && "Parent mesh pointer is null");
         return *mMesh;
     }
 
-    const ParentMesh& mesh() const
+    decltype(auto) mesh() const requires (!std::is_void_v<ParentMesh>)
     {
         assert(mMesh != nullptr && "Parent mesh pointer is null");
         return *mMesh;
@@ -177,23 +178,21 @@ public:
         }
     }
 
-    /**
-     * @brief Un-marks as deleted the element with the given id.
-     */
-    void undeleteElement(IndexType i)
+    void deleteElement(const ProxyType& e)
     {
-        assert(i < size());
-        auto& flags = get<CompId::BIT_FLAGS>()[i];
-        if (flags[comp::BitFlags::DELETED]) {
-            flags[comp::BitFlags::DELETED] = false;
-            ++mElemCount;
-        }
+        deleteElement(e.index());
     }
+
 
     bool isDeleted(IndexType i) const
     {
         assert(i < size());
         return get<CompId::BIT_FLAGS>()[i][comp::BitFlags::DELETED];
+    }
+
+    bool isDeleted(const ConstProxyType& e) const
+    {
+        return isDeleted(e.index());
     }
 
     void resize(std::size_t newSize)
@@ -280,6 +279,17 @@ public:
     {
         return vcl::View(begin(jumpDeleted), end());
     }
+};
+
+/**
+ * @brief Concept that checks whether a type T is an ElementContainer.
+ */
+template<typename T>
+concept ElementContainerConcept = requires {
+    { std::remove_cvref_t<T>::ELEMENT_ID } -> std::convertible_to<uint>;
+    typename std::remove_cvref_t<T>::IndexType;
+    typename std::remove_cvref_t<T>::ProxyType;
+    typename std::remove_cvref_t<T>::ConstProxyType;
 };
 
 } // namespace vcl::meshv2

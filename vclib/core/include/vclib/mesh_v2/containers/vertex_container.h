@@ -8,17 +8,18 @@
 #ifndef VCL_MESH_V2_CONTAINERS_VERTEX_CONTAINER_H
 #define VCL_MESH_V2_CONTAINERS_VERTEX_CONTAINER_H
 
-#include <vclib/base/views/view.h>
 #include <vclib/mesh_v2/components/base/component_predicates.h>
 #include <vclib/mesh_v2/containers/base/element_container.h>
 #include <vclib/mesh_v2/elements/vertex.h>
+
+#include <vclib/base.h>
 
 namespace vcl::meshv2 {
 
 /**
  * @brief VertexContainer stores the per-vertex data in a Structure of Arrays (SoA).
  *
- * It accepts the Vertex component list (satisfying VertexComponentsConcept),
+ * It accepts the Vertex component list (satisfying HasRequiredVertexComponents),
  * instantiates the underlying storage and exposes the Vertex element view.
  *
  * @tparam CompList The vertex components type (e.g. VertexComponents<BitFlags, Position3f, Normal3f>).
@@ -50,8 +51,23 @@ public:
     using ConstVertex      = typename Base::ConstProxyType;
     using VertexType_      = Vertex;
     using ConstVertexType  = ConstVertex;
+    using IndexType        = Index;
+    using ParentMeshType   = ParentMesh;
 
-    using Base::Base;
+    static constexpr uint ELEMENT_ID = ElemId::VERTEX;
+
+    template<typename NewParent>
+    using Rebind = VertexContainer<CompList, Index, NewParent>;
+
+    VertexContainer()
+    {
+        Base::template enable<CompId::POSITION>();
+    }
+
+    VertexContainer(ParentMesh* parent) : VertexContainer()
+    {
+        Base::setMesh(parent);
+    }
 
     Vertex vertex(Index i) { return Base::element(i); }
     ConstVertex vertex(Index i) const { return Base::element(i); }
@@ -61,6 +77,9 @@ public:
     std::size_t deletedVertexCount() const { return Base::deletedElementCount(); }
 
     void resizeVertices(std::size_t n) { Base::resize(n); }
+
+    void deleteVertex(Index i) { Base::deleteElement(i); }
+    void deleteVertex(const Vertex& v) { Base::deleteElement(v.index()); }
 
     auto vertices(bool jumpDeleted = true)
     {

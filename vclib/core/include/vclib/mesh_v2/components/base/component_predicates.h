@@ -12,8 +12,6 @@
 
 #include <vclib/base.h>
 
-#include <vclib/mesh_v2/parallel_vectors_tuple.h>
-
 namespace vcl::meshv2::comp {
 
 namespace detail {
