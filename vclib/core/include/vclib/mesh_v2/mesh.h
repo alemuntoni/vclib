@@ -51,7 +51,21 @@ class Mesh : public detail::RebindContainer<Args, Mesh<Args...>>...
         detail::FindContainer<ElemId::VERTEX, Rebound<Args>...>::found,
         "A Mesh must have a VertexContainer.");
 
+    using VertexContainerType =
+        typename detail::FindContainer<ElemId::VERTEX, Rebound<Args>...>::type;
+
+    template<typename T, typename ExpectedIndex>
+    static constexpr bool ContainerIndexMatches =
+        (!requires { typename T::IndexType; }) ||
+        std::is_same_v<typename T::IndexType, ExpectedIndex>;
+
 public:
+    using IndexType = typename VertexContainerType::IndexType;
+
+    static_assert(
+        (ContainerIndexMatches<Rebound<Args>, IndexType> && ...),
+        "All element containers in a Mesh must share the exact same IndexType.");
+
     /**
      * @brief Constructs an empty Mesh and connects all child containers.
      */
@@ -220,6 +234,45 @@ public:
     }
 
     /**
+     * @brief Checks if the container of elements having ID ELEM_ID is compact.
+     */
+    template<uint ELEM_ID>
+    requires (hasContainerOf<ELEM_ID>())
+    bool isCompact() const
+    {
+        return this->ContainerType<ELEM_ID>::isCompact();
+    }
+
+    /**
+     * @brief Compacts all containers in the mesh, removing all deleted elements
+     * and updating all cross-container references.
+     */
+    void compact()
+    {
+        (compactContainer<Rebound<Args>>(), ...);
+    }
+
+    /**
+     * @brief Compacts the container of elements having ID ELEM_ID.
+     */
+    template<uint ELEM_ID>
+    requires (hasContainerOf<ELEM_ID>())
+    auto compact()
+    {
+        return this->ContainerType<ELEM_ID>::compact();
+    }
+
+    /**
+     * @brief Broadcasts updated element indices of ELEM_ID to all containers
+     * so that any referencing components are updated.
+     */
+    template<uint ELEM_ID>
+    void updateAllReferences(const std::vector<IndexType>& newIndices)
+    {
+        (updateContainerReferences<Rebound<Args>, ELEM_ID>(newIndices), ...);
+    }
+
+    /**
      * @brief Clears all elements across all containers in the mesh.
      */
     void clear() { (clearContainer<Rebound<Args>>(), ...); }
@@ -374,6 +427,22 @@ private:
     {
         if constexpr (requires { this->T::clear(); }) {
             this->T::clear();
+        }
+    }
+
+    template<typename T>
+    void compactContainer()
+    {
+        if constexpr (requires { this->T::compact(); }) {
+            this->T::compact();
+        }
+    }
+
+    template<typename T, uint ELEM_ID>
+    void updateContainerReferences(const std::vector<IndexType>& newIndices)
+    {
+        if constexpr (requires { this->T::template updateReferences<ELEM_ID>(newIndices); }) {
+            this->T::template updateReferences<ELEM_ID>(newIndices);
         }
     }
 

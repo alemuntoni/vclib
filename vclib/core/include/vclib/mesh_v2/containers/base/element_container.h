@@ -56,6 +56,8 @@ public:
     using Iterator       = ElementIterator<ElementContainer>;
     using ConstIterator  = ElementIterator<const ElementContainer>;
 
+    static constexpr uint ELEMENT_ID = ProxyType::ELEMENT_ID;
+
 private:
     using VectorTupleType =
         detail::ParallelVectorsTupleFromComponents<Components>::type;
@@ -165,6 +167,63 @@ public:
 
     bool empty() const { return mElemCount == 0; }
 
+    bool isCompact() const { return deletedElementCount() == 0; }
+
+    /**
+     * @brief Compacts the container, removing all deleted elements and shifting
+     * active elements to form a contiguous range.
+     *
+     * If the container is connected to a parent mesh, broadcasts the new indices
+     * to the mesh so that all referencing containers are updated.
+     *
+     * @return A vector of new indices, where newIndices[old_i] is the new index
+     * of element old_i, or std::numeric_limits<IndexType>::max() if element old_i
+     * was deleted.
+     */
+    std::vector<IndexType> compact()
+    {
+        std::vector<IndexType> newIndices(size());
+        if (isCompact()) {
+            for (IndexType i = 0; i < size(); ++i) {
+                newIndices[i] = i;
+            }
+            return newIndices;
+        }
+
+        IndexType currentIndex = 0;
+        const auto& bitFlagsVec = get<CompId::BIT_FLAGS>();
+        for (IndexType i = 0; i < size(); ++i) {
+            if (bitFlagsVec[i][comp::BitFlags::DELETED]) {
+                newIndices[i] = std::numeric_limits<IndexType>::max();
+            }
+            else {
+                newIndices[i] = currentIndex++;
+            }
+        }
+
+        mElemComponents.compact(newIndices);
+        assert(mElemComponents.size() == mElemCount);
+
+        if constexpr (!std::is_void_v<ParentMesh>) {
+            if (mMesh != nullptr) {
+                mMesh->template updateAllReferences<ELEMENT_ID>(newIndices);
+            }
+        }
+
+        return newIndices;
+    }
+
+    template<uint TARGET_ELEM_ID>
+    void updateReferences(const std::vector<IndexType>& newIndices)
+    {
+        if constexpr (ProxyType::template referencesElement<TARGET_ELEM_ID>()) {
+            for (std::size_t i = 0; i < size(); ++i) {
+                element(i).template updateReferences<TARGET_ELEM_ID>(newIndices);
+            }
+        }
+    }
+
+public:
     /**
      * @brief Marks as deleted the element with the given id.
      */
@@ -224,25 +283,25 @@ public:
     // Element proxy access
     ProxyType operator[](IndexType i)
     {
-        assert(i < size());
+        assert(i < size() || i == std::numeric_limits<IndexType>::max());
         return ProxyType(*this, i);
     }
 
     ConstProxyType operator[](IndexType i) const
     {
-        assert(i < size());
+        assert(i < size() || i == std::numeric_limits<IndexType>::max());
         return ConstProxyType(*this, i);
     }
 
     ProxyType element(IndexType i)
     {
-        assert(i < size());
+        assert(i < size() || i == std::numeric_limits<IndexType>::max());
         return ProxyType(*this, i);
     }
 
     ConstProxyType element(IndexType i) const
     {
-        assert(i < size());
+        assert(i < size() || i == std::numeric_limits<IndexType>::max());
         return ConstProxyType(*this, i);
     }
 

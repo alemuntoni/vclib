@@ -200,6 +200,29 @@ public:
     }
 
     /**
+     * @brief Compacts all currently enabled vectors according to the mapping
+     * newIndices.
+     *
+     * @tparam Index The index type of the mapping vector.
+     * @param newIndices The vector mapping old indices to new indices (or
+     * std::numeric_limits<Index>::max() if deleted).
+     */
+    template<typename Index>
+    void compact(const std::vector<Index>& newIndices)
+    {
+        if constexpr (vectorCount() > 0) {
+            vectorCompact<vectorCount() - 1>(newIndices);
+        }
+        std::size_t newSize = 0;
+        for (std::size_t i = 0; i < newIndices.size(); ++i) {
+            if (newIndices[i] != std::numeric_limits<Index>::max()) {
+                ++newSize;
+            }
+        }
+        mSize = newSize;
+    }
+
+    /**
      * @brief Checks whether the vector of Type T is currently enabled.
      *
      * This will cause a compile-time error if the type T is duplicated in the
@@ -370,6 +393,17 @@ private:
         }
         if constexpr (N != 0) {
             vectorSwap<N - 1>(i, j);
+        }
+    }
+
+    template<std::size_t N, typename Index>
+    void vectorCompact(const std::vector<Index>& newIndices)
+    {
+        if (mVecEnabled[N]) {
+            vcl::compactVector(std::get<N>(mVecTuple), newIndices);
+        }
+        if constexpr (N != 0) {
+            vectorCompact<N - 1>(newIndices);
         }
     }
 };

@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <vclib/base.h>
 #include <vclib/mesh_v2/components/base/component.h>
+#include <vclib/mesh_v2/components/base/component_predicates.h>
 #include <vclib/mesh_v2/components/bit_flags.h>
 
 namespace vcl::meshv2 {
@@ -48,36 +49,18 @@ class ElementProxy;
 template<typename ContainerType, typename... Comps>
 class ElementProxy<ContainerType, vcl::TypeWrapper<Comps...>> : public Comps...
 {
-    static_assert(
-        comp::HasBitFlags<vcl::TypeWrapper<Comps...>>,
-        "An Element must have the BitFlags component "
-        "(vcl::meshv2::comp::BitFlags).");
-
 public:
     using Components = vcl::TypeWrapper<Comps...>;
     using IndexType  = typename std::remove_cv_t<ContainerType>::IndexType;
 
+    static_assert(
+        comp::HasBitFlags<Components>,
+        "An Element must have the BitFlags component "
+        "(vcl::meshv2::comp::BitFlags).");
+
 private:
     ContainerType* mContainer = nullptr;
     IndexType      mIndex     = std::numeric_limits<IndexType>::max();
-
-protected:
-    ElementProxy() = default;
-
-    ElementProxy(ContainerType& container, IndexType index) :
-            mContainer(&container), mIndex(index)
-    {
-    }
-
-    // Implicit conversion constructor to allow conversion from a mutable
-    // ElementProxy to a const ElementProxy.
-    template<typename OtherContainerType>
-    requires std::is_same_v<ContainerType, const OtherContainerType>
-    ElementProxy(
-        const ElementProxy<OtherContainerType, vcl::TypeWrapper<Comps...>>&
-            other) : mContainer(other.mContainer), mIndex(other.mIndex)
-    {
-    }
 
 public:
     // Methods accessed by the components ("deducing this" self.container()).
@@ -117,13 +100,64 @@ public:
         return mContainer && mContainer->template isEnabled<COMP_ID>();
     }
 
+protected:
+    ElementProxy() = default;
+
+    ElementProxy(ContainerType& container, IndexType index) :
+            mContainer(&container), mIndex(index)
+    {
+    }
+
+    // Implicit conversion constructor to allow conversion from a mutable
+    // ElementProxy to a const ElementProxy.
+    template<typename OtherContainerType>
+    requires std::is_same_v<ContainerType, const OtherContainerType>
+    ElementProxy(
+        const ElementProxy<OtherContainerType, vcl::TypeWrapper<Comps...>>&
+            other) : mContainer(other.mContainer), mIndex(other.mIndex)
+    {
+    }
+
+    template<uint TARGET_ELEM_ID>
+    void updateReferences(const std::vector<IndexType>& newIndices)
+    {
+        auto updateIfMatching = [&]<typename Comp>() {
+            if constexpr (
+                comp::ComponentReferencesElement<Comp, TARGET_ELEM_ID>) {
+                if constexpr (requires { Comp::COMPONENT_ID; }) {
+                    if (this->template isComponentEnabled<
+                            Comp::COMPONENT_ID>()) {
+                        this->Comp::template updateReferences<TARGET_ELEM_ID>(
+                            newIndices);
+                    }
+                }
+                else {
+                    this->Comp::template updateReferences<TARGET_ELEM_ID>(
+                        newIndices);
+                }
+            }
+        };
+
+        (updateIfMatching.template operator()<Comps>(), ...);
+    }
+
+    template<uint TARGET_ELEM_ID>
+    static constexpr bool referencesElement()
+    {
+        return (comp::ComponentReferencesElement<Comps, TARGET_ELEM_ID> || ...);
+    }
+
 private:
     /// friend classes declarations
 
     template<typename, typename>
     friend class ElementProxy;
 
-    template<typename, typename, std::unsigned_integral, template<typename...> class>
+    template<
+        typename,
+        typename,
+        std::unsigned_integral,
+        template<typename...> class>
     friend class ElementContainer;
 
     template<typename>
@@ -141,7 +175,7 @@ private:
  * an IndexType, and member functions index() and isValid().
  */
 template<typename T>
-concept ElementConcept = requires(T&& obj) {
+concept ElementConcept = requires (T&& obj) {
     { std::remove_cvref_t<T>::ELEMENT_ID } -> std::convertible_to<uint>;
     typename std::remove_cvref_t<T>::Components;
     typename std::remove_cvref_t<T>::IndexType;

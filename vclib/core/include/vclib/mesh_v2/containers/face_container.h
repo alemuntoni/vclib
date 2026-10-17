@@ -76,6 +76,8 @@ public:
     std::size_t faceContainerSize() const { return Base::elementContainerSize(); }
     std::size_t deletedFaceCount() const { return Base::deletedElementCount(); }
 
+    std::vector<Index> compactFaces() { return Base::compact(); }
+
     void resizeFaces(std::size_t n) { Base::resize(n); }
 
     void deleteFace(Index i) { Base::deleteElement(i); }

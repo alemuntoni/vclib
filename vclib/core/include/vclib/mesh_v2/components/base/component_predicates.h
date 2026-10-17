@@ -87,6 +87,18 @@ concept HasComponent = detail::
     HasComponentImpl<COMP_ID, typename detail::ComponentListHelper<T>::type>;
 
 /**
+ * @brief Concept that checks whether a component Comp stores references to
+ * elements of type TARGET_ELEM_ID (e.g. ElemId::VERTEX).
+ *
+ * A component declares this by defining:
+ *   template<uint TARGET_ELEM_ID> static constexpr bool referencesElement()
+ */
+template<typename Comp, uint TARGET_ELEM_ID>
+concept ComponentReferencesElement = requires {
+    requires Comp::template referencesElement<TARGET_ELEM_ID>();
+};
+
+/**
  * @brief Trait to find the index of a Component by its COMP_ID inside a
  * TypeWrapper.
  *

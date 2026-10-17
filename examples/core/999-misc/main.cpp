@@ -146,36 +146,10 @@ int main()
     }
 
     // =========================================================================
-    // Deletion and Automatic Skipping
-    // =========================================================================
-
-    std::cout << "\n--- Deletion and Skip Test ---\n";
-    mesh.deleteVertex(1);
-
-    std::cout << "Marked vertex 1 as deleted.\n";
-    std::cout << "  Physical container size: " << mesh.vertexContainerSize() << "\n";
-    std::cout << "  Active (non-deleted) count: " << mesh.vertexCount() << "\n";
-    std::cout << "  Deleted count: " << mesh.deletedVertexCount() << "\n";
-    std::cout << "  isCompact(): " << (mesh.isCompact() ? "yes" : "no") << "\n";
-
-    std::cout << "Iterating over active vertices (vertex 1 automatically skipped):\n";
-    for (auto v : mesh.vertices()) {
-        std::cout << "  Visible vertex: " << v.index() << " pos = " << v.position() << "\n";
-    }
-
-    std::cout << "Iterating over ALL vertices (including deleted, jumpDeleted = false):\n";
-    for (auto v : mesh.vertices(false)) {
-        std::cout << "  Vertex " << v.index()
-                  << " (deleted: " << (v.deleted() ? "yes" : "no") << ")\n";
-    }
-
-    std::cout << "\n";
-
-    // =========================================================================
     // Const Correctness
     // =========================================================================
 
-    std::cout << "--- Const Correctness Test ---\n";
+    std::cout << "\n--- Const Correctness Test ---\n";
     const MyMesh& constMesh = mesh;
 
     // Access returns ConstVertex / ConstFace proxies
@@ -230,5 +204,81 @@ int main()
     meshMoveAssigned = std::move(meshAssigned); // Move assignment
     std::cout << "Move-assigned mesh vertices: " << meshMoveAssigned.vertexCount() << "\n";
 
+    // =========================================================================
+    // Deletion and Automatic Skipping
+    // =========================================================================
+
+    std::cout << "\n--- Deletion and Skip Test ---\n";
+    mesh.deleteVertex(1);
+
+    std::cout << "Marked vertex 1 as deleted.\n";
+    std::cout << "  Physical container size: " << mesh.vertexContainerSize() << "\n";
+    std::cout << "  Active (non-deleted) count: " << mesh.vertexCount() << "\n";
+    std::cout << "  Deleted count: " << mesh.deletedVertexCount() << "\n";
+    std::cout << "  isCompact(): " << (mesh.isCompact() ? "yes" : "no") << "\n";
+
+    std::cout << "Iterating over active vertices (vertex 1 automatically skipped):\n";
+    for (auto v : mesh.vertices()) {
+        std::cout << "  Visible vertex: " << v.index() << " pos = " << v.position() << "\n";
+    }
+
+    std::cout << "Iterating over ALL vertices (including deleted, jumpDeleted = false):\n";
+    for (auto v : mesh.vertices(false)) {
+        std::cout << "  Vertex " << v.index()
+                  << " (deleted: " << (v.deleted() ? "yes" : "no") << ")\n";
+    }
+
+    // =========================================================================
+    // Mesh Compaction & Reference Remapping
+    // =========================================================================
+
+    std::cout << "\n--- Mesh Compaction Test ---\n";
+    std::cout << "Before compact():\n";
+    std::cout << "  isCompact(): " << (mesh.isCompact() ? "yes" : "no") << "\n";
+    std::cout << "  Vertex container size: " << mesh.vertexContainerSize()
+              << ", active: " << mesh.vertexCount() << "\n";
+    std::cout << "  Face 0 vertex indices: (" << mesh.face(0).vertexIndex(0) << ", "
+              << mesh.face(0).vertexIndex(1) << ", " << mesh.face(0).vertexIndex(2) << ")\n";
+    std::cout << "  Face 1 vertex indices: (" << mesh.face(1).vertexIndex(0) << ", "
+              << mesh.face(1).vertexIndex(1) << ", " << mesh.face(1).vertexIndex(2) << ")\n";
+
+    mesh.compact();
+
+    using VertexIndex = MyMesh::Vertex::IndexType;
+    auto formatVIdx = [](VertexIndex idx) {
+        return idx == std::numeric_limits<VertexIndex>::max() ? "NULL" : std::to_string(idx);
+    };
+
+    std::cout << "After compact():\n";
+    std::cout << "  isCompact(): " << (mesh.isCompact() ? "yes" : "no") << "\n";
+    std::cout << "  Vertex container size: " << mesh.vertexContainerSize()
+              << ", active: " << mesh.vertexCount() << "\n";
+    std::cout << "  Face 0 vertex indices: (" << formatVIdx(mesh.face(0).vertexIndex(0)) << ", "
+              << formatVIdx(mesh.face(0).vertexIndex(1)) << ", "
+              << formatVIdx(mesh.face(0).vertexIndex(2)) << ")\n";
+    std::cout << "  Face 1 vertex indices: (" << formatVIdx(mesh.face(1).vertexIndex(0)) << ", "
+              << formatVIdx(mesh.face(1).vertexIndex(1)) << ", "
+              << formatVIdx(mesh.face(1).vertexIndex(2)) << ")\n";
+
+    std::cout << "  Face 0 corner 0 pos: " << mesh.face(0).vertex(0).position() << "\n";
+    std::cout << "  Face 0 corner 1 isValid: " << (mesh.face(0).vertex(1).isValid() ? "valid" : "invalid (deleted)") << "\n";
+    std::cout << "  Face 0 corner 2 pos: " << mesh.face(0).vertex(2).position() << "\n";
+
+    // Test face deletion and compactFaces
+    mesh.deleteFace(0);
+    std::cout << "Marked face 0 as deleted:\n";
+    std::cout << "  isCompact(): " << (mesh.isCompact() ? "yes" : "no") << "\n";
+    std::cout << "  Face count: " << mesh.faceCount() << ", container size: " << mesh.faceContainerSize() << "\n";
+
+    mesh.compactFaces();
+    std::cout << "After compactFaces():\n";
+    std::cout << "  isCompact(): " << (mesh.isCompact() ? "yes" : "no") << "\n";
+    std::cout << "  Face count: " << mesh.faceCount() << ", container size: " << mesh.faceContainerSize() << "\n";
+    std::cout << "  Remaining face 0 indices: ("
+              << formatVIdx(mesh.face(0).vertexIndex(0)) << ", "
+              << formatVIdx(mesh.face(0).vertexIndex(1)) << ", "
+              << formatVIdx(mesh.face(0).vertexIndex(2)) << ")\n";
+
+    std::cout << "\nAll mesh tests passed successfully!\n";
     return 0;
 }

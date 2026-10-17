@@ -9,7 +9,8 @@
 #define VCL_MESH_V2_COMPONENTS_VERTEX_REFERENCES_H
 
 #include <vclib/mesh_v2/components/base/component_predicates.h>
-#include <vclib/mesh_v2/components/base/container_component.h>
+#include <vclib/mesh_v2/components/base/container_references_component.h>
+#include <vclib/mesh_v2/elements/base/base.h>
 
 #include <cassert>
 #include <concepts>
@@ -28,16 +29,25 @@ namespace vcl::meshv2::comp {
  */
 template<std::unsigned_integral Index = uint>
 class TriangleVertexReferences :
-        public ContainerComponent<CompId::VERTEX_REFERENCES, Index, 3, false>
+        public ContainerReferencesComponent<
+            CompId::VERTEX_REFERENCES,
+            Index,
+            ElemId::VERTEX,
+            3,
+            false>
 {
-    using Base =
-        ContainerComponent<CompId::VERTEX_REFERENCES, Index, 3, false>;
+    using Base = ContainerReferencesComponent<
+        CompId::VERTEX_REFERENCES,
+        Index,
+        ElemId::VERTEX,
+        3,
+        false>;
 
 public:
     using IndexType                    = Index;
     static constexpr uint VERTEX_COUNT = 3;
 
-    uint vertexCount(this auto&& self)
+    uint vertexCount(this auto&&)
     {
         return VERTEX_COUNT;
     }
@@ -78,14 +88,12 @@ public:
     decltype(auto) vertex(this auto&& self, uint i)
     {
         assert(i < 3);
-        return self.container().mesh().vertex(self.vertexIndex(i));
+        return self.referencedElement(i);
     }
 
     decltype(auto) vertices(this auto&& self)
     {
-        auto& m = self.container().mesh();
-        return self.vertexIndices() |
-               std::views::transform([&m](auto idx) { return m.vertex(idx); });
+        return self.referencedElements();
     }
 };
 

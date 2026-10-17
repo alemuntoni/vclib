@@ -76,6 +76,8 @@ public:
     std::size_t vertexContainerSize() const { return Base::elementContainerSize(); }
     std::size_t deletedVertexCount() const { return Base::deletedElementCount(); }
 
+    std::vector<Index> compactVertices() { return Base::compact(); }
+
     void resizeVertices(std::size_t n) { Base::resize(n); }
 
     void deleteVertex(Index i) { Base::deleteElement(i); }
