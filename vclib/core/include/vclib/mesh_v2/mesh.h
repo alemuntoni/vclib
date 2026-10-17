@@ -78,31 +78,16 @@ public:
     }
 
     /**
-     * @brief Copy assignment operator.
+     * @brief Assignment operator of the Mesh using the Copy & Swap idiom.
+     * Handles both copy assignment and move assignment seamlessly and provides
+     * the strong exception safety guarantee.
+     *
+     * @param other The mesh from which to copy or move data.
+     * @return Reference to this Mesh after assignment.
      */
-    Mesh& operator=(const Mesh& other)
+    Mesh& operator=(Mesh other) noexcept
     {
-        if (this != &other) {
-            ((static_cast<Rebound<Args>&>(*this) =
-                  static_cast<const Rebound<Args>&>(other)),
-             ...);
-            setParentMeshPointersToContainers();
-        }
-        return *this;
-    }
-
-    /**
-     * @brief Move assignment operator.
-     */
-    Mesh& operator=(Mesh&& other) noexcept
-    {
-        if (this != &other) {
-            ((static_cast<Rebound<Args>&>(*this) =
-                  static_cast<Rebound<Args>&&>(other)),
-             ...);
-            setParentMeshPointersToContainers();
-            other.setParentMeshPointersToContainers();
-        }
+        swap(other);
         return *this;
     }
 

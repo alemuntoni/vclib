@@ -221,5 +221,14 @@ int main()
     swap(meshMoved, meshSwapped);
     std::cout << "Swapped mesh vertices: " << meshSwapped.vertexCount() << "\n";
 
+    // Copy & Swap assignment tests
+    MyMesh meshAssigned;
+    meshAssigned = mesh; // Copy assignment
+    std::cout << "Copy-assigned mesh vertices: " << meshAssigned.vertexCount() << "\n";
+
+    MyMesh meshMoveAssigned;
+    meshMoveAssigned = std::move(meshAssigned); // Move assignment
+    std::cout << "Move-assigned mesh vertices: " << meshMoveAssigned.vertexCount() << "\n";
+
     return 0;
 }
