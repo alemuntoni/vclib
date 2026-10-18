@@ -407,6 +407,7 @@ public:
     void resizeVertices(this auto&& self, uint n) requires (N < 0)
     {
         Base::containerData(self).resize(n);
+        self.container().resizeTTVCComponents(self.index(), n);
     }
 
     /**
@@ -417,6 +418,7 @@ public:
     void pushVertex(this auto&& self, IndexType vi) requires (N < 0)
     {
         Base::containerData(self).pushBack(vi);
+        self.container().pushBackTTVCComponents(self.index());
     }
 
     /**
@@ -445,6 +447,7 @@ public:
     void insertVertex(this auto&& self, uint i, IndexType vi) requires (N < 0)
     {
         Base::containerData(self).insert(i, vi);
+        self.container().insertTTVCComponents(self.index(), i);
     }
 
     /**
@@ -473,6 +476,7 @@ public:
     void eraseVertex(this auto&& self, uint i) requires (N < 0)
     {
         Base::containerData(self).erase(i);
+        self.container().eraseTTVCComponents(self.index(), i);
     }
 
     /**
@@ -482,6 +486,7 @@ public:
     void clearVertices(this auto&& self) requires (N < 0)
     {
         Base::containerData(self).clear();
+        self.container().clearTTVCComponents(self.index());
     }
 
     // check this: is the behaviour the same of old mesh?

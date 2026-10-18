@@ -34,6 +34,16 @@ public:
     {
         Base::resize(size, value);
     }
+
+    void pushBack(Index value = NULL_INDEX) requires (N < 0)
+    {
+        Base::pushBack(value);
+    }
+
+    void insert(uint i, Index value = NULL_INDEX) requires (N < 0)
+    {
+        Base::insert(i, value);
+    }
 };
 
 } // namespace vcl::meshv2

@@ -20,8 +20,9 @@ namespace vcl::meshv2 {
  * and the COMPONENT_ID (for metaprogramming checks).
  */
 template<uint COMP_ID, typename Data>
-struct Component
+class Component
 {
+public:
     using DataType                     = Data;
     static constexpr uint COMPONENT_ID = COMP_ID;
 };

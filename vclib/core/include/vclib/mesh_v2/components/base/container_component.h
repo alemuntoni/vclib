@@ -22,12 +22,13 @@ namespace vcl::meshv2 {
  * for derived components, without polluting the ElementProxy interface with
  * generic methods that would cause collisions in multiple inheritance.
  *
- * @tparam COMP_ID The unique identifier of the component.
- * @tparam T The type of the elements stored in the container.
- * @tparam N The size of the container. If N >= 0, static size. If N < 0,
+ * @tparam COMP_ID: The unique identifier of the component.
+ * @tparam T: The type of the elements stored in the container.
+ * @tparam N: The size of the container. If N >= 0, static size. If N < 0,
  * dynamic size.
- * @tparam TTVC True if the component's container size is tied to the vertex
+ * @tparam TTVC: True if the component's container size is tied to the vertex
  * count of the parent element.
+ * @tparam Container: The container type to use. Defaults to vcl::Vector<T, N>.
  */
 template<
     uint COMP_ID,
@@ -35,19 +36,43 @@ template<
     int  N,
     bool TTVC,
     typename Container = vcl::Vector<T, N>>
-struct ContainerComponent : public Component<COMP_ID, Container>
+class ContainerComponent : public Component<COMP_ID, Container>
 {
-    using ValueType                           = T;
-    using ContainerType                       = Container;
-    static constexpr int  SIZE                = N;
-    static constexpr bool IS_DYNAMIC          = (N < 0);
+protected:
+    using ValueType                            = T;
+    using ContainerType                        = Container;
+    static constexpr int  SIZE                 = N;
     static constexpr bool TIED_TO_VERTEX_COUNT = TTVC;
 
-protected:
     template<typename Self>
     static decltype(auto) containerData(Self&& self)
     {
         return self.container().template get<COMP_ID>()[self.index()];
+    }
+
+    void resize(this auto&& self, uint n) requires (N < 0)
+    {
+        containerData(self).resize(n);
+    }
+
+    void pushBack(this auto&& self, const T& v = T()) requires (N < 0)
+    {
+        containerData(self).pushBack(v);
+    }
+
+    void insert(this auto&& self, uint pos, const T& v = T()) requires (N < 0)
+    {
+        containerData(self).insert(pos, v);
+    }
+
+    void erase(this auto&& self, uint pos) requires (N < 0)
+    {
+        containerData(self).erase(pos);
+    }
+
+    void clear(this auto&& self) requires (N < 0)
+    {
+        containerData(self).clear();
     }
 };
 

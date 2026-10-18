@@ -9,6 +9,7 @@
 #define VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H
 
 #include <vclib/mesh_v2/components/base/component.h>
+#include <vclib/mesh_v2/components/base/component_predicates.h>
 #include <vclib/mesh_v2/components/bit_flags.h>
 #include <vclib/mesh_v2/elements/base/element_proxy.h>
 #include <vclib/mesh_v2/iterators/element_iterator.h>
@@ -20,6 +21,11 @@
 #include <concepts>
 
 namespace vcl::meshv2 {
+
+namespace comp {
+template<int, std::unsigned_integral>
+class VertexReferences;
+}
 
 namespace detail {
 
@@ -484,12 +490,112 @@ private:
     template<typename>
     friend class ElementIterator;
 
+    template<int, std::unsigned_integral>
+    friend class comp::VertexReferences;
+
     std::size_t size() const { return mElemComponents.size(); }
 
     bool isDeleted(IndexType i) const
     {
         assert(i < size());
         return get<CompId::BIT_FLAGS>()[i][0];
+    }
+
+    // --- TTVC (Tied To Vertex Count) synchronization helpers ---
+
+    template<typename... Comps>
+    void resizeTTVCComponentsImpl(vcl::TypeWrapper<Comps...>, IndexType i, uint n)
+    {
+        assert(i < size());
+        auto p = element(i);
+        ([&]() {
+            if constexpr (comp::IsTiedToVertexCount<Comps>) {
+                if (isEnabled<Comps::COMPONENT_ID>()) {
+                    p.Comps::resize(n);
+                }
+            }
+        }(), ...);
+    }
+
+    template<typename... Comps>
+    void pushBackTTVCComponentsImpl(vcl::TypeWrapper<Comps...>, IndexType i)
+    {
+        assert(i < size());
+        auto p = element(i);
+        ([&]() {
+            if constexpr (comp::IsTiedToVertexCount<Comps>) {
+                if (isEnabled<Comps::COMPONENT_ID>()) {
+                    p.Comps::pushBack();
+                }
+            }
+        }(), ...);
+    }
+
+    template<typename... Comps>
+    void insertTTVCComponentsImpl(vcl::TypeWrapper<Comps...>, IndexType i, uint pos)
+    {
+        assert(i < size());
+        auto p = element(i);
+        ([&]() {
+            if constexpr (comp::IsTiedToVertexCount<Comps>) {
+                if (isEnabled<Comps::COMPONENT_ID>()) {
+                    p.Comps::insert(pos);
+                }
+            }
+        }(), ...);
+    }
+
+    template<typename... Comps>
+    void eraseTTVCComponentsImpl(vcl::TypeWrapper<Comps...>, IndexType i, uint pos)
+    {
+        assert(i < size());
+        auto p = element(i);
+        ([&]() {
+            if constexpr (comp::IsTiedToVertexCount<Comps>) {
+                if (isEnabled<Comps::COMPONENT_ID>()) {
+                    p.Comps::erase(pos);
+                }
+            }
+        }(), ...);
+    }
+
+    template<typename... Comps>
+    void clearTTVCComponentsImpl(vcl::TypeWrapper<Comps...>, IndexType i)
+    {
+        assert(i < size());
+        auto p = element(i);
+        ([&]() {
+            if constexpr (comp::IsTiedToVertexCount<Comps>) {
+                if (isEnabled<Comps::COMPONENT_ID>()) {
+                    p.Comps::clear();
+                }
+            }
+        }(), ...);
+    }
+
+    void resizeTTVCComponents(IndexType i, uint n)
+    {
+        resizeTTVCComponentsImpl(Components{}, i, n);
+    }
+
+    void pushBackTTVCComponents(IndexType i)
+    {
+        pushBackTTVCComponentsImpl(Components{}, i);
+    }
+
+    void insertTTVCComponents(IndexType i, uint pos)
+    {
+        insertTTVCComponentsImpl(Components{}, i, pos);
+    }
+
+    void eraseTTVCComponents(IndexType i, uint pos)
+    {
+        eraseTTVCComponentsImpl(Components{}, i, pos);
+    }
+
+    void clearTTVCComponents(IndexType i)
+    {
+        clearTTVCComponentsImpl(Components{}, i);
     }
 };
 

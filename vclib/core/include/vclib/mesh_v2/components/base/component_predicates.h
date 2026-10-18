@@ -99,6 +99,15 @@ concept ComponentReferencesElement = requires {
 };
 
 /**
+ * @brief Concept that checks whether a component Comp is tied to the vertex
+ * count (has static constexpr bool TIED_TO_VERTEX_COUNT = true).
+ */
+template<typename Comp>
+concept IsTiedToVertexCount = requires {
+    { std::remove_cvref_t<Comp>::TIED_TO_VERTEX_COUNT } -> std::convertible_to<bool>;
+} && std::remove_cvref_t<Comp>::TIED_TO_VERTEX_COUNT;
+
+/**
  * @brief Trait to find the index of a Component by its COMP_ID inside a
  * TypeWrapper.
  *
