@@ -10,6 +10,7 @@
 
 #include "../components/bit_flags.h"
 #include "../components/normal.h"
+#include "../components/polygon_bit_flags.h"
 #include "../components/triangle_bit_flags.h"
 #include "../components/vertex_references.h"
 
@@ -20,6 +21,8 @@ concept HasBitFlags = comp::HasBitFlags<T>;
 template<typename T>
 concept HasTriangleBitFlags = comp::HasTriangleBitFlags<T>;
 template<typename T>
+concept HasPolygonBitFlags = comp::HasPolygonBitFlags<T>;
+template<typename T>
 concept HasNormal = comp::HasNormal<T>;
 template<typename T>
 concept HasVertexReferences = comp::HasVertexReferences<T>;
@@ -28,9 +31,18 @@ concept HasTriangleVertexReferences = comp::HasTriangleVertexReferences<T>;
 template<typename T>
 concept HasPolygonVertexReferences = comp::HasPolygonVertexReferences<T>;
 
+/**
+ * @brief Concept that checks whether a type T (which can be a TypeWrapper of
+ * components, an ElementProxy, an ElementContainer, or a Mesh) has either the
+ * PolygonBitFlags or the TriangleBitFlags component.
+ */
+template<typename T>
+concept HasFaceBitFlags = HasTriangleBitFlags<T> || HasPolygonBitFlags<T>;
+
 /* Port BitFlags classes into face namespace */
 using BitFlags         = comp::BitFlags;
 using TriangleBitFlags = comp::TriangleBitFlags;
+using PolygonBitFlags  = comp::PolygonBitFlags<-1>;
 
 /* Port Normal classes into face namespace */
 template<typename ScalarType, int N>
