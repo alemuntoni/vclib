@@ -59,51 +59,10 @@ public:
     {
     }
 
-    /**
-     * @brief Sets the vertices of the face from a variable number of vertex
-     * proxies or vertex indices.
-     */
-    template<typename... Args>
-    requires (sizeof...(Args) > 1 && !IsConst<ContainerType>)
-    void setVertices(const Args&... args)
-    {
-        assert(Base::isValid());
-        this->setVertexIndices(toIndex(args)...);
-    }
-
-    /**
-     * @brief Sets the vertices of the face from a range of vertex proxies or
-     * vertex indices.
-     */
-    template<std::ranges::input_range Rng>
-    requires (!IsConst<ContainerType>)
-    void setVertices(Rng&& r)
-    {
-        assert(Base::isValid());
-        auto it = std::ranges::begin(r);
-        auto v0 = toIndex(*it++);
-        auto v1 = toIndex(*it++);
-        auto v2 = toIndex(*it);
-        this->setVertexIndices(v0, v1, v2);
-    }
-
 protected:
     Face(ContainerType& container, IndexType index) : Base(container, index) {}
 
 private:
-    // given a type V representing a vertex:
-    // - if it is a vertex proxy, return its index
-    // - if it is an index, return it directly
-    template<typename V>
-    static auto toIndex(const V& v)
-    {
-        if constexpr (requires { v.index(); }) {
-            return v.index();
-        }
-        else {
-            return v;
-        }
-    }
 
     /// friend classes declarations
 

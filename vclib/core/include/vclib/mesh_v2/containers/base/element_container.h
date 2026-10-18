@@ -84,7 +84,7 @@ public:
     decltype(auto) mesh() const requires (!std::is_void_v<ParentMesh>)
     {
         assert(mMesh != nullptr && "Parent mesh pointer is null");
-        return *mMesh;
+        return std::as_const(*mMesh);
     }
 
     /**

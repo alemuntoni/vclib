@@ -119,6 +119,27 @@ struct IndexOfCompId<COMP_ID, vcl::TypeWrapper<Components...>>
 };
 
 /**
+ * @brief Trait to extract the Component type with the given COMP_ID from a
+ * TypeWrapper or from an object that contains components (ElementProxy,
+ * ElementContainer, Mesh, etc.).
+ */
+template<uint COMP_ID, typename ComponentListWrapper>
+struct ComponentType;
+
+template<uint COMP_ID, typename... Components>
+struct ComponentType<COMP_ID, vcl::TypeWrapper<Components...>>
+{
+    using type = std::tuple_element_t<
+        IndexOfCompId<COMP_ID, vcl::TypeWrapper<Components...>>::value,
+        std::tuple<Components...>>;
+};
+
+template<uint COMP_ID, typename T>
+using ComponentTypeT = typename ComponentType<
+    COMP_ID,
+    typename detail::ComponentListHelper<T>::type>::type;
+
+/**
  * @brief Checks if the given object (ElementProxy, ElementContainer, Mesh...)
  * has the component COMPONENT_ID available (present and enabled).
  *

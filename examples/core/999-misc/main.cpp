@@ -61,6 +61,9 @@ int main()
     static_assert(meshv2::FaceConcept<MyMesh::ConstFace>);
     static_assert(meshv2::TriangleFaceConcept<MyMesh::Face>);
     static_assert(meshv2::TriangleFaceConcept<MyMesh::ConstFace>);
+    static_assert(meshv2::face::HasTriangleVertexReferences<MyMesh::Face>);
+    static_assert(meshv2::face::HasTriangleVertexReferences<MyMesh::ConstFace>);
+    static_assert(meshv2::face::HasTriangleVertexReferences<MyFaceComponents>);
 
     // Strong typing: Vertex and Face cannot be confused
     static_assert(!meshv2::VertexConcept<MyMesh::Face>);
@@ -165,7 +168,66 @@ int main()
     // Conversion from mutable Vertex to ConstVertex
     MyMesh::ConstVertex cvFromMutable = mesh.vertex(2);
     std::cout << "ConstVertex converted from mutable Vertex: index "
-              << cvFromMutable.index() << "\n\n";
+              << cvFromMutable.index() << "\n";
+
+    // Test vertexIndices() view (mutable vs const)
+    auto f0 = mesh.face(0);
+    f0.vertexIndices()[1] = 1; // Mutate via view operator[]
+    for (auto& vi : f0.vertexIndices()) {
+        static_assert(!std::is_const_v<std::remove_reference_t<decltype(vi)>>);
+        vi = vi; // Mutate via reference in range-for
+    }
+    std::cout << "VertexIndices view (const face):\n";
+    for (const auto& vi : constMesh.face(0).vertexIndices()) {
+        static_assert(std::is_const_v<std::remove_reference_t<decltype(vi)>>);
+        std::cout << "  Const face vertexIndex via view: " << vi << "\n";
+    }
+    std::cout << "\n";
+
+    // =========================================================================
+    // VertexReferences Component API Tests
+    // =========================================================================
+    std::cout << "--- VertexReferences Component API Tests ---\n";
+    auto testF = mesh.face(0);
+    // testF indices are (0, 1, 2)
+    assert(testF.vertexIndexMod(0) == 0);
+    assert(testF.vertexIndexMod(3) == 0);
+    assert(testF.vertexIndexMod(-1) == 2);
+    assert(testF.vertexIndexMod(-3) == 0);
+
+    assert(testF.containsVertex(0));
+    assert(testF.containsVertex(1));
+    assert(!testF.containsVertex(3));
+    assert(testF.containsVertex(mesh.vertex(2)));
+
+    assert(testF.indexOfVertex(0) == 0);
+    assert(testF.indexOfVertex(1) == 1);
+    assert(testF.indexOfVertex(2) == 2);
+    assert(testF.indexOfVertex(3) == UINT_NULL);
+
+    // Edge (0, 1) -> edge 0
+    // Edge (1, 2) -> edge 1
+    // Edge (2, 0) -> edge 2
+    assert(testF.indexOfEdge(0, 1) == 0);
+    assert(testF.indexOfEdge(1, 0) == 0);
+    assert(testF.indexOfEdge(1, 2) == 1);
+    assert(testF.indexOfEdge(2, 1) == 1);
+    assert(testF.indexOfEdge(2, 0) == 2);
+    assert(testF.indexOfEdge(0, 2) == 2);
+    assert(testF.indexOfEdge(0, 3) == UINT_NULL);
+
+    // Test setVertexMod
+    testF.setVertexMod(-1, 2);
+
+    // Test setVertices range
+    std::array<uint, 3> newIdxs = {0, 1, 2};
+    testF.setVertices(newIdxs);
+    assert(testF.vertexIndex(0) == 0 && testF.vertexIndex(1) == 1 && testF.vertexIndex(2) == 2);
+
+    // Test setVertices variadic
+    testF.setVertices(0, 1, 2);
+    assert(testF.vertexIndex(0) == 0 && testF.vertexIndex(1) == 1 && testF.vertexIndex(2) == 2);
+    std::cout << "All VertexReferences methods verified successfully!\n\n";
 
     // =========================================================================
     // Element Validity
