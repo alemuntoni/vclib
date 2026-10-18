@@ -10,12 +10,15 @@
 
 #include "../components/bit_flags.h"
 #include "../components/normal.h"
+#include "../components/triangle_bit_flags.h"
 #include "../components/vertex_references.h"
 
 namespace vcl::meshv2::face {
 
 template<typename T>
 concept HasBitFlags = comp::HasBitFlags<T>;
+template<typename T>
+concept HasTriangleBitFlags = comp::HasTriangleBitFlags<T>;
 template<typename T>
 concept HasNormal = comp::HasNormal<T>;
 template<typename T>
@@ -25,8 +28,9 @@ concept HasTriangleVertexReferences = comp::HasTriangleVertexReferences<T>;
 template<typename T>
 concept HasPolygonVertexReferences = comp::HasPolygonVertexReferences<T>;
 
-/* Port BitFlags class into face namespace */
-using BitFlags = comp::BitFlags;
+/* Port BitFlags classes into face namespace */
+using BitFlags         = comp::BitFlags;
+using TriangleBitFlags = comp::TriangleBitFlags;
 
 /* Port Normal classes into face namespace */
 template<typename ScalarType, int N>
