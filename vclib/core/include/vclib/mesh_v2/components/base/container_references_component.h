@@ -8,7 +8,9 @@
 #ifndef VCL_MESH_V2_COMPONENTS_BASE_CONTAINER_REFERENCES_COMPONENT_H
 #define VCL_MESH_V2_COMPONENTS_BASE_CONTAINER_REFERENCES_COMPONENT_H
 
-#include <vclib/mesh_v2/components/base/container_component.h>
+#include "container_component.h"
+#include "reference_vector.h"
+
 #include <vclib/mesh_v2/elements/base/base.h>
 
 #include <cassert>
@@ -28,22 +30,32 @@ namespace vcl::meshv2 {
  * providing a uniform, cache-friendly implementation of updateReferences for
  * mesh compaction.
  *
- * @tparam COMP_ID The unique identifier of the component.
- * @tparam Index The unsigned integral type used to store indices (default uint).
- * @tparam REF_ELEM_ID The ElemId of the referenced elements (e.g. ElemId::VERTEX).
- * @tparam N The size of the reference container: static (N >= 0) or dynamic (N < 0).
- * @tparam TTVC True if the component container size is tied to the vertex count.
+ * @tparam COMP_ID: The unique identifier of the component.
+ * @tparam Index: The unsigned integral type used to store indices (default
+ * uint).
+ * @tparam REF_ELEM_ID: The ElemId of the referenced elements (e.g.
+ * ElemId::VERTEX).
+ * @tparam N: The size of the reference container: static (N >= 0) or dynamic (N
+ * < 0).
+ * @tparam TTVC: True if the component container size is tied to the vertex
+ * count.
  */
 template<
-    uint COMP_ID,
+    uint                   COMP_ID,
     std::unsigned_integral Index,
-    uint REF_ELEM_ID,
-    int N = -1,
-    bool TTVC = false>
+    uint                   REF_ELEM_ID,
+    int                    N    = -1,
+    bool                   TTVC = false>
 class ContainerReferencesComponent :
-        public ContainerComponent<COMP_ID, Index, N, TTVC>
+        public ContainerComponent<
+            COMP_ID,
+            Index,
+            N,
+            TTVC,
+            ReferenceVector<Index, N>>
 {
-    using Base = ContainerComponent<COMP_ID, Index, N, TTVC>;
+    using Base =
+        ContainerComponent<COMP_ID, Index, N, TTVC, ReferenceVector<Index, N>>;
 
 public:
     using IndexType = Index;
@@ -60,7 +72,9 @@ protected:
      * mapping after compaction of the referenced element container.
      */
     template<uint TARGET_ELEM_ID>
-    void updateReferences(this auto&& self, const std::vector<IndexType>& newIndices)
+    void updateReferences(
+        this auto&&                   self,
+        const std::vector<IndexType>& newIndices)
     {
         if constexpr (TARGET_ELEM_ID == REF_ELEM_ID) {
             for (auto& ref : Base::containerData(self)) {
@@ -71,6 +85,7 @@ protected:
             }
         }
     }
+
     // --- High-level Element Proxy Access (via Parent Mesh) ---
 
     decltype(auto) referencedElement(this auto&& self, uint i)

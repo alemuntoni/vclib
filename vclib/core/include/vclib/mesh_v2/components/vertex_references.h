@@ -19,37 +19,84 @@
 namespace vcl::meshv2::comp {
 
 /**
- * @brief Component that stores indices to the 3 vertices of a triangular face.
+ * @brief The VertexReferences class represents a component that stores a
+ * container of indices or pointers to vertices that will be part of an Element
+ * (e.g. Face, Edge, Tetrahedron, etc.).
  *
- * It provides both direct access to the stored indices (vertexIndex,
- * vertexIndices) and high-level access to the referenced vertex proxies (vertex,
- * vertices) through the parent mesh.
+ * The container of Vertex references is a random access container that could
+ * have static or dynamic size, depending on the value of the template argument
+ * N (a negative number means dynamic).
  *
- * @tparam Index The unsigned integral type used to store indices (default uint).
+ * For example, if a Face element should represent only triangles, N could be
+ * 3. In this case, the container will have static size and it can't be resized
+ * in any way. If N is -1, the container will have dynamic size and it will be
+ * possible to resize it (e.g. if the Face element should represent a polygon).
+ *
+ * The member functions of this class will be available in the instance of any
+ * Element that will contain this component.
+ *
+ * For example, if you have a Face Element `f` that has the VertexReferences
+ * component, you'll be able to access to this component member functions from
+ * `f`:
+ *
+ * @code{.cpp}
+ * uint n = f.vertexCount();
+ * auto* v = f.vertex(0);
+ * uint vi = f.vertexIndex(0);
+ * @endcode
+ *
+ * @note This component is usually the main component of an Element, and
+ * therefore is automatically enabled in the Element's container and cannot be
+ * disabled.
+ *
+ * @note Several components are *Tied To Vertex Count*: in other words, they
+ * are composed by a container that has the same size of the VertexReferences
+ * and, when the VertexReferences container is resized, also the container of
+ * these components is resized automatically.
+ *
+ * @tparam N: The size of the container, that will represent the number of
+ * storable vertices. If negative, the container is dynamic.
+ * @tparam Index: The unsigned integral type used to store indices (default
+ * uint).
+ *
+ * @ingroup components
  */
-template<std::unsigned_integral Index = uint>
-class TriangleVertexReferences :
+template<int N, std::unsigned_integral Index = uint>
+class VertexReferences :
         public ContainerReferencesComponent<
             CompId::VERTEX_REFERENCES,
             Index,
             ElemId::VERTEX,
-            3,
+            N,
             false>
 {
     using Base = ContainerReferencesComponent<
         CompId::VERTEX_REFERENCES,
         Index,
         ElemId::VERTEX,
-        3,
+        N,
         false>;
 
 public:
-    using IndexType                    = Index;
-    static constexpr uint VERTEX_COUNT = 3;
+    using IndexType                   = Index;
+    static constexpr int VERTEX_COUNT = N;
 
-    uint vertexCount(this auto&&)
+    /* Constructors */
+
+    /**
+     * @brief Empty constructor.
+     *
+     * If the VertexReferences container size is static, initializes all the
+     * pointers/indices to `nullptr`/`UINT_NULL`, otherwise the container will
+     * be empty.
+     */
+    VertexReferences() = default;
+
+    /* Member functions */
+
+    uint vertexCount(this auto&& self)
     {
-        return VERTEX_COUNT;
+        return Base::containerData(self).size();
     }
 
     // --- Direct Index Access (works standalone without parent Mesh) ---
@@ -61,21 +108,21 @@ public:
 
     IndexType vertexIndex(this auto&& self, uint i)
     {
-        assert(i < 3);
+        assert(i < self.vertexCount());
         return self.vertexIndices()[i];
     }
 
     void setVertexIndex(this auto&& self, uint i, IndexType vIdx)
     {
-        assert(i < 3);
+        assert(i < self.vertexCount());
         self.vertexIndices()[i] = vIdx;
     }
 
     void setVertexIndices(
         this auto&& self,
-        IndexType v0,
-        IndexType v1,
-        IndexType v2)
+        IndexType   v0,
+        IndexType   v1,
+        IndexType   v2)
     {
         auto& refs = self.vertexIndices();
         refs[0]    = v0;
@@ -87,7 +134,7 @@ public:
 
     decltype(auto) vertex(this auto&& self, uint i)
     {
-        assert(i < 3);
+        assert(i < self.vertexCount());
         return self.referencedElement(i);
     }
 
@@ -97,6 +144,13 @@ public:
     }
 };
 
+// Specialization Aliases
+template<std::unsigned_integral Index = uint>
+using TriangleVertexReferences = VertexReferences<3, Index>;
+
+template<std::unsigned_integral Index = uint>
+using PolygonVertexReferences = VertexReferences<-1, Index>;
+
 /**
  * @brief Concept that checks whether a type T (which can be a TypeWrapper of
  * components, an ElementProxy, an ElementContainer, or a Mesh) has the
@@ -104,6 +158,16 @@ public:
  */
 template<typename T>
 concept HasVertexReferences = HasComponent<CompId::VERTEX_REFERENCES, T>;
+
+template<typename T>
+concept HasTriangleVertexReferences =
+    HasComponent<CompId::VERTEX_REFERENCES, T> &&
+    (RemoveRef<T>::VERTEX_COUNT == 3);
+
+template<typename T>
+concept HasPolygonVertexReferences =
+    HasComponent<CompId::VERTEX_REFERENCES, T> &&
+    (RemoveRef<T>::VERTEX_COUNT == -1);
 
 } // namespace vcl::meshv2::comp
 

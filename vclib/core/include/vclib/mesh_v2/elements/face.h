@@ -8,6 +8,8 @@
 #ifndef VCL_MESH_V2_ELEMENTS_FACE_H
 #define VCL_MESH_V2_ELEMENTS_FACE_H
 
+#include "face_components.h"
+
 #include <vclib/mesh_v2/components/bit_flags.h>
 #include <vclib/mesh_v2/components/vertex_references.h>
 #include <vclib/mesh_v2/elements/base/base.h>

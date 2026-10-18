@@ -29,11 +29,16 @@ namespace vcl::meshv2 {
  * @tparam TTVC True if the component's container size is tied to the vertex
  * count of the parent element.
  */
-template<uint COMP_ID, typename T, int N, bool TTVC>
-struct ContainerComponent : public Component<COMP_ID, vcl::Vector<T, N>>
+template<
+    uint COMP_ID,
+    typename T,
+    int  N,
+    bool TTVC,
+    typename Container = vcl::Vector<T, N>>
+struct ContainerComponent : public Component<COMP_ID, Container>
 {
     using ValueType                           = T;
-    using ContainerType                       = vcl::Vector<T, N>;
+    using ContainerType                       = Container;
     static constexpr int  SIZE                = N;
     static constexpr bool IS_DYNAMIC          = (N < 0);
     static constexpr bool TIED_TO_VERTEX_COUNT = TTVC;

@@ -23,13 +23,13 @@ using namespace vcl;
 // =============================================================================
 
 using MyVertexComponents = meshv2::VertexComponents<
-    meshv2::comp::BitFlags,
-    meshv2::comp::Position3f,
-    meshv2::comp::Normal3f>;
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3f,
+    meshv2::vert::Normal3f>;
 
 using MyFaceComponents = meshv2::FaceComponents<
-    meshv2::comp::BitFlags,
-    meshv2::comp::TriangleVertexReferences<uint>>;
+    meshv2::face::BitFlags,
+    meshv2::face::TriangleVertexReferences<uint>>;
 
 // =============================================================================
 // Step 2 & 3: Mesh definition from VertexContainer and FaceContainer
