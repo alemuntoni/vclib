@@ -54,9 +54,8 @@ private:
     void advanceForward()
     {
         if (mContainer) {
-            std::size_t sz = mContainer->size();
-            const auto& bitFlagsVec = mContainer->template get<CompId::BIT_FLAGS>();
-            while (mIndex < sz && bitFlagsVec[mIndex][comp::BitFlags::DELETED]) {
+            std::size_t sz = mContainer->elementContainerSize();
+            while (mIndex < sz && mContainer->isDeleted(mIndex)) {
                 ++mIndex;
             }
         }
@@ -65,8 +64,7 @@ private:
     void advanceBackward()
     {
         if (mContainer) {
-            const auto& bitFlagsVec = mContainer->template get<CompId::BIT_FLAGS>();
-            while (mIndex > 0 && bitFlagsVec[mIndex][comp::BitFlags::DELETED]) {
+            while (mIndex > 0 && mContainer->isDeleted(mIndex)) {
                 --mIndex;
             }
         }

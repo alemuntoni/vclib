@@ -64,7 +64,8 @@ public:
 
     static_assert(
         (ContainerIndexMatches<Rebound<Args>, IndexType> && ...),
-        "All element containers in a Mesh must share the exact same IndexType.");
+        "All element containers in a Mesh must share the exact same "
+        "IndexType.");
 
     /**
      * @brief Constructs an empty Mesh and connects all child containers.
@@ -240,17 +241,14 @@ public:
     requires (hasContainerOf<ELEM_ID>())
     bool isCompact() const
     {
-        return this->ContainerType<ELEM_ID>::isCompact();
+        return this->ContainerType<ELEM_ID>::isElementContainerCompact();
     }
 
     /**
      * @brief Compacts all containers in the mesh, removing all deleted elements
      * and updating all cross-container references.
      */
-    void compact()
-    {
-        (compactContainer<Rebound<Args>>(), ...);
-    }
+    void compact() { (compactContainer<Rebound<Args>>(), ...); }
 
     /**
      * @brief Compacts the container of elements having ID ELEM_ID.
@@ -259,7 +257,7 @@ public:
     requires (hasContainerOf<ELEM_ID>())
     auto compact()
     {
-        return this->ContainerType<ELEM_ID>::compact();
+        return this->ContainerType<ELEM_ID>::compactElements();
     }
 
     /**
@@ -354,13 +352,6 @@ public:
         ContainerType<ELEM_ID>::deleteElement(i);
     }
 
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    bool isDeleted(uint i) const
-    {
-        return ContainerType<ELEM_ID>::isDeleted(i);
-    }
-
     /* Element operations by proxy */
 
     template<ElementConcept El>
@@ -370,18 +361,11 @@ public:
         deleteElement<std::remove_cvref_t<El>::ELEMENT_ID>(e.index());
     }
 
-    template<ElementConcept El>
-    requires (hasContainerOf<std::remove_cvref_t<El>::ELEMENT_ID>())
-    bool isDeleted(const El& e) const
-    {
-        return isDeleted<std::remove_cvref_t<El>::ELEMENT_ID>(e.index());
-    }
-
 private:
     template<typename T>
     void setParentMeshPointer()
     {
-        if constexpr (requires { this->T::setMesh(this); }) {
+        if constexpr (ElementContainerConcept<T>) {
             this->T::setMesh(this);
         }
     }
@@ -394,7 +378,7 @@ private:
     template<typename T>
     void enableAllContainer()
     {
-        if constexpr (requires { this->T::enableAll(); }) {
+        if constexpr (ElementContainerConcept<T>) {
             this->T::enableAll();
         }
     }
@@ -402,7 +386,7 @@ private:
     template<typename T>
     void disableAllContainer()
     {
-        if constexpr (requires { this->T::disableAll(); }) {
+        if constexpr (ElementContainerConcept<T>) {
             this->T::disableAll();
         }
     }
@@ -410,11 +394,7 @@ private:
     template<typename T>
     bool isContainerCompact() const
     {
-        if constexpr (requires {
-                          {
-                              this->T::deletedElementCount()
-                          } -> std::convertible_to<std::size_t>;
-                      }) {
+        if constexpr (ElementContainerConcept<T>) {
             return this->T::deletedElementCount() == 0;
         }
         else {
@@ -425,23 +405,23 @@ private:
     template<typename T>
     void clearContainer()
     {
-        if constexpr (requires { this->T::clear(); }) {
-            this->T::clear();
+        if constexpr (ElementContainerConcept<T>) {
+            this->T::clearElements();
         }
     }
 
     template<typename T>
     void compactContainer()
     {
-        if constexpr (requires { this->T::compact(); }) {
-            this->T::compact();
+        if constexpr (ElementContainerConcept<T>) {
+            this->T::compactElements();
         }
     }
 
     template<typename T, uint ELEM_ID>
     void updateContainerReferences(const std::vector<IndexType>& newIndices)
     {
-        if constexpr (requires { this->T::template updateReferences<ELEM_ID>(newIndices); }) {
+        if constexpr (ElementContainerConcept<T>) {
             this->T::template updateReferences<ELEM_ID>(newIndices);
         }
     }
@@ -449,11 +429,7 @@ private:
     template<typename T>
     bool isContainerEmpty() const
     {
-        if constexpr (requires {
-                          {
-                              this->T::elementCount()
-                          } -> std::convertible_to<std::size_t>;
-                      }) {
+        if constexpr (ElementContainerConcept<T>) {
             return this->T::elementCount() == 0;
         }
         else {
