@@ -51,6 +51,15 @@ using SimpleMesh = meshv2::Mesh<
     meshv2::VertexContainer<SimpleVertexComponents>,
     meshv2::FaceContainer<MyFaceComponents>>;
 
+template<typename T>
+concept CanCallBitFlags = requires(T t) { t.bitFlags(); };
+
+template<typename T>
+concept CanCallPositions = requires(T t) { t.positions(); };
+
+template<typename T>
+concept CanCallNormals = requires(T t) { t.normals(); };
+
 int main()
 {
     // =========================================================================
@@ -226,6 +235,69 @@ int main()
     }
 
     // =========================================================================
+    // ElementContainerProxy & ComponentView Tests
+    // =========================================================================
+
+    std::cout << "\n--- ElementContainerProxy & ComponentView Tests ---\n";
+
+    // 1. Direct indexing on ElementContainerProxy
+    assert(mesh.vertices().size() == 4);
+    assert(mesh.vertices()[0].position() == Point3f(0.0f, 0.0f, 1.0f));
+    assert(mesh.faces().size() == 2);
+    assert(mesh.faces()[0].vertexIndex(0) == 0);
+
+    // 2. Positions ComponentView
+    auto posView = mesh.vertices().positions();
+    assert(posView.size() == 4);
+    assert(posView.isEnabled());
+    assert(posView[0] == Point3f(0.0f, 0.0f, 1.0f));
+    assert(posView.data() != nullptr);
+    assert(posView.data()[0] == Point3f(0.0f, 0.0f, 1.0f));
+
+    // Test mutation via positions operator[]
+    posView[0] = Point3f(0.1f, 0.2f, 1.3f);
+    assert(mesh.vertex(0).position() == Point3f(0.1f, 0.2f, 1.3f));
+    posView[0] = Point3f(0.0f, 0.0f, 1.0f); // restore
+
+    // Iterate directly over positions
+    std::size_t posCount = 0;
+    for (Point3f& p : mesh.vertices().positions()) {
+        static_assert(!std::is_const_v<std::remove_reference_t<decltype(p)>>);
+        std::cout << "  Iterated position: " << p << "\n";
+        ++posCount;
+    }
+    assert(posCount == 4);
+
+    // 3. Normals & Colors ComponentView
+    auto normView = mesh.vertices().normals();
+    assert(normView.size() == 4);
+    assert(normView[0] == Point3f(0.0f, 0.0f, 1.0f));
+
+    auto colView = mesh.vertices().colors();
+    assert(colView.size() == 4);
+    assert(colView[0] == Color::Blue);
+    assert(colView[1] == Color::Green);
+
+    // Face colors and vertex references
+    auto faceColView = mesh.faces().colors();
+    assert(faceColView.size() == 2);
+    assert(faceColView[0] == Color::DarkRed);
+
+    auto faceRefsView = mesh.faces().vertexReferences();
+    assert(faceRefsView.size() == 2);
+    assert(faceRefsView[0][0] == 0 && faceRefsView[0][1] == 1 && faceRefsView[0][2] == 2);
+    assert(faceRefsView.data() != nullptr);
+
+    // 4. Compile-time constraints on ElementContainerProxy
+    static_assert(!CanCallBitFlags<decltype(mesh.vertices())>);
+    static_assert(!CanCallPositions<decltype(mesh.faces())>);
+    static_assert(!CanCallNormals<decltype(SimpleMesh{}.vertices())>);
+    static_assert(CanCallPositions<decltype(mesh.vertices())>);
+    static_assert(CanCallNormals<decltype(mesh.vertices())>);
+
+    std::cout << "ElementContainerProxy and ComponentView verified successfully!\n";
+
+    // =========================================================================
     // Const Correctness
     // =========================================================================
 
@@ -241,6 +313,16 @@ int main()
     static_assert(std::is_same_v<decltype(constMesh.vertex(0).color()), const vcl::Color&>);
     assert(constMesh.face(0).color() == Color::DarkRed);
     static_assert(std::is_same_v<decltype(constMesh.face(0).color()), const vcl::Color&>);
+
+    // Const ComponentView tests
+    auto constPosView = constMesh.vertices().positions();
+    assert(constPosView.size() == 4);
+    assert(constPosView[0] == Point3f(0.0f, 0.0f, 1.0f));
+    static_assert(std::is_same_v<decltype(constPosView[0]), const Point3f&>);
+    static_assert(std::is_same_v<decltype(constPosView.data()), const Point3f*>);
+    for (const Point3f& p : constMesh.vertices().positions()) {
+        static_assert(std::is_const_v<std::remove_reference_t<decltype(p)>>);
+    }
 
     // Access returns ConstVertex / ConstFace proxies
     MyMesh::ConstVertex cv0 = constMesh.vertex(0);
@@ -381,6 +463,22 @@ int main()
         std::cout << "  Vertex " << v.index()
                   << " (deleted: " << (v.deleted() ? "yes" : "no") << ")\n";
     }
+
+    // Test ComponentView jumping deleted elements
+    assert(mesh.vertices().positions().size() == 3);
+    assert(mesh.vertices(false).positions().size() == 4);
+    std::size_t activePosCount = 0;
+    for (auto& p : mesh.vertices().positions()) {
+        std::cout << "  Active vertex position via view: " << p << "\n";
+        ++activePosCount;
+    }
+    assert(activePosCount == 3);
+
+    std::size_t allPosCount = 0;
+    for (auto& p : mesh.vertices(false).positions()) {
+        ++allPosCount;
+    }
+    assert(allPosCount == 4);
 
     // =========================================================================
     // Mesh Compaction & Reference Remapping

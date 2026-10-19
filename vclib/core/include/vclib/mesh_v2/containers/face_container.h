@@ -82,7 +82,10 @@ public:
     void deleteFace(Index i) { Base::deleteElement(i); }
     void deleteFace(const Face& f) { Base::deleteElement(f.index()); }
 
-    auto faces(bool jumpDeleted = true) { return Base::elements(jumpDeleted); }
+    auto faces(bool jumpDeleted = true)
+    {
+        return Base::elements(jumpDeleted);
+    }
 
     auto faces(bool jumpDeleted = true) const
     {

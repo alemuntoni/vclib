@@ -8,6 +8,9 @@
 #ifndef VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H
 #define VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H
 
+#include "component_view.h"
+#include "element_container_proxy.h"
+
 #include <vclib/mesh_v2/components/base/component.h>
 #include <vclib/mesh_v2/components/base/component_predicates.h>
 #include <vclib/mesh_v2/components/bit_flags.h>
@@ -479,12 +482,12 @@ protected:
 
     auto elements(bool jumpDeleted = true)
     {
-        return vcl::View(begin(jumpDeleted), end());
+        return ElementContainerProxy<ElementContainer>(*this, jumpDeleted);
     }
 
     auto elements(bool jumpDeleted = true) const
     {
-        return vcl::View(begin(jumpDeleted), end());
+        return ElementContainerProxy<const ElementContainer>(*this, jumpDeleted);
     }
 
 
@@ -503,6 +506,15 @@ protected:
 private:
     template<typename>
     friend class ElementIterator;
+
+    template<uint, typename>
+    friend class ComponentIterator;
+
+    template<uint, typename>
+    friend class ComponentView;
+
+    template<typename>
+    friend class ElementContainerProxy;
 
     template<int, std::unsigned_integral>
     friend class comp::VertexReferences;
