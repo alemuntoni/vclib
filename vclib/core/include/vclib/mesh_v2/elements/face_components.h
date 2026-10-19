@@ -30,6 +30,8 @@ concept HasNormal = comp::HasNormal<T>;
 template<typename T>
 concept HasVertexReferences = comp::HasVertexReferences<T>;
 template<typename T>
+concept HasStaticVertexReferences = comp::HasStaticVertexReferences<T>;
+template<typename T>
 concept HasTriangleVertexReferences = comp::HasTriangleVertexReferences<T>;
 template<typename T>
 concept HasPolygonVertexReferences = comp::HasPolygonVertexReferences<T>;

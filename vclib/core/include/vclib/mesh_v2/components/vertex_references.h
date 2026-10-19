@@ -521,6 +521,11 @@ template<typename T>
 concept HasVertexReferences = HasComponent<CompId::VERTEX_REFERENCES, T>;
 
 template<typename T>
+concept HasStaticVertexReferences =
+    HasComponent<CompId::VERTEX_REFERENCES, T> &&
+    (ComponentTypeT<CompId::VERTEX_REFERENCES, T>::VERTEX_COUNT > 0);
+
+template<typename T>
 concept HasTriangleVertexReferences =
     HasComponent<CompId::VERTEX_REFERENCES, T> &&
     (ComponentTypeT<CompId::VERTEX_REFERENCES, T>::VERTEX_COUNT == 3);

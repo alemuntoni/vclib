@@ -51,6 +51,14 @@ using SimpleMesh = meshv2::Mesh<
     meshv2::VertexContainer<SimpleVertexComponents>,
     meshv2::FaceContainer<MyFaceComponents>>;
 
+using PolyFaceComponents = meshv2::FaceComponents<
+    meshv2::face::PolygonBitFlags,
+    meshv2::face::PolygonVertexReferences<uint>>;
+
+using PolyMesh = meshv2::Mesh<
+    meshv2::VertexContainer<SimpleVertexComponents>,
+    meshv2::FaceContainer<PolyFaceComponents>>;
+
 template<typename T>
 concept CanCallBitFlags = requires(T t) { t.bitFlags(); };
 
@@ -59,6 +67,9 @@ concept CanCallPositions = requires(T t) { t.positions(); };
 
 template<typename T>
 concept CanCallNormals = requires(T t) { t.normals(); };
+
+template<typename T>
+concept CanCallVertexIndices = requires(T t) { t.vertexIndices(); };
 
 int main()
 {
@@ -283,10 +294,10 @@ int main()
     assert(faceColView.size() == 2);
     assert(faceColView[0] == Color::DarkRed);
 
-    auto faceRefsView = mesh.faces().vertexReferences();
-    assert(faceRefsView.size() == 2);
-    assert(faceRefsView[0][0] == 0 && faceRefsView[0][1] == 1 && faceRefsView[0][2] == 2);
-    assert(faceRefsView.data() != nullptr);
+    auto faceIndicesView = mesh.faces().vertexIndices();
+    assert(faceIndicesView.size() == 2);
+    assert(faceIndicesView[0][0] == 0 && faceIndicesView[0][1] == 1 && faceIndicesView[0][2] == 2);
+    assert(faceIndicesView.data() != nullptr);
 
     // 4. Compile-time constraints on ElementContainerProxy
     static_assert(!CanCallBitFlags<decltype(mesh.vertices())>);
@@ -294,6 +305,8 @@ int main()
     static_assert(!CanCallNormals<decltype(SimpleMesh{}.vertices())>);
     static_assert(CanCallPositions<decltype(mesh.vertices())>);
     static_assert(CanCallNormals<decltype(mesh.vertices())>);
+    static_assert(CanCallVertexIndices<decltype(mesh.faces())>);
+    static_assert(!CanCallVertexIndices<decltype(PolyMesh{}.faces())>);
 
     std::cout << "ElementContainerProxy and ComponentView verified successfully!\n";
 

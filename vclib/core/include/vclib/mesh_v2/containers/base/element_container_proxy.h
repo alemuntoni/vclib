@@ -122,10 +122,11 @@ public:
     }
 
     /**
-     * @brief Returns a ComponentView over the vertex references of the
-     * elements.
+     * @brief Returns a ComponentView over the vertex indices of the elements.
+     * Available only for elements with a static/fixed number of vertices
+     * (e.g. triangles, quads), representing a contiguous Index Buffer.
      */
-    auto vertexReferences() const requires comp::HasVertexReferences<Container>
+    auto vertexIndices() const requires comp::HasStaticVertexReferences<Container>
     {
         return component<CompId::VERTEX_REFERENCES>();
     }
