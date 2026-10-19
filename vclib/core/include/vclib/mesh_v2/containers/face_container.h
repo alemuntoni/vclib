@@ -33,7 +33,7 @@ template<
     std::unsigned_integral Index = uint,
     typename ParentMesh          = void>
 class FaceContainer :
-    protected ElementContainer<
+    public ElementContainer<
         typename comp::detail::ComponentListHelper<CompList>::type,
         ParentMesh,
         Index,
@@ -45,16 +45,15 @@ class FaceContainer :
         Index,
         Face>;
 
+protected:
+    using Base::get;
+
 public:
     using FaceComponents = CompList;
     using Face           = typename Base::ProxyType;
     using ConstFace      = typename Base::ConstProxyType;
     using FaceType_      = Face;
     using ConstFaceType  = ConstFace;
-    using IndexType        = Index;
-    using ParentMeshType   = ParentMesh;
-
-    static constexpr uint ELEMENT_ID = ElemId::FACE;
 
     template<typename NewParent>
     using Rebind = FaceContainer<CompList, Index, NewParent>;

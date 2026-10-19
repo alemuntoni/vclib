@@ -9,6 +9,7 @@
 #define VCL_MESH_V2_ELEMENTS_VERTEX_COMPONENTS_H
 
 #include "../components/bit_flags.h"
+#include "../components/color.h"
 #include "../components/normal.h"
 #include "../components/position.h"
 
@@ -17,12 +18,17 @@ namespace vcl::meshv2::vert {
 template<typename T>
 concept HasBitFlags = comp::HasBitFlags<T>;
 template<typename T>
+concept HasColor = comp::HasColor<T>;
+template<typename T>
 concept HasNormal = comp::HasNormal<T>;
 template<typename T>
 concept HasPosition = comp::HasPosition<T>;
 
 /* Port BitFlags class into vert namespace */
 using BitFlags = comp::BitFlags;
+
+/* Port Color class into vert namespace */
+using Color = comp::Color;
 
 /* Port Normal classes into vert namespace */
 template<typename ScalarType, int N>

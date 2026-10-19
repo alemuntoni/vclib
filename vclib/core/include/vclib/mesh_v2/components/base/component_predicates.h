@@ -16,6 +16,16 @@ namespace vcl::meshv2::comp {
 
 namespace detail {
 
+template<uint COMP_ID, typename T>
+inline constexpr bool HasComponentImpl = requires {
+    requires std::remove_cvref_t<T>::COMPONENT_ID == COMP_ID;
+};
+
+template<uint COMP_ID, typename... Components>
+inline constexpr bool
+    HasComponentImpl<COMP_ID, vcl::TypeWrapper<Components...>> =
+    (HasComponentImpl<COMP_ID, Components> || ...);
+
 // Helper details for finding the index of a Component by COMP_ID in a list of
 // Components. It recursively checks each component's COMPONENT_ID against the
 // target COMP_ID, incrementing the CurrentIndex until a match is found or the
@@ -27,7 +37,7 @@ template<uint COMP_ID, uint CurrentIndex, typename First, typename... Rest>
 struct IndexOfCompIdImpl<COMP_ID, CurrentIndex, First, Rest...>
 {
     static constexpr uint value =
-        (First::COMPONENT_ID == COMP_ID) ?
+        HasComponentImpl<COMP_ID, First> ?
             CurrentIndex :
             IndexOfCompIdImpl<COMP_ID, CurrentIndex + 1, Rest...>::value;
 };
@@ -66,16 +76,6 @@ private:
 public:
     using type = decltype(helper());
 };
-
-template<uint COMP_ID, typename T>
-inline constexpr bool HasComponentImpl = requires {
-    requires std::remove_cvref_t<T>::COMPONENT_ID == COMP_ID;
-};
-
-template<uint COMP_ID, typename... Components>
-inline constexpr bool
-    HasComponentImpl<COMP_ID, vcl::TypeWrapper<Components...>> =
-    ((Components::COMPONENT_ID == COMP_ID) || ...);
 
 } // namespace detail
 

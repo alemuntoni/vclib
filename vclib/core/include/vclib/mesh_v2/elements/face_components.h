@@ -9,6 +9,7 @@
 #define VCL_MESH_V2_ELEMENTS_FACE_COMPONENTS_H
 
 #include "../components/bit_flags.h"
+#include "../components/color.h"
 #include "../components/normal.h"
 #include "../components/polygon_bit_flags.h"
 #include "../components/triangle_bit_flags.h"
@@ -22,6 +23,8 @@ template<typename T>
 concept HasTriangleBitFlags = comp::HasTriangleBitFlags<T>;
 template<typename T>
 concept HasPolygonBitFlags = comp::HasPolygonBitFlags<T>;
+template<typename T>
+concept HasColor = comp::HasColor<T>;
 template<typename T>
 concept HasNormal = comp::HasNormal<T>;
 template<typename T>
@@ -43,6 +46,9 @@ concept HasFaceBitFlags = HasTriangleBitFlags<T> || HasPolygonBitFlags<T>;
 using BitFlags         = comp::BitFlags;
 using TriangleBitFlags = comp::TriangleBitFlags;
 using PolygonBitFlags  = comp::PolygonBitFlags<-1>;
+
+/* Port Color class into face namespace */
+using Color = comp::Color;
 
 /* Port Normal classes into face namespace */
 template<typename ScalarType, int N>

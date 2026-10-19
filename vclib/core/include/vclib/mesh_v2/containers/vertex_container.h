@@ -33,7 +33,7 @@ template<
     std::unsigned_integral Index = uint,
     typename ParentMesh          = void>
 class VertexContainer :
-    protected ElementContainer<
+    public ElementContainer<
         typename comp::detail::ComponentListHelper<CompList>::type,
         ParentMesh,
         Index,
@@ -45,16 +45,15 @@ class VertexContainer :
         Index,
         Vertex>;
 
+protected:
+    using Base::get;
+
 public:
     using VertexComponents = CompList;
     using Vertex           = typename Base::ProxyType;
     using ConstVertex      = typename Base::ConstProxyType;
     using VertexType_      = Vertex;
     using ConstVertexType  = ConstVertex;
-    using IndexType        = Index;
-    using ParentMeshType   = ParentMesh;
-
-    static constexpr uint ELEMENT_ID = ElemId::VERTEX;
 
     template<typename NewParent>
     using Rebind = VertexContainer<CompList, Index, NewParent>;

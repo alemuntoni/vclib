@@ -8,9 +8,7 @@
 #ifndef VCL_MESH_V2_MESH_COMPONENTS_COLOR_H
 #define VCL_MESH_V2_MESH_COMPONENTS_COLOR_H
 
-#include <vclib/mesh_v2/components/base/component_predicates.h>
-
-#include <vclib/space/core.h>
+#include <vclib/mesh_v2/components/color.h>
 
 namespace vcl::meshv2::mesh {
 
@@ -62,7 +60,9 @@ public:
  * @ingroup components_concepts
  */
 template<typename T>
-concept HasColor = comp::HasComponent<CompId::COLOR, T>;
+concept HasColor = comp::HasColor<T>;
+
+using comp::isColorAvailableOn;
 
 } // namespace vcl::meshv2::mesh
 

@@ -27,6 +27,14 @@ public:
     static constexpr uint COMPONENT_ID = COMP_ID;
 };
 
+/**
+ * @brief Concept that checks whether a type T is a Component (has COMPONENT_ID).
+ */
+template<typename T>
+concept ComponentConcept = requires {
+    { std::remove_cvref_t<T>::COMPONENT_ID } -> std::convertible_to<uint>;
+};
+
 } // namespace vcl::meshv2
 
 #endif // VCL_MESH_V2_COMPONENTS_BASE_COMPONENT_H

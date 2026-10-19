@@ -67,7 +67,8 @@ class Mesh : public detail::RebindContainer<Args, Mesh<Args...>>...
     template<typename T>
     struct IsMeshComponentPred
     {
-        static constexpr bool value = !ElementContainerConcept<T>;
+        static constexpr bool value =
+            !ElementContainerConcept<T> && ComponentConcept<T>;
     };
 
 public:
@@ -241,6 +242,20 @@ public:
      */
     void disableAll() { (disableAllContainer<Rebound<Args>>(), ...); }
 
+    /**
+     * @brief Enables all the optional components of this Mesh that are also
+     * available and enabled in the other mesh m.
+     *
+     * @tparam OtherMeshType The type of the mesh from which to copy component
+     * states.
+     * @param[in] m The other mesh to check.
+     */
+    template<typename OtherMeshType>
+    void enableSameOptionalComponentsOf(const OtherMeshType& m)
+    {
+        (enableSameOptionalComponentsOfContainer<Rebound<Args>>(m), ...);
+    }
+
     /* Unified mesh state */
 
     /**
@@ -406,6 +421,17 @@ private:
     {
         if constexpr (ElementContainerConcept<T>) {
             this->T::disableAll();
+        }
+    }
+
+    template<typename Cont, typename OtherMeshType>
+    void enableSameOptionalComponentsOfContainer(const OtherMeshType& m)
+    {
+        if constexpr (ElementContainerConcept<Cont>) {
+            if constexpr (OtherMeshType::template hasContainerOf<Cont::ELEMENT_ID>()) {
+                this->Cont::enableSameOptionalComponentsOf(
+                    m.template container<Cont::ELEMENT_ID>());
+            }
         }
     }
 

@@ -26,11 +26,13 @@ using namespace vcl;
 using MyVertexComponents = meshv2::VertexComponents<
     meshv2::vert::BitFlags,
     meshv2::vert::Position3f,
-    meshv2::vert::Normal3f>;
+    meshv2::vert::Normal3f,
+    meshv2::vert::Color>;
 
 using MyFaceComponents = meshv2::FaceComponents<
     meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<uint>>;
+    meshv2::face::TriangleVertexReferences<uint>,
+    meshv2::face::Color>;
 
 // =============================================================================
 // Step 2 & 3: Mesh definition from Containers and Mesh-level components
@@ -40,6 +42,14 @@ using MyMesh = meshv2::Mesh<
     meshv2::VertexContainer<MyVertexComponents>,
     meshv2::FaceContainer<MyFaceComponents>,
     meshv2::mesh::Color>;
+
+using SimpleVertexComponents = meshv2::VertexComponents<
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3f>;
+
+using SimpleMesh = meshv2::Mesh<
+    meshv2::VertexContainer<SimpleVertexComponents>,
+    meshv2::FaceContainer<MyFaceComponents>>;
 
 int main()
 {
@@ -77,11 +87,32 @@ int main()
     static_assert(meshv2::HasTriangles<MyMesh>);
     static_assert(meshv2::MeshConcept<MyMesh>);
 
-    // Mesh-level Components Concepts
+    // Color Component Concepts
     static_assert(meshv2::mesh::HasColor<MyMesh>);
     static_assert(meshv2::mesh::HasColor<meshv2::mesh::Color>);
-    static_assert(!meshv2::mesh::HasColor<MyMesh::Vertex>);
-    static_assert(!meshv2::mesh::HasColor<MyMesh::Face>);
+    static_assert(!meshv2::mesh::HasColor<SimpleMesh>);
+
+    static_assert(meshv2::vert::HasColor<MyMesh::Vertex>);
+    static_assert(meshv2::vert::HasColor<MyMesh::ConstVertex>);
+    static_assert(meshv2::vert::HasColor<MyVertexComponents>);
+    static_assert(!meshv2::vert::HasColor<SimpleMesh::Vertex>);
+
+    static_assert(meshv2::face::HasColor<MyMesh::Face>);
+    static_assert(meshv2::face::HasColor<MyMesh::ConstFace>);
+    static_assert(meshv2::face::HasColor<MyFaceComponents>);
+
+    // Container and Component Concepts
+    static_assert(meshv2::ElementContainerConcept<
+                  MyMesh::ContainerType<meshv2::ElemId::VERTEX>>);
+    static_assert(meshv2::ElementContainerConcept<
+                  MyMesh::ContainerType<meshv2::ElemId::FACE>>);
+    static_assert(!meshv2::ElementContainerConcept<meshv2::mesh::Color>);
+    static_assert(meshv2::ComponentConcept<meshv2::mesh::Color>);
+    static_assert(!meshv2::ComponentConcept<
+                  MyMesh::ContainerType<meshv2::ElemId::VERTEX>>);
+    static_assert(!meshv2::ComponentConcept<
+                  MyMesh::ContainerType<meshv2::ElemId::FACE>>);
+    static_assert(std::is_same_v<MyMesh::Components, vcl::TypeWrapper<meshv2::mesh::Color>>);
 
     // =========================================================================
     // Create and Populate MyMesh
@@ -122,11 +153,40 @@ int main()
     assert(meshv2::mesh::isColorAvailableOn(mesh));
     assert(meshv2::comp::isColorAvailableOn(mesh));
 
+    // 4. Setting Vertex and Face Colors
+    assert((!mesh.isEnabled<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+    assert(!meshv2::comp::isColorAvailableOn(mesh.vertex(0)));
+    mesh.enable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
+    assert((mesh.isEnabled<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+    assert(meshv2::comp::isColorAvailableOn(mesh.vertex(0)));
+
+    mesh.vertex(0).color() = Color::Blue;
+    mesh.vertex(1).color() = Color::Green;
+    mesh.vertex(2).color() = Color::Yellow;
+    mesh.vertex(3).color() = Color::Cyan;
+    assert(mesh.vertex(0).color() == Color::Blue);
+    assert(mesh.vertex(1).color() == Color::Green);
+
+    assert((!mesh.isEnabled<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+    assert(!meshv2::comp::isColorAvailableOn(mesh.face(0)));
+    mesh.enable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>();
+    assert((mesh.isEnabled<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+    assert(meshv2::comp::isColorAvailableOn(mesh.face(0)));
+
+    mesh.face(0).color() = Color::DarkRed;
+    mesh.face(1).color() = Color::DarkBlue;
+    assert(mesh.face(0).color() == Color::DarkRed);
+    assert(mesh.face(1).color() == Color::DarkBlue);
+
     std::cout << "--- MyMesh Created ---\n";
     std::cout << "Vertices: " << mesh.vertexCount() << ", Faces: " << mesh.faceCount() << "\n";
     std::cout << "Mesh color: (" << (int)mesh.color().red() << ", "
               << (int)mesh.color().green() << ", " << (int)mesh.color().blue() << ", "
-              << (int)mesh.color().alpha() << ")\n\n";
+              << (int)mesh.color().alpha() << ")\n";
+    std::cout << "Vertex 0 color: (" << (int)mesh.vertex(0).color().red() << ", "
+              << (int)mesh.vertex(0).color().green() << ", " << (int)mesh.vertex(0).color().blue() << ")\n";
+    std::cout << "Face 0 color: (" << (int)mesh.face(0).color().red() << ", "
+              << (int)mesh.face(0).color().green() << ", " << (int)mesh.face(0).color().blue() << ")\n\n";
 
     // =========================================================================
     // Topological Navigation (Face -> Vertex)
@@ -175,6 +235,12 @@ int main()
     // Mesh color const correctness
     assert(constMesh.color() == Color::Red);
     static_assert(std::is_same_v<decltype(constMesh.color()), const vcl::Color&>);
+
+    // Vertex & Face color const correctness
+    assert(constMesh.vertex(0).color() == Color::Blue);
+    static_assert(std::is_same_v<decltype(constMesh.vertex(0).color()), const vcl::Color&>);
+    assert(constMesh.face(0).color() == Color::DarkRed);
+    static_assert(std::is_same_v<decltype(constMesh.face(0).color()), const vcl::Color&>);
 
     // Access returns ConstVertex / ConstFace proxies
     MyMesh::ConstVertex cv0 = constMesh.vertex(0);
@@ -366,6 +432,31 @@ int main()
               << formatVIdx(mesh.face(0).vertexIndex(0)) << ", "
               << formatVIdx(mesh.face(0).vertexIndex(1)) << ", "
               << formatVIdx(mesh.face(0).vertexIndex(2)) << ")\n";
+
+    // =========================================================================
+    // enableSameOptionalComponentsOf Tests
+    // =========================================================================
+
+    std::cout << "\n--- enableSameOptionalComponentsOf Tests ---\n";
+    MyMesh meshWithNormals;
+    meshWithNormals.enable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
+    assert((meshWithNormals.isEnabled<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+
+    MyMesh meshWithoutNormals;
+    assert((!meshWithoutNormals.isEnabled<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+
+    // 1. Mesh-level enableSameOptionalComponentsOf
+    meshWithoutNormals.enableSameOptionalComponentsOf(meshWithNormals);
+    assert((meshWithoutNormals.isEnabled<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    std::cout << "Successfully enabled Normal component on mesh matching other mesh!\n";
+
+    // 2. Test with a mesh that does not have the component (remains disabled)
+    SimpleMesh simpleMesh;
+    MyMesh meshTestedAgainstSimple;
+    assert((!meshTestedAgainstSimple.isEnabled<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    meshTestedAgainstSimple.enableSameOptionalComponentsOf(simpleMesh);
+    assert((!meshTestedAgainstSimple.isEnabled<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    std::cout << "Verified that components absent in source mesh remain disabled!\n";
 
     std::cout << "\nAll mesh tests passed successfully!\n";
     return 0;

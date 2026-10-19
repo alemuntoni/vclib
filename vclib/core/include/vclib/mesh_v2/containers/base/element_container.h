@@ -85,11 +85,113 @@ public:
 
     static constexpr uint ELEMENT_ID = ProxyType::ELEMENT_ID;
 
+    /**
+     * @brief Returns the vector for the given component ID.
+     */
+    template<uint COMP_ID>
+    auto& get()
+    {
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
+        return mElemComponents.template get<N>();
+    }
+
+    template<uint COMP_ID>
+    const auto& get() const
+    {
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
+        return mElemComponents.template get<N>();
+    }
+
+protected:
     ElementContainer()
     {
         // BitFlags is mandatory and always enabled
         enable<CompId::BIT_FLAGS>();
     }
+
+    decltype(auto) mesh() requires (!std::is_void_v<ParentMesh>)
+    {
+        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
+        return *mParentMesh;
+    }
+
+    decltype(auto) mesh() const requires (!std::is_void_v<ParentMesh>)
+    {
+        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
+        return std::as_const(*mParentMesh);
+    }
+
+    void setMesh(ParentMesh* mesh) { mParentMesh = mesh; }
+
+    /**
+     * @brief Enables the component with the given COMP_ID.
+     */
+    template<uint COMP_ID>
+    void enable()
+    {
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
+        mElemComponents.template enable<N>();
+    }
+
+    /**
+     * @brief Disables the component with the given COMP_ID.
+     * Note: BitFlags cannot be disabled.
+     */
+    template<uint COMP_ID>
+    void disable()
+    {
+        static_assert(
+            COMP_ID != CompId::BIT_FLAGS,
+            "BitFlags component cannot be disabled");
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
+        mElemComponents.template disable<N>();
+    }
+
+    /**
+     * @brief Checks if the component with the given COMP_ID is enabled.
+     */
+    template<uint COMP_ID>
+    bool isEnabled() const
+    {
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
+        return mElemComponents.template isEnabled<N>();
+    }
+
+    void enableAll() { mElemComponents.enableAll(); }
+
+    void disableAll()
+    {
+        mElemComponents.disableAll();
+        // Keep BitFlags enabled
+        enable<CompId::BIT_FLAGS>();
+    }
+
+    /**
+     * @brief Enables in this container all the optional components that are
+     * available and enabled in the given other container.
+     *
+     * @tparam OtherContainer The type of the container to check against.
+     * @param[in] other The other container.
+     */
+    template<typename OtherContainer>
+    void enableSameOptionalComponentsOf(const OtherContainer& other)
+    {
+        enableSameOptionalComponentsOfImpl(Components{}, other);
+    }
+
+    template<uint TARGET_ELEM_ID>
+    void updateReferences(const std::vector<IndexType>& newIndices)
+    {
+        if constexpr (ProxyType::template referencesElement<TARGET_ELEM_ID>()) {
+            for (std::size_t i = 0; i < size(); ++i) {
+                element(i).template updateReferences<TARGET_ELEM_ID>(
+                    newIndices);
+            }
+        }
+    }
+
+
+    /* Members that are inherited and renamed/wrapped by derived element containers */
 
     /**
      * @brief Returns a const proxy of the element at the i-th position in
@@ -385,92 +487,6 @@ public:
         return vcl::View(begin(jumpDeleted), end());
     }
 
-    // other members... understand if they need to be public
-
-    void setMesh(ParentMesh* mesh) { mParentMesh = mesh; }
-
-    decltype(auto) mesh() requires (!std::is_void_v<ParentMesh>)
-    {
-        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
-        return *mParentMesh;
-    }
-
-    decltype(auto) mesh() const requires (!std::is_void_v<ParentMesh>)
-    {
-        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
-        return std::as_const(*mParentMesh);
-    }
-
-    /**
-     * @brief Returns the vector for the given component ID.
-     */
-    template<uint COMP_ID>
-    auto& get()
-    {
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
-        return mElemComponents.template get<N>();
-    }
-
-    template<uint COMP_ID>
-    const auto& get() const
-    {
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
-        return mElemComponents.template get<N>();
-    }
-
-    /**
-     * @brief Enables the component with the given COMP_ID.
-     */
-    template<uint COMP_ID>
-    void enable()
-    {
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
-        mElemComponents.template enable<N>();
-    }
-
-    /**
-     * @brief Disables the component with the given COMP_ID.
-     * Note: BitFlags cannot be disabled.
-     */
-    template<uint COMP_ID>
-    void disable()
-    {
-        static_assert(
-            COMP_ID != CompId::BIT_FLAGS,
-            "BitFlags component cannot be disabled");
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
-        mElemComponents.template disable<N>();
-    }
-
-    /**
-     * @brief Checks if the component with the given COMP_ID is enabled.
-     */
-    template<uint COMP_ID>
-    bool isEnabled() const
-    {
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
-        return mElemComponents.template isEnabled<N>();
-    }
-
-    void enableAll() { mElemComponents.enableAll(); }
-
-    void disableAll()
-    {
-        mElemComponents.disableAll();
-        // Keep BitFlags enabled
-        enable<CompId::BIT_FLAGS>();
-    }
-
-    template<uint TARGET_ELEM_ID>
-    void updateReferences(const std::vector<IndexType>& newIndices)
-    {
-        if constexpr (ProxyType::template referencesElement<TARGET_ELEM_ID>()) {
-            for (std::size_t i = 0; i < size(); ++i) {
-                element(i).template updateReferences<TARGET_ELEM_ID>(
-                    newIndices);
-            }
-        }
-    }
 
     ProxyType operator[](IndexType i)
     {
@@ -484,14 +500,18 @@ public:
         return ConstProxyType(*this, i);
     }
 
-
-
 private:
     template<typename>
     friend class ElementIterator;
 
     template<int, std::unsigned_integral>
     friend class comp::VertexReferences;
+
+    template<typename CT, typename CLW>
+    friend class ElementProxy;
+
+    template<uint CID, std::unsigned_integral I, uint RID, int N, bool TTVC>
+    friend class ContainerReferencesComponent;
 
     std::size_t size() const { return mElemComponents.size(); }
 
@@ -596,6 +616,24 @@ private:
     void clearTTVCComponents(IndexType i)
     {
         clearTTVCComponentsImpl(Components{}, i);
+    }
+
+    template<typename... Comps, typename OtherContainer>
+    void enableSameOptionalComponentsOfImpl(
+        vcl::TypeWrapper<Comps...>,
+        const OtherContainer& other)
+    {
+        auto enableIfAvailableInOther = [&]<typename Comp>() {
+            if (!this->template isEnabled<Comp::COMPONENT_ID>()) {
+                if constexpr (comp::HasComponent<Comp::COMPONENT_ID, OtherContainer>) {
+                    if (comp::isComponentAvailableOn<Comp::COMPONENT_ID>(other)) {
+                        this->template enable<Comp::COMPONENT_ID>();
+                    }
+                }
+            }
+        };
+
+        (enableIfAvailableInOther.template operator()<Comps>(), ...);
     }
 };
 
