@@ -55,12 +55,30 @@ class Mesh : public detail::RebindContainer<Args, Mesh<Args...>>...
         typename detail::FindContainer<ElemId::VERTEX, Rebound<Args>...>::type;
 
     template<typename T, typename ExpectedIndex>
-    static constexpr bool ContainerIndexMatches =
-        (!requires { typename T::IndexType; }) ||
-        std::is_same_v<typename T::IndexType, ExpectedIndex>;
+    static constexpr bool ContainerIndexMatches = []() {
+        if constexpr (ElementContainerConcept<T>) {
+            return std::is_same_v<typename T::IndexType, ExpectedIndex>;
+        }
+        else {
+            return true;
+        }
+    }();
+
+    template<typename T>
+    struct IsMeshComponentPred
+    {
+        static constexpr bool value = !ElementContainerConcept<T>;
+    };
 
 public:
     using IndexType = typename VertexContainerType::IndexType;
+
+    /**
+     * @brief Components is a TypeWrapper that wraps all mesh-level components.
+     */
+    using Components = typename FilterTypesByCondition<
+        IsMeshComponentPred,
+        TypeWrapper<Rebound<Args>...>>::type;
 
     static_assert(
         (ContainerIndexMatches<Rebound<Args>, IndexType> && ...),

@@ -15,6 +15,7 @@
 #include <vclib/mesh_v2/containers/face_container.h>
 #include <vclib/mesh_v2/containers/vertex_container.h>
 #include <vclib/mesh_v2/mesh.h>
+#include <vclib/mesh_v2/mesh_components.h>
 
 using namespace vcl;
 
@@ -32,12 +33,13 @@ using MyFaceComponents = meshv2::FaceComponents<
     meshv2::face::TriangleVertexReferences<uint>>;
 
 // =============================================================================
-// Step 2 & 3: Mesh definition from VertexContainer and FaceContainer
+// Step 2 & 3: Mesh definition from Containers and Mesh-level components
 // =============================================================================
 
 using MyMesh = meshv2::Mesh<
     meshv2::VertexContainer<MyVertexComponents>,
-    meshv2::FaceContainer<MyFaceComponents>>;
+    meshv2::FaceContainer<MyFaceComponents>,
+    meshv2::mesh::Color>;
 
 int main()
 {
@@ -75,6 +77,12 @@ int main()
     static_assert(meshv2::HasTriangles<MyMesh>);
     static_assert(meshv2::MeshConcept<MyMesh>);
 
+    // Mesh-level Components Concepts
+    static_assert(meshv2::mesh::HasColor<MyMesh>);
+    static_assert(meshv2::mesh::HasColor<meshv2::mesh::Color>);
+    static_assert(!meshv2::mesh::HasColor<MyMesh::Vertex>);
+    static_assert(!meshv2::mesh::HasColor<MyMesh::Face>);
+
     // =========================================================================
     // Create and Populate MyMesh
     // =========================================================================
@@ -108,8 +116,17 @@ int main()
     // Face 1: set using vertices
     mesh.face(1).setVertices(mesh.vertex(1), mesh.vertex(3), mesh.vertex(2));
 
+    // 3. Setting mesh-level Color
+    mesh.color() = Color::Red;
+    assert(mesh.color() == Color::Red);
+    assert(meshv2::mesh::isColorAvailableOn(mesh));
+    assert(meshv2::comp::isColorAvailableOn(mesh));
+
     std::cout << "--- MyMesh Created ---\n";
-    std::cout << "Vertices: " << mesh.vertexCount() << ", Faces: " << mesh.faceCount() << "\n\n";
+    std::cout << "Vertices: " << mesh.vertexCount() << ", Faces: " << mesh.faceCount() << "\n";
+    std::cout << "Mesh color: (" << (int)mesh.color().red() << ", "
+              << (int)mesh.color().green() << ", " << (int)mesh.color().blue() << ", "
+              << (int)mesh.color().alpha() << ")\n\n";
 
     // =========================================================================
     // Topological Navigation (Face -> Vertex)
@@ -154,6 +171,10 @@ int main()
 
     std::cout << "\n--- Const Correctness Test ---\n";
     const MyMesh& constMesh = mesh;
+
+    // Mesh color const correctness
+    assert(constMesh.color() == Color::Red);
+    static_assert(std::is_same_v<decltype(constMesh.color()), const vcl::Color&>);
 
     // Access returns ConstVertex / ConstFace proxies
     MyMesh::ConstVertex cv0 = constMesh.vertex(0);
@@ -246,24 +267,29 @@ int main()
 
     std::cout << "\n--- Mesh Copy & Swap Tests ---\n";
     MyMesh meshCopy = mesh;
+    assert(meshCopy.color() == Color::Red);
     std::cout << "Copied mesh face 0 vertex 0 pos: "
               << meshCopy.face(0).vertex(0).position() << "\n";
 
     MyMesh meshMoved = std::move(meshCopy);
+    assert(meshMoved.color() == Color::Red);
     std::cout << "Moved mesh face 0 vertex 0 pos: "
               << meshMoved.face(0).vertex(0).position() << "\n";
 
     MyMesh meshSwapped;
     swap(meshMoved, meshSwapped);
+    assert(meshSwapped.color() == Color::Red);
     std::cout << "Swapped mesh vertices: " << meshSwapped.vertexCount() << "\n";
 
     // Copy & Swap assignment tests
     MyMesh meshAssigned;
     meshAssigned = mesh; // Copy assignment
+    assert(meshAssigned.color() == Color::Red);
     std::cout << "Copy-assigned mesh vertices: " << meshAssigned.vertexCount() << "\n";
 
     MyMesh meshMoveAssigned;
     meshMoveAssigned = std::move(meshAssigned); // Move assignment
+    assert(meshMoveAssigned.color() == Color::Red);
     std::cout << "Move-assigned mesh vertices: " << meshMoveAssigned.vertexCount() << "\n";
 
     // =========================================================================

@@ -68,7 +68,9 @@ public:
 };
 
 template<uint COMP_ID, typename T>
-inline constexpr bool HasComponentImpl = false;
+inline constexpr bool HasComponentImpl = requires {
+    requires std::remove_cvref_t<T>::COMPONENT_ID == COMP_ID;
+};
 
 template<uint COMP_ID, typename... Components>
 inline constexpr bool
