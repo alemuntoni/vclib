@@ -14,6 +14,7 @@
 #include <vclib/mesh_v2/components/base/component.h>
 #include <vclib/mesh_v2/components/base/component_predicates.h>
 #include <vclib/mesh_v2/components/bit_flags.h>
+#include <vclib/mesh_v2/components/vertex_references.h>
 #include <vclib/mesh_v2/elements/base/element_proxy.h>
 #include <vclib/mesh_v2/iterators/element_iterator.h>
 
@@ -24,11 +25,6 @@
 #include <concepts>
 
 namespace vcl::meshv2 {
-
-namespace comp {
-template<int, std::unsigned_integral>
-class VertexReferences;
-}
 
 namespace detail {
 
@@ -112,89 +108,7 @@ protected:
         enable<CompId::BIT_FLAGS>();
     }
 
-    decltype(auto) mesh() requires (!std::is_void_v<ParentMesh>)
-    {
-        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
-        return *mParentMesh;
-    }
-
-    decltype(auto) mesh() const requires (!std::is_void_v<ParentMesh>)
-    {
-        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
-        return std::as_const(*mParentMesh);
-    }
-
-    void setMesh(ParentMesh* mesh) { mParentMesh = mesh; }
-
-    /**
-     * @brief Enables the component with the given COMP_ID.
-     */
-    template<uint COMP_ID>
-    void enable()
-    {
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
-        mElemComponents.template enable<N>();
-    }
-
-    /**
-     * @brief Disables the component with the given COMP_ID.
-     * Note: BitFlags cannot be disabled.
-     */
-    template<uint COMP_ID>
-    void disable()
-    {
-        static_assert(
-            COMP_ID != CompId::BIT_FLAGS,
-            "BitFlags component cannot be disabled");
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
-        mElemComponents.template disable<N>();
-    }
-
-    /**
-     * @brief Checks if the component with the given COMP_ID is enabled.
-     */
-    template<uint COMP_ID>
-    bool isEnabled() const
-    {
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
-        return mElemComponents.template isEnabled<N>();
-    }
-
-    void enableAll() { mElemComponents.enableAll(); }
-
-    void disableAll()
-    {
-        mElemComponents.disableAll();
-        // Keep BitFlags enabled
-        enable<CompId::BIT_FLAGS>();
-    }
-
-    /**
-     * @brief Enables in this container all the optional components that are
-     * available and enabled in the given other container.
-     *
-     * @tparam OtherContainer The type of the container to check against.
-     * @param[in] other The other container.
-     */
-    template<typename OtherContainer>
-    void enableSameOptionalComponentsOf(const OtherContainer& other)
-    {
-        enableSameOptionalComponentsOfImpl(Components{}, other);
-    }
-
-    template<uint TARGET_ELEM_ID>
-    void updateReferences(const std::vector<IndexType>& newIndices)
-    {
-        if constexpr (ProxyType::template referencesElement<TARGET_ELEM_ID>()) {
-            for (std::size_t i = 0; i < size(); ++i) {
-                element(i).template updateReferences<TARGET_ELEM_ID>(
-                    newIndices);
-            }
-        }
-    }
-
-
-    /* Members that are inherited and renamed/wrapped by derived element containers */
+    /* Members that are inherited and wrapped by derived element containers */
 
     /**
      * @brief Returns a const proxy of the element at the i-th position in
@@ -463,33 +377,190 @@ protected:
     // TODO: append
     // TODO: serialize and deserialize
 
-    // Iterators
+    /**
+     * @brief Returns an iterator to the beginning of the container.
+     *
+     * The iterator is automatically initialized to jump deleted elements of the
+     * container. You can change this option by calling this function with
+     * jumpDeleted=false.
+     *
+     * @param[in] jumpDeleted (def: true): boolean that tells if the iterator
+     * should jump deleted elements.
+     * @return An iterator the the first element of the container.
+     */
     Iterator begin(bool jumpDeleted = true)
     {
         bool needJump = jumpDeleted && (size() != elementCount());
         return Iterator(*this, 0, needJump);
     }
 
+    /**
+     * @brief Returns an iterator to the end of the container.
+     * @return An iterator to the end of the container.
+     */
     Iterator end() { return Iterator(*this, size(), false); }
 
+    /**
+     * @brief Returns a const iterator to the beginning of the container.
+     *
+     * The iterator is automatically initialized to jump deleted elements of the
+     * container. You can change this option by calling this function with
+     * jumpDeleted=false.
+     *
+     * @param[in] jumpDeleted (def: true): boolean that tells if the iterator
+     * should jump deleted elements.
+     * @return A const iterator the the first element of the container.
+     */
     ConstIterator begin(bool jumpDeleted = true) const
     {
         bool needJump = jumpDeleted && (size() != elementCount());
         return ConstIterator(*this, 0, needJump);
     }
 
+    /**
+     * @brief Returns a const iterator to the end of the container.
+     * @return A const iterator to the end of the container.
+     */
     ConstIterator end() const { return ConstIterator(*this, size(), false); }
 
+    /**
+     * @brief Returns a ElementContainerProxy object that allows to iterate over
+     * the elements of the containers, providing two member functions begin()
+     * and end(), and allows access to the vector of components.
+     *
+     * This member function is very useful when you want to iterate over the
+     * elements using the C++ foreach syntax:
+     *
+     * @code{.cpp}
+     * for (Element& f : m.elements()){
+     *     // do something with this element
+     * }
+     * @endcode
+     *
+     * The iterator used to iterate over elements is automatically initialized
+     * to jump deleted elements of the container. You can change this option by
+     * calling this function with jumpDeleted=false.
+     *
+     * @param[in] jumpDeleted (def: true): boolean that tells if the iterator
+     * should jump deleted elements.
+     * @return An object having begin() and end() function, allowing to iterate
+     * over the container.
+     */
     auto elements(bool jumpDeleted = true)
     {
         return ElementContainerProxy<ElementContainer>(*this, jumpDeleted);
     }
 
+    /**
+     * @brief Returns a ElementContainerProxy object that allows to iterate over
+     * the elements of the containers, providing two member functions begin()
+     * and end(), and allows access to the vector of components.
+     *
+     * This member function is very useful when you want to iterate over the
+     * elements using the C++ foreach syntax:
+     *
+     * @code{.cpp}
+     * for (Element& f : m.elements()){
+     *     // do something with this element
+     * }
+     * @endcode
+     *
+     * The iterator used to iterate over elements is automatically initialized
+     * to jump deleted elements of the container. You can change this option by
+     * calling this function with jumpDeleted=false.
+     *
+     * @param[in] jumpDeleted (def: true): boolean that tells if the iterator
+     * should jump deleted elements.
+     * @return An object having begin() and end() function, allowing to iterate
+     * over the container.
+     */
     auto elements(bool jumpDeleted = true) const
     {
         return ElementContainerProxy<const ElementContainer>(*this, jumpDeleted);
     }
 
+    // TODO: missing elements(begin, end)
+
+    decltype(auto) mesh() requires (!std::is_void_v<ParentMesh>)
+    {
+        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
+        return *mParentMesh;
+    }
+
+    decltype(auto) mesh() const requires (!std::is_void_v<ParentMesh>)
+    {
+        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
+        return std::as_const(*mParentMesh);
+    }
+
+    void setMesh(ParentMesh* mesh) { mParentMesh = mesh; }
+
+    /**
+     * @brief Checks if the component with the given COMP_ID is enabled.
+     */
+    template<uint COMP_ID>
+    bool isEnabled() const
+    {
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
+        return mElemComponents.template isEnabled<N>();
+    }
+
+    /**
+     * @brief Enables the component with the given COMP_ID.
+     */
+    template<uint COMP_ID>
+    void enable()
+    {
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
+        mElemComponents.template enable<N>();
+    }
+
+    /**
+     * @brief Disables the component with the given COMP_ID.
+     * Note: BitFlags cannot be disabled.
+     */
+    template<uint COMP_ID>
+    void disable()
+    {
+        static_assert(
+            COMP_ID != CompId::BIT_FLAGS,
+            "BitFlags component cannot be disabled");
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
+        mElemComponents.template disable<N>();
+    }
+
+    void enableAll() { mElemComponents.enableAll(); }
+
+    void disableAll()
+    {
+        mElemComponents.disableAll();
+        // Keep BitFlags enabled
+        enable<CompId::BIT_FLAGS>();
+    }
+
+    /**
+     * @brief Enables in this container all the optional components that are
+     * available and enabled in the given other container.
+     *
+     * @tparam OtherContainer The type of the container to check against.
+     * @param[in] other The other container.
+     */
+    template<typename OtherContainer>
+    void enableSameOptionalComponentsOf(const OtherContainer& other)
+    {
+        enableSameOptionalComponentsOfImpl(Components{}, other);
+    }
+
+    template<uint TARGET_ELEM_ID>
+    void updateReferences(const std::vector<IndexType>& newIndices)
+    {
+        if constexpr (ProxyType::template referencesElement<TARGET_ELEM_ID>()) {
+            for (std::size_t i = 0; i < size(); ++i) {
+                element(i).template updateReferences<TARGET_ELEM_ID>(
+                    newIndices);
+            }
+        }
+    }
 
     ProxyType operator[](IndexType i)
     {
