@@ -8,7 +8,20 @@
 get_filename_component(EXAMPLE_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(vclib-core-example-${EXAMPLE_NAME})
 
-set(SOURCES main.cpp)
+set(SOURCES
+    types.h
+    test_concepts.h
+    test_navigation.h
+    test_container_proxy.h
+    test_const_correctness.h
+    test_vertex_references.h
+    test_lifetime.h
+    test_deletion_compaction.h
+    test_optional_components.h
+    test_add_elements.h
+    test_import_from.h
+    main.cpp
+)
 
 vclib_add_example(
     ${EXAMPLE_NAME}
