@@ -50,6 +50,15 @@ public:
      * @return A reference to the color of the mesh.
      */
     decltype(auto) color(this auto&& self) { return (self.mColor); }
+
+protected:
+    template<typename OtherMesh>
+    void importFrom(this auto&& self, const OtherMesh& m)
+    {
+        if constexpr (comp::HasColor<OtherMesh>) {
+            self.mColor = m.color();
+        }
+    }
 };
 
 /**

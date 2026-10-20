@@ -172,6 +172,7 @@ public:
         return Base::elements(jumpDeleted);
     }
 
+protected:
     /**
      * @brief Imports all faces from the corresponding container of the
      * other mesh into this container.
@@ -188,7 +189,6 @@ public:
         manageImportTriFromPoly(m);
     }
 
-protected:
     /**
      * @brief Manages conversion from polygonal or n-gon faces to triangles
      * when importing into a triangle mesh.

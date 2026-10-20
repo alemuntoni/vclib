@@ -256,6 +256,21 @@ public:
         (enableSameOptionalComponentsOfContainer<Rebound<Args>>(m), ...);
     }
 
+    /**
+     * @brief Imports all the data (elements and mesh-level components) from the
+     * input Mesh m to this Mesh.
+     *
+     * This function calls, for each Container and Component of the mesh, its
+     * importFrom function.
+     *
+     * @param[in] m The mesh from which to import all the data.
+     */
+    template<typename OtherMeshType>
+    void importFrom(const OtherMeshType& m)
+    {
+        (importFromHelper<Rebound<Args>>(m), ...);
+    }
+
     /* Unified mesh state */
 
     /**
@@ -454,6 +469,12 @@ private:
                     m.template container<Cont::ELEMENT_ID>());
             }
         }
+    }
+
+    template<typename BaseType, typename OtherMeshType>
+    void importFromHelper(const OtherMeshType& m)
+    {
+        this->BaseType::importFrom(m);
     }
 
     template<typename T>

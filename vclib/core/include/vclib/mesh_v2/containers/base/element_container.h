@@ -209,6 +209,13 @@ public:
      */
     std::size_t deletedElementCount() const { return size() - elementCount(); }
 
+protected:
+    ElementContainer()
+    {
+        // BitFlags is mandatory and always enabled
+        enable<CompId::BIT_FLAGS>();
+    }
+
     /**
      * @brief Imports all elements from the corresponding container of the
      * other mesh into this container.
@@ -229,13 +236,6 @@ public:
             }
             mElemCount = c.elementCount();
         }
-    }
-
-protected:
-    ElementContainer()
-    {
-        // BitFlags is mandatory and always enabled
-        enable<CompId::BIT_FLAGS>();
     }
 
     /* Members that are inherited and wrapped by derived element containers */

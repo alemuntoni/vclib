@@ -755,7 +755,7 @@ int main()
         assert(mDestTri.face(0).vertexIndex(1) == 8);
         assert(mDestTri.face(0).vertexIndex(2) == 9);
 
-        // 5. Container-level importFrom
+        // 5. Mesh-level importFrom
         TriBitMesh mTriSource;
         mTriSource.addVertices(3);
         mTriSource.vertex(0).position() = Point3f(1, 2, 3);
@@ -766,21 +766,20 @@ int main()
         mTriSource.face(0).edgeSelected(1) = true;
 
         TriBitMesh mTriDest;
-        mTriDest.container<vcl::meshv2::ElemId::VERTEX>().importFrom(mTriSource);
+        mTriDest.importFrom(mTriSource);
         assert(mTriDest.container<vcl::meshv2::ElemId::VERTEX>().elementContainerSize() == 3);
         assert(mTriDest.vertex(0).position() == Point3f(1, 2, 3));
         assert(mTriDest.vertex(1).position() == Point3f(4, 5, 6));
         assert(mTriDest.vertex(1).selected() == true);
         assert(mTriDest.vertex(0).selected() == false);
 
-        mTriDest.container<vcl::meshv2::ElemId::FACE>().importFrom(mTriSource);
         assert(mTriDest.container<vcl::meshv2::ElemId::FACE>().elementContainerSize() == 1);
         assert(mTriDest.face(0).vertexIndex(0) == 0);
         assert(mTriDest.face(0).vertexIndex(1) == 1);
         assert(mTriDest.face(0).vertexIndex(2) == 2);
         assert(mTriDest.face(0).edgeSelected(1) == true);
 
-        // 6. Triangulation on importFrom (PolyMesh to TriMesh)
+        // 6. Triangulation on importFrom (PolyMesh to TriMesh at mesh level)
         {
             PolyMesh polySource;
             polySource.addVertices(5);
@@ -794,10 +793,8 @@ int main()
             polySource.addFace(0, 1, 2, 3, 4);
 
             TriBitMesh triDest;
-            triDest.container<vcl::meshv2::ElemId::VERTEX>().importFrom(polySource);
+            triDest.importFrom(polySource);
             assert(triDest.vertexCount() == 5);
-
-            triDest.container<vcl::meshv2::ElemId::FACE>().importFrom(polySource);
             assert(triDest.faceCount() == 3);
             assert(triDest.faceContainerSize() == 3);
 
@@ -824,8 +821,7 @@ int main()
             polyMixed.addFace(3, 4, 5, 6); // quad (4 vertices)
 
             TriBitMesh triMixed;
-            triMixed.container<vcl::meshv2::ElemId::VERTEX>().importFrom(polyMixed);
-            triMixed.container<vcl::meshv2::ElemId::FACE>().importFrom(polyMixed);
+            triMixed.importFrom(polyMixed);
             assert(triMixed.faceCount() == 3);
             assert(triMixed.faceContainerSize() == 3);
             assert(triMixed.face(0).vertexIndex(0) == 0);
@@ -833,7 +829,21 @@ int main()
             assert(triMixed.face(0).vertexIndex(2) == 2);
         }
 
-        std::cout << "ElementProxy, ElementContainer and FaceContainer triangulation importFrom verified successfully!\n";
+        // 7. Mesh-level component import (Color)
+        {
+            MyMesh m1;
+            m1.color() = Color::Red;
+            m1.addVertices(3);
+            m1.addFace(0, 1, 2);
+
+            MyMesh m2;
+            m2.importFrom(m1);
+            assert(m2.color() == Color::Red);
+            assert(m2.vertexCount() == 3);
+            assert(m2.faceCount() == 1);
+        }
+
+        std::cout << "ElementProxy and Mesh-level importFrom verified successfully!\n";
     }
 
     std::cout << "\nAll mesh tests passed successfully!\n";
