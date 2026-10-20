@@ -31,15 +31,13 @@ namespace vcl::meshv2 {
  * @ingroup elements
  */
 template<typename ContainerType>
-class Face : public ElementProxy<ContainerType>
+class Face : public ElementProxy<ElemId::FACE, ContainerType>
 {
-    using Base = ElementProxy<ContainerType>;
+    using Base = ElementProxy<ElemId::FACE, ContainerType>;
 
 public:
     using typename Base::Components;
     using typename Base::IndexType;
-
-    static constexpr uint ELEMENT_ID = ElemId::FACE;
 
     static_assert(
         comp::HasVertexReferences<Components>,
@@ -59,6 +57,18 @@ public:
     {
     }
 
+    template<typename OtherElement>
+    void importFrom(const OtherElement& other, bool importRefs = true)
+        requires (!std::is_const_v<ContainerType>)
+    {
+        if constexpr (
+            comp::HasPolygonVertexReferences<Components> &&
+            comp::HasVertexReferences<OtherElement>) {
+            this->resizeVertices(other.vertexCount());
+        }
+        Base::importFrom(other, importRefs);
+    }
+
 protected:
     Face(ContainerType& container, IndexType index) : Base(container, index) {}
 
@@ -66,7 +76,7 @@ private:
 
     /// friend classes declarations
 
-    template<typename, typename>
+    template<uint, typename, typename>
     friend class ElementProxy;
 
     template<

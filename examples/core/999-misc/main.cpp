@@ -681,45 +681,34 @@ int main()
         mDouble.addVertex(Point3d(1.5, 2.5, 3.5));
 
         MyMesh mFloat;
+        mFloat.enableAll();
         mFloat.addVertex(Point3f(0.0f, 0.0f, 0.0f));
 
-        // Call Position::importFrom directly through element proxy:
-        mFloat.vertex(0).vcl::meshv2::comp::Position3f::importFrom(mDouble.vertex(0));
-        assert(mFloat.vertex(0).position() == Point3f(1.5f, 2.5f, 3.5f));
-
-        // 2. Normal importFrom
-        mFloat.enableAll();
-        // importing from element without Normal should do nothing
-        mFloat.vertex(0).normal() = Point3f(0, 1, 0);
-        mFloat.vertex(0).vcl::meshv2::comp::Normal3f::importFrom(mDouble.vertex(0));
-        assert(mFloat.vertex(0).normal() == Point3f(0, 1, 0));
-
-        // import from element with Normal
+        // 1. ElementProxy::importFrom on Vertex:
+        // mFloat has Position, BitFlags, Normal (optional).
+        // mSource has Position, BitFlags, Normal, Color.
         MyMesh mSource;
         mSource.enableAll();
-        mSource.addVertex(Point3f(0, 0, 0));
-        mSource.vertex(0).normal() = Point3f(1, 0, 0);
-        mFloat.vertex(0).vcl::meshv2::comp::Normal3f::importFrom(mSource.vertex(0));
-        assert(mFloat.vertex(0).normal() == Point3f(1, 0, 0));
-
-        // 3. Color importFrom
+        mSource.addVertex(Point3f(1.5f, 2.5f, 3.5f));
+        mSource.vertex(0).normal() = Point3f(1.0f, 0.0f, 0.0f);
         mSource.vertex(0).color() = vcl::Color::Green;
-        mFloat.vertex(0).vcl::meshv2::comp::Color::importFrom(mSource.vertex(0));
-        assert(mFloat.vertex(0).color() == vcl::Color::Green);
-
-        // 4. BitFlags importFrom
         mSource.vertex(0).selected() = true;
         mSource.vertex(0).visited() = true;
         mSource.vertex(0).onBorder() = true;
         mSource.vertex(0).userBit(3) = true;
-        mFloat.vertex(0).vcl::meshv2::comp::BitFlags::importFrom(mSource.vertex(0));
+
+        mFloat.vertex(0).position() = Point3f(0, 0, 0);
+        mFloat.vertex(0).normal() = Point3f(0, 0, 0);
+        mFloat.vertex(0).importFrom(mSource.vertex(0));
+        assert(mFloat.vertex(0).position() == Point3f(1.5f, 2.5f, 3.5f));
+        assert(mFloat.vertex(0).normal() == Point3f(1.0f, 0.0f, 0.0f));
         assert(mFloat.vertex(0).selected() == true);
         assert(mFloat.vertex(0).visited() == true);
         assert(mFloat.vertex(0).onBorder() == true);
         assert(mFloat.vertex(0).userBit(3) == true);
         assert(mFloat.vertex(0).userBit(2) == false);
 
-        // 5. TriangleBitFlags & PolygonBitFlags importFrom
+        // 2. ElementProxy::importFrom on Face (Triangle to Poly)
         using TriBitMesh = vcl::meshv2::Mesh<
             vcl::meshv2::VertexContainer<vcl::TypeWrapper<
                 vcl::meshv2::comp::Position3f,
@@ -737,63 +726,61 @@ int main()
         mSourceTri.face(0).edgeSelected(2) = true;
         mSourceTri.face(0).edgeFaux(0) = true;
 
-        polyMesh.face(0).vcl::meshv2::comp::PolygonBitFlags<>::importFrom(mSourceTri.face(0));
+        polyMesh.face(0).importFrom(mSourceTri.face(0));
+        assert(polyMesh.face(0).vertexCount() == 3);
+        assert(polyMesh.face(0).vertexIndex(0) == 0);
+        assert(polyMesh.face(0).vertexIndex(1) == 1);
+        assert(polyMesh.face(0).vertexIndex(2) == 2);
         assert(polyMesh.face(0).edgeOnBorder(1) == true);
         assert(polyMesh.face(0).edgeSelected(2) == true);
         assert(polyMesh.face(0).edgeFaux(0) == true);
 
-        // PolygonBitFlags back to TriangleBitFlags
+        // 3. Poly (3 vertices) to Triangle
         TriBitMesh mDestTri;
         mDestTri.addVertices(3);
-        mDestTri.addFace(0, 1, 2);
-        mDestTri.face(0).vcl::meshv2::comp::TriangleBitFlags::importFrom(polyMesh.face(0));
+        mDestTri.addFace(9, 9, 9);
+        mDestTri.face(0).importFrom(polyMesh.face(0));
+        assert(mDestTri.face(0).vertexIndex(0) == 0);
+        assert(mDestTri.face(0).vertexIndex(1) == 1);
+        assert(mDestTri.face(0).vertexIndex(2) == 2);
         assert(mDestTri.face(0).edgeOnBorder(1) == true);
         assert(mDestTri.face(0).edgeSelected(2) == true);
         assert(mDestTri.face(0).edgeFaux(0) == true);
         assert(mDestTri.face(0).edgeOnBorder(0) == false);
 
-        // Test VertexReferences::importFrom
-        // 1. Fixed Tri to Tri
-        TriBitMesh mTriA;
-        mTriA.addVertices(4);
-        mTriA.addFace(0, 1, 2);
-        TriBitMesh mTriB;
-        mTriB.addVertices(4);
-        mTriB.addFace(3, 2, 1);
+        // 4. importRefs = false on Face
+        mDestTri.face(0).setVertices(7, 8, 9);
+        mDestTri.face(0).importFrom(mSourceTri.face(0), false);
+        assert(mDestTri.face(0).vertexIndex(0) == 7);
+        assert(mDestTri.face(0).vertexIndex(1) == 8);
+        assert(mDestTri.face(0).vertexIndex(2) == 9);
 
-        mTriA.face(0).vcl::meshv2::comp::VertexReferences<3>::importFrom(mTriB.face(0));
-        assert(mTriA.face(0).vertexIndex(0) == 3);
-        assert(mTriA.face(0).vertexIndex(1) == 2);
-        assert(mTriA.face(0).vertexIndex(2) == 1);
+        // 5. Container-level importFrom
+        TriBitMesh mTriSource;
+        mTriSource.addVertices(3);
+        mTriSource.vertex(0).position() = Point3f(1, 2, 3);
+        mTriSource.vertex(1).position() = Point3f(4, 5, 6);
+        mTriSource.vertex(2).position() = Point3f(7, 8, 9);
+        mTriSource.vertex(1).selected() = true;
+        mTriSource.addFace(0, 1, 2);
+        mTriSource.face(0).edgeSelected(1) = true;
 
-        // 2. importRefs = false: does nothing
-        mTriA.face(0).vcl::meshv2::comp::VertexReferences<3>::importFrom(mSourceTri.face(0), false);
-        assert(mTriA.face(0).vertexIndex(0) == 3); // unchanged
+        TriBitMesh mTriDest;
+        mTriDest.container<vcl::meshv2::ElemId::VERTEX>().importFrom(mTriSource);
+        assert(mTriDest.container<vcl::meshv2::ElemId::VERTEX>().elementContainerSize() == 3);
+        assert(mTriDest.vertex(0).position() == Point3f(1, 2, 3));
+        assert(mTriDest.vertex(1).position() == Point3f(4, 5, 6));
+        assert(mTriDest.vertex(1).selected() == true);
+        assert(mTriDest.vertex(0).selected() == false);
 
-        // 3. Tri to Poly
-        polyMesh.face(0).vcl::meshv2::comp::VertexReferences<-1>::importFrom(mTriB.face(0));
-        assert(polyMesh.face(0).vertexCount() == 3);
-        assert(polyMesh.face(0).vertexIndex(0) == 3);
-        assert(polyMesh.face(0).vertexIndex(1) == 2);
-        assert(polyMesh.face(0).vertexIndex(2) == 1);
+        mTriDest.container<vcl::meshv2::ElemId::FACE>().importFrom(mTriSource);
+        assert(mTriDest.container<vcl::meshv2::ElemId::FACE>().elementContainerSize() == 1);
+        assert(mTriDest.face(0).vertexIndex(0) == 0);
+        assert(mTriDest.face(0).vertexIndex(1) == 1);
+        assert(mTriDest.face(0).vertexIndex(2) == 2);
+        assert(mTriDest.face(0).edgeSelected(1) == true);
 
-        // 4. Poly (3 vertices) to Tri
-        mTriA.face(0).setVertices(99, 99, 99);
-        mTriA.face(0).vcl::meshv2::comp::VertexReferences<3>::importFrom(polyMesh.face(0));
-        assert(mTriA.face(0).vertexIndex(0) == 3);
-        assert(mTriA.face(0).vertexIndex(1) == 2);
-        assert(mTriA.face(0).vertexIndex(2) == 1);
-
-        // 5. Poly (4 vertices) to Tri (should not import, size mismatch)
-        polyMesh.face(0).resizeVertices(4);
-        polyMesh.face(0).setVertices(4, 5, 6, 7);
-        mTriA.face(0).vcl::meshv2::comp::VertexReferences<3>::importFrom(polyMesh.face(0));
-        // mTriA remains 3, 2, 1
-        assert(mTriA.face(0).vertexIndex(0) == 3);
-        assert(mTriA.face(0).vertexIndex(1) == 2);
-        assert(mTriA.face(0).vertexIndex(2) == 1);
-
-        std::cout << "Component-level importFrom verified successfully!\n";
+        std::cout << "ElementProxy and ElementContainer importFrom verified successfully!\n";
     }
 
     std::cout << "\nAll mesh tests passed successfully!\n";

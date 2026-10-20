@@ -435,10 +435,10 @@ public:
         return self.edgeFlags().size();
     }
 
+protected:
     template<typename OtherElement>
     void importFrom(this auto&& self, const OtherElement& other, bool = true);
 
-protected:
     void setDeleted(this auto&& self, bool b = true)
     {
         self.flags()[DELETED] = b;

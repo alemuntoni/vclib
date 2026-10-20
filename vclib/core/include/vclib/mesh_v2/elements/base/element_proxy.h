@@ -29,6 +29,7 @@ template<typename ContainerType>
 class ElementIterator;
 
 template<
+    uint ELEM_ID,
     typename ContainerType,
     typename ComponentListWrapper =
         typename std::remove_cv_t<ContainerType>::Components>
@@ -46,8 +47,9 @@ class ElementProxy;
  * It will provide all the member functions of the components in the
  * ComponentListWrapper.
  */
-template<typename ContainerType, typename... Comps>
-class ElementProxy<ContainerType, vcl::TypeWrapper<Comps...>> : public Comps...
+template<uint ELEM_ID, typename ContainerType, typename... Comps>
+class ElementProxy<ELEM_ID, ContainerType, vcl::TypeWrapper<Comps...>> :
+        public Comps...
 {
 public:
     using Components = vcl::TypeWrapper<Comps...>;
@@ -63,6 +65,8 @@ private:
     IndexType      mIndex     = std::numeric_limits<IndexType>::max();
 
 public:
+    static constexpr uint ELEMENT_ID = ELEM_ID;
+
     // Methods accessed by the components ("deducing this" self.container()).
     // TODO: When C++26 variadic friends are fully supported on MSVC, move
     // container() to protected so that ElementProxy is fully encapsulated.
@@ -100,6 +104,40 @@ public:
         return mContainer && mContainer->template isEnabled<COMP_ID>();
     }
 
+    /**
+     * @brief Imports the components of the other element into this element.
+     *
+     * Iterates over all components that compose this element and calls their
+     * importFrom method on the other element if available/enabled.
+     *
+     * @param[in] other The other element to import from.
+     * @param[in] importRefs Boolean flag indicating if references (e.g. vertex
+     * indices) should be imported (default: true).
+     */
+    template<typename OtherElement>
+    void importFrom(const OtherElement& other, bool importRefs = true)
+        requires (!std::is_const_v<ContainerType>)
+    {
+        static_assert(
+            ELEMENT_ID == OtherElement::ELEMENT_ID,
+            "Cannot import from an element of a different type.");
+
+        auto importSingleComponent = [&]<typename Comp>() {
+            if constexpr (requires { this->Comp::importFrom(other, importRefs); }) {
+                if constexpr (requires { Comp::COMPONENT_ID; }) {
+                    if (this->template isComponentEnabled<Comp::COMPONENT_ID>()) {
+                        this->Comp::importFrom(other, importRefs);
+                    }
+                }
+                else {
+                    this->Comp::importFrom(other, importRefs);
+                }
+            }
+        };
+
+        (importSingleComponent.template operator()<Comps>(), ...);
+    }
+
 protected:
     ElementProxy() = default;
 
@@ -113,8 +151,11 @@ protected:
     template<typename OtherContainerType>
     requires std::is_same_v<ContainerType, const OtherContainerType>
     ElementProxy(
-        const ElementProxy<OtherContainerType, vcl::TypeWrapper<Comps...>>&
-            other) : mContainer(other.mContainer), mIndex(other.mIndex)
+        const ElementProxy<
+            ELEM_ID,
+            OtherContainerType,
+            vcl::TypeWrapper<Comps...>>& other) :
+            mContainer(other.mContainer), mIndex(other.mIndex)
     {
     }
 
@@ -150,7 +191,7 @@ protected:
 private:
     /// friend classes declarations
 
-    template<typename, typename>
+    template<uint, typename, typename>
     friend class ElementProxy;
 
     template<

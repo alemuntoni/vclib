@@ -29,15 +29,13 @@ namespace vcl::meshv2 {
  * @ingroup elements
  */
 template<typename ContainerType>
-class Vertex : public ElementProxy<ContainerType>
+class Vertex : public ElementProxy<ElemId::VERTEX, ContainerType>
 {
-    using Base = ElementProxy<ContainerType>;
+    using Base = ElementProxy<ElemId::VERTEX, ContainerType>;
 
 public:
     using typename Base::Components;
     using typename Base::IndexType;
-
-    static constexpr uint ELEMENT_ID = ElemId::VERTEX;
 
     static_assert(
         comp::HasPosition<Components>,
@@ -65,7 +63,7 @@ protected:
 private:
     /// friend classes declarations
 
-    template<typename, typename>
+    template<uint, typename, typename>
     friend class ElementProxy;
 
     template<

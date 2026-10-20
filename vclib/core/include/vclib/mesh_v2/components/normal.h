@@ -61,6 +61,7 @@ public:
         return self.container().template get<CompId::NORMAL>()[self.index()];
     }
 
+protected:
     template<typename OtherElement>
     void importFrom(this auto&& self, const OtherElement& other, bool = true);
 };

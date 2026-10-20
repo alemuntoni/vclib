@@ -40,11 +40,55 @@ struct ParallelVectorsTupleFromComponents<vcl::TypeWrapper<Components...>>
 
 } // namespace detail
 
+/**
+ * @brief The ElementContainer class is the low-level base container that
+ * manages the Structure of Arrays (SoA) storage for a specific mesh element
+ * type.
+ *
+ * It acts as the backbone for concrete element containers (such as
+ * VertexContainer, FaceContainer, and EdgeContainer). For each component in the
+ * ComponentList, ElementContainer maintains a dedicated, contiguous vector in a
+ * ParallelVectorsTuple.
+ *
+ * Key responsibilities:
+ * - Manages memory allocation, resizing, and element count tracking (both total
+ *   allocated size and active non-deleted count).
+ * - Tracks deleted elements via the mandatory BitFlags component and provides
+ *   compacting routines (compactElements, elementCompactIndices).
+ * - Controls dynamic enabling and disabling of optional components.
+ * - Coordinates topological updates and reference remapping across containers
+ *   when elements are compacted (updateReferences).
+ * - Exposes low-level access to elements as strongly-typed flyweight proxies
+ *   via the template template parameter Element (e.g. Vertex, Face).
+ *
+ * @tparam ComponentList: A vcl::TypeWrapper wrapping the list of components
+ * that compose the element (e.g. VertexComponents, FaceComponents). Each
+ * component determines a parallel vector column in the underlying SoA storage.
+ * Must include the BitFlags component.
+ *
+ * @tparam ParentMesh: The enclosing Mesh class type to which this container
+ * belongs, or void if used as an unbound placeholder prior to mesh rebinding.
+ * Allows element proxies to navigate across containers (e.g. from Face to
+ * Vertex) through container.mesh().
+ *
+ * @tparam Index: An unsigned integral type used for element indices.
+ * Determines index representation width across the container (e.g. uint32_t
+ * or uint64_t).
+ *
+ * @tparam Element: A template template parameter representing the concrete
+ * element proxy class template (e.g. Vertex, Face, Edge), instantiated
+ * internally as Element<ElementContainer> (ProxyType) and
+ * Element<const ElementContainer> (ConstProxyType). This allows
+ * ElementContainer and its iterators to instantiate and return strongly-typed
+ * element proxies directly without intermediate type erasure.
+ *
+ * @ingroup containers
+ */
 template<
     typename ComponentList,
     typename ParentMesh,
-    std::unsigned_integral Index        = uint,
-    template<typename...> class Element = ElementProxy>
+    std::unsigned_integral Index,
+    template<typename...> class Element>
 class ElementContainer
 {
     static_assert(
@@ -100,15 +144,6 @@ public:
         constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
         return mElemComponents.template get<N>();
     }
-
-protected:
-    ElementContainer()
-    {
-        // BitFlags is mandatory and always enabled
-        enable<CompId::BIT_FLAGS>();
-    }
-
-    /* Members that are inherited and wrapped by derived element containers */
 
     /**
      * @brief Returns a const proxy of the element at the i-th position in
@@ -173,6 +208,39 @@ protected:
      * @return The number of deleted elements in the container.
      */
     std::size_t deletedElementCount() const { return size() - elementCount(); }
+
+    /**
+     * @brief Imports all elements from the corresponding container of the
+     * other mesh into this container.
+     *
+     * @param[in] m The other mesh to import from.
+     * @param[in] importRefs Boolean flag indicating if references should be
+     * imported.
+     */
+    template<typename OtherMesh>
+    void importFrom(const OtherMesh& m, bool importRefs = true)
+    {
+        if constexpr (OtherMesh::template hasContainerOf<ELEMENT_ID>()) {
+            const auto& c = m.template container<ELEMENT_ID>();
+            enableSameOptionalComponentsOf(c);
+            clearElements();
+            const std::size_t n = c.elementContainerSize();
+            addElements(n);
+            for (IndexType i = 0; i < n; ++i) {
+                element(i).importFrom(c.element(i), importRefs);
+            }
+            mElemCount = c.elementCount();
+        }
+    }
+
+protected:
+    ElementContainer()
+    {
+        // BitFlags is mandatory and always enabled
+        enable<CompId::BIT_FLAGS>();
+    }
+
+    /* Members that are inherited and wrapped by derived element containers */
 
     /**
      * @brief Returns true if the container is compact, i.e. there are no
@@ -504,7 +572,8 @@ protected:
      */
     auto elements(bool jumpDeleted = true) const
     {
-        return ElementContainerProxy<const ElementContainer>(*this, jumpDeleted);
+        return ElementContainerProxy<const ElementContainer>(
+            *this, jumpDeleted);
     }
 
     // TODO: missing elements(begin, end)
@@ -576,7 +645,7 @@ protected:
     template<typename OtherContainer>
     void enableSameOptionalComponentsOf(const OtherContainer& other)
     {
-        enableSameOptionalComponentsOfImpl(Components{}, other);
+        enableSameOptionalComponentsOfImpl(Components {}, other);
     }
 
     template<uint TARGET_ELEM_ID>
@@ -618,8 +687,15 @@ private:
     template<int, std::unsigned_integral>
     friend class comp::VertexReferences;
 
-    template<typename CT, typename CLW>
+    template<uint, typename CT, typename CLW>
     friend class ElementProxy;
+
+    template<
+        typename,
+        typename,
+        std::unsigned_integral,
+        template<typename...> class>
+    friend class ElementContainer;
 
     template<uint CID, std::unsigned_integral I, uint RID, int N, bool TTVC>
     friend class ContainerReferencesComponent;
@@ -635,10 +711,13 @@ private:
     // --- TTVC (Tied To Vertex Count) synchronization helpers ---
 
     template<typename... Comps>
-    void resizeTTVCComponentsImpl(vcl::TypeWrapper<Comps...>, IndexType i, uint n)
+    void resizeTTVCComponentsImpl(
+        vcl::TypeWrapper<Comps...>,
+        IndexType i,
+        uint      n)
     {
         assert(i < size());
-        auto p = element(i);
+        auto p          = element(i);
         auto resizeComp = [&]<typename Comp>() {
             if constexpr (comp::IsTiedToVertexCount<Comp>) {
                 if (this->template isEnabled<Comp::COMPONENT_ID>()) {
@@ -653,7 +732,7 @@ private:
     void pushBackTTVCComponentsImpl(vcl::TypeWrapper<Comps...>, IndexType i)
     {
         assert(i < size());
-        auto p = element(i);
+        auto p            = element(i);
         auto pushBackComp = [&]<typename Comp>() {
             if constexpr (comp::IsTiedToVertexCount<Comp>) {
                 if (this->template isEnabled<Comp::COMPONENT_ID>()) {
@@ -665,10 +744,13 @@ private:
     }
 
     template<typename... Comps>
-    void insertTTVCComponentsImpl(vcl::TypeWrapper<Comps...>, IndexType i, uint pos)
+    void insertTTVCComponentsImpl(
+        vcl::TypeWrapper<Comps...>,
+        IndexType i,
+        uint      pos)
     {
         assert(i < size());
-        auto p = element(i);
+        auto p          = element(i);
         auto insertComp = [&]<typename Comp>() {
             if constexpr (comp::IsTiedToVertexCount<Comp>) {
                 if (this->template isEnabled<Comp::COMPONENT_ID>()) {
@@ -680,10 +762,13 @@ private:
     }
 
     template<typename... Comps>
-    void eraseTTVCComponentsImpl(vcl::TypeWrapper<Comps...>, IndexType i, uint pos)
+    void eraseTTVCComponentsImpl(
+        vcl::TypeWrapper<Comps...>,
+        IndexType i,
+        uint      pos)
     {
         assert(i < size());
-        auto p = element(i);
+        auto p         = element(i);
         auto eraseComp = [&]<typename Comp>() {
             if constexpr (comp::IsTiedToVertexCount<Comp>) {
                 if (this->template isEnabled<Comp::COMPONENT_ID>()) {
@@ -698,7 +783,7 @@ private:
     void clearTTVCComponentsImpl(vcl::TypeWrapper<Comps...>, IndexType i)
     {
         assert(i < size());
-        auto p = element(i);
+        auto p         = element(i);
         auto clearComp = [&]<typename Comp>() {
             if constexpr (comp::IsTiedToVertexCount<Comp>) {
                 if (this->template isEnabled<Comp::COMPONENT_ID>()) {
@@ -711,27 +796,27 @@ private:
 
     void resizeTTVCComponents(IndexType i, uint n)
     {
-        resizeTTVCComponentsImpl(Components{}, i, n);
+        resizeTTVCComponentsImpl(Components {}, i, n);
     }
 
     void pushBackTTVCComponents(IndexType i)
     {
-        pushBackTTVCComponentsImpl(Components{}, i);
+        pushBackTTVCComponentsImpl(Components {}, i);
     }
 
     void insertTTVCComponents(IndexType i, uint pos)
     {
-        insertTTVCComponentsImpl(Components{}, i, pos);
+        insertTTVCComponentsImpl(Components {}, i, pos);
     }
 
     void eraseTTVCComponents(IndexType i, uint pos)
     {
-        eraseTTVCComponentsImpl(Components{}, i, pos);
+        eraseTTVCComponentsImpl(Components {}, i, pos);
     }
 
     void clearTTVCComponents(IndexType i)
     {
-        clearTTVCComponentsImpl(Components{}, i);
+        clearTTVCComponentsImpl(Components {}, i);
     }
 
     template<typename... Comps, typename OtherContainer>
@@ -741,8 +826,10 @@ private:
     {
         auto enableIfAvailableInOther = [&]<typename Comp>() {
             if (!this->template isEnabled<Comp::COMPONENT_ID>()) {
-                if constexpr (comp::HasComponent<Comp::COMPONENT_ID, OtherContainer>) {
-                    if (comp::isComponentAvailableOn<Comp::COMPONENT_ID>(other)) {
+                if constexpr (
+                    comp::HasComponent<Comp::COMPONENT_ID, OtherContainer>) {
+                    if (comp::isComponentAvailableOn<Comp::COMPONENT_ID>(
+                            other)) {
                         this->template enable<Comp::COMPONENT_ID>();
                     }
                 }

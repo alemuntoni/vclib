@@ -503,6 +503,7 @@ public:
             Base::containerData(self).end());
     }
 
+protected:
     template<typename OtherElement>
     void importFrom(
         this auto&&         self,
