@@ -86,6 +86,24 @@ protected:
         }
     }
 
+    /**
+     * @brief Shifts the stored reference indices by offset if they match
+     * TARGET_ELEM_ID. Used during append operations.
+     */
+    template<uint TARGET_ELEM_ID>
+    void shiftReferences(this auto&& self, IndexType offset)
+    {
+        if constexpr (TARGET_ELEM_ID == REF_ELEM_ID) {
+            if (offset != 0) {
+                for (auto& ref : Base::containerData(self)) {
+                    if (ref != std::numeric_limits<IndexType>::max()) {
+                        ref += offset;
+                    }
+                }
+            }
+        }
+    }
+
     // --- High-level Element Proxy Access (via Parent Mesh) ---
 
     decltype(auto) referencedElement(this auto&& self, uint i)

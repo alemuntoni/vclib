@@ -21,6 +21,7 @@
 #include <vclib/base.h>
 #include <vclib/space/core.h>
 
+#include <algorithm>
 #include <cassert>
 #include <concepts>
 
@@ -468,7 +469,16 @@ protected:
         return newIndices;
     }
 
-    // TODO: append
+    /**
+     * @brief Appends all elements from another container of the same type.
+     *
+     * @param[in] other The other container whose elements will be appended.
+     */
+    void append(const ElementContainer& other)
+    {
+        appendImpl(Components {}, other);
+    }
+
     // TODO: serialize and deserialize
 
     /**
@@ -657,6 +667,18 @@ protected:
         }
     }
 
+    template<uint TARGET_ELEM_ID>
+    void shiftReferences(IndexType startFrom, IndexType offset)
+    {
+        if constexpr (ProxyType::template referencesElement<TARGET_ELEM_ID>()) {
+            if (offset != 0) {
+                for (std::size_t i = startFrom; i < size(); ++i) {
+                    element(i).template shiftReferences<TARGET_ELEM_ID>(offset);
+                }
+            }
+        }
+    }
+
     ProxyType operator[](IndexType i)
     {
         assert(i < size() || i == std::numeric_limits<IndexType>::max());
@@ -835,6 +857,31 @@ private:
         };
 
         (enableIfAvailableInOther.template operator()<Comps>(), ...);
+    }
+
+    template<typename... Comps>
+    void appendImpl(vcl::TypeWrapper<Comps...>, const ElementContainer& other)
+    {
+        const std::size_t on = other.elementContainerSize();
+        if (on == 0) {
+            return;
+        }
+
+        const std::size_t n = elementContainerSize();
+        addElements(on);
+
+        auto copyComponent = [&]<typename Comp>() {
+            if (this->template isEnabled<Comp::COMPONENT_ID>() &&
+                other.template isEnabled<Comp::COMPONENT_ID>()) {
+                auto&       thisVec  = this->template get<Comp::COMPONENT_ID>();
+                const auto& otherVec = other.template get<Comp::COMPONENT_ID>();
+                std::copy(otherVec.begin(), otherVec.end(), thisVec.begin() + n);
+            }
+        };
+
+        (copyComponent.template operator()<Comps>(), ...);
+
+        mElemCount = (mElemCount - on) + other.elementCount();
     }
 };
 

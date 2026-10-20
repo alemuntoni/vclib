@@ -183,6 +183,29 @@ protected:
     }
 
     template<uint TARGET_ELEM_ID>
+    void shiftReferences(IndexType offset)
+    {
+        auto shiftIfMatching = [&]<typename Comp>() {
+            if constexpr (
+                comp::ComponentReferencesElement<Comp, TARGET_ELEM_ID>) {
+                if constexpr (requires { Comp::COMPONENT_ID; }) {
+                    if (this->template isComponentEnabled<
+                            Comp::COMPONENT_ID>()) {
+                        this->Comp::template shiftReferences<TARGET_ELEM_ID>(
+                            offset);
+                    }
+                }
+                else {
+                    this->Comp::template shiftReferences<TARGET_ELEM_ID>(
+                        offset);
+                }
+            }
+        };
+
+        (shiftIfMatching.template operator()<Comps>(), ...);
+    }
+
+    template<uint TARGET_ELEM_ID>
     static constexpr bool referencesElement()
     {
         return (comp::ComponentReferencesElement<Comps, TARGET_ELEM_ID> || ...);
