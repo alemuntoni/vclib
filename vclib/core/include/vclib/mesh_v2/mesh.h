@@ -16,6 +16,7 @@
 #include <vclib/mesh_v2/elements/face.h>
 #include <vclib/mesh_v2/elements/vertex.h>
 
+#include <array>
 #include <concepts>
 #include <type_traits>
 #include <utility>
@@ -271,6 +272,45 @@ public:
         (importFromHelper<Rebound<Args>>(m), ...);
     }
 
+    /**
+     * @brief Appends the contents of another Mesh of the exact same type to
+     * this Mesh.
+     *
+     * Appends the elements of all containers (vertices, faces, etc.) from the
+     * input Mesh m to this Mesh, preserving active and deleted element states,
+     * and shifts all topological references (e.g. face vertex indices) in the
+     * newly appended elements so that they correctly point to the appended
+     * elements.
+     *
+     * @note This operation is only allowed between meshes of the exact same type.
+     *
+     * @param[in] m The mesh to append to this mesh.
+     */
+    void append(const Mesh& m)
+    {
+        if (this == &m) {
+            Mesh copy = m;
+            append(copy);
+            return;
+        }
+
+        std::array<IndexType, ElemId::ELEMENT_COUNT> initialSizes = {0};
+        (saveInitialContainerSize<Rebound<Args>>(initialSizes), ...);
+
+        (appendContainer<Rebound<Args>>(m), ...);
+
+        (shiftReferencesOfContainer<Rebound<Args>>(initialSizes), ...);
+
+        // TODO: When mesh::TransformMatrix is implemented, apply relative
+        // transformation matrix to the newly appended vertex positions and
+        // normals: matrix = this->transformMatrix().inverse() *
+        // m.transformMatrix(); transform positions and normals from
+        // initialSizes[ElemId::VERTEX] to end.
+
+        // TODO: When mesh::Materials is implemented, merge materials and
+        // textures and remap material indices of the newly appended faces.
+    }
+
     /* Unified mesh state */
 
     /**
@@ -475,6 +515,46 @@ private:
     void importFromHelper(const OtherMeshType& m)
     {
         this->BaseType::importFrom(m);
+    }
+
+    template<typename Cont>
+    void saveInitialContainerSize(
+        std::array<IndexType, ElemId::ELEMENT_COUNT>& sizes) const
+    {
+        if constexpr (ElementContainerConcept<Cont>) {
+            sizes[Cont::ELEMENT_ID] = this->Cont::elementContainerSize();
+        }
+    }
+
+    template<typename Cont>
+    void appendContainer(const Mesh& m)
+    {
+        if constexpr (ElementContainerConcept<Cont>) {
+            this->Cont::append(static_cast<const Cont&>(m));
+        }
+    }
+
+    template<typename Cont, uint TARGET_ELEM_ID>
+    void shiftContainerReferences(IndexType startFrom, IndexType offset)
+    {
+        if constexpr (ElementContainerConcept<Cont>) {
+            this->Cont::template shiftReferences<TARGET_ELEM_ID>(
+                startFrom, offset);
+        }
+    }
+
+    template<typename Cont>
+    void shiftReferencesOfContainer(
+        const std::array<IndexType, ElemId::ELEMENT_COUNT>& initialSizes)
+    {
+        if constexpr (ElementContainerConcept<Cont>) {
+            const IndexType startFrom = initialSizes[Cont::ELEMENT_ID];
+            [&]<uint... TargetIDs>(std::integer_sequence<uint, TargetIDs...>) {
+                (shiftContainerReferences<Cont, TargetIDs>(
+                     startFrom, initialSizes[TargetIDs]),
+                 ...);
+            }(std::make_integer_sequence<uint, ElemId::ELEMENT_COUNT>{});
+        }
     }
 
     template<typename T>

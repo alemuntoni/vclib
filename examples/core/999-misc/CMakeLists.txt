@@ -20,6 +20,7 @@ set(SOURCES
     test_optional_components.h
     test_add_elements.h
     test_import_from.h
+    test_append.h
     main.cpp
 )
 
