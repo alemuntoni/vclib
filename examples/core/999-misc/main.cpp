@@ -569,6 +569,100 @@ int main()
     assert((!meshTestedAgainstSimple.isEnabled<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
     std::cout << "Verified that components absent in source mesh remain disabled!\n";
 
+    // =========================================================================
+    // addVertex / addVertices & addFace / addFaces Tests
+    // =========================================================================
+
+    std::cout << "\n--- addVertex / addVertices & addFace / addFaces Tests ---\n";
+    MyMesh addMesh;
+
+    // 1. addVertex() and addVertex(pos)
+    uint v0 = addMesh.addVertex();
+    addMesh.vertex(v0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    assert(addMesh.vertexCount() == 1);
+    assert(addMesh.vertex(v0).position() == Point3f(0.0f, 0.0f, 0.0f));
+
+    uint v1 = addMesh.addVertex(Point3f(1.0f, 0.0f, 0.0f));
+    assert(addMesh.vertexCount() == 2);
+    assert(addMesh.vertex(v1).position() == Point3f(1.0f, 0.0f, 0.0f));
+
+    // 2. addVertices(count)
+    uint baseV = addMesh.addVertices(2);
+    assert(baseV == 2);
+    assert(addMesh.vertexCount() == 4);
+    addMesh.vertex(baseV).position() = Point3f(0.0f, 1.0f, 0.0f);
+    addMesh.vertex(baseV + 1).position() = Point3f(1.0f, 1.0f, 0.0f);
+
+    // 3. addVertices(variadic positions)
+    uint baseVVar = addMesh.addVertices(Point3f(2.0f, 0.0f, 0.0f), Point3f(2.0f, 1.0f, 0.0f));
+    assert(baseVVar == 4);
+    assert(addMesh.vertexCount() == 6);
+    assert(addMesh.vertex(4).position() == Point3f(2.0f, 0.0f, 0.0f));
+    assert(addMesh.vertex(5).position() == Point3f(2.0f, 1.0f, 0.0f));
+
+    // 4. addVertices(range of positions)
+    std::vector<Point3f> newPos = {Point3f(3.0f, 0.0f, 0.0f), Point3f(3.0f, 1.0f, 0.0f)};
+    uint baseVRng = addMesh.addVertices(newPos);
+    assert(baseVRng == 6);
+    assert(addMesh.vertexCount() == 8);
+    assert(addMesh.vertex(6).position() == Point3f(3.0f, 0.0f, 0.0f));
+    assert(addMesh.vertex(7).position() == Point3f(3.0f, 1.0f, 0.0f));
+
+    // 5. addFace() and addFace(indices)
+    uint addF0 = addMesh.addFace();
+    addMesh.face(addF0).setVertices(0, 1, 2);
+    assert(addMesh.faceCount() == 1);
+    assert(addMesh.face(addF0).vertexIndex(0) == 0 && addMesh.face(addF0).vertexIndex(1) == 1 && addMesh.face(addF0).vertexIndex(2) == 2);
+
+    uint addF1 = addMesh.addFace(1, 3, 2);
+    assert(addMesh.faceCount() == 2);
+    assert(addMesh.face(addF1).vertexIndex(0) == 1 && addMesh.face(addF1).vertexIndex(1) == 3 && addMesh.face(addF1).vertexIndex(2) == 2);
+
+    // 6. addFace(vertex proxies)
+    uint addF2 = addMesh.addFace(addMesh.vertex(0), addMesh.vertex(1), addMesh.vertex(3));
+    assert(addMesh.faceCount() == 3);
+    assert(addMesh.face(addF2).vertexIndex(0) == 0 && addMesh.face(addF2).vertexIndex(1) == 1 && addMesh.face(addF2).vertexIndex(2) == 3);
+
+    // 7. addFace(range of indices)
+    std::vector<uint> faceIndices = {4, 5, 2};
+    uint addF3 = addMesh.addFace(faceIndices);
+    assert(addMesh.faceCount() == 4);
+    assert(addMesh.face(addF3).vertexIndex(0) == 4 && addMesh.face(addF3).vertexIndex(1) == 5 && addMesh.face(addF3).vertexIndex(2) == 2);
+
+    // 8. addFaces(count)
+    uint baseF = addMesh.addFaces(2);
+    assert(baseF == 4);
+    assert(addMesh.faceCount() == 6);
+
+    // 9. addFaces(range of ranges)
+    std::vector<std::vector<uint>> multiFaces = {{6, 7, 4}, {7, 5, 4}};
+    uint baseFMulti = addMesh.addFaces(multiFaces);
+    assert(baseFMulti == 6);
+    assert(addMesh.faceCount() == 8);
+    assert(addMesh.face(6).vertexIndex(0) == 6 && addMesh.face(6).vertexIndex(1) == 7 && addMesh.face(6).vertexIndex(2) == 4);
+    assert(addMesh.face(7).vertexIndex(0) == 7 && addMesh.face(7).vertexIndex(1) == 5 && addMesh.face(7).vertexIndex(2) == 4);
+
+    // 11. Polygon mesh tests: addFace with arbitrary number of vertices
+    PolyMesh polyMesh;
+    polyMesh.addVertices(Point3f(0.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f),
+                         Point3f(1.0f, 1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f),
+                         Point3f(0.5f, 1.5f, 0.0f));
+    assert(polyMesh.vertexCount() == 5);
+
+    // Quad face
+    uint polyF0 = polyMesh.addFace(0, 1, 2, 3);
+    assert(polyMesh.face(polyF0).vertexCount() == 4);
+    assert(polyMesh.face(polyF0).vertexIndex(0) == 0);
+    assert(polyMesh.face(polyF0).vertexIndex(3) == 3);
+
+    // Pentagon face from range
+    std::vector<uint> pentagon = {0, 1, 2, 4, 3};
+    uint polyF1 = polyMesh.addFace(pentagon);
+    assert(polyMesh.face(polyF1).vertexCount() == 5);
+    assert(polyMesh.face(polyF1).vertexIndex(3) == 4);
+
+    std::cout << "addVertex, addVertices, addFace, addFaces verified successfully!\n";
+
     std::cout << "\nAll mesh tests passed successfully!\n";
     return 0;
 }

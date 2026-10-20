@@ -185,8 +185,36 @@ protected:
         return deletedElementCount() == 0;
     }
 
-    // TODO: missing addElement
-    // TODO: missing addElements
+    /**
+     * @brief Adds an element to the Element Container.
+     *
+     * Returns the index of the added element.
+     *
+     * @return The index of the added element.
+     */
+    IndexType addElement()
+    {
+        std::size_t id = mElemComponents.size();
+        mElemComponents.resize(id + 1);
+        ++mElemCount;
+        return static_cast<IndexType>(id);
+    }
+
+    /**
+     * @brief Adds n elements to the Element Container.
+     *
+     * Returns the index of the first added element.
+     *
+     * @param[in] n: the number of elements to add.
+     * @return The index of the first added element.
+     */
+    IndexType addElements(std::size_t n)
+    {
+        std::size_t baseId = mElemComponents.size();
+        mElemComponents.resize(baseId + n);
+        mElemCount += n;
+        return static_cast<IndexType>(baseId);
+    }
 
     void clearElements()
     {
@@ -611,13 +639,14 @@ private:
     {
         assert(i < size());
         auto p = element(i);
-        ([&]() {
-            if constexpr (comp::IsTiedToVertexCount<Comps>) {
-                if (isEnabled<Comps::COMPONENT_ID>()) {
-                    p.Comps::resize(n);
+        auto resizeComp = [&]<typename Comp>() {
+            if constexpr (comp::IsTiedToVertexCount<Comp>) {
+                if (this->template isEnabled<Comp::COMPONENT_ID>()) {
+                    p.Comp::resize(n);
                 }
             }
-        }(), ...);
+        };
+        (resizeComp.template operator()<Comps>(), ...);
     }
 
     template<typename... Comps>
@@ -625,13 +654,14 @@ private:
     {
         assert(i < size());
         auto p = element(i);
-        ([&]() {
-            if constexpr (comp::IsTiedToVertexCount<Comps>) {
-                if (isEnabled<Comps::COMPONENT_ID>()) {
-                    p.Comps::pushBack();
+        auto pushBackComp = [&]<typename Comp>() {
+            if constexpr (comp::IsTiedToVertexCount<Comp>) {
+                if (this->template isEnabled<Comp::COMPONENT_ID>()) {
+                    p.Comp::pushBack();
                 }
             }
-        }(), ...);
+        };
+        (pushBackComp.template operator()<Comps>(), ...);
     }
 
     template<typename... Comps>
@@ -639,13 +669,14 @@ private:
     {
         assert(i < size());
         auto p = element(i);
-        ([&]() {
-            if constexpr (comp::IsTiedToVertexCount<Comps>) {
-                if (isEnabled<Comps::COMPONENT_ID>()) {
-                    p.Comps::insert(pos);
+        auto insertComp = [&]<typename Comp>() {
+            if constexpr (comp::IsTiedToVertexCount<Comp>) {
+                if (this->template isEnabled<Comp::COMPONENT_ID>()) {
+                    p.Comp::insert(pos);
                 }
             }
-        }(), ...);
+        };
+        (insertComp.template operator()<Comps>(), ...);
     }
 
     template<typename... Comps>
@@ -653,13 +684,14 @@ private:
     {
         assert(i < size());
         auto p = element(i);
-        ([&]() {
-            if constexpr (comp::IsTiedToVertexCount<Comps>) {
-                if (isEnabled<Comps::COMPONENT_ID>()) {
-                    p.Comps::erase(pos);
+        auto eraseComp = [&]<typename Comp>() {
+            if constexpr (comp::IsTiedToVertexCount<Comp>) {
+                if (this->template isEnabled<Comp::COMPONENT_ID>()) {
+                    p.Comp::erase(pos);
                 }
             }
-        }(), ...);
+        };
+        (eraseComp.template operator()<Comps>(), ...);
     }
 
     template<typename... Comps>
@@ -667,13 +699,14 @@ private:
     {
         assert(i < size());
         auto p = element(i);
-        ([&]() {
-            if constexpr (comp::IsTiedToVertexCount<Comps>) {
-                if (isEnabled<Comps::COMPONENT_ID>()) {
-                    p.Comps::clear();
+        auto clearComp = [&]<typename Comp>() {
+            if constexpr (comp::IsTiedToVertexCount<Comp>) {
+                if (this->template isEnabled<Comp::COMPONENT_ID>()) {
+                    p.Comp::clear();
                 }
             }
-        }(), ...);
+        };
+        (clearComp.template operator()<Comps>(), ...);
     }
 
     void resizeTTVCComponents(IndexType i, uint n)

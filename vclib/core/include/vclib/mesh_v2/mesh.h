@@ -366,16 +366,37 @@ public:
 
     template<uint ELEM_ID>
     requires (hasContainerOf<ELEM_ID>())
+    decltype(auto) add()
+    {
+        return ContainerType<ELEM_ID>::addElement();
+    }
+
+    template<uint ELEM_ID>
+    requires (hasContainerOf<ELEM_ID>())
+    decltype(auto) add(std::size_t n)
+    {
+        return ContainerType<ELEM_ID>::addElements(n);
+    }
+
+    template<uint ELEM_ID>
+    requires (hasContainerOf<ELEM_ID>())
     void resize(std::size_t n)
     {
-        ContainerType<ELEM_ID>::resize(n);
+        ContainerType<ELEM_ID>::resizeElements(n);
     }
 
     template<uint ELEM_ID>
     requires (hasContainerOf<ELEM_ID>())
     void reserve(std::size_t n)
     {
-        ContainerType<ELEM_ID>::reserve(n);
+        ContainerType<ELEM_ID>::reserveElements(n);
+    }
+
+    template<uint ELEM_ID>
+    requires (hasContainerOf<ELEM_ID>())
+    void clear()
+    {
+        ContainerType<ELEM_ID>::clearElements();
     }
 
     template<uint ELEM_ID>
