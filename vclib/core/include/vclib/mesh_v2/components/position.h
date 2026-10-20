@@ -8,7 +8,8 @@
 #ifndef VCL_MESH_V2_COMPONENTS_POSITION_H
 #define VCL_MESH_V2_COMPONENTS_POSITION_H
 
-#include <vclib/mesh_v2/components/base/component_predicates.h>
+#include "base/component_predicates.h"
+
 #include <vclib/space/core.h>
 
 namespace vcl::meshv2::comp {
@@ -53,6 +54,9 @@ public:
     {
         return self.container().template get<CompId::POSITION>()[self.index()];
     }
+
+    template<typename OtherElement>
+    void importFrom(this auto&& self, const OtherElement& other, bool = true);
 };
 
 /* Concepts */
@@ -79,6 +83,20 @@ concept HasPosition = HasComponent<CompId::POSITION, T>;
 inline bool isPositionAvailableOn(const auto& element)
 {
     return isComponentAvailableOn<CompId::POSITION>(element);
+}
+
+/* Implementation of member functions */
+
+template<PointConcept P>
+template<typename OtherElement>
+void Position<P>::importFrom(this auto&& self, const OtherElement& other, bool)
+{
+    if constexpr (HasPosition<OtherElement>) {
+        if (isPositionAvailableOn(self) && isPositionAvailableOn(other)) {
+            using ScalarType = PositionType::ScalarType;
+            self.position() = other.position().template cast<ScalarType>();
+        }
+    }
 }
 
 /* Specialization Aliases */

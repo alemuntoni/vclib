@@ -42,7 +42,7 @@ concept HasPolygonVertexReferences = comp::HasPolygonVertexReferences<T>;
  * PolygonBitFlags or the TriangleBitFlags component.
  */
 template<typename T>
-concept HasFaceBitFlags = HasTriangleBitFlags<T> || HasPolygonBitFlags<T>;
+concept HasFaceBitFlags = comp::HasFaceBitFlags<T>;
 
 /* Port BitFlags classes into face namespace */
 using BitFlags         = comp::BitFlags;

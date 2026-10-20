@@ -663,6 +663,139 @@ int main()
 
     std::cout << "addVertex, addVertices, addFace, addFaces verified successfully!\n";
 
+    // --- Phase 1: Component-level importFrom Tests ---
+    std::cout << "\n--- Component-level importFrom Tests ---\n";
+    {
+        // 1. Position importFrom (same type and cross scalar cast)
+        using MeshDouble = vcl::meshv2::Mesh<
+            vcl::meshv2::VertexContainer<vcl::TypeWrapper<
+                vcl::meshv2::comp::Position3d,
+                vcl::meshv2::comp::BitFlags
+            >>,
+            vcl::meshv2::FaceContainer<vcl::TypeWrapper<
+                vcl::meshv2::comp::TriangleBitFlags,
+                vcl::meshv2::comp::VertexReferences<3>
+            >>
+        >;
+        MeshDouble mDouble;
+        mDouble.addVertex(Point3d(1.5, 2.5, 3.5));
+
+        MyMesh mFloat;
+        mFloat.addVertex(Point3f(0.0f, 0.0f, 0.0f));
+
+        // Call Position::importFrom directly through element proxy:
+        mFloat.vertex(0).vcl::meshv2::comp::Position3f::importFrom(mDouble.vertex(0));
+        assert(mFloat.vertex(0).position() == Point3f(1.5f, 2.5f, 3.5f));
+
+        // 2. Normal importFrom
+        mFloat.enableAll();
+        // importing from element without Normal should do nothing
+        mFloat.vertex(0).normal() = Point3f(0, 1, 0);
+        mFloat.vertex(0).vcl::meshv2::comp::Normal3f::importFrom(mDouble.vertex(0));
+        assert(mFloat.vertex(0).normal() == Point3f(0, 1, 0));
+
+        // import from element with Normal
+        MyMesh mSource;
+        mSource.enableAll();
+        mSource.addVertex(Point3f(0, 0, 0));
+        mSource.vertex(0).normal() = Point3f(1, 0, 0);
+        mFloat.vertex(0).vcl::meshv2::comp::Normal3f::importFrom(mSource.vertex(0));
+        assert(mFloat.vertex(0).normal() == Point3f(1, 0, 0));
+
+        // 3. Color importFrom
+        mSource.vertex(0).color() = vcl::Color::Green;
+        mFloat.vertex(0).vcl::meshv2::comp::Color::importFrom(mSource.vertex(0));
+        assert(mFloat.vertex(0).color() == vcl::Color::Green);
+
+        // 4. BitFlags importFrom
+        mSource.vertex(0).selected() = true;
+        mSource.vertex(0).visited() = true;
+        mSource.vertex(0).onBorder() = true;
+        mSource.vertex(0).userBit(3) = true;
+        mFloat.vertex(0).vcl::meshv2::comp::BitFlags::importFrom(mSource.vertex(0));
+        assert(mFloat.vertex(0).selected() == true);
+        assert(mFloat.vertex(0).visited() == true);
+        assert(mFloat.vertex(0).onBorder() == true);
+        assert(mFloat.vertex(0).userBit(3) == true);
+        assert(mFloat.vertex(0).userBit(2) == false);
+
+        // 5. TriangleBitFlags & PolygonBitFlags importFrom
+        using TriBitMesh = vcl::meshv2::Mesh<
+            vcl::meshv2::VertexContainer<vcl::TypeWrapper<
+                vcl::meshv2::comp::Position3f,
+                vcl::meshv2::comp::BitFlags
+            >>,
+            vcl::meshv2::FaceContainer<vcl::TypeWrapper<
+                vcl::meshv2::comp::TriangleBitFlags,
+                vcl::meshv2::comp::VertexReferences<3>
+            >>
+        >;
+        TriBitMesh mSourceTri;
+        mSourceTri.addVertices(3);
+        mSourceTri.addFace(0, 1, 2);
+        mSourceTri.face(0).edgeOnBorder(1) = true;
+        mSourceTri.face(0).edgeSelected(2) = true;
+        mSourceTri.face(0).edgeFaux(0) = true;
+
+        polyMesh.face(0).vcl::meshv2::comp::PolygonBitFlags<>::importFrom(mSourceTri.face(0));
+        assert(polyMesh.face(0).edgeOnBorder(1) == true);
+        assert(polyMesh.face(0).edgeSelected(2) == true);
+        assert(polyMesh.face(0).edgeFaux(0) == true);
+
+        // PolygonBitFlags back to TriangleBitFlags
+        TriBitMesh mDestTri;
+        mDestTri.addVertices(3);
+        mDestTri.addFace(0, 1, 2);
+        mDestTri.face(0).vcl::meshv2::comp::TriangleBitFlags::importFrom(polyMesh.face(0));
+        assert(mDestTri.face(0).edgeOnBorder(1) == true);
+        assert(mDestTri.face(0).edgeSelected(2) == true);
+        assert(mDestTri.face(0).edgeFaux(0) == true);
+        assert(mDestTri.face(0).edgeOnBorder(0) == false);
+
+        // Test VertexReferences::importFrom
+        // 1. Fixed Tri to Tri
+        TriBitMesh mTriA;
+        mTriA.addVertices(4);
+        mTriA.addFace(0, 1, 2);
+        TriBitMesh mTriB;
+        mTriB.addVertices(4);
+        mTriB.addFace(3, 2, 1);
+
+        mTriA.face(0).vcl::meshv2::comp::VertexReferences<3>::importFrom(mTriB.face(0));
+        assert(mTriA.face(0).vertexIndex(0) == 3);
+        assert(mTriA.face(0).vertexIndex(1) == 2);
+        assert(mTriA.face(0).vertexIndex(2) == 1);
+
+        // 2. importRefs = false: does nothing
+        mTriA.face(0).vcl::meshv2::comp::VertexReferences<3>::importFrom(mSourceTri.face(0), false);
+        assert(mTriA.face(0).vertexIndex(0) == 3); // unchanged
+
+        // 3. Tri to Poly
+        polyMesh.face(0).vcl::meshv2::comp::VertexReferences<-1>::importFrom(mTriB.face(0));
+        assert(polyMesh.face(0).vertexCount() == 3);
+        assert(polyMesh.face(0).vertexIndex(0) == 3);
+        assert(polyMesh.face(0).vertexIndex(1) == 2);
+        assert(polyMesh.face(0).vertexIndex(2) == 1);
+
+        // 4. Poly (3 vertices) to Tri
+        mTriA.face(0).setVertices(99, 99, 99);
+        mTriA.face(0).vcl::meshv2::comp::VertexReferences<3>::importFrom(polyMesh.face(0));
+        assert(mTriA.face(0).vertexIndex(0) == 3);
+        assert(mTriA.face(0).vertexIndex(1) == 2);
+        assert(mTriA.face(0).vertexIndex(2) == 1);
+
+        // 5. Poly (4 vertices) to Tri (should not import, size mismatch)
+        polyMesh.face(0).resizeVertices(4);
+        polyMesh.face(0).setVertices(4, 5, 6, 7);
+        mTriA.face(0).vcl::meshv2::comp::VertexReferences<3>::importFrom(polyMesh.face(0));
+        // mTriA remains 3, 2, 1
+        assert(mTriA.face(0).vertexIndex(0) == 3);
+        assert(mTriA.face(0).vertexIndex(1) == 2);
+        assert(mTriA.face(0).vertexIndex(2) == 1);
+
+        std::cout << "Component-level importFrom verified successfully!\n";
+    }
+
     std::cout << "\nAll mesh tests passed successfully!\n";
     return 0;
 }

@@ -8,7 +8,8 @@
 #ifndef VCL_MESH_V2_COMPONENTS_COLOR_H
 #define VCL_MESH_V2_COMPONENTS_COLOR_H
 
-#include <vclib/mesh_v2/components/base/component_predicates.h>
+#include "base/component_predicates.h"
+
 #include <vclib/space/core.h>
 
 namespace vcl::meshv2::comp {
@@ -54,6 +55,9 @@ public:
     {
         return self.container().template get<CompId::COLOR>()[self.index()];
     }
+
+    template<typename OtherElement>
+    void importFrom(this auto&& self, const OtherElement& other, bool = true);
 };
 
 /* Concepts */
@@ -82,6 +86,18 @@ concept HasColor = HasComponent<CompId::COLOR, T>;
 inline bool isColorAvailableOn(const auto& element)
 {
     return isComponentAvailableOn<CompId::COLOR>(element);
+}
+
+/* Implementation of member functions */
+
+template<typename OtherElement>
+void Color::importFrom(this auto&& self, const OtherElement& other, bool)
+{
+    if constexpr (HasColor<OtherElement>) {
+        if (isColorAvailableOn(self) && isColorAvailableOn(other)) {
+            self.color() = other.color();
+        }
+    }
 }
 
 } // namespace vcl::meshv2::comp

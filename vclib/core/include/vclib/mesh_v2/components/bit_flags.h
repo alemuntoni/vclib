@@ -8,7 +8,7 @@
 #ifndef VCL_MESH_V2_COMPONENTS_BIT_FLAGS_H
 #define VCL_MESH_V2_COMPONENTS_BIT_FLAGS_H
 
-#include <vclib/mesh_v2/components/base/component_predicates.h>
+#include "base/bit_flags_concepts.h"
 
 #include <vclib/space/core.h>
 
@@ -189,6 +189,9 @@ public:
         return f;
     }
 
+    template<typename OtherElement>
+    void importFrom(this auto&& self, const OtherElement& other, bool = true);
+
 protected:
     void setDeleted(this auto&& self, bool b = true)
     {
@@ -202,13 +205,31 @@ private:
     }
 };
 
-/**
- * @brief Concept that checks whether a type T (which can be a TypeWrapper of
- * components, an ElementProxy, an ElementContainer, or a Mesh) has the
- * BitFlags component (COMP_ID = CompId::BIT_FLAGS).
- */
-template<typename T>
-concept HasBitFlags = HasComponent<CompId::BIT_FLAGS, T>;
+/* Implementation of member functions */
+
+template<typename OtherElement>
+void BitFlags::importFrom(this auto&& self, const OtherElement& other, bool)
+{
+    if constexpr (HasBitFlags<OtherElement>) {
+        self.resetBitFlags();
+        if constexpr (HasFaceBitFlags<OtherElement>) {
+            self.setDeleted(other.deleted());
+            self.selected() = other.selected();
+            self.visited()  = other.visited();
+            self.onBorder() = other.onBorder();
+
+            const uint um =
+                std::min(USER_BIT_COUNT, (uint) OtherElement::USER_BIT_COUNT);
+            for (uint i = 0; i < um; ++i) {
+                self.userBit(i) = other.userBit(i);
+            }
+        }
+        else {
+            self.setUnderlyingBitFlags(other.underlyingBitFlags());
+            self.setDeleted(other.deleted());
+        }
+    }
+}
 
 } // namespace vcl::meshv2::comp
 

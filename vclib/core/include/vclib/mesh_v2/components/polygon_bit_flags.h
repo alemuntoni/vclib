@@ -8,8 +8,7 @@
 #ifndef VCL_MESH_V2_COMPONENTS_POLYGON_BIT_FLAGS_H
 #define VCL_MESH_V2_COMPONENTS_POLYGON_BIT_FLAGS_H
 
-#include <vclib/mesh_v2/components/base/component_predicates.h>
-#include <vclib/mesh_v2/components/triangle_bit_flags.h>
+#include "base/bit_flags_concepts.h"
 
 #include <vclib/space/core.h>
 
@@ -427,6 +426,18 @@ public:
         return f;
     }
 
+    /**
+     * @brief Returns the number of edges of the Polygon.
+     * @return the number of edges of the Polygon.
+     */
+    uint edgeCount(this auto&& self)
+    {
+        return self.edgeFlags().size();
+    }
+
+    template<typename OtherElement>
+    void importFrom(this auto&& self, const OtherElement& other, bool = true);
+
 protected:
     void setDeleted(this auto&& self, bool b = true)
     {
@@ -467,6 +478,9 @@ protected:
     void clear(this auto&& self) requires (N < 0) { self.edgeFlags().clear(); }
 
 private:
+    template<int OtherN>
+    friend class PolygonBitFlags;
+
     decltype(auto) data(this auto&& self)
     {
         return self.container().template get<CompId::BIT_FLAGS>()[self.index()];
@@ -480,27 +494,55 @@ private:
     }
 };
 
-namespace detail {
-template<typename T>
-struct IsPolygonBitFlags : std::false_type
-{
-};
+/* Implementation of member functions */
 
 template<int N>
-struct IsPolygonBitFlags<PolygonBitFlags<N>> : std::true_type
+template<typename OtherElement>
+void PolygonBitFlags<N>::importFrom(this auto&& self, const OtherElement& other, bool)
 {
-};
-} // namespace detail
+    if constexpr (HasBitFlags<OtherElement>) {
+        self.resetBitFlags();
+        if constexpr (HasPolygonBitFlags<OtherElement>) {
+            self.setUnderlyingBitFlags(other.underlyingBitFlags());
+            self.setDeleted(other.deleted());
+            if constexpr (N < 0) {
+                self.edgeFlags().resize(other.edgeCount());
+            }
+            const uint n = std::min(
+                (uint) self.edgeCount(),
+                (uint) other.edgeCount());
+            for (uint i = 0; i < n; ++i) {
+                self.setUnderlyingEdgeBitFlags(i, other.underlyingEdgeBitFlags(i));
+            }
+        }
+        else {
+            self.setDeleted(other.deleted());
+            self.selected() = other.selected();
+            self.visited()  = other.visited();
 
-/**
- * @brief Concept that checks whether a type T (which can be a TypeWrapper of
- * components, an ElementProxy, an ElementContainer, or a Mesh) has the
- * PolygonBitFlags component.
- */
-template<typename T>
-concept HasPolygonBitFlags =
-    HasComponent<CompId::BIT_FLAGS, T> &&
-    detail::IsPolygonBitFlags<ComponentTypeT<CompId::BIT_FLAGS, T>>::value;
+            const uint um =
+                std::min(USER_BIT_COUNT, (uint) OtherElement::USER_BIT_COUNT);
+            for (uint i = 0; i < um; ++i) {
+                self.userBit(i) = other.userBit(i);
+            }
+            if constexpr (HasTriangleBitFlags<OtherElement>) {
+                if constexpr (N < 0) {
+                    if (self.edgeCount() < 3) {
+                        self.edgeFlags().resize(3);
+                    }
+                }
+                const uint numEdges =
+                    std::min((uint) self.edgeCount(), 3u);
+                for (uint i = 0; i < numEdges; ++i) {
+                    self.edgeOnBorder(i) = other.edgeOnBorder(i);
+                    self.edgeSelected(i) = other.edgeSelected(i);
+                    self.edgeVisited(i)  = other.edgeVisited(i);
+                    self.edgeFaux(i)     = other.edgeFaux(i);
+                }
+            }
+        }
+    }
+}
 
 } // namespace vcl::meshv2::comp
 

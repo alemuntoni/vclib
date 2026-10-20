@@ -8,7 +8,8 @@
 #ifndef VCL_MESH_V2_COMPONENTS_NORMAL_H
 #define VCL_MESH_V2_COMPONENTS_NORMAL_H
 
-#include <vclib/mesh_v2/components/base/component_predicates.h>
+#include "base/component_predicates.h"
+
 #include <vclib/space/core.h>
 
 namespace vcl::meshv2::comp {
@@ -59,6 +60,9 @@ public:
     {
         return self.container().template get<CompId::NORMAL>()[self.index()];
     }
+
+    template<typename OtherElement>
+    void importFrom(this auto&& self, const OtherElement& other, bool = true);
 };
 
 /* Concepts */
@@ -87,6 +91,20 @@ concept HasNormal = HasComponent<CompId::NORMAL, T>;
 inline bool isNormalAvailableOn(const auto& element)
 {
     return isComponentAvailableOn<CompId::NORMAL>(element);
+}
+
+/* Implementation of member functions */
+
+template<PointConcept P>
+template<typename OtherElement>
+void Normal<P>::importFrom(this auto&& self, const OtherElement& other, bool)
+{
+    if constexpr (HasNormal<OtherElement>) {
+        if (isNormalAvailableOn(self) && isNormalAvailableOn(other)) {
+            using ScalarType = NormalType::ScalarType;
+            self.normal() = other.normal().template cast<ScalarType>();
+        }
+    }
 }
 
 /* Specialization Aliases */

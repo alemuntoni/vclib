@@ -8,11 +8,12 @@
 #ifndef VCL_MESH_V2_COMPONENTS_VERTEX_REFERENCES_H
 #define VCL_MESH_V2_COMPONENTS_VERTEX_REFERENCES_H
 
-#include <vclib/mesh_v2/components/base/component_predicates.h>
-#include <vclib/mesh_v2/components/base/container_references_component.h>
+#include "base/component_predicates.h"
+#include "base/container_references_component.h"
+
 #include <vclib/mesh_v2/elements/base/base.h>
 
-#include <vclib/base/views/view.h>
+#include <vclib/base.h>
 
 #include <cassert>
 #include <concepts>
@@ -501,6 +502,12 @@ public:
             Base::containerData(self).begin(),
             Base::containerData(self).end());
     }
+
+    template<typename OtherElement>
+    void importFrom(
+        this auto&&         self,
+        const OtherElement& other,
+        bool                importRefs = true);
 };
 
 // Specialization Aliases
@@ -534,6 +541,48 @@ template<typename T>
 concept HasPolygonVertexReferences =
     HasComponent<CompId::VERTEX_REFERENCES, T> &&
     (ComponentTypeT<CompId::VERTEX_REFERENCES, T>::VERTEX_COUNT == -1);
+
+/* Implementation of member functions */
+
+template<int N, std::unsigned_integral Index>
+template<typename OtherElement>
+void VertexReferences<N, Index>::importFrom(
+    this auto&&         self,
+    const OtherElement& other,
+    bool                importRefs)
+{
+    if (importRefs) {
+        if constexpr (HasVertexReferences<OtherElement>) {
+            using OtherComp =
+                ComponentTypeT<CompId::VERTEX_REFERENCES, OtherElement>;
+            constexpr int OTHER_N = OtherComp::VERTEX_COUNT;
+
+            if constexpr (N > 0) {
+                if constexpr (N == OTHER_N) {
+                    for (uint i = 0; i < N; ++i) {
+                        self.setVertex(
+                            i, static_cast<IndexType>(other.vertexIndex(i)));
+                    }
+                }
+                else if constexpr (OTHER_N < 0) {
+                    if (other.vertexCount() == N) {
+                        for (uint i = 0; i < N; ++i) {
+                            self.setVertex(
+                                i, static_cast<IndexType>(other.vertexIndex(i)));
+                        }
+                    }
+                }
+            }
+            else {
+                self.resizeVertices(other.vertexCount());
+                for (uint i = 0; i < other.vertexCount(); ++i) {
+                    self.setVertex(
+                        i, static_cast<IndexType>(other.vertexIndex(i)));
+                }
+            }
+        }
+    }
+}
 
 } // namespace vcl::meshv2::comp
 

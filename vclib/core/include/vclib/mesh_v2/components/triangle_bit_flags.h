@@ -8,7 +8,7 @@
 #ifndef VCL_MESH_V2_COMPONENTS_TRIANGLE_BIT_FLAGS_H
 #define VCL_MESH_V2_COMPONENTS_TRIANGLE_BIT_FLAGS_H
 
-#include <vclib/mesh_v2/components/base/component_predicates.h>
+#include "base/bit_flags_concepts.h"
 
 #include <vclib/space/core.h>
 
@@ -294,6 +294,9 @@ public:
         return f;
     }
 
+    template<typename OtherElement>
+    void importFrom(this auto&& self, const OtherElement& other, bool = true);
+
 protected:
     void setDeleted(this auto&& self, bool b = true)
     {
@@ -307,15 +310,39 @@ private:
     }
 };
 
-/**
- * @brief Concept that checks whether a type T (which can be a TypeWrapper of
- * components, an ElementProxy, an ElementContainer, or a Mesh) has the
- * TriangleBitFlags component.
- */
-template<typename T>
-concept HasTriangleBitFlags =
-    HasComponent<CompId::BIT_FLAGS, T> &&
-    std::is_same_v<ComponentTypeT<CompId::BIT_FLAGS, T>, TriangleBitFlags>;
+/* Implementation of member functions */
+
+template<typename OtherElement>
+void TriangleBitFlags::importFrom(this auto&& self, const OtherElement& other, bool)
+{
+    if constexpr (HasBitFlags<OtherElement>) {
+        self.resetBitFlags();
+        if constexpr (HasTriangleBitFlags<OtherElement>) {
+            self.setUnderlyingBitFlags(other.underlyingBitFlags());
+            self.setDeleted(other.deleted());
+        }
+        else {
+            self.setDeleted(other.deleted());
+            self.selected() = other.selected();
+            self.visited()  = other.visited();
+
+            const uint um =
+                std::min(USER_BIT_COUNT, (uint) OtherElement::USER_BIT_COUNT);
+            for (uint i = 0; i < um; ++i) {
+                self.userBit(i) = other.userBit(i);
+            }
+            if constexpr (HasPolygonBitFlags<OtherElement>) {
+                const uint numEdges = std::min(3u, (uint) other.edgeCount());
+                for (uint i = 0; i < numEdges; ++i) {
+                    self.edgeOnBorder(i) = other.edgeOnBorder(i);
+                    self.edgeSelected(i) = other.edgeSelected(i);
+                    self.edgeVisited(i)  = other.edgeVisited(i);
+                    self.edgeFaux(i)     = other.edgeFaux(i);
+                }
+            }
+        }
+    }
+}
 
 } // namespace vcl::meshv2::comp
 
