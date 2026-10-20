@@ -214,11 +214,9 @@ public:
      * other mesh into this container.
      *
      * @param[in] m The other mesh to import from.
-     * @param[in] importRefs Boolean flag indicating if references should be
-     * imported.
      */
     template<typename OtherMesh>
-    void importFrom(const OtherMesh& m, bool importRefs = true)
+    void importFrom(const OtherMesh& m)
     {
         if constexpr (OtherMesh::template hasContainerOf<ELEMENT_ID>()) {
             const auto& c = m.template container<ELEMENT_ID>();
@@ -227,7 +225,7 @@ public:
             const std::size_t n = c.elementContainerSize();
             addElements(n);
             for (IndexType i = 0; i < n; ++i) {
-                element(i).importFrom(c.element(i), importRefs);
+                element(i).importFrom(c.element(i));
             }
             mElemCount = c.elementCount();
         }

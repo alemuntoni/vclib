@@ -50,6 +50,7 @@ protected:
 
 public:
     using VertexComponents = CompList;
+    using IndexType        = Index;
     using Vertex           = typename Base::ProxyType;
     using ConstVertex      = typename Base::ConstProxyType;
     using VertexType_      = Vertex;

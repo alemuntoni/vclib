@@ -12,6 +12,7 @@
 #include <vclib/mesh_v2/containers/base/element_container.h>
 #include <vclib/mesh_v2/elements/face.h>
 
+#include <vclib/algorithms/core.h>
 #include <vclib/base.h>
 
 namespace vcl::meshv2 {
@@ -22,7 +23,8 @@ namespace vcl::meshv2 {
  * It accepts the Face component list (satisfying HasRequiredFaceComponents),
  * instantiates the underlying storage and exposes the Face element view.
  *
- * @tparam CompList The face components type (e.g. FaceComponents<BitFlags, TriangleVertexReferences<uint>>).
+ * @tparam CompList The face components type (e.g. FaceComponents<BitFlags,
+ * TriangleVertexReferences<uint>>).
  * @tparam Index The index type (default uint).
  * @tparam ParentMesh The parent mesh type (default void).
  *
@@ -30,14 +32,14 @@ namespace vcl::meshv2 {
  */
 template<
     HasRequiredFaceComponents CompList,
-    std::unsigned_integral Index = uint,
-    typename ParentMesh          = void>
+    std::unsigned_integral    Index = uint,
+    typename ParentMesh             = void>
 class FaceContainer :
-    public ElementContainer<
-        typename comp::detail::ComponentListHelper<CompList>::type,
-        ParentMesh,
-        Index,
-        Face>
+        public ElementContainer<
+            typename comp::detail::ComponentListHelper<CompList>::type,
+            ParentMesh,
+            Index,
+            Face>
 {
     using Base = ElementContainer<
         typename comp::detail::ComponentListHelper<CompList>::type,
@@ -50,6 +52,7 @@ protected:
 
 public:
     using FaceComponents = CompList;
+    using IndexType      = Index;
     using Face           = typename Base::ProxyType;
     using ConstFace      = typename Base::ConstProxyType;
     using FaceType_      = Face;
@@ -58,10 +61,7 @@ public:
     template<typename NewParent>
     using Rebind = FaceContainer<CompList, Index, NewParent>;
 
-    FaceContainer()
-    {
-        Base::template enable<CompId::VERTEX_REFERENCES>();
-    }
+    FaceContainer() { Base::template enable<CompId::VERTEX_REFERENCES>(); }
 
     FaceContainer(ParentMesh* parent) : FaceContainer()
     {
@@ -69,15 +69,21 @@ public:
     }
 
     Face face(Index i) { return Base::element(i); }
+
     ConstFace face(Index i) const { return Base::element(i); }
 
     std::size_t faceCount() const { return Base::elementCount(); }
-    std::size_t faceContainerSize() const { return Base::elementContainerSize(); }
+
+    std::size_t faceContainerSize() const
+    {
+        return Base::elementContainerSize();
+    }
+
     std::size_t deletedFaceCount() const { return Base::deletedElementCount(); }
 
     /**
-     * @brief Adds a new face into the Face container, returning the index of the
-     * added face.
+     * @brief Adds a new face into the Face container, returning the index of
+     * the added face.
      *
      * @return The index of the new face.
      */
@@ -91,9 +97,9 @@ public:
      * @return The index of the new face.
      */
     template<typename... Args>
-    Index addFace(const Args&... args)
-        requires (sizeof...(Args) >= 3 &&
-                  (sizeof...(Args) == Face::VERTEX_COUNT || Face::VERTEX_COUNT < 0))
+    Index addFace(const Args&... args) requires (
+        sizeof...(Args) >= 3 &&
+        (sizeof...(Args) == Face::VERTEX_COUNT || Face::VERTEX_COUNT < 0))
     {
         Index fid = addFace();
         face(fid).setVertices(args...);
@@ -116,8 +122,8 @@ public:
     }
 
     /**
-     * @brief Adds an arbitrary number of n faces, returning the index of the first
-     * added face.
+     * @brief Adds an arbitrary number of n faces, returning the index of the
+     * first added face.
      *
      * @param[in] n: the number of faces to add to the container.
      * @return The index of the first added face.
@@ -150,20 +156,130 @@ public:
     std::vector<Index> compactFaces() { return Base::compactElements(); }
 
     void resizeFaces(std::size_t n) { Base::resizeElements(n); }
+
     void reserveFaces(std::size_t capacity) { Base::reserveElements(capacity); }
+
     void clearFaces() { Base::clearElements(); }
 
     void deleteFace(Index i) { Base::deleteElement(i); }
+
     void deleteFace(const Face& f) { Base::deleteElement(f.index()); }
 
-    auto faces(bool jumpDeleted = true)
-    {
-        return Base::elements(jumpDeleted);
-    }
+    auto faces(bool jumpDeleted = true) { return Base::elements(jumpDeleted); }
 
     auto faces(bool jumpDeleted = true) const
     {
         return Base::elements(jumpDeleted);
+    }
+
+    /**
+     * @brief Imports all faces from the corresponding container of the
+     * other mesh into this container.
+     *
+     * If importing into a triangle mesh from a mesh with non-triangle faces
+     * (e.g. quad or polygonal), the faces are triangulated using ear-cutting.
+     *
+     * @param[in] m The other mesh to import from.
+     */
+    template<typename OtherMesh>
+    void importFrom(const OtherMesh& m)
+    {
+        Base::importFrom(m);
+        manageImportTriFromPoly(m);
+    }
+
+protected:
+    /**
+     * @brief Manages conversion from polygonal or n-gon faces to triangles
+     * when importing into a triangle mesh.
+     *
+     * Non-triangular faces are triangulated using the ear-cutting algorithm.
+     * The first triangle occupies the original face index, and additional
+     * triangles are appended to the container.
+     */
+    template<typename OtherMesh>
+    void manageImportTriFromPoly(const OtherMesh& m)
+    {
+        if constexpr (OtherMesh::template hasContainerOf<ElemId::FACE>()) {
+            using OtherFace = OtherMesh::ConstFace;
+
+            // if this is not a triangle mesh nor a polygon mesh (meaning that
+            // we can't control the number of vertex pointers in this mesh), and
+            // this mesh does not have the same number of vertex pointers of the
+            // other, it means that we don't know how to convert these type of
+            // meshes (e.g. we don't know how to convert a polygon mesh into a
+            // quad mesh, or convert a quad mesh into a pentagonal mesh...)
+            static_assert(
+                !(Face::VERTEX_COUNT != 3 && Face::VERTEX_COUNT > 0 &&
+                  Face::VERTEX_COUNT != OtherFace::VERTEX_COUNT),
+                "Cannot import from that type of Mesh. Don't know how to "
+                "convert faces.");
+
+            // we need to manage conversion from poly or faces with cardinality
+            // > 3 (e.g. quads) to triangle meshes. In this case, we triangulate
+            // the polygon using the earcut algorithm.
+            if constexpr (
+                Face::VERTEX_COUNT == 3 &&
+                (OtherFace::VERTEX_COUNT > 3 || OtherFace::VERTEX_COUNT < 0)) {
+                for (const auto& mf : m.faces()) {
+                    // if the current face has the same number of vertices of
+                    // this mf face (3), then the vertex indices have been
+                    // correctly imported from the component importFrom
+                    // function. The component importFrom function does
+                    // nothing when importing from a face with at least 4
+                    // vertices
+                    if (mf.vertexCount() != 3) {
+                        // triangulate mf; the first triangle of the
+                        // triangulation will be this->face(m.index(mf)); the
+                        // other triangles will be added at the end of the
+                        // container
+
+                        // TODO: use vcl::views for mesh v2 when will be
+                        // implemented
+                        auto polyPositions =
+                            mf.vertexIndices() |
+                            std::views::transform([&m](auto vi) {
+                                return m.vertex(vi).position();
+                            });
+
+                        std::vector<uint> tris = vcl::earCut(polyPositions);
+
+                        if (tris.size() >= 3) {
+                            Face f = face(mf.index());
+                            importTriCorners(f, mf, tris, 0);
+
+                            // number of other faces to add
+                            uint  nf      = tris.size() / 3 - 1;
+                            Index baseFid = addFaces(nf);
+
+                            uint t = 3; // index that cycles into tris
+                            for (uint k = 0; k < nf; ++k, t += 3) {
+                                Face fk = face(baseFid + k);
+                                fk.importFrom(mf, false);
+                                importTriCorners(fk, mf, tris, t);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+private:
+    template<typename OtherFace>
+    static void importTriCorners(
+        Face&                    f,
+        const OtherFace&         mf,
+        const std::vector<uint>& tris,
+        uint                     basetri)
+    {
+        for (uint j = 0; j < 3; ++j) {
+            f.setVertex(j, mf.vertexIndex(tris[basetri + j]));
+            // TODO: Handle wedge components (e.g. WedgeColors, WedgeTexCoords)
+            // once implemented in mesh_v2:
+            // f.wedgeColor(j) = mf.wedgeColor(tris[basetri + j]);
+            // f.wedgeTexCoord(j) = mf.wedgeTexCoord(tris[basetri + j]);
+        }
     }
 };
 

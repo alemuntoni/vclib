@@ -39,6 +39,9 @@ public:
     using typename Base::Components;
     using typename Base::IndexType;
 
+    static constexpr int VERTEX_COUNT =
+        comp::ComponentTypeT<CompId::VERTEX_REFERENCES, Components>::VERTEX_COUNT;
+
     static_assert(
         comp::HasVertexReferences<Components>,
         "A Face must have the VertexReferences component (e.g. "

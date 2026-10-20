@@ -780,7 +780,60 @@ int main()
         assert(mTriDest.face(0).vertexIndex(2) == 2);
         assert(mTriDest.face(0).edgeSelected(1) == true);
 
-        std::cout << "ElementProxy and ElementContainer importFrom verified successfully!\n";
+        // 6. Triangulation on importFrom (PolyMesh to TriMesh)
+        {
+            PolyMesh polySource;
+            polySource.addVertices(5);
+            polySource.vertex(0).position() = Point3f(0, 0, 0);
+            polySource.vertex(1).position() = Point3f(2, 0, 0);
+            polySource.vertex(2).position() = Point3f(2, 2, 0);
+            polySource.vertex(3).position() = Point3f(1, 3, 0);
+            polySource.vertex(4).position() = Point3f(0, 2, 0);
+
+            // Add a pentagon (5 vertices) -> should produce 3 triangles
+            polySource.addFace(0, 1, 2, 3, 4);
+
+            TriBitMesh triDest;
+            triDest.container<vcl::meshv2::ElemId::VERTEX>().importFrom(polySource);
+            assert(triDest.vertexCount() == 5);
+
+            triDest.container<vcl::meshv2::ElemId::FACE>().importFrom(polySource);
+            assert(triDest.faceCount() == 3);
+            assert(triDest.faceContainerSize() == 3);
+
+            // Each triangle must have 3 valid vertex indices from {0, 1, 2, 3, 4}
+            for (uint fi = 0; fi < 3; ++fi) {
+                assert(triDest.face(fi).vertexCount() == 3);
+                for (uint vi = 0; vi < 3; ++vi) {
+                    assert(triDest.face(fi).vertexIndex(vi) <= 4);
+                }
+            }
+
+            // Also test a mix: 1 triangle and 1 quad (4 vertices) -> 1 + 2 = 3 triangles
+            PolyMesh polyMixed;
+            polyMixed.addVertices(7);
+            polyMixed.vertex(0).position() = Point3f(0, 0, 0);
+            polyMixed.vertex(1).position() = Point3f(1, 0, 0);
+            polyMixed.vertex(2).position() = Point3f(0, 1, 0);
+            polyMixed.addFace(0, 1, 2); // triangle (3 vertices)
+
+            polyMixed.vertex(3).position() = Point3f(2, 0, 0);
+            polyMixed.vertex(4).position() = Point3f(3, 0, 0);
+            polyMixed.vertex(5).position() = Point3f(3, 1, 0);
+            polyMixed.vertex(6).position() = Point3f(2, 1, 0);
+            polyMixed.addFace(3, 4, 5, 6); // quad (4 vertices)
+
+            TriBitMesh triMixed;
+            triMixed.container<vcl::meshv2::ElemId::VERTEX>().importFrom(polyMixed);
+            triMixed.container<vcl::meshv2::ElemId::FACE>().importFrom(polyMixed);
+            assert(triMixed.faceCount() == 3);
+            assert(triMixed.faceContainerSize() == 3);
+            assert(triMixed.face(0).vertexIndex(0) == 0);
+            assert(triMixed.face(0).vertexIndex(1) == 1);
+            assert(triMixed.face(0).vertexIndex(2) == 2);
+        }
+
+        std::cout << "ElementProxy, ElementContainer and FaceContainer triangulation importFrom verified successfully!\n";
     }
 
     std::cout << "\nAll mesh tests passed successfully!\n";
