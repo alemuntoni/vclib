@@ -11,6 +11,9 @@
 #include <vclib/base.h>
 
 #include <array>
+#include <bit>
+#include <istream>
+#include <ostream>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -343,6 +346,44 @@ public:
         std::get<I>(mVecTuple).clear();
     }
 
+    /**
+     * @brief Serializes the parallel vectors tuple to the given output stream.
+     *
+     * Writes the size, the enabled flags of all vectors, and the contents of
+     * each enabled vector. For trivially copyable types under native
+     * little-endian, vectors are serialized via bulk I/O; otherwise,
+     * elements are serialized individually.
+     *
+     * @param os The output stream to write to.
+     */
+    void serialize(std::ostream& os) const
+    {
+        vcl::serialize(os, mSize);
+        if constexpr (VECTOR_COUNT > 0) {
+            vcl::serialize(os, mVecEnabled);
+            serializeVectors(os, std::make_index_sequence<VECTOR_COUNT>{});
+        }
+    }
+
+    /**
+     * @brief Deserializes the parallel vectors tuple from the given input stream.
+     *
+     * Reads the size, the enabled flags of all vectors, and the contents of
+     * each enabled vector. Disabled vectors are cleared. For trivially copyable
+     * types under native little-endian, vectors are deserialized via bulk I/O;
+     * otherwise, elements are deserialized individually.
+     *
+     * @param is The input stream to read from.
+     */
+    void deserialize(std::istream& is)
+    {
+        vcl::deserialize(is, mSize);
+        if constexpr (VECTOR_COUNT > 0) {
+            vcl::deserialize(is, mVecEnabled);
+            deserializeVectors(is, std::make_index_sequence<VECTOR_COUNT>{});
+        }
+    }
+
 private:
     template<std::size_t N>
     void vectorEnableAll()
@@ -404,6 +445,70 @@ private:
         }
         if constexpr (N != 0) {
             vectorCompact<N - 1>(newIndices);
+        }
+    }
+
+    template<std::size_t... Is>
+    void serializeVectors(std::ostream& os, std::index_sequence<Is...>) const
+    {
+        (serializeVector<Is>(os), ...);
+    }
+
+    template<std::size_t I>
+    void serializeVector(std::ostream& os) const
+    {
+        if (mVecEnabled[I]) {
+            const auto& vec = std::get<I>(mVecTuple);
+            using ElemType  = std::tuple_element_t<I, std::tuple<Types...>>;
+            if constexpr (
+                std::endian::native == std::endian::little &&
+                std::is_trivially_copyable_v<ElemType> &&
+                !std::is_same_v<ElemType, bool>) {
+                if (mSize > 0) {
+                    os.write(
+                        reinterpret_cast<const char*>(vec.data()),
+                        static_cast<std::streamsize>(mSize * sizeof(ElemType)));
+                }
+            }
+            else {
+                for (const auto& elem : vec) {
+                    vcl::serialize(os, elem);
+                }
+            }
+        }
+    }
+
+    template<std::size_t... Is>
+    void deserializeVectors(std::istream& is, std::index_sequence<Is...>)
+    {
+        (deserializeVector<Is>(is), ...);
+    }
+
+    template<std::size_t I>
+    void deserializeVector(std::istream& is)
+    {
+        auto& vec = std::get<I>(mVecTuple);
+        if (mVecEnabled[I]) {
+            vec.resize(mSize);
+            using ElemType = std::tuple_element_t<I, std::tuple<Types...>>;
+            if constexpr (
+                std::endian::native == std::endian::little &&
+                std::is_trivially_copyable_v<ElemType> &&
+                !std::is_same_v<ElemType, bool>) {
+                if (mSize > 0) {
+                    is.read(
+                        reinterpret_cast<char*>(vec.data()),
+                        static_cast<std::streamsize>(mSize * sizeof(ElemType)));
+                }
+            }
+            else {
+                for (auto& elem : vec) {
+                    vcl::deserialize(is, elem);
+                }
+            }
+        }
+        else {
+            vec.clear();
         }
     }
 };
