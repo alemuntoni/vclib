@@ -11,7 +11,9 @@ project(vclib-core-example-${EXAMPLE_NAME})
 set(SOURCES
     types.h
     load_matrices.h
+    benchmark.h
     test_building.h
+    test_normals.h
     main.cpp
 )
 
