@@ -27,6 +27,8 @@
 #include <algorithm>
 #include <cassert>
 #include <concepts>
+#include <istream>
+#include <ostream>
 
 namespace vcl::meshv2 {
 
@@ -527,7 +529,37 @@ protected:
         appendImpl(Components {}, other);
     }
 
-    // TODO: serialize and deserialize
+    /**
+     * @brief Serializes the element container to the given output stream.
+     *
+     * Writes the active element count and the contents of the underlying
+     * parallel vectors tuple (including size, component enable flags, and data).
+     *
+     * @param os The output stream to write to.
+     */
+    void serialize(std::ostream& os) const
+    {
+        vcl::serialize(os, mElemCount);
+        mElemComponents.serialize(os);
+    }
+
+    /**
+     * @brief Deserializes the element container from the given input stream.
+     *
+     * Reads the active element count and the contents of the underlying
+     * parallel vectors tuple. If custom components are supported, existing
+     * custom components are cleared.
+     *
+     * @param is The input stream to read from.
+     */
+    void deserialize(std::istream& is)
+    {
+        vcl::deserialize(is, mElemCount);
+        mElemComponents.deserialize(is);
+        if constexpr (comp::HasCustomComponents<ComponentList>) {
+            mCustomComponents.clear();
+        }
+    }
 
     /**
      * @brief Returns an iterator to the beginning of the container.
@@ -922,6 +954,34 @@ protected:
                     otherContainer.mCustomComponents);
             }
         }
+    }
+
+    /**
+     * @brief Serializes all custom components of type K stored in this
+     * container to the given output stream.
+     *
+     * @tparam K The type of the custom components to serialize.
+     * @param os The output stream to write to.
+     */
+    template<typename K>
+    void serializeElemCustomComponentsOfType(std::ostream& os) const
+        requires comp::HasCustomComponents<Components>
+    {
+        mCustomComponents.template serializeCustomComponentsOfType<K>(os);
+    }
+
+    /**
+     * @brief Deserializes all custom components of type K from the given
+     * input stream and stores them into this container.
+     *
+     * @tparam K The type of the custom components to deserialize.
+     * @param is The input stream to read from.
+     */
+    template<typename K>
+    void deserializeElemCustomComponentsOfType(std::istream& is)
+        requires comp::HasCustomComponents<Components>
+    {
+        mCustomComponents.template deserializeCustomComponentsOfType<K>(is);
     }
 
     ProxyType operator[](IndexType i)

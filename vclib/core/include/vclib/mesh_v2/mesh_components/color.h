@@ -10,6 +10,9 @@
 
 #include <vclib/mesh_v2/components/color.h>
 
+#include <istream>
+#include <ostream>
+
 namespace vcl::meshv2::mesh {
 
 /**
@@ -52,6 +55,18 @@ public:
     decltype(auto) color(this auto&& self) { return (self.mColor); }
 
 protected:
+    /**
+     * @brief Serializes the mesh color to the given output stream.
+     * @param[in] os The output stream.
+     */
+    void serialize(std::ostream& os) const { vcl::serialize(os, mColor); }
+
+    /**
+     * @brief Deserializes the mesh color from the given input stream.
+     * @param[in] is The input stream.
+     */
+    void deserialize(std::istream& is) { vcl::deserialize(is, mColor); }
+
     template<typename OtherMesh>
     void importFrom(this auto&& self, const OtherMesh& m)
     {

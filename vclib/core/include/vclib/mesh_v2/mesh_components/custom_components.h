@@ -200,6 +200,11 @@ public:
         this const auto& self,
         std::ostream&    os)
     {
+        constexpr uint32_t CCMP_TAG = 0x504D4343; // 'C', 'C', 'M', 'P'
+        vcl::serialize(os, CCMP_TAG);
+        uint32_t typeSize = static_cast<uint32_t>(sizeof(CompType));
+        vcl::serialize(os, typeSize);
+
         std::vector<std::string> compNames =
             self.template customComponentNamesOfType<CompType>();
         vcl::serialize(os, compNames);
@@ -218,6 +223,19 @@ public:
     template<typename CompType>
     void deserializeCustomComponentsOfType(this auto& self, std::istream& is)
     {
+        constexpr uint32_t CCMP_TAG = 0x504D4343;
+        uint32_t tag = 0;
+        vcl::deserialize(is, tag);
+        if (tag != CCMP_TAG) {
+            throw std::runtime_error("Invalid custom component block magic header");
+        }
+        uint32_t typeSize = 0;
+        vcl::deserialize(is, typeSize);
+        if (typeSize != sizeof(CompType)) {
+            throw BadCustomComponentTypeException(
+                "Custom component type size mismatch during deserialization.");
+        }
+
         std::vector<std::string> compNames;
         vcl::deserialize(is, compNames);
         for (const auto& name : compNames) {

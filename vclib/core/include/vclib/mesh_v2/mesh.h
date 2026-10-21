@@ -20,6 +20,9 @@
 
 #include <array>
 #include <concepts>
+#include <cstring>
+#include <istream>
+#include <ostream>
 #include <type_traits>
 #include <utility>
 
@@ -388,6 +391,58 @@ public:
      */
     bool empty() const { return (isContainerEmpty<Rebound<Args>>() && ...); }
 
+    /**
+     * @brief Serializes the mesh to the given binary output stream.
+     *
+     * Writes the binary format magic header ("vcl_mesh", 8 bytes), the format
+     * version (uint32_t = 1), and then sequentially serializes all element
+     * containers (with their SoA column buffers and component enable states)
+     * and serializable mesh-level components.
+     *
+     * @param[out] os The binary output stream to write to.
+     */
+    void serialize(std::ostream& os) const
+    {
+        constexpr char MAGIC[8] = {'v', 'c', 'l', '_', 'm', 'e', 's', 'h'};
+        os.write(MAGIC, 8);
+        constexpr uint32_t VERSION = 1;
+        vcl::serialize(os, VERSION);
+
+        (serializeBase<Rebound<Args>>(os), ...);
+    }
+
+    /**
+     * @brief Deserializes the mesh from the given binary input stream.
+     *
+     * Validates the binary format magic header ("vcl_mesh") and format
+     * version (= 1), deserializes all element containers and mesh-level
+     * components, and reconnects all child container parent pointers back
+     * to this mesh.
+     *
+     * @param[in] is The binary input stream to read from.
+     * @throws std::runtime_error If the magic header or format version is invalid.
+     */
+    void deserialize(std::istream& is)
+    {
+        char magic[8];
+        is.read(magic, 8);
+        if (std::memcmp(magic, "vcl_mesh", 8) != 0) {
+            throw std::runtime_error(
+                "Invalid mesh file header: expected 'vcl_mesh'");
+        }
+        uint32_t version = 0;
+        vcl::deserialize(is, version);
+        if (version != 1) {
+            throw std::runtime_error(
+                "Unsupported mesh binary format version: " +
+                std::to_string(version));
+        }
+
+        (deserializeBase<Rebound<Args>>(is), ...);
+
+        setParentMeshPointersToContainers();
+    }
+
     /* Generic element access by ELEM_ID */
 
     template<uint ELEM_ID>
@@ -630,6 +685,37 @@ public:
         return ContainerType<ELEM_ID>::template customComponentVectorHandle<K>(name);
     }
 
+    /**
+     * @brief Serializes all per-element custom components of type CompType
+     * for the container having ID ELEM_ID to the output stream.
+     *
+     * @tparam ELEM_ID The ID of the element (e.g. ElemId::VERTEX).
+     * @tparam CompType The type of custom components to serialize.
+     * @param[out] os The output stream.
+     */
+    template<uint ELEM_ID, typename CompType>
+    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    void serializePerElementCustomComponentsOfType(std::ostream& os) const
+    {
+        ContainerType<ELEM_ID>::template serializeElemCustomComponentsOfType<CompType>(os);
+    }
+
+    /**
+     * @brief Deserializes all per-element custom components of type CompType
+     * for the container having ID ELEM_ID from the input stream.
+     *
+     * @tparam ELEM_ID The ID of the element (e.g. ElemId::VERTEX).
+     * @tparam CompType The type of custom components to deserialize.
+     * @param[in] is The input stream.
+     */
+    template<uint ELEM_ID, typename CompType>
+    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    void deserializePerElementCustomComponentsOfType(std::istream& is)
+    {
+        ContainerType<ELEM_ID>::template deserializeElemCustomComponentsOfType<CompType>(is);
+    }
+
+
 private:
     template<typename T>
     void setParentMeshPointer()
@@ -760,6 +846,22 @@ private:
         }
         else {
             return true;
+        }
+    }
+
+    template<typename T>
+    void serializeBase(std::ostream& os) const
+    {
+        if constexpr (requires { this->T::serialize(os); }) {
+            this->T::serialize(os);
+        }
+    }
+
+    template<typename T>
+    void deserializeBase(std::istream& is)
+    {
+        if constexpr (requires { this->T::deserialize(is); }) {
+            this->T::deserialize(is);
         }
     }
 };

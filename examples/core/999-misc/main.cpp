@@ -20,6 +20,7 @@
 #include "test_append.h"
 #include "test_custom_components.h"
 #include "test_views.h"
+#include "test_serialization.h"
 
 int main()
 {
@@ -36,6 +37,7 @@ int main()
     testAppend();
     testCustomComponents();
     testViews();
+    testSerialization();
 
     std::println("All mesh tests passed successfully!");
     return 0;

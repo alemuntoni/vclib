@@ -339,6 +339,34 @@ public:
     {
         return Base::template customComponentVectorHandle<K>(name);
     }
+
+    /**
+     * @brief Serializes all per-vertex custom components of type K stored in
+     * this container to the given output stream.
+     *
+     * @tparam K The type of the custom components to serialize.
+     * @param os The output stream to write to.
+     */
+    template<typename K>
+    void serializePerVertexCustomComponentsOfType(std::ostream& os) const
+        requires vert::HasCustomComponents<Components>
+    {
+        Base::template serializeElemCustomComponentsOfType<K>(os);
+    }
+
+    /**
+     * @brief Deserializes all per-vertex custom components of type K from the
+     * given input stream and stores them into this container.
+     *
+     * @tparam K The type of the custom components to deserialize.
+     * @param is The input stream to read from.
+     */
+    template<typename K>
+    void deserializePerVertexCustomComponentsOfType(std::istream& is)
+        requires vert::HasCustomComponents<Components>
+    {
+        Base::template deserializeElemCustomComponentsOfType<K>(is);
+    }
 };
 
 } // namespace vcl::meshv2

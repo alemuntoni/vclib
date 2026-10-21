@@ -8,11 +8,12 @@
 #ifndef VCL_MESH_V2_CONTAINERS_BASE_CUSTOM_COMPONENTS_VECTOR_MAP_H
 #define VCL_MESH_V2_CONTAINERS_BASE_CUSTOM_COMPONENTS_VECTOR_MAP_H
 
-#include <vclib/mesh/exceptions.h>
+#include <vclib/mesh_v2/exceptions.h>
 
 #include <vclib/base.h>
 
 #include <any>
+#include <cstring>
 #include <string>
 #include <typeindex>
 #include <unordered_map>
@@ -65,6 +66,10 @@ public:
         const std::string&,
         const Other&) {}
     std::vector<std::string> allComponentNames() const { return {}; }
+    template<typename CompType>
+    void serializeCustomComponentsOfType(std::ostream&) const {}
+    template<typename CompType>
+    void deserializeCustomComponentsOfType(std::istream&) {}
 };
 
 template<>
@@ -365,6 +370,11 @@ public:
     template<typename CompType>
     void serializeCustomComponentsOfType(std::ostream& os) const
     {
+        constexpr uint32_t CCMP_TAG = 0x504D4343; // 'C', 'C', 'M', 'P'
+        vcl::serialize(os, CCMP_TAG);
+        uint32_t typeSize = static_cast<uint32_t>(sizeof(CompType));
+        vcl::serialize(os, typeSize);
+
         std::vector<std::string> compNames =
             allComponentNamesOfType<CompType>();
         vcl::serialize(os, compNames);
@@ -379,6 +389,19 @@ public:
     template<typename CompType>
     void deserializeCustomComponentsOfType(std::istream& is)
     {
+        constexpr uint32_t CCMP_TAG = 0x504D4343;
+        uint32_t tag = 0;
+        vcl::deserialize(is, tag);
+        if (tag != CCMP_TAG) {
+            throw std::runtime_error("Invalid custom component block magic header");
+        }
+        uint32_t typeSize = 0;
+        vcl::deserialize(is, typeSize);
+        if (typeSize != sizeof(CompType)) {
+            throw BadCustomComponentTypeException(
+                "Custom component type size mismatch during deserialization.");
+        }
+
         std::vector<std::string> compNames;
         vcl::deserialize(is, compNames);
         for (const auto& name : compNames) {
@@ -386,9 +409,9 @@ public:
             vcl::deserialize(is, b);
             std::vector<std::any> v;
             vcl::deserialize<CompType>(is, v);
-            mMap[name]              = v;
+            mMap[name]              = std::move(v);
             mNeedToInitialize[name] = b;
-            mCompType.emplace(name, typeid(CompType));
+            mCompType.insert_or_assign(name, typeid(CompType));
         }
     }
 
