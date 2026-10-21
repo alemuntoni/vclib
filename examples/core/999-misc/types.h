@@ -18,6 +18,7 @@
 #include <vclib/space/core.h>
 
 #include <vclib/mesh_v2/components/bit_flags.h>
+#include <vclib/mesh_v2/components/custom_components.h>
 #include <vclib/mesh_v2/components/normal.h>
 #include <vclib/mesh_v2/components/position.h>
 #include <vclib/mesh_v2/components/vertex_references.h>
@@ -90,6 +91,21 @@ using MeshDouble = vcl::meshv2::Mesh<
     vcl::meshv2::FaceContainer<vcl::TypeWrapper<
         vcl::meshv2::comp::TriangleBitFlags,
         vcl::meshv2::comp::VertexReferences<3>>>>;
+
+using CCMeshVertexComponents = meshv2::VertexComponents<
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3f,
+    meshv2::vert::CustomComponents>;
+
+using CCMeshFaceComponents = meshv2::FaceComponents<
+    meshv2::face::BitFlags,
+    meshv2::face::TriangleVertexReferences<vcl::uint>,
+    meshv2::face::CustomComponents>;
+
+using CCMesh = meshv2::Mesh<
+    meshv2::VertexContainer<CCMeshVertexComponents>,
+    meshv2::FaceContainer<CCMeshFaceComponents>,
+    meshv2::mesh::CustomComponents>;
 
 // Concept checking templates
 template<typename T>

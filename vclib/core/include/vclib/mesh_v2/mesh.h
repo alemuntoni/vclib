@@ -10,11 +10,13 @@
 
 #include <vclib/base.h>
 #include <vclib/mesh_v2/containers/base/base.h>
+#include <vclib/mesh_v2/containers/base/custom_component_vector_handle.h>
 #include <vclib/mesh_v2/containers/face_container.h>
 #include <vclib/mesh_v2/containers/vertex_container.h>
 #include <vclib/mesh_v2/elements/base/base.h>
 #include <vclib/mesh_v2/elements/face.h>
 #include <vclib/mesh_v2/elements/vertex.h>
+#include <vclib/mesh_v2/mesh_components.h>
 
 #include <array>
 #include <concepts>
@@ -159,6 +161,24 @@ public:
     template<uint ELEM_ID>
     using ContainerType =
         typename detail::FindContainer<ELEM_ID, Rebound<Args>...>::type;
+
+    /**
+     * @brief Returns true if this Mesh has a container for ELEM_ID and that
+     * container contains the component COMP_ID.
+     *
+     * @tparam ELEM_ID The ID of the element (e.g. ElemId::VERTEX).
+     * @tparam COMP_ID The ID of the component (e.g. CompId::CUSTOM_COMPONENTS).
+     */
+    template<uint ELEM_ID, uint COMP_ID>
+    static constexpr bool hasPerElementComponent()
+    {
+        if constexpr (hasContainerOf<ELEM_ID>()) {
+            return comp::HasComponent<COMP_ID, ContainerType<ELEM_ID>>;
+        }
+        else {
+            return false;
+        }
+    }
 
     /**
      * @brief Returns a reference to the container for the given ELEM_ID.
@@ -470,6 +490,146 @@ public:
         deleteElement<std::remove_cvref_t<El>::ELEMENT_ID>(e.index());
     }
 
+    /* Per-Element Custom Components */
+
+    /**
+     * @brief Checks if the Element container with ELEM_ID has a custom
+     * component with the given name.
+     *
+     * @tparam ELEM_ID The ID of the element (e.g. ElemId::VERTEX).
+     * @param[in] name The name of the custom component to check.
+     * @return true if the element has the custom component, false otherwise.
+     */
+    template<uint ELEM_ID>
+    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    bool hasPerElementCustomComponent(const std::string& name) const
+    {
+        return ContainerType<ELEM_ID>::hasElemCustomComponent(name);
+    }
+
+    /**
+     * @brief Returns a vector containing all the names of the custom components
+     * associated to the Element with ELEM_ID.
+     *
+     * @tparam ELEM_ID The ID of the element.
+     * @return A vector of strings with all custom component names.
+     */
+    template<uint ELEM_ID>
+    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    std::vector<std::string> perElementCustomComponentNames() const
+    {
+        return ContainerType<ELEM_ID>::elemCustomComponentNames();
+    }
+
+    /**
+     * @brief Checks if the custom component of the Element with ELEM_ID is of
+     * type K.
+     *
+     * @tparam ELEM_ID The ID of the element.
+     * @tparam K The type of the custom component to check.
+     * @param[in] name The name of the custom component.
+     * @return true if the custom component is of type K, false otherwise.
+     */
+    template<uint ELEM_ID, typename K>
+    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    bool isPerElementCustomComponentOfType(const std::string& name) const
+    {
+        return ContainerType<ELEM_ID>::template isElemCustomComponentOfType<K>(name);
+    }
+
+    /**
+     * @brief Returns the std::type_index of the custom component of the Element
+     * with ELEM_ID.
+     *
+     * @tparam ELEM_ID The ID of the element.
+     * @param[in] name The name of the custom component.
+     * @return The std::type_index of the custom component.
+     */
+    template<uint ELEM_ID>
+    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    std::type_index perElementCustomComponentType(const std::string& name) const
+    {
+        return ContainerType<ELEM_ID>::elemComponentType(name);
+    }
+
+    /**
+     * @brief Returns a vector of strings containing the names of all custom
+     * components of type K associated to the Element with ELEM_ID.
+     *
+     * @tparam ELEM_ID The ID of the element.
+     * @tparam K The type of the custom components.
+     * @return A vector of strings with custom component names of type K.
+     */
+    template<uint ELEM_ID, typename K>
+    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    std::vector<std::string> perElementCustomComponentNamesOfType() const
+    {
+        return ContainerType<ELEM_ID>::template elemCustomComponentNamesOfType<K>();
+    }
+
+    /**
+     * @brief Adds a custom component of type K with the given name to the
+     * Element container with ELEM_ID.
+     *
+     * @tparam ELEM_ID The ID of the element.
+     * @tparam K The type of the custom component.
+     * @param[in] name The name of the custom component to add.
+     */
+    template<uint ELEM_ID, typename K>
+    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    void addPerElementCustomComponent(const std::string& name)
+    {
+        ContainerType<ELEM_ID>::template addElemCustomComponent<K>(name);
+    }
+
+    /**
+     * @brief Deletes the custom component with the given name from the Element
+     * container with ELEM_ID.
+     *
+     * @tparam ELEM_ID The ID of the element.
+     * @param[in] name The name of the custom component to delete.
+     */
+    template<uint ELEM_ID>
+    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    void deletePerElementCustomComponent(const std::string& name)
+    {
+        ContainerType<ELEM_ID>::deleteElemCustomComponent(name);
+    }
+
+    /**
+     * @brief Returns a vector handle to access the custom component of type K
+     * with the given name on the Element container with ELEM_ID.
+     *
+     * @tparam ELEM_ID The ID of the element.
+     * @tparam K The type of the custom component.
+     * @param[in] name The name of the custom component.
+     * @return A CustomComponentVectorHandle<K>.
+     */
+    template<uint ELEM_ID, typename K>
+    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    CustomComponentVectorHandle<K> perElementCustomComponentVectorHandle(
+        const std::string& name)
+    {
+        return ContainerType<ELEM_ID>::template customComponentVectorHandle<K>(name);
+    }
+
+    /**
+     * @brief Returns a const vector handle to access the custom component of
+     * type K with the given name on the Element container with ELEM_ID.
+     *
+     * @tparam ELEM_ID The ID of the element.
+     * @tparam K The type of the custom component.
+     * @param[in] name The name of the custom component.
+     * @return A ConstCustomComponentVectorHandle<K>.
+     */
+    template<uint ELEM_ID, typename K>
+    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    ConstCustomComponentVectorHandle<K> perElementCustomComponentVectorHandle(
+        const std::string& name) const
+    {
+        return ContainerType<ELEM_ID>::template customComponentVectorHandle<K>(name);
+    }
+
 private:
     template<typename T>
     void setParentMeshPointer()
@@ -640,6 +800,37 @@ concept HasTriangles = HasFaces<MeshType> && requires {
     typename MeshType::Face;
     requires TriangleFaceConcept<typename MeshType::Face>;
 };
+
+/**
+ * @brief Concept that checks whether a Mesh has a container for the given
+ * ELEM_ID with the given component COMP_ID.
+ */
+template<typename MeshType, uint ELEM_ID, uint COMP_ID>
+concept HasPerElementComponent =
+    HasContainerOf<MeshType, ELEM_ID> &&
+    comp::HasComponent<COMP_ID, typename MeshType::template ContainerType<ELEM_ID>>;
+
+/**
+ * @brief Concept that checks whether a Mesh has per-element custom components
+ * on container ELEM_ID.
+ */
+template<typename MeshType, uint ELEM_ID>
+concept HasPerElementCustomComponents =
+    HasPerElementComponent<MeshType, ELEM_ID, CompId::CUSTOM_COMPONENTS>;
+
+/**
+ * @brief Concept that checks whether a Mesh has per-vertex custom components.
+ */
+template<typename MeshType>
+concept HasPerVertexCustomComponents =
+    HasPerElementCustomComponents<MeshType, ElemId::VERTEX>;
+
+/**
+ * @brief Concept that checks whether a Mesh has per-face custom components.
+ */
+template<typename MeshType>
+concept HasPerFaceCustomComponents =
+    HasPerElementCustomComponents<MeshType, ElemId::FACE>;
 
 /**
  * @brief Concept that checks whether a type T satisfies the Mesh concept.

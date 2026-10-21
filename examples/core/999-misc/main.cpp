@@ -18,6 +18,7 @@
 #include "test_add_elements.h"
 #include "test_import_from.h"
 #include "test_append.h"
+#include "test_custom_components.h"
 
 int main()
 {
@@ -32,6 +33,7 @@ int main()
     testAddElements();
     testImportFrom();
     testAppend();
+    testCustomComponents();
 
     std::println("All mesh tests passed successfully!");
     return 0;

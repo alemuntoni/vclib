@@ -11,6 +11,7 @@
 #include <vclib/mesh_v2/components/base/component_predicates.h>
 #include <vclib/mesh_v2/containers/base/element_container.h>
 #include <vclib/mesh_v2/elements/vertex.h>
+#include <vclib/mesh_v2/elements/vertex_components.h>
 
 #include <vclib/base.h>
 
@@ -49,6 +50,7 @@ protected:
     using Base::get;
 
 public:
+    using Components       = typename Base::Components;
     using VertexComponents = CompList;
     using IndexType        = Index;
     using Vertex           = typename Base::ProxyType;
@@ -164,6 +166,178 @@ public:
     auto vertices(bool jumpDeleted = true) const
     {
         return Base::elements(jumpDeleted);
+    }
+
+    // --- Custom Components ---
+
+    /**
+     * @brief Checks if Vertices have a custom component with the given name.
+     *
+     * This function does not take into account the type of the custom
+     * component.
+     *
+     * @note This function is available only if the Vertex Element has the
+     * CustomComponents Component.
+     *
+     * @param[in] name The name of the custom component to check.
+     * @return `true` if the Vertex Element has a custom component with the
+     * given name.
+     */
+    bool hasPerVertexCustomComponent(const std::string& name) const
+        requires vert::HasCustomComponents<Components>
+    {
+        return Base::hasElemCustomComponent(name);
+    }
+
+    /**
+     * @brief Returns a vector containing all the names of the custom components
+     * of any type associated to the Vertex Element.
+     *
+     * @note This function is available only if the Vertex Element has the
+     * CustomComponents Component.
+     *
+     * @return A vector of strings representing all the names of the custom
+     * components.
+     */
+    std::vector<std::string> perVertexCustomComponentNames() const
+        requires vert::HasCustomComponents<Components>
+    {
+        return Base::elemCustomComponentNames();
+    }
+
+    /**
+     * @brief Checks if the custom component of the Vertex Element having the
+     * given name has the same type of the given template argument type of this
+     * function.
+     *
+     * @note This function is available only if the Vertex Element has the
+     * CustomComponents Component.
+     *
+     * @tparam K The type of the custom component to check.
+     * @param[in] name The name of the custom component to check.
+     * @throws std::out_of_range if no custom component of the given name was
+     * found.
+     * @return `true` if the custom component is of the same type of the
+     * template argument.
+     */
+    template<typename K>
+    bool isPerVertexCustomComponentOfType(const std::string& name) const
+        requires vert::HasCustomComponents<Components>
+    {
+        return Base::template isElemCustomComponentOfType<K>(name);
+    }
+
+    /**
+     * @brief Returns the std::type_index of the custom component of the Vertex
+     * Element having the given input name.
+     *
+     * @note This function is available only if the Vertex Element has the
+     * CustomComponents Component.
+     *
+     * @param[in] name The name of the custom component to get the
+     * std::type_index from.
+     * @throws std::out_of_range if no custom component of the given name was
+     * found.
+     * @return The std::type_index of the custom component having the given
+     * input name.
+     */
+    std::type_index perVertexCustomComponentType(const std::string& name) const
+        requires vert::HasCustomComponents<Components>
+    {
+        return Base::elemComponentType(name);
+    }
+
+    /**
+     * @brief Returns a vector containing all the names of the custom components
+     * associated to the Vertex Element having the same type of the given
+     * template argument type of this function.
+     *
+     * @note This function is available only if the Vertex Element has the
+     * CustomComponents Component.
+     *
+     * @tparam K The type of the custom component names.
+     * @return A vector of strings representing the names of the custom
+     * components of a given type.
+     */
+    template<typename K>
+    std::vector<std::string> perVertexCustomComponentNamesOfType() const
+        requires vert::HasCustomComponents<Components>
+    {
+        return Base::template elemCustomComponentNamesOfType<K>();
+    }
+
+    /**
+     * @brief Adds a custom component of type K to the Vertex, having the given
+     * name.
+     *
+     * @note This function is available only if the Vertex Element has the
+     * CustomComponents Component.
+     *
+     * @tparam K The type of the custom component added to the Vertex.
+     * @param[in] name The name of the custom component added to the Vertex.
+     */
+    template<typename K>
+    void addPerVertexCustomComponent(const std::string& name)
+        requires vert::HasCustomComponents<Components>
+    {
+        Base::template addElemCustomComponent<K>(name);
+    }
+
+    /**
+     * @brief Deletes the custom component of the given name from the Vertex
+     * Element.
+     *
+     * The function does nothing if the custom component does not exists.
+     *
+     * @note This function is available only if the Vertex Element has the
+     * CustomComponents Component.
+     *
+     * @param[in] name The name of the custom component that will be removed
+     * from the Vertex.
+     */
+    void deletePerVertexCustomComponent(const std::string& name)
+        requires vert::HasCustomComponents<Components>
+    {
+        Base::deleteElemCustomComponent(name);
+    }
+
+    /**
+     * @brief Returns a vector handle to the custom component having the type K
+     * and the given name.
+     *
+     * @note This function is available only if the Vertex Element has the
+     * CustomComponents Component.
+     *
+     * @tparam K The type of the custom component on which return the handle.
+     * @param[in] name Name of the custom component on which return the handle.
+     * @return A vector handle that allows to access to the custom component.
+     */
+    template<typename K>
+    CustomComponentVectorHandle<K> perVertexCustomComponentVectorHandle(
+        const std::string& name)
+        requires vert::HasCustomComponents<Components>
+    {
+        return Base::template customComponentVectorHandle<K>(name);
+    }
+
+    /**
+     * @brief Returns a const vector handle to the custom component having type
+     * K and the given name.
+     *
+     * @note This function is available only if the Vertex Element has the
+     * CustomComponents Component.
+     *
+     * @tparam K The type of the custom component on which return the handle.
+     * @param[in] name Name of the custom component on which return the handle.
+     * @return A const vector handle that allows to access to the custom
+     * component.
+     */
+    template<typename K>
+    ConstCustomComponentVectorHandle<K> perVertexCustomComponentVectorHandle(
+        const std::string& name) const
+        requires vert::HasCustomComponents<Components>
+    {
+        return Base::template customComponentVectorHandle<K>(name);
     }
 };
 

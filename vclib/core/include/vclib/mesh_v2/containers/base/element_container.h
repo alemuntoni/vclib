@@ -9,11 +9,14 @@
 #define VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H
 
 #include "component_view.h"
+#include "custom_component_vector_handle.h"
+#include "custom_components_vector_map.h"
 #include "element_container_proxy.h"
 
 #include <vclib/mesh_v2/components/base/component.h>
 #include <vclib/mesh_v2/components/base/component_predicates.h>
 #include <vclib/mesh_v2/components/bit_flags.h>
+#include <vclib/mesh_v2/components/custom_components.h>
 #include <vclib/mesh_v2/components/vertex_references.h>
 #include <vclib/mesh_v2/elements/base/element_proxy.h>
 #include <vclib/mesh_v2/iterators/element_iterator.h>
@@ -28,6 +31,13 @@
 namespace vcl::meshv2 {
 
 namespace detail {
+
+// Trait to check if a component has a static vector column (DataType is not void)
+template<typename Comp>
+struct HasVectorColumnPred
+{
+    static constexpr bool value = !std::is_void_v<typename Comp::DataType>;
+};
 
 // Trait to convert TypeWrapper<Components...> in a ParallelVectorsTuple
 template<typename ComponentListWrapper>
@@ -97,8 +107,12 @@ class ElementContainer
         "An Element must have the BitFlags component "
         "(vcl::meshv2::comp::BitFlags).");
 
+    using VectorComponents = typename FilterTypesByCondition<
+        detail::HasVectorColumnPred,
+        ComponentList>::type;
+
     using VectorTupleType =
-        detail::ParallelVectorsTupleFromComponents<ComponentList>::type;
+        typename detail::ParallelVectorsTupleFromComponents<VectorComponents>::type;
 
     ParentMesh* mParentMesh = nullptr;
 
@@ -118,6 +132,10 @@ class ElementContainer
      */
     VectorTupleType mElemComponents;
 
+    [[no_unique_address]]
+    detail::CustomComponentsVectorMap<comp::HasCustomComponents<ComponentList>>
+        mCustomComponents;
+
 public:
     using Components     = ComponentList;
     using IndexType      = Index;
@@ -135,14 +153,20 @@ public:
     template<uint COMP_ID>
     auto& get()
     {
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
+        static_assert(
+            COMP_ID != CompId::CUSTOM_COMPONENTS,
+            "CustomComponents do not have a column in the parallel vectors tuple.");
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
         return mElemComponents.template get<N>();
     }
 
     template<uint COMP_ID>
     const auto& get() const
     {
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
+        static_assert(
+            COMP_ID != CompId::CUSTOM_COMPONENTS,
+            "CustomComponents do not have a column in the parallel vectors tuple.");
+        constexpr uint N = comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
         return mElemComponents.template get<N>();
     }
 
@@ -236,6 +260,12 @@ protected:
                 element(i).importFrom(c.element(i));
             }
             mElemCount = c.elementCount();
+            if constexpr (
+                comp::HasCustomComponents<Components> &&
+                comp::HasCustomComponents<
+                    typename std::remove_cvref_t<decltype(c)>::Components>) {
+                mCustomComponents = c.mCustomComponents;
+            }
         }
     }
 
@@ -263,6 +293,9 @@ protected:
     {
         std::size_t id = mElemComponents.size();
         mElemComponents.resize(id + 1);
+        if constexpr (comp::HasCustomComponents<Components>) {
+            mCustomComponents.resize(id + 1);
+        }
         ++mElemCount;
         return static_cast<IndexType>(id);
     }
@@ -279,6 +312,9 @@ protected:
     {
         std::size_t baseId = mElemComponents.size();
         mElemComponents.resize(baseId + n);
+        if constexpr (comp::HasCustomComponents<Components>) {
+            mCustomComponents.resize(baseId + n);
+        }
         mElemCount += n;
         return static_cast<IndexType>(baseId);
     }
@@ -286,6 +322,9 @@ protected:
     void clearElements()
     {
         mElemComponents.clear();
+        if constexpr (comp::HasCustomComponents<Components>) {
+            mCustomComponents.clear();
+        }
         mElemCount = 0;
     }
 
@@ -321,6 +360,9 @@ protected:
     {
         std::size_t oldSize = mElemComponents.size();
         mElemComponents.resize(newSize);
+        if constexpr (comp::HasCustomComponents<Components>) {
+            mCustomComponents.resize(newSize);
+        }
         if (newSize > oldSize) {
             mElemCount += (newSize - oldSize);
         }
@@ -337,6 +379,9 @@ protected:
     void reserveElements(std::size_t capacity)
     {
         mElemComponents.reserve(capacity);
+        if constexpr (comp::HasCustomComponents<Components>) {
+            mCustomComponents.reserve(capacity);
+        }
     }
 
     /**
@@ -352,6 +397,9 @@ protected:
         std::vector<IndexType> newIndices = elementCompactIndices();
         if (!isElementContainerCompact()) {
             mElemComponents.compact(newIndices);
+            if constexpr (comp::HasCustomComponents<Components>) {
+                mCustomComponents.compact(newIndices);
+            }
             assert(mElemComponents.size() == mElemCount);
 
             if constexpr (!std::is_void_v<ParentMesh>) {
@@ -606,8 +654,13 @@ protected:
     template<uint COMP_ID>
     bool isEnabled() const
     {
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
-        return mElemComponents.template isEnabled<N>();
+        if constexpr (COMP_ID == CompId::CUSTOM_COMPONENTS) {
+            return comp::HasComponent<COMP_ID, Components>;
+        }
+        else {
+            constexpr uint N = comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+            return mElemComponents.template isEnabled<N>();
+        }
     }
 
     /**
@@ -616,8 +669,10 @@ protected:
     template<uint COMP_ID>
     void enable()
     {
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
-        mElemComponents.template enable<N>();
+        if constexpr (COMP_ID != CompId::CUSTOM_COMPONENTS) {
+            constexpr uint N = comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+            mElemComponents.template enable<N>();
+        }
     }
 
     /**
@@ -630,8 +685,10 @@ protected:
         static_assert(
             COMP_ID != CompId::BIT_FLAGS,
             "BitFlags component cannot be disabled");
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, Components>::value;
-        mElemComponents.template disable<N>();
+        if constexpr (COMP_ID != CompId::CUSTOM_COMPONENTS) {
+            constexpr uint N = comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+            mElemComponents.template disable<N>();
+        }
     }
 
     void enableAll() { mElemComponents.enableAll(); }
@@ -679,6 +736,194 @@ protected:
         }
     }
 
+    // --- Custom Components ---
+
+    /**
+     * @brief Returns true if the element has a custom component with the given
+     * name, false otherwise.
+     *
+     * @param[in] name The name of the custom component.
+     * @return true if the custom component exists, false otherwise.
+     */
+    bool hasElemCustomComponent(const std::string& name) const
+        requires comp::HasCustomComponents<Components>
+    {
+        return mCustomComponents.componentExists(name);
+    }
+
+    /**
+     * @brief Returns a vector containing the names of all the custom components
+     * associated to the elements of this container.
+     *
+     * @return A vector of strings containing the names of all custom components.
+     */
+    std::vector<std::string> elemCustomComponentNames() const
+        requires comp::HasCustomComponents<Components>
+    {
+        return mCustomComponents.allComponentNames();
+    }
+
+    /**
+     * @brief Returns true if the custom component of the given name is of the
+     * type given as template argument, false otherwise.
+     *
+     * @tparam K The type of the custom component to check.
+     * @param[in] name The name of the custom component.
+     * @return true if the custom component is of type K, false otherwise.
+     */
+    template<typename K>
+    bool isElemCustomComponentOfType(const std::string& name) const
+        requires comp::HasCustomComponents<Components>
+    {
+        return mCustomComponents.template isComponentOfType<K>(name);
+    }
+
+    /**
+     * @brief Returns the `std::type_index` of the custom component of the given
+     * name.
+     *
+     * @param[in] name The name of the custom component.
+     * @return The `std::type_index` of the custom component.
+     */
+    std::type_index elemComponentType(const std::string& name) const
+        requires comp::HasCustomComponents<Components>
+    {
+        return mCustomComponents.componentType(name);
+    }
+
+    std::type_index elemCustomComponentType(const std::string& name) const
+        requires comp::HasCustomComponents<Components>
+    {
+        return elemComponentType(name);
+    }
+
+    /**
+     * @brief Returns a vector of strings containing the names of all the custom
+     * components of type K.
+     *
+     * @tparam K The type of the custom components.
+     * @return A vector of strings containing the names of custom components of
+     * type K.
+     */
+    template<typename K>
+    std::vector<std::string> elemCustomComponentNamesOfType() const
+        requires comp::HasCustomComponents<Components>
+    {
+        return mCustomComponents.template allComponentNamesOfType<K>();
+    }
+
+    /**
+     * @brief Adds a new vector of custom components with the given name and
+     * type. All existing elements are initialized with the default constructor
+     * of K.
+     *
+     * @tparam K The type of the custom component.
+     * @param[in] name The name of the custom component.
+     */
+    template<typename K>
+    void addElemCustomComponent(const std::string& name)
+        requires comp::HasCustomComponents<Components>
+    {
+        mCustomComponents.template addNewComponent<K>(
+            name, elementContainerSize());
+    }
+
+    /**
+     * @brief Deletes the custom component with the given name.
+     *
+     * @param[in] name The name of the custom component to delete.
+     */
+    void deleteElemCustomComponent(const std::string& name)
+        requires comp::HasCustomComponents<Components>
+    {
+        mCustomComponents.deleteComponent(name);
+    }
+
+    /**
+     * @brief Returns a vector handle to access the custom component of type K
+     * with the given name.
+     *
+     * @tparam K The type of the custom component.
+     * @param[in] name The name of the custom component.
+     * @return A CustomComponentVectorHandle<K>.
+     */
+    template<typename K>
+    CustomComponentVectorHandle<K> customComponentVectorHandle(
+        const std::string& name)
+        requires comp::HasCustomComponents<Components>
+    {
+        return CustomComponentVectorHandle<K>(
+            mCustomComponents.template componentVector<K>(name));
+    }
+
+    /**
+     * @brief Returns a const vector handle to access the custom component of
+     * type K with the given name.
+     *
+     * @tparam K The type of the custom component.
+     * @param[in] name The name of the custom component.
+     * @return A ConstCustomComponentVectorHandle<K>.
+     */
+    template<typename K>
+    ConstCustomComponentVectorHandle<K> customComponentVectorHandle(
+        const std::string& name) const
+        requires comp::HasCustomComponents<Components>
+    {
+        return ConstCustomComponentVectorHandle<K>(
+            mCustomComponents.template componentVector<K>(name));
+    }
+
+    /**
+     * @brief Returns a reference to the custom component of type K at index i.
+     *
+     * @tparam K The type of the custom component.
+     * @param[in] name The name of the custom component.
+     * @param[in] i The index of the element.
+     * @return A reference to the custom component value.
+     */
+    template<typename K>
+    K& elemCustomComponent(const std::string& name, IndexType i)
+        requires comp::HasCustomComponents<Components>
+    {
+        return std::any_cast<K&>(
+            mCustomComponents.template componentVector<K>(name)[i]);
+    }
+
+    template<typename K>
+    const K& elemCustomComponent(const std::string& name, IndexType i) const
+        requires comp::HasCustomComponents<Components>
+    {
+        return std::any_cast<const K&>(
+            mCustomComponents.template componentVector<K>(name)[i]);
+    }
+
+    /**
+     * @brief Imports the custom components from another container for a
+     * specific element index.
+     *
+     * @param[in] thisIndex The index in this container.
+     * @param[in] otherContainer The other container to import from.
+     * @param[in] otherIndex The index in the other container.
+     */
+    template<typename OtherContainer>
+    void importElementCustomComponents(
+        IndexType             thisIndex,
+        const OtherContainer& otherContainer,
+        IndexType             otherIndex)
+        requires comp::HasCustomComponents<Components>
+    {
+        if constexpr (comp::HasCustomComponents<
+                          typename OtherContainer::Components>) {
+            for (const auto& name : mCustomComponents.allComponentNames()) {
+                mCustomComponents.importSameCustomComponentFrom(
+                    thisIndex,
+                    otherIndex,
+                    name,
+                    otherContainer.mCustomComponents);
+            }
+        }
+    }
+
     ProxyType operator[](IndexType i)
     {
         assert(i < size() || i == std::numeric_limits<IndexType>::max());
@@ -709,6 +954,8 @@ private:
 
     template<uint, typename CT, typename CLW>
     friend class ElementProxy;
+
+    friend class comp::CustomComponents;
 
     template<
         typename,
@@ -845,12 +1092,14 @@ private:
         const OtherContainer& other)
     {
         auto enableIfAvailableInOther = [&]<typename Comp>() {
-            if (!this->template isEnabled<Comp::COMPONENT_ID>()) {
-                if constexpr (
-                    comp::HasComponent<Comp::COMPONENT_ID, OtherContainer>) {
-                    if (comp::isComponentAvailableOn<Comp::COMPONENT_ID>(
-                            other)) {
-                        this->template enable<Comp::COMPONENT_ID>();
+            if constexpr (Comp::COMPONENT_ID != CompId::CUSTOM_COMPONENTS) {
+                if (!this->template isEnabled<Comp::COMPONENT_ID>()) {
+                    if constexpr (
+                        comp::HasComponent<Comp::COMPONENT_ID, OtherContainer>) {
+                        if (comp::isComponentAvailableOn<Comp::COMPONENT_ID>(
+                                other)) {
+                            this->template enable<Comp::COMPONENT_ID>();
+                        }
                     }
                 }
             }
@@ -871,15 +1120,21 @@ private:
         addElements(on);
 
         auto copyComponent = [&]<typename Comp>() {
-            if (this->template isEnabled<Comp::COMPONENT_ID>() &&
-                other.template isEnabled<Comp::COMPONENT_ID>()) {
-                auto&       thisVec  = this->template get<Comp::COMPONENT_ID>();
-                const auto& otherVec = other.template get<Comp::COMPONENT_ID>();
-                std::copy(otherVec.begin(), otherVec.end(), thisVec.begin() + n);
+            if constexpr (Comp::COMPONENT_ID != CompId::CUSTOM_COMPONENTS) {
+                if (this->template isEnabled<Comp::COMPONENT_ID>() &&
+                    other.template isEnabled<Comp::COMPONENT_ID>()) {
+                    auto&       thisVec  = this->template get<Comp::COMPONENT_ID>();
+                    const auto& otherVec = other.template get<Comp::COMPONENT_ID>();
+                    std::copy(otherVec.begin(), otherVec.end(), thisVec.begin() + n);
+                }
             }
         };
 
         (copyComponent.template operator()<Comps>(), ...);
+
+        if constexpr (comp::HasCustomComponents<Components>) {
+            mCustomComponents.append(other.mCustomComponents, n, on);
+        }
 
         mElemCount = (mElemCount - on) + other.elementCount();
     }

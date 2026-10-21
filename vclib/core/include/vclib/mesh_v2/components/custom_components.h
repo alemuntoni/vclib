@@ -142,7 +142,7 @@ public:
         this auto&&        self,
         const std::string& compName)
     {
-        return self.container().template customComponent<CompType>(
+        return self.container().template elemCustomComponent<CompType>(
             compName, self.index());
     }
 

@@ -49,6 +49,22 @@ namespace vcl::meshv2::detail {
 template<bool HasCustomComponent>
 class CustomComponentsVectorMap
 {
+public:
+    void clear() {}
+    void reserve(std::size_t) {}
+    void resize(std::size_t) {}
+    template<typename Index>
+    void compact(const std::vector<Index>&) {}
+    void swapCustomComponents(std::size_t, std::size_t) {}
+    template<typename Other>
+    void append(const Other&, std::size_t, std::size_t) {}
+    template<typename Other>
+    void importSameCustomComponentFrom(
+        std::size_t,
+        std::size_t,
+        const std::string&,
+        const Other&) {}
+    std::vector<std::string> allComponentNames() const { return {}; }
 };
 
 template<>

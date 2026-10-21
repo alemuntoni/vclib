@@ -113,9 +113,9 @@ public:
 
     bool empty() const { return mVec.empty(); }
 
-    T& at(std::unsigned_integral auto i) { return mVec.at(i).get(); }
+    T& at(std::size_t i) { return mVec.at(i).get(); }
 
-    const T& at(std::unsigned_integral auto i) const
+    const T& at(std::size_t i) const
     {
         return mVec.at(i).get();
     }
@@ -130,9 +130,9 @@ public:
 
     std::size_t size() const { return mVec.size(); }
 
-    T& operator[](std::unsigned_integral auto i) { return mVec[i].get(); }
+    T& operator[](std::size_t i) { return mVec[i].get(); }
 
-    const T& operator[](std::unsigned_integral auto i) const
+    const T& operator[](std::size_t i) const
     {
         return mVec[i].get();
     }
