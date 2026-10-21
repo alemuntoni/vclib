@@ -8,6 +8,17 @@
 #ifndef VCL_MESH_V2_VIEWS_COMPONENTS_H
 #define VCL_MESH_V2_VIEWS_COMPONENTS_H
 
+#include "component.h"
+#include "components/adj_edges.h"
+#include "components/adj_faces.h"
+#include "components/adj_vertices.h"
+#include "components/colors.h"
+#include "components/normals.h"
+#include "components/positions.h"
+#include "components/principal_curvatures.h"
+#include "components/quality.h"
 #include "components/selection.h"
+#include "components/tangents.h"
+#include "components/tex_coords.h"
 
 #endif // VCL_MESH_V2_VIEWS_COMPONENTS_H
