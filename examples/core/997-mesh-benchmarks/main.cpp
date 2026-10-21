@@ -10,6 +10,7 @@
 #include "test_building.h"
 #include "test_normals.h"
 #include "test_transform.h"
+#include "test_traversal.h"
 #include "types.h"
 
 #include <iostream>
@@ -54,7 +55,10 @@ int main(int argc, char** argv)
         // Run Task 2: Bounding Box
         bench::benchmarkBoundingBox(m1, m2, 5);
 
-        // Run Task 3: Normals Computation
+        // Run Task 3: Face Traversal / Surface Area
+        bench::benchmarkTraversal(m1, m2, 5);
+
+        // Run Task 4: Normals Computation
         m2.enable<vcl::meshv2::ElemId::VERTEX, vcl::meshv2::CompId::NORMAL>();
         m2.enable<vcl::meshv2::ElemId::FACE, vcl::meshv2::CompId::NORMAL>();
         bench::benchmarkNormals(m1, m2, 5);
