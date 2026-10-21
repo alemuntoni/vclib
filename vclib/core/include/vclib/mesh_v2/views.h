@@ -8,6 +8,7 @@
 #ifndef VCL_MESH_V2_VIEWS_H
 #define VCL_MESH_V2_VIEWS_H
 
+#include "views/components.h"
 #include "views/elements.h"
 
 #endif // VCL_MESH_V2_VIEWS_H

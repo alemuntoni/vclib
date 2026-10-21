@@ -137,11 +137,148 @@ inline void testElementViews()
     assert((vIndices == std::vector<uint>{0, 2, 3}));
 }
 
+inline void testSelectionViews()
+{
+    namespace views = meshv2::views;
+
+    MyMesh m = createSampleQuadMesh(); // 4 vertices (0, 1, 2, 3), 2 faces (0, 1)
+
+    // --- 1. Concepts ---
+    static_assert(meshv2::SelectableRangeConcept<decltype(m.vertices())>);
+    static_assert(meshv2::SelectableRangeConcept<decltype(m | views::vertices)>);
+    static_assert(meshv2::SelectableRangeConcept<decltype(m.faces())>);
+    static_assert(meshv2::SelectableRangeConcept<decltype(m | views::faces)>);
+    static_assert(meshv2::SelectableRangeConcept<decltype(m.vertices() | views::selected)>);
+    static_assert(meshv2::SelectableRangeConcept<decltype(m.vertices() | views::notSelected)>);
+
+    // --- 2. Initial state: nothing selected ---
+    std::size_t selCount = 0;
+    for (auto v : m.vertices() | views::selected) {
+        (void)v;
+        ++selCount;
+    }
+    assert(selCount == 0);
+
+    std::size_t notSelCount = 0;
+    for (auto v : m.vertices() | views::notSelected) {
+        (void)v;
+        ++notSelCount;
+    }
+    assert(notSelCount == 4);
+
+    // --- 3. Selecting vertices 0 and 2 ---
+    m.vertex(0).selected() = true;
+    m.vertex(2).selected() = true;
+
+    // Pipe syntax: m.vertices() | views::selected
+    std::vector<uint> selIndices;
+    for (uint idx : m.vertices() | views::selected | views::indices) {
+        selIndices.push_back(idx);
+    }
+    assert((selIndices == std::vector<uint>{0, 2}));
+
+    // Pipeline composition: m | views::vertices | views::selected | views::indices
+    selIndices.clear();
+    for (uint idx : m | views::vertices | views::selected | views::indices) {
+        selIndices.push_back(idx);
+    }
+    assert((selIndices == std::vector<uint>{0, 2}));
+
+    // Function call syntax: views::selected(m.vertices())
+    selIndices.clear();
+    for (uint idx : views::selected(m.vertices()) | views::indices) {
+        selIndices.push_back(idx);
+    }
+    assert((selIndices == std::vector<uint>{0, 2}));
+
+    // --- 4. views::notSelected ---
+    std::vector<uint> notSelIndices;
+    for (uint idx : m.vertices() | views::notSelected | views::indices) {
+        notSelIndices.push_back(idx);
+    }
+    assert((notSelIndices == std::vector<uint>{1, 3}));
+
+    // Function call syntax: views::notSelected(m.vertices())
+    notSelIndices.clear();
+    for (uint idx : views::notSelected(m.vertices()) | views::indices) {
+        notSelIndices.push_back(idx);
+    }
+    assert((notSelIndices == std::vector<uint>{1, 3}));
+
+    // --- 5. views::selection (reading bit values) ---
+    std::vector<bool> selValues;
+    for (bool s : m.vertices() | views::selection) {
+        selValues.push_back(s);
+    }
+    assert((selValues == std::vector<bool>{true, false, true, false}));
+
+    // Writing through views::selection (BitProxy assignment)
+    for (auto s : m.vertices() | views::selection) {
+        s = true;
+    }
+    selIndices.clear();
+    for (uint idx : m.vertices() | views::selected | views::indices) {
+        selIndices.push_back(idx);
+    }
+    assert((selIndices == std::vector<uint>{0, 1, 2, 3}));
+
+    // Resetting selection
+    for (auto s : m.vertices() | views::selection) {
+        s = false;
+    }
+    selIndices.clear();
+    for (uint idx : m.vertices() | views::selected | views::indices) {
+        selIndices.push_back(idx);
+    }
+    assert(selIndices.empty());
+
+    // --- 6. Face Selection ---
+    m.face(1).selected() = true;
+
+    std::vector<uint> selFaces;
+    for (uint idx : m | views::faces | views::selected | views::indices) {
+        selFaces.push_back(idx);
+    }
+    assert((selFaces == std::vector<uint>{1}));
+
+    std::vector<uint> notSelFaces;
+    for (uint idx : m | views::faces | views::notSelected | views::indices) {
+        notSelFaces.push_back(idx);
+    }
+    assert((notSelFaces == std::vector<uint>{0}));
+
+    // --- 7. Selection combined with Deleted Elements ---
+    m.vertex(0).selected() = true;
+    m.vertex(1).selected() = true;
+    m.vertex(2).selected() = true;
+    m.deleteVertex(0); // Vertex 0 is deleted, so it must be skipped
+
+    selIndices.clear();
+    for (uint idx : m | views::vertices | views::selected | views::indices) {
+        selIndices.push_back(idx);
+    }
+    assert((selIndices == std::vector<uint>{1, 2}));
+
+    // --- 8. Modifying ElementProxy through views::selected iteration ---
+    for (auto v : m.vertices() | views::selected) {
+        v.selected() = false;
+    }
+    selIndices.clear();
+    for (uint idx : m | views::vertices | views::selected | views::indices) {
+        selIndices.push_back(idx);
+    }
+    assert(selIndices.empty());
+}
+
 inline void testViews()
 {
     std::println("--- Testing Views (Phase 1: Element Views) ---");
     testElementViews();
     std::println("Views (Phase 1) verified successfully!\n");
+
+    std::println("--- Testing Views (Phase 2: Selection Views) ---");
+    testSelectionViews();
+    std::println("Views (Phase 2) verified successfully!\n");
 }
 
 #endif // TEST_VIEWS_H
