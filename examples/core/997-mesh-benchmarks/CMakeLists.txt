@@ -15,6 +15,7 @@ set(SOURCES
     test_building.h
     test_normals.h
     test_bounding_box.h
+    test_transform.h
     main.cpp
 )
 

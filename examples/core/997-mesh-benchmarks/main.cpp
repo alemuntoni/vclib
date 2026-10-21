@@ -9,6 +9,7 @@
 #include "test_bounding_box.h"
 #include "test_building.h"
 #include "test_normals.h"
+#include "test_transform.h"
 #include "types.h"
 
 #include <iostream>
@@ -23,8 +24,8 @@ int main(int argc, char** argv)
     else {
 #ifdef VCLIB_EXAMPLE_MESHES_PATH
         // path = VCLIB_EXAMPLE_MESHES_PATH "/bimba.obj";
-        // path = "/home/alessandro/devel/3DMeshes/3DMeshes/ESTE_PRINT.ply"; // LIN
-        path = "C:/Users/Alessandro/Desktop/ESTE_PRINT.ply"; // WIN
+        path = "/home/alessandro/devel/3DMeshes/3DMeshes/ESTE_PRINT.ply"; // LIN
+        // path = "C:/Users/Alessandro/Desktop/ESTE_PRINT.ply"; // WIN
         // path = "/Users/alessandro/ESTE_PRINT.ply"; // MAC
 #else
         std::println(stderr, "Usage: {} <mesh_path>", argv[0]);
@@ -57,6 +58,9 @@ int main(int argc, char** argv)
         m2.enable<vcl::meshv2::ElemId::VERTEX, vcl::meshv2::CompId::NORMAL>();
         m2.enable<vcl::meshv2::ElemId::FACE, vcl::meshv2::CompId::NORMAL>();
         bench::benchmarkNormals(m1, m2, 5);
+
+        // Run Task 4: Matrix Transform
+        bench::benchmarkTransform(m1, m2, 5);
 
         std::println("\nFinal Verification:");
         std::println("  m1 vertices: {}, faces: {}", m1.vertexCount(), m1.faceCount());
