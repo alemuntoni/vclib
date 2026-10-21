@@ -6,6 +6,7 @@
 // obtain one at https://mozilla.org/MPL/2.0/.
 
 #include "load_matrices.h"
+#include "test_bounding_box.h"
 #include "test_building.h"
 #include "test_normals.h"
 #include "types.h"
@@ -21,8 +22,10 @@ int main(int argc, char** argv)
     }
     else {
 #ifdef VCLIB_EXAMPLE_MESHES_PATH
-        path = VCLIB_EXAMPLE_MESHES_PATH "/bimba.obj";
-        // path = "/home/alessandro/devel/3DMeshes/3DMeshes/ESTE_PRINT.ply";
+        // path = VCLIB_EXAMPLE_MESHES_PATH "/bimba.obj";
+        // path = "/home/alessandro/devel/3DMeshes/3DMeshes/ESTE_PRINT.ply"; // LIN
+        path = "C:/Users/Alessandro/Desktop/ESTE_PRINT.ply"; // WIN
+        // path = "/Users/alessandro/ESTE_PRINT.ply"; // MAC
 #else
         std::println(stderr, "Usage: {} <mesh_path>", argv[0]);
         return 1;
@@ -47,7 +50,10 @@ int main(int argc, char** argv)
         // Run Task 1: Building
         bench::benchmarkBuilding(V, F, m1, m2, 5);
 
-        // Run Task 2: Normals Computation
+        // Run Task 2: Bounding Box
+        bench::benchmarkBoundingBox(m1, m2, 5);
+
+        // Run Task 3: Normals Computation
         m2.enable<vcl::meshv2::ElemId::VERTEX, vcl::meshv2::CompId::NORMAL>();
         m2.enable<vcl::meshv2::ElemId::FACE, vcl::meshv2::CompId::NORMAL>();
         bench::benchmarkNormals(m1, m2, 5);

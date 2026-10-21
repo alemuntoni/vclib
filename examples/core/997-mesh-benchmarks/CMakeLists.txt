@@ -14,6 +14,7 @@ set(SOURCES
     benchmark.h
     test_building.h
     test_normals.h
+    test_bounding_box.h
     main.cpp
 )
 

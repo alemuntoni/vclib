@@ -53,31 +53,31 @@ inline MeshMatrices<VMatrix, FMatrix> loadMeshMatrices(const std::string& path)
  * @param cols Number of vertex columns.
  * @return MeshMatrices containing vertices (rows*cols x 3) and faces ((rows-1)*(cols-1)*2 x 3).
  */
-inline MeshMatrices<Eigen::MatrixX3d, Eigen::MatrixX3i> makeGridMatrices(uint rows, uint cols)
+inline MeshMatrices<Eigen::MatrixX3d, Eigen::MatrixX3i> makeGridMatrices(vcl::uint rows, vcl::uint cols)
 {
     MeshMatrices<Eigen::MatrixX3d, Eigen::MatrixX3i> m;
-    uint numVerts = rows * cols;
-    uint numFaces = (rows - 1) * (cols - 1) * 2;
+    vcl::uint numVerts = rows * cols;
+    vcl::uint numFaces = (rows - 1) * (cols - 1) * 2;
 
     m.vertices.resize(numVerts, 3);
     m.faces.resize(numFaces, 3);
 
-    for (uint r = 0; r < rows; ++r) {
-        for (uint c = 0; c < cols; ++c) {
-            uint idx = r * cols + c;
+    for (vcl::uint r = 0; r < rows; ++r) {
+        for (vcl::uint c = 0; c < cols; ++c) {
+            vcl::uint idx = r * cols + c;
             m.vertices(idx, 0) = static_cast<double>(c);
             m.vertices(idx, 1) = static_cast<double>(r);
             m.vertices(idx, 2) = 0.0;
         }
     }
 
-    uint fIdx = 0;
-    for (uint r = 0; r < rows - 1; ++r) {
-        for (uint c = 0; c < cols - 1; ++c) {
-            uint v00 = r * cols + c;
-            uint v01 = r * cols + (c + 1);
-            uint v10 = (r + 1) * cols + c;
-            uint v11 = (r + 1) * cols + (c + 1);
+    vcl::uint fIdx = 0;
+    for (vcl::uint r = 0; r < rows - 1; ++r) {
+        for (vcl::uint c = 0; c < cols - 1; ++c) {
+            vcl::uint v00 = r * cols + c;
+            vcl::uint v01 = r * cols + (c + 1);
+            vcl::uint v10 = (r + 1) * cols + c;
+            vcl::uint v11 = (r + 1) * cols + (c + 1);
 
             m.faces(fIdx, 0) = v00;
             m.faces(fIdx, 1) = v10;

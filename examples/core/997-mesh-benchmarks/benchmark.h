@@ -38,6 +38,31 @@ inline BenchmarkStats computeStats(const std::vector<double>& runs)
     return stats;
 }
 
+// do not optimize function to prevent compiler optimizations from removing
+// unused results
+template<typename T>
+inline void doNotOptimize(const T& val)
+{
+#if defined(__GNUC__) || defined(__clang__)
+    asm volatile("" : : "r,m"(val) : "memory");
+#else
+    volatile const auto* p = &val;
+    (void)p;
+#endif
+}
+
+template<typename F>
+inline void invokeBenchmarkFunc(F&& f)
+{
+    if constexpr (!std::is_void_v<std::invoke_result_t<F>>) {
+        auto res = f();
+        doNotOptimize(res);
+    }
+    else {
+        f();
+    }
+}
+
 /**
  * @brief Generic benchmark runner executing two arbitrary callables (V1 vs V2).
  *
@@ -60,8 +85,8 @@ inline void runBenchmark(
     std::println("==================================================");
 
     if (warmup) {
-        funcV1();
-        funcV2();
+        invokeBenchmarkFunc(funcV1);
+        invokeBenchmarkFunc(funcV2);
     }
 
     // Benchmark V1
@@ -70,7 +95,7 @@ inline void runBenchmark(
     runsV1.reserve(iterations);
     for (int i = 0; i < iterations; ++i) {
         timerV1.start();
-        funcV1();
+        invokeBenchmarkFunc(funcV1);
         timerV1.stop();
         runsV1.push_back(timerV1.delay() * 1000.0); // ms
     }
@@ -81,7 +106,7 @@ inline void runBenchmark(
     runsV2.reserve(iterations);
     for (int i = 0; i < iterations; ++i) {
         timerV2.start();
-        funcV2();
+        invokeBenchmarkFunc(funcV2);
         timerV2.stop();
         runsV2.push_back(timerV2.delay() * 1000.0); // ms
     }
