@@ -8,6 +8,8 @@
 #include "load_matrices.h"
 #include "test_bounding_box.h"
 #include "test_building.h"
+#include "test_compact.h"
+#include "test_copy.h"
 #include "test_normals.h"
 #include "test_transform.h"
 #include "test_traversal.h"
@@ -63,8 +65,14 @@ int main(int argc, char** argv)
         m2.enable<vcl::meshv2::ElemId::FACE, vcl::meshv2::CompId::NORMAL>();
         bench::benchmarkNormals(m1, m2, 5);
 
-        // Run Task 4: Matrix Transform
+        // Run Task 5: Matrix Transform
         bench::benchmarkTransform(m1, m2, 5);
+
+        // Run Task 6: Deep Copy / Cloning
+        bench::benchmarkCopy(m1, m2, 5);
+
+        // Run Task 7: Delete & Compact
+        bench::benchmarkDeleteAndCompact(m1, m2, 5);
 
         std::println("\nFinal Verification:");
         std::println("  m1 vertices: {}, faces: {}", m1.vertexCount(), m1.faceCount());

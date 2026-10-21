@@ -17,6 +17,8 @@ set(SOURCES
     test_bounding_box.h
     test_transform.h
     test_traversal.h
+    test_copy.h
+    test_compact.h
     main.cpp
 )
 
