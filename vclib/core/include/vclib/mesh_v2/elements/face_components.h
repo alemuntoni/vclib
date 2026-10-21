@@ -10,6 +10,7 @@
 
 #include "../components/bit_flags.h"
 #include "../components/color.h"
+#include "../components/custom_components.h"
 #include "../components/normal.h"
 #include "../components/polygon_bit_flags.h"
 #include "../components/triangle_bit_flags.h"
@@ -25,6 +26,8 @@ template<typename T>
 concept HasPolygonBitFlags = comp::HasPolygonBitFlags<T>;
 template<typename T>
 concept HasColor = comp::HasColor<T>;
+template<typename T>
+concept HasCustomComponents = comp::HasCustomComponents<T>;
 template<typename T>
 concept HasNormal = comp::HasNormal<T>;
 template<typename T>
@@ -51,6 +54,9 @@ using PolygonBitFlags  = comp::PolygonBitFlags<-1>;
 
 /* Port Color class into face namespace */
 using Color = comp::Color;
+
+/* Port CustomComponents class into face namespace */
+using CustomComponents = comp::CustomComponents;
 
 /* Port Normal classes into face namespace */
 template<typename ScalarType, int N>

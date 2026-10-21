@@ -10,6 +10,7 @@
 
 #include "../components/bit_flags.h"
 #include "../components/color.h"
+#include "../components/custom_components.h"
 #include "../components/normal.h"
 #include "../components/position.h"
 
@@ -20,6 +21,8 @@ concept HasBitFlags = comp::HasBitFlags<T>;
 template<typename T>
 concept HasColor = comp::HasColor<T>;
 template<typename T>
+concept HasCustomComponents = comp::HasCustomComponents<T>;
+template<typename T>
 concept HasNormal = comp::HasNormal<T>;
 template<typename T>
 concept HasPosition = comp::HasPosition<T>;
@@ -29,6 +32,9 @@ using BitFlags = comp::BitFlags;
 
 /* Port Color class into vert namespace */
 using Color = comp::Color;
+
+/* Port CustomComponents class into vert namespace */
+using CustomComponents = comp::CustomComponents;
 
 /* Port Normal classes into vert namespace */
 template<typename ScalarType, int N>
