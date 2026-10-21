@@ -12,7 +12,18 @@
 
 #include <ranges>
 
-namespace vcl::meshv2::views {
+namespace vcl::meshv2 {
+
+template<typename T>
+concept HasIndexMember = requires(T&& t) {
+    { t.index() } -> std::convertible_to<uint>;
+};
+
+template<typename R>
+concept IndexRangeConcept =
+    std::ranges::range<R> && HasIndexMember<std::ranges::range_reference_t<R>>;
+
+namespace views {
 
 namespace detail {
 
@@ -21,22 +32,12 @@ struct UnsupportedElementView
 };
 
 inline constexpr auto index = [](auto&& p) -> uint {
-    if constexpr (IsPointer<decltype(p)>) {
-        if (p == nullptr) [[unlikely]] {
-            return UINT_NULL;
-        }
-        else {
-            return p->index();
-        }
-    }
-    else {
-        return p.index();
-    }
+    return p.index();
 };
 
 struct IndicesView : std::ranges::range_adaptor_closure<IndicesView>
 {
-    template<std::ranges::range R>
+    template<IndexRangeConcept R>
     constexpr auto operator()(R&& r) const
     {
         return std::forward<R>(r) | std::views::transform(index);
@@ -68,6 +69,7 @@ inline constexpr auto elements = detail::UnsupportedElementView {};
  */
 inline constexpr detail::IndicesView indices;
 
-} // namespace vcl::meshv2::views
+} // namespace views
+} // namespace vcl::meshv2
 
 #endif // VCL_MESH_V2_VIEWS_ELEMENT_H

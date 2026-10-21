@@ -19,9 +19,7 @@ namespace vcl::meshv2 {
 template<typename T>
 concept HasPositionMember = requires(T&& t) {
     { t.position() };
-} || (vcl::IsPointer<std::remove_cvref_t<T>> && requires(T&& t) {
-    { t->position() };
-});
+};
 
 template<typename R>
 concept PositionRangeConcept =
@@ -35,10 +33,7 @@ namespace views {
 namespace detail {
 
 inline constexpr auto getPosition = [](auto&& p) -> decltype(auto) {
-    if constexpr (vcl::IsPointer<decltype(p)>)
-        return p->position();
-    else
-        return p.position();
+    return p.position();
 };
 
 struct PositionsView : std::ranges::range_adaptor_closure<PositionsView>

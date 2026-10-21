@@ -19,9 +19,7 @@ namespace vcl::meshv2 {
 template<typename T>
 concept HasNormalMember = requires(T&& t) {
     { t.normal() };
-} || (vcl::IsPointer<std::remove_cvref_t<T>> && requires(T&& t) {
-    { t->normal() };
-});
+};
 
 template<typename R>
 concept NormalRangeConcept =
@@ -35,10 +33,7 @@ namespace views {
 namespace detail {
 
 inline constexpr auto getNormal = [](auto&& p) -> decltype(auto) {
-    if constexpr (vcl::IsPointer<decltype(p)>)
-        return p->normal();
-    else
-        return p.normal();
+    return p.normal();
 };
 
 struct NormalsView : std::ranges::range_adaptor_closure<NormalsView>

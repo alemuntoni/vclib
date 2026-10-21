@@ -17,9 +17,7 @@ namespace vcl::meshv2 {
 template<typename T>
 concept SelectableConcept = requires(T&& t) {
     { t.selected() };
-} || (vcl::IsPointer<std::remove_cvref_t<T>> && requires(T&& t) {
-    { t->selected() };
-});
+};
 
 template<typename R>
 concept SelectableRangeConcept =
@@ -30,36 +28,15 @@ namespace views {
 namespace detail {
 
 inline constexpr auto isSelected = [](auto&& e) -> bool {
-    if constexpr (vcl::IsPointer<decltype(e)>) {
-        if (e == nullptr) [[unlikely]] {
-            return false;
-        }
-        return static_cast<bool>(e->selected());
-    }
-    else {
-        return static_cast<bool>(e.selected());
-    }
+    return static_cast<bool>(e.selected());
 };
 
 inline constexpr auto isNotSelected = [](auto&& e) -> bool {
-    if constexpr (vcl::IsPointer<decltype(e)>) {
-        if (e == nullptr) [[unlikely]] {
-            return false;
-        }
-        return !static_cast<bool>(e->selected());
-    }
-    else {
-        return !static_cast<bool>(e.selected());
-    }
+    return !static_cast<bool>(e.selected());
 };
 
 inline constexpr auto getSelection = [](auto&& e) -> decltype(auto) {
-    if constexpr (vcl::IsPointer<decltype(e)>) {
-        return e->selected();
-    }
-    else {
-        return e.selected();
-    }
+    return e.selected();
 };
 
 struct SelectedView : std::ranges::range_adaptor_closure<SelectedView>

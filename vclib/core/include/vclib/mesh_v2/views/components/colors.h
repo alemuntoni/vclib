@@ -19,9 +19,7 @@ namespace vcl::meshv2 {
 template<typename T>
 concept HasColorMember = requires(T&& t) {
     { t.color() };
-} || (vcl::IsPointer<std::remove_cvref_t<T>> && requires(T&& t) {
-    { t->color() };
-});
+};
 
 template<typename R>
 concept ColorRangeConcept =
@@ -35,10 +33,7 @@ namespace views {
 namespace detail {
 
 inline constexpr auto getColor = [](auto&& p) -> decltype(auto) {
-    if constexpr (vcl::IsPointer<decltype(p)>)
-        return p->color();
-    else
-        return p.color();
+    return p.color();
 };
 
 struct ColorsView : std::ranges::range_adaptor_closure<ColorsView>
