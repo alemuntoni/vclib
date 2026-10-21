@@ -30,17 +30,18 @@ namespace vcl::meshv2 {
 
 /**
  * @brief The Mesh class represents a generic mesh composed of element
- * containers (VertexContainer, FaceContainer, etc.) and optional mesh-level
- * components.
+ * containers (VertexContainer, FaceContainer, etc.) and mesh-level components.
  *
- * Mesh serves as the unifying glue:
- * - Automatically rebinds containers with its own type as ParentMesh so that
- *   element proxies (e.g. Face) can seamlessly navigate across containers (e.g.
- *   face.vertex(i)).
- * - Coordinates whole-mesh operations such as isCompact(), clear(), empty(),
- *   and component enablement across all containers.
- * - Provides generic access by ELEM_ID (container<ELEM_ID>(),
- * element<ELEM_ID>(), elements<ELEM_ID>(), count<ELEM_ID>()).
+ * The Mesh class will expose all the public members of its containers and is
+ * components, and its role is to implement all the functionalities that allow
+ * these containers to comunicate (e.g. an operation on the vertex container
+ * that requires to update also some face information).
+ *
+ * Therefore, in this page are documented only the functions that in some way
+ * need to modify the status of more than one Container of the Mesh. Other
+ * functions are inherited by the Container classes of the Elements of the Mesh,
+ * or from its Components, and depend on all the templates that compose a
+ * specific Mesh definition.
  *
  * @tparam Args Container types (e.g. VertexContainer<...>, FaceContainer<...>)
  * and mesh-level components.
@@ -80,74 +81,19 @@ class Mesh : public detail::RebindContainer<Args, Mesh<Args...>>...
 public:
     using IndexType = typename VertexContainerType::IndexType;
 
-    /**
-     * @brief Components is a TypeWrapper that wraps all mesh-level components.
-     */
-    using Components = typename FilterTypesByCondition<
-        IsMeshComponentPred,
-        TypeWrapper<Rebound<Args>...>>::type;
-
     static_assert(
         (ContainerIndexMatches<Rebound<Args>, IndexType> && ...),
         "All element containers in a Mesh must share the exact same "
         "IndexType.");
 
     /**
-     * @brief Constructs an empty Mesh and connects all child containers.
+     * @brief Components is an alias to a vcl::TypeWrapper that wraps all the
+     * types from which the Mesh inherits (Args) that are Components (they
+     * satisfy the ComponentConcept).
      */
-    Mesh() { setParentMeshPointersToContainers(); }
-
-    /**
-     * @brief Copy constructor: deep copies containers and resets parent
-     * pointers.
-     */
-    Mesh(const Mesh& other) :
-            Rebound<Args>(static_cast<const Rebound<Args>&>(other))...
-    {
-        setParentMeshPointersToContainers();
-    }
-
-    /**
-     * @brief Move constructor: moves containers and resets parent pointers.
-     */
-    Mesh(Mesh&& other) noexcept :
-            Rebound<Args>(static_cast<Rebound<Args>&&>(other))...
-    {
-        setParentMeshPointersToContainers();
-        other.setParentMeshPointersToContainers();
-    }
-
-    /**
-     * @brief Assignment operator of the Mesh using the Copy & Swap idiom.
-     * Handles both copy assignment and move assignment seamlessly and provides
-     * the strong exception safety guarantee.
-     *
-     * @param other The mesh from which to copy or move data.
-     * @return Reference to this Mesh after assignment.
-     */
-    Mesh& operator=(Mesh other) noexcept
-    {
-        swap(other);
-        return *this;
-    }
-
-    /**
-     * @brief Swaps the content of this Mesh with another.
-     */
-    void swap(Mesh& other) noexcept
-    {
-        using std::swap;
-        (swap(
-             static_cast<Rebound<Args>&>(*this),
-             static_cast<Rebound<Args>&>(other)),
-         ...);
-        setParentMeshPointersToContainers();
-        other.setParentMeshPointersToContainers();
-    }
-
-    friend void swap(Mesh& a, Mesh& b) noexcept { a.swap(b); }
-
-    /* Container introspection and retrieval */
+    using Components = typename FilterTypesByCondition<
+        IsMeshComponentPred,
+        TypeWrapper<Rebound<Args>...>>::type;
 
     /**
      * @brief Checks at compile-time if this Mesh has a container for ELEM_ID.
@@ -183,25 +129,70 @@ public:
         }
     }
 
+    /* Constructors */
+
     /**
-     * @brief Returns a reference to the container for the given ELEM_ID.
+     * @brief Empty constructor, constructs an empty mesh.
      */
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    ContainerType<ELEM_ID>& container()
+    Mesh() { setParentMeshPointersToContainers(); }
+
+    /**
+     * @brief Copy constructor: deep copies containers and components.
+     *
+     * @param oth: the mesh from which constructo this Mesh.
+     */
+    Mesh(const Mesh& other) :
+            Rebound<Args>(static_cast<const Rebound<Args>&>(other))...
     {
-        return static_cast<ContainerType<ELEM_ID>&>(*this);
+        setParentMeshPointersToContainers();
     }
 
     /**
-     * @brief Returns a const reference to the container for the given ELEM_ID.
+     * @brief Move constructor, moves the given mesh into this one, without any
+     * other resource acquisition.
+     *
+     * @param other: the mesh that will be moved into this Mesh.
      */
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    const ContainerType<ELEM_ID>& container() const
+    Mesh(Mesh&& other) noexcept :
+            Rebound<Args>(static_cast<Rebound<Args>&&>(other))...
     {
-        return static_cast<const ContainerType<ELEM_ID>&>(*this);
+        setParentMeshPointersToContainers();
+        other.setParentMeshPointersToContainers();
     }
+
+    /**
+     * @brief Assignment operator of the Mesh using the Copy & Swap idiom.
+     * Handles both copy assignment and move assignment seamlessly and provides
+     * the strong exception safety guarantee.
+     *
+     * @param other: The mesh from which to copy or move data.
+     * @return Reference to this Mesh after assignment.
+     */
+    Mesh& operator=(Mesh other) noexcept
+    {
+        swap(other);
+        return *this;
+    }
+
+    /* Member functions */
+
+    /**
+     * @brief Swaps the content of this Mesh with another.
+     */
+    void swap(Mesh& other) noexcept
+    {
+        using std::swap;
+        (swap(
+             static_cast<Rebound<Args>&>(*this),
+             static_cast<Rebound<Args>&>(other)),
+         ...);
+        setParentMeshPointersToContainers();
+        other.setParentMeshPointersToContainers();
+    }
+
+    friend void swap(Mesh& a, Mesh& b) noexcept { a.swap(b); }
+
+    /* Container introspection and retrieval */
 
     /* Component Enable / Disable */
 
@@ -717,6 +708,26 @@ public:
 
 
 private:
+    /**
+     * @brief Returns a reference to the container for the given ELEM_ID.
+     */
+    template<uint ELEM_ID>
+    requires (hasContainerOf<ELEM_ID>())
+    ContainerType<ELEM_ID>& container()
+    {
+        return static_cast<ContainerType<ELEM_ID>&>(*this);
+    }
+
+    /**
+     * @brief Returns a const reference to the container for the given ELEM_ID.
+     */
+    template<uint ELEM_ID>
+    requires (hasContainerOf<ELEM_ID>())
+    const ContainerType<ELEM_ID>& container() const
+    {
+        return static_cast<const ContainerType<ELEM_ID>&>(*this);
+    }
+
     template<typename T>
     void setParentMeshPointer()
     {
@@ -864,6 +875,16 @@ private:
             this->T::deserialize(is);
         }
     }
+
+    template<typename...>
+    friend class Mesh;
+
+    template<
+        typename ComponentList,
+        typename ParentMesh,
+        std::unsigned_integral Index,
+        template<typename...> class Element>
+    friend class ElementContainer;
 };
 
 /* Mesh Concepts */
