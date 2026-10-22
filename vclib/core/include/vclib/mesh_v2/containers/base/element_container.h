@@ -70,8 +70,8 @@ namespace vcl::meshv2 {
  *
  * @tparam Element: A template template parameter representing the concrete
  * element proxy class template (e.g. Vertex, Face, Edge), instantiated
- * internally as Element<ElementContainer> (ProxyType) and
- * Element<const ElementContainer> (ConstProxyType). This allows
+ * internally as Element<ElementContainer> (ElementType) and
+ * Element<const ElementContainer> (ConstElementType). This allows
  * ElementContainer and its iterators to instantiate and return strongly-typed
  * element proxies directly without intermediate type erasure.
  *
@@ -114,52 +114,35 @@ class ElementContainer
      */
     VectorTupleType mElemComponents;
 
+    /**
+     * @brief The map that associates a string to a vector of custom
+     * components
+     */
     [[no_unique_address]] detail::CustomComponentsVectorMap<
         comp::HasCustomComponents<ComponentList>> mCustomComponents;
 
+protected:
+    using Iterator      = ElementIterator<ElementContainer>;
+    using ConstIterator = ElementIterator<const ElementContainer>;
+
 public:
-    using Components     = ComponentList;
-    using IndexType      = Index;
-    using ParentMeshType = ParentMesh;
-    using ProxyType      = Element<ElementContainer>;
-    using ConstProxyType = Element<const ElementContainer>;
-    using Iterator       = ElementIterator<ElementContainer>;
-    using ConstIterator  = ElementIterator<const ElementContainer>;
+    using Components       = ComponentList;
+    using IndexType        = Index;
+    using ParentMeshType   = ParentMesh;
+    using ElementType      = Element<ElementContainer>;
+    using ConstElementType = Element<const ElementContainer>;
 
-    static constexpr uint ELEMENT_ID = ProxyType::ELEMENT_ID;
-
-    // get the vector for the given component ID
-    // TODO: When C++26 variadic friends are fully supported on MSVC, move
-    // get() to protected so that ElementContainer is fully encapsulated.
-
-    /**
-     * @brief Returns the vector for the given component ID.
-     */
-    template<uint COMP_ID>
-    auto& vector()
-    {
-        static_assert(
-            COMP_ID != CompId::CUSTOM_COMPONENTS,
-            "CustomComponents do not have a column in the parallel vectors "
-            "tuple.");
-        constexpr uint N =
-            comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
-        return mElemComponents.template get<N>();
-    }
-
-    template<uint COMP_ID>
-    const auto& vector() const
-    {
-        static_assert(
-            COMP_ID != CompId::CUSTOM_COMPONENTS,
-            "CustomComponents do not have a column in the parallel vectors "
-            "tuple.");
-        constexpr uint N =
-            comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
-        return mElemComponents.template get<N>();
-    }
+    static constexpr uint ELEMENT_ID = ElementType::ELEMENT_ID;
 
 protected:
+    ElementContainer()
+    {
+        // BitFlags is mandatory and always enabled
+        enable<CompId::BIT_FLAGS>();
+    }
+
+    /* Members that are inherited and wrapped by derived element containers */
+
     /**
      * @brief Returns a const proxy of the element at the i-th position in
      * the Element Container of the Mesh, which will be the element having index
@@ -171,10 +154,10 @@ protected:
      *
      * @param[in] i: the index of the element that will be returned.
      */
-    ConstProxyType element(IndexType i) const
+    ConstElementType element(IndexType i) const
     {
         assert(i < size() || i == std::numeric_limits<IndexType>::max());
-        return ConstProxyType(*this, i);
+        return ConstElementType(*this, i);
     }
 
     /**
@@ -188,10 +171,10 @@ protected:
      *
      * @param[in] i: the index of the element that will be returned.
      */
-    ProxyType element(IndexType i)
+    ElementType element(IndexType i)
     {
         assert(i < size() || i == std::numeric_limits<IndexType>::max());
-        return ProxyType(*this, i);
+        return ElementType(*this, i);
     }
 
     /**
@@ -223,54 +206,6 @@ protected:
      * @return The number of deleted elements in the container.
      */
     std::size_t deletedElementCount() const { return size() - elementCount(); }
-
-
-    ElementContainer()
-    {
-        // BitFlags is mandatory and always enabled
-        enable<CompId::BIT_FLAGS>();
-    }
-
-    /**
-     * @brief Imports all elements from the corresponding container of the
-     * other mesh into this container.
-     *
-     * @param[in] m The other mesh to import from.
-     */
-    template<typename OtherMesh>
-    void importFrom(const OtherMesh& m)
-    {
-        if constexpr (OtherMesh::template hasContainerOf<ELEMENT_ID>()) {
-            const auto& c = m.template container<ELEMENT_ID>();
-            enableSameOptionalComponentsOf(c);
-            clearElements();
-            const std::size_t n = c.elementContainerSize();
-            addElements(n);
-            for (IndexType i = 0; i < n; ++i) {
-                element(i).importFrom(c.element(i));
-            }
-            mElemCount = c.elementCount();
-            if constexpr (
-                comp::HasCustomComponents<Components> &&
-                comp::HasCustomComponents<
-                    typename std::remove_cvref_t<decltype(c)>::Components>) {
-                mCustomComponents = c.mCustomComponents;
-            }
-        }
-    }
-
-    /* Members that are inherited and wrapped by derived element containers */
-
-    /**
-     * @brief Returns true if the container is compact, i.e. there are no
-     * deleted elements.
-     *
-     * @return true if the container is compact, false otherwise.
-     */
-    bool isElementContainerCompact() const
-    {
-        return deletedElementCount() == 0;
-    }
 
     /**
      * @brief Adds an element to the Element Container.
@@ -442,7 +377,18 @@ protected:
      *
      * @param[in] e: the element that will be marked as deleted.
      */
-    void deleteElement(const ProxyType& e) { deleteElement(e.index()); }
+    void deleteElement(const ElementType& e) { deleteElement(e.index()); }
+
+    /**
+     * @brief Returns true if the container is compact, i.e. there are no
+     * deleted elements.
+     *
+     * @return true if the container is compact, false otherwise.
+     */
+    bool isElementContainerCompact() const
+    {
+        return deletedElementCount() == 0;
+    }
 
     /**
      * @brief This is an utility member function that returns the index of an
@@ -655,19 +601,7 @@ protected:
 
     // TODO: missing elements(begin, end)
 
-    decltype(auto) parentMesh() requires (!std::is_void_v<ParentMesh>)
-    {
-        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
-        return *mParentMesh;
-    }
-
-    decltype(auto) parentMesh() const requires (!std::is_void_v<ParentMesh>)
-    {
-        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
-        return std::as_const(*mParentMesh);
-    }
-
-    void setParentMesh(ParentMesh* mesh) { mParentMesh = mesh; }
+    // ### Enable - Disable
 
     /**
      * @brief Checks if the component with the given COMP_ID is enabled.
@@ -737,10 +671,82 @@ protected:
         enableSameOptionalComponentsOfImpl(Components {}, other);
     }
 
+    /**
+     * @brief Returns the vector for the given component ID.
+     */
+    template<uint COMP_ID>
+    auto& vector()
+    {
+        static_assert(
+            COMP_ID != CompId::CUSTOM_COMPONENTS,
+            "CustomComponents do not have a column in the parallel vectors "
+            "tuple.");
+        constexpr uint N =
+            comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+        return mElemComponents.template get<N>();
+    }
+
+    template<uint COMP_ID>
+    const auto& vector() const
+    {
+        static_assert(
+            COMP_ID != CompId::CUSTOM_COMPONENTS,
+            "CustomComponents do not have a column in the parallel vectors "
+            "tuple.");
+        constexpr uint N =
+            comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+        return mElemComponents.template get<N>();
+    }
+
+    /**
+     * @brief Imports all elements from the corresponding container of the
+     * other mesh into this container.
+     *
+     * @param[in] m The other mesh to import from.
+     */
+    template<typename OtherMesh>
+    void importFrom(const OtherMesh& m)
+    {
+        if constexpr (OtherMesh::template hasContainerOf<ELEMENT_ID>()) {
+            const auto& c = m.template container<ELEMENT_ID>();
+            enableSameOptionalComponentsOf(c);
+            clearElements();
+            const std::size_t n = c.elementContainerSize();
+            addElements(n);
+            for (IndexType i = 0; i < n; ++i) {
+                element(i).importFrom(c.element(i));
+            }
+            mElemCount = c.elementCount();
+            if constexpr (
+                comp::HasCustomComponents<Components> &&
+                comp::HasCustomComponents<
+                    typename std::remove_cvref_t<decltype(c)>::Components>) {
+                mCustomComponents = c.mCustomComponents;
+            }
+        }
+    }
+
+    decltype(auto) parentMesh() requires (!std::is_void_v<ParentMesh>)
+    {
+        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
+        return *mParentMesh;
+    }
+
+    decltype(auto) parentMesh() const requires (!std::is_void_v<ParentMesh>)
+    {
+        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
+        return std::as_const(*mParentMesh);
+    }
+
+    void setParentMesh(ParentMesh* mesh) { mParentMesh = mesh; }
+
+
+
     template<uint TARGET_ELEM_ID>
     void updateReferences(const std::vector<IndexType>& newIndices)
     {
-        if constexpr (ProxyType::template referencesElement<TARGET_ELEM_ID>()) {
+        if constexpr (
+            ElementType::template referencesElement<TARGET_ELEM_ID>()) {
             for (std::size_t i = 0; i < size(); ++i) {
                 element(i).template updateReferences<TARGET_ELEM_ID>(
                     newIndices);
@@ -751,7 +757,8 @@ protected:
     template<uint TARGET_ELEM_ID>
     void shiftReferences(IndexType startFrom, IndexType offset)
     {
-        if constexpr (ProxyType::template referencesElement<TARGET_ELEM_ID>()) {
+        if constexpr (
+            ElementType::template referencesElement<TARGET_ELEM_ID>()) {
             if (offset != 0) {
                 for (std::size_t i = startFrom; i < size(); ++i) {
                     element(i).template shiftReferences<TARGET_ELEM_ID>(offset);
@@ -975,19 +982,22 @@ protected:
         mCustomComponents.template deserializeCustomComponentsOfType<K>(is);
     }
 
-    ProxyType operator[](IndexType i)
+    ElementType operator[](IndexType i)
     {
         assert(i < size() || i == std::numeric_limits<IndexType>::max());
-        return ProxyType(*this, i);
+        return ElementType(*this, i);
     }
 
-    ConstProxyType operator[](IndexType i) const
+    ConstElementType operator[](IndexType i) const
     {
         assert(i < size() || i == std::numeric_limits<IndexType>::max());
-        return ConstProxyType(*this, i);
+        return ConstElementType(*this, i);
     }
 
 private:
+    template<uint COMP_ID, typename Data>
+    friend class Component;
+
     template<typename>
     friend class ElementIterator;
 
@@ -1000,6 +1010,7 @@ private:
     template<typename>
     friend class ElementContainerProxy;
 
+    // to allow TTVC resize, pushBack, insert, erase, clear members
     template<int, std::unsigned_integral>
     friend class comp::VertexReferences;
 
@@ -1201,8 +1212,8 @@ template<typename T>
 concept ElementContainerConcept = requires {
     { std::remove_cvref_t<T>::ELEMENT_ID } -> std::convertible_to<uint>;
     typename std::remove_cvref_t<T>::IndexType;
-    typename std::remove_cvref_t<T>::ProxyType;
-    typename std::remove_cvref_t<T>::ConstProxyType;
+    typename std::remove_cvref_t<T>::ElementType;
+    typename std::remove_cvref_t<T>::ConstElementType;
 };
 
 } // namespace vcl::meshv2

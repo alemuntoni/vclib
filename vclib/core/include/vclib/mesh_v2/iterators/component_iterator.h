@@ -19,7 +19,8 @@
 namespace vcl::meshv2 {
 
 /**
- * @brief Bidirectional iterator over a single component column in an ElementContainer.
+ * @brief Bidirectional iterator over a single component column in an
+ * ElementContainer.
  *
  * It yields references to the component data. By default, it jumps elements
  * that are marked as deleted (jumpDeleted = true).
@@ -35,7 +36,10 @@ public:
     using IndexType       = typename ContainerTraits::IndexType;
     using CompType        = comp::ComponentTypeT<COMP_ID, ContainerType>;
     using RawDataType     = typename CompType::DataType;
-    using DataType        = std::conditional_t<std::is_const_v<ContainerType>, const RawDataType, RawDataType>;
+    using DataType        = std::conditional_t<
+        std::is_const_v<ContainerType>,
+        const RawDataType,
+        RawDataType>;
 
     // Modern C++ standard iterator traits
     using difference_type   = std::ptrdiff_t;
@@ -72,8 +76,11 @@ private:
 public:
     ComponentIterator() = default;
 
-    ComponentIterator(ContainerType& container, IndexType index, bool jumpDeleted = true) :
-        mContainer(&container), mIndex(index), mJumpDeleted(jumpDeleted)
+    ComponentIterator(
+        ContainerType& container,
+        IndexType      index,
+        bool           jumpDeleted = true) :
+            mContainer(&container), mIndex(index), mJumpDeleted(jumpDeleted)
     {
         if (mJumpDeleted) [[unlikely]] {
             advanceForward();
@@ -82,14 +89,18 @@ public:
 
     // Implicit conversion from mutable iterator to const iterator
     template<typename OtherContainerType>
-        requires std::is_same_v<ContainerType, const OtherContainerType>
-    ComponentIterator(const ComponentIterator<COMP_ID, OtherContainerType>& other) :
-        mContainer(other.parentContainer()), mIndex(other.index()), mJumpDeleted(other.jumpDeleted())
+    requires std::is_same_v<ContainerType, const OtherContainerType>
+    ComponentIterator(
+        const ComponentIterator<COMP_ID, OtherContainerType>& other) :
+            mContainer(other.parentContainer()), mIndex(other.index()),
+            mJumpDeleted(other.jumpDeleted())
     {
     }
 
     ContainerType* parentContainer() const { return mContainer; }
+
     IndexType index() const { return mIndex; }
+
     bool jumpDeleted() const { return mJumpDeleted; }
 
     reference operator*() const
@@ -99,10 +110,7 @@ public:
         return mContainer->template vector<COMP_ID>()[mIndex];
     }
 
-    pointer operator->() const
-    {
-        return &(operator*());
-    }
+    pointer operator->() const { return &(operator*()); }
 
     ComponentIterator& operator++()
     {
@@ -137,13 +145,15 @@ public:
     }
 
     template<typename OtherContainer>
-    bool operator==(const ComponentIterator<COMP_ID, OtherContainer>& other) const
+    bool operator==(
+        const ComponentIterator<COMP_ID, OtherContainer>& other) const
     {
         return mIndex == other.index() && mContainer == other.parentContainer();
     }
 
     template<typename OtherContainer>
-    auto operator<=>(const ComponentIterator<COMP_ID, OtherContainer>& other) const
+    auto operator<=>(
+        const ComponentIterator<COMP_ID, OtherContainer>& other) const
     {
         return mIndex <=> other.index();
     }

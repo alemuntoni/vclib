@@ -44,10 +44,10 @@ public:
     using ContainerType = std::remove_cv_t<Container>;
     using IndexType     = typename ContainerType::IndexType;
     using Components    = typename ContainerType::Components;
-    using ProxyType     = std::conditional_t<
+    using ElementType   = std::conditional_t<
         std::is_const_v<Container>,
-        typename ContainerType::ConstProxyType,
-        typename ContainerType::ProxyType>;
+        typename ContainerType::ConstElementType,
+        typename ContainerType::ElementType>;
     using Iterator = std::conditional_t<
         std::is_const_v<Container>,
         typename ContainerType::ConstIterator,
@@ -78,7 +78,7 @@ public:
 
     Iterator end() const { return mContainer ? mContainer->end() : Iterator(); }
 
-    ProxyType operator[](IndexType i) const
+    ElementType operator[](IndexType i) const
     {
         assert(mContainer != nullptr);
         return (*mContainer)[i];
@@ -126,7 +126,8 @@ public:
      * Available only for elements with a static/fixed number of vertices
      * (e.g. triangles, quads), representing a contiguous Index Buffer.
      */
-    auto vertexIndices() const requires comp::HasStaticVertexReferences<Container>
+    auto vertexIndices() const
+        requires comp::HasStaticVertexReferences<Container>
     {
         return component<CompId::VERTEX_REFERENCES>();
     }

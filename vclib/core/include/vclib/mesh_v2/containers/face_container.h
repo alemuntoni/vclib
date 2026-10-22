@@ -53,12 +53,8 @@ protected:
 
 public:
     using Components     = typename Base::Components;
-    using FaceComponents = CompList;
-    using IndexType      = Index;
-    using Face           = typename Base::ProxyType;
-    using ConstFace      = typename Base::ConstProxyType;
-    using FaceType_      = Face;
-    using ConstFaceType  = ConstFace;
+    using Face           = typename Base::ElementType;
+    using ConstFace      = typename Base::ConstElementType;
 
     template<typename NewParent>
     using Rebind = FaceContainer<CompList, Index, NewParent>;

@@ -33,23 +33,23 @@ public:
     using ContainerTraits = std::remove_cv_t<ContainerType>;
     using IndexType       = typename ContainerTraits::IndexType;
     using Components      = typename ContainerTraits::Components;
-    using ProxyType       = std::conditional_t<
+    using ElementType     = std::conditional_t<
         std::is_const_v<ContainerType>,
-        typename ContainerTraits::ConstProxyType,
-        typename ContainerTraits::ProxyType>;
+        typename ContainerTraits::ConstElementType,
+        typename ContainerTraits::ElementType>;
 
     // Modern C++ standard iterator traits
     using difference_type   = std::ptrdiff_t;
-    using value_type        = ProxyType;
-    using reference         = ProxyType;
-    using pointer           = FakePointerWithValue<ProxyType>;
+    using value_type        = ElementType;
+    using reference         = ElementType;
+    using pointer           = FakePointerWithValue<ElementType>;
     using iterator_concept  = std::bidirectional_iterator_tag;
     using iterator_category = std::bidirectional_iterator_tag;
 
 private:
-    ContainerType* mContainer = nullptr;
-    IndexType mIndex = 0;
-    bool mJumpDeleted = true;
+    ContainerType* mContainer   = nullptr;
+    IndexType      mIndex       = 0;
+    bool           mJumpDeleted = true;
 
     void advanceForward()
     {
@@ -73,8 +73,11 @@ private:
 public:
     ElementIterator() = default;
 
-    ElementIterator(ContainerType& container, IndexType index, bool jumpDeleted = true) :
-        mContainer(&container), mIndex(index), mJumpDeleted(jumpDeleted)
+    ElementIterator(
+        ContainerType& container,
+        IndexType      index,
+        bool           jumpDeleted = true) :
+            mContainer(&container), mIndex(index), mJumpDeleted(jumpDeleted)
     {
         if (mJumpDeleted) [[unlikely]] {
             advanceForward();
@@ -83,25 +86,22 @@ public:
 
     // Implicit conversion from mutable iterator to const iterator
     template<typename OtherContainerType>
-        requires std::is_same_v<ContainerType, const OtherContainerType>
+    requires std::is_same_v<ContainerType, const OtherContainerType>
     ElementIterator(const ElementIterator<OtherContainerType>& other) :
-        mContainer(other.parentContainer()), mIndex(other.index()), mJumpDeleted(other.jumpDeleted())
+            mContainer(other.parentContainer()), mIndex(other.index()),
+            mJumpDeleted(other.jumpDeleted())
     {
     }
 
     ContainerType* parentContainer() const { return mContainer; }
+
     IndexType index() const { return mIndex; }
+
     bool jumpDeleted() const { return mJumpDeleted; }
 
-    reference operator*() const
-    {
-        return ProxyType(*mContainer, mIndex);
-    }
+    reference operator*() const { return ElementType(*mContainer, mIndex); }
 
-    pointer operator->() const
-    {
-        return pointer(operator*());
-    }
+    pointer operator->() const { return pointer(operator*()); }
 
     ElementIterator& operator++()
     {

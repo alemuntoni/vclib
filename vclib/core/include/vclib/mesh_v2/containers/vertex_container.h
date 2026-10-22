@@ -51,12 +51,8 @@ protected:
 
 public:
     using Components       = typename Base::Components;
-    using VertexComponents = CompList;
-    using IndexType        = Index;
-    using Vertex           = typename Base::ProxyType;
-    using ConstVertex      = typename Base::ConstProxyType;
-    using VertexType_      = Vertex;
-    using ConstVertexType  = ConstVertex;
+    using Vertex           = typename Base::ElementType;
+    using ConstVertex      = typename Base::ConstElementType;
     using PositionType     = typename Vertex::PositionType;
 
     template<typename NewParent>
