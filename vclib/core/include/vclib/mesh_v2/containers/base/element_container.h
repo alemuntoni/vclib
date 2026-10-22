@@ -1159,8 +1159,7 @@ private:
                     if constexpr (
                         comp::
                             HasComponent<Comp::COMPONENT_ID, OtherContainer>) {
-                        if (comp::isComponentAvailableOn<Comp::COMPONENT_ID>(
-                                other)) {
+                        if (other.template isEnabled<Comp::COMPONENT_ID>()) {
                             this->template enable<Comp::COMPONENT_ID>();
                         }
                     }

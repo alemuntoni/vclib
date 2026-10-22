@@ -99,7 +99,7 @@ template<typename OtherElement>
 void Normal<P>::importFrom(this auto&& self, const OtherElement& other, bool)
 {
     if constexpr (HasNormal<OtherElement>) {
-        if (isNormalAvailableOn(self) && isNormalAvailableOn(other)) {
+        if (isNormalAvailableOn(other)) {
             using ScalarType = NormalType::ScalarType;
             self.normal()    = other.normal().template cast<ScalarType>();
         }

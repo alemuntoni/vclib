@@ -151,27 +151,21 @@ using ComponentTypeT = typename ComponentType<
     typename detail::ComponentListHelper<T>::type>::type;
 
 /**
- * @brief Checks if the given object (ElementProxy, ElementContainer, Mesh...)
- * has the component COMPONENT_ID available (present and enabled).
+ * @brief Checks if the given Element has the component COMPONENT_ID available
+ * (present at compile time and enabled at run time).
  *
  * @tparam COMPONENT_ID The component ID to check.
- * @param[in] obj The object to check.
- * @return true if the object has the component and it is enabled, false otherwise.
+ * @param[in] element The element to check.
+ * @return true if the element has the component and it is enabled, false otherwise.
  *
  * @ingroup base
  */
-template<uint COMPONENT_ID, typename T>
-inline bool isComponentAvailableOn(const T& obj)
+template<uint COMPONENT_ID, typename Element>
+inline bool isComponentAvailableOn(const Element& element)
 {
-    if constexpr (HasComponent<COMPONENT_ID, T>) {
-        if constexpr (requires { obj.template isEnabled<COMPONENT_ID>(); }) {
-            return obj.template isEnabled<COMPONENT_ID>();
-        }
-        else if constexpr (requires { obj.template isComponentEnabled<COMPONENT_ID>(); }) {
-            return obj.template isComponentEnabled<COMPONENT_ID>();
-        }
-        else if constexpr (requires { obj.parentContainer().template isEnabled<COMPONENT_ID>(); }) {
-            return obj.parentContainer().template isEnabled<COMPONENT_ID>();
+    if constexpr (HasComponent<COMPONENT_ID, Element>) {
+        if constexpr (requires { element.template isComponentEnabled<COMPONENT_ID>(); }) {
+            return element.template isComponentEnabled<COMPONENT_ID>();
         }
         else {
             return true;

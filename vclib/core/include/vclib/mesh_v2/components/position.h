@@ -92,7 +92,7 @@ template<typename OtherElement>
 void Position<P>::importFrom(this auto&& self, const OtherElement& other, bool)
 {
     if constexpr (HasPosition<OtherElement>) {
-        if (isPositionAvailableOn(self) && isPositionAvailableOn(other)) {
+        if (isPositionAvailableOn(other)) {
             using ScalarType = PositionType::ScalarType;
             self.position() = other.position().template cast<ScalarType>();
         }

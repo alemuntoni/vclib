@@ -103,13 +103,13 @@ inline void testMeshImportFromTriToTri()
 
     TriBitMesh mTriDest;
     mTriDest.importFrom(mTriSource);
-    assert(mTriDest.container<vcl::meshv2::ElemId::VERTEX>().elementContainerSize() == 3);
+    assert(mTriDest.vertexContainerSize() == 3);
     assert(mTriDest.vertex(0).position() == Point3f(1, 2, 3));
     assert(mTriDest.vertex(1).position() == Point3f(4, 5, 6));
     assert(mTriDest.vertex(1).selected() == true);
     assert(mTriDest.vertex(0).selected() == false);
 
-    assert(mTriDest.container<vcl::meshv2::ElemId::FACE>().elementContainerSize() == 1);
+    assert(mTriDest.faceContainerSize() == 1);
     assert(mTriDest.face(0).vertexIndex(0) == 0);
     assert(mTriDest.face(0).vertexIndex(1) == 1);
     assert(mTriDest.face(0).vertexIndex(2) == 2);

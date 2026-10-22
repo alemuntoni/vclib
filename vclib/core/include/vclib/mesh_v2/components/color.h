@@ -94,7 +94,7 @@ template<typename OtherElement>
 void Color::importFrom(this auto&& self, const OtherElement& other, bool)
 {
     if constexpr (HasColor<OtherElement>) {
-        if (isColorAvailableOn(self) && isColorAvailableOn(other)) {
+        if (isColorAvailableOn(other)) {
             self.color() = other.color();
         }
     }
