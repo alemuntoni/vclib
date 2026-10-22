@@ -27,9 +27,13 @@ concept HasPolygonBitFlags = comp::HasPolygonBitFlags<T>;
 template<typename T>
 concept HasColor = comp::HasColor<T>;
 template<typename T>
+concept HasOptionalColor = comp::HasOptionalColor<T>;
+template<typename T>
 concept HasCustomComponents = comp::HasCustomComponents<T>;
 template<typename T>
 concept HasNormal = comp::HasNormal<T>;
+template<typename T>
+concept HasOptionalNormal = comp::HasOptionalNormal<T>;
 template<typename T>
 concept HasVertexReferences = comp::HasVertexReferences<T>;
 template<typename T>
@@ -53,20 +57,23 @@ using TriangleBitFlags = comp::TriangleBitFlags;
 using PolygonBitFlags  = comp::PolygonBitFlags<-1>;
 
 /* Port Color class into face namespace */
-using Color = comp::Color;
+using Color         = comp::Color<false>;
+using OptionalColor = comp::OptionalColor;
 
 /* Port CustomComponents class into face namespace */
 using CustomComponents = comp::CustomComponents;
 
 /* Port Normal classes into face namespace */
-template<typename ScalarType, int N>
-using Normal = comp::Normal<Point<ScalarType, N>>;
+template<typename ScalarType, int N, bool OPT = false>
+using Normal = comp::Normal<Point<ScalarType, N>, OPT>;
 
-template<typename ScalarType>
-using Normal3 = comp::Normal3<ScalarType>;
+template<typename ScalarType, bool OPT = false>
+using Normal3 = comp::Normal3<ScalarType, OPT>;
 
-using Normal3f = comp::Normal3f;
-using Normal3d = comp::Normal3d;
+using Normal3f         = comp::Normal3f;
+using Normal3d         = comp::Normal3d;
+using OptionalNormal3f = comp::OptionalNormal3f;
+using OptionalNormal3d = comp::OptionalNormal3d;
 
 /* Port VertexReferences class into face namespace */
 template<int N, std::unsigned_integral Index = uint>

@@ -48,17 +48,33 @@ using namespace vcl;
 using MyVertexComponents = meshv2::VertexComponents<
     meshv2::vert::BitFlags,
     meshv2::vert::Position3f,
-    meshv2::vert::Normal3f,
-    meshv2::vert::Color>;
+    meshv2::vert::OptionalNormal3f,
+    meshv2::vert::OptionalColor>;
 
 using MyFaceComponents = meshv2::FaceComponents<
     meshv2::face::BitFlags,
     meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::Color>;
+    meshv2::face::OptionalColor>;
 
 using MyMesh = meshv2::Mesh<
     meshv2::VertexContainer<MyVertexComponents>,
     meshv2::FaceContainer<MyFaceComponents>,
+    meshv2::mesh::Color>;
+
+using FullVertexComponents = meshv2::VertexComponents<
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3f,
+    meshv2::vert::Normal3f,
+    meshv2::vert::Color>;
+
+using FullFaceComponents = meshv2::FaceComponents<
+    meshv2::face::BitFlags,
+    meshv2::face::TriangleVertexReferences<vcl::uint>,
+    meshv2::face::Color>;
+
+using FullMesh = meshv2::Mesh<
+    meshv2::VertexContainer<FullVertexComponents>,
+    meshv2::FaceContainer<FullFaceComponents>,
     meshv2::mesh::Color>;
 
 using SimpleVertexComponents =

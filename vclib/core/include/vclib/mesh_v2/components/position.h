@@ -33,10 +33,10 @@ namespace vcl::meshv2::comp {
  *
  * @ingroup components
  */
-template<PointConcept P>
-class Position : public Component<CompId::POSITION, P>
+template<PointConcept P, bool OPT = false>
+class Position : public Component<CompId::POSITION, P, OPT>
 {
-    using Base = Component<CompId::POSITION, P>;
+    using Base = Component<CompId::POSITION, P, OPT>;
 
 public:
     /**
@@ -71,6 +71,15 @@ protected:
 template<typename T>
 concept HasPosition = HasComponent<CompId::POSITION, T>;
 
+/**
+ * @brief A concept that checks whether a type T has the Position component and it is optional.
+ *
+ * @ingroup components_concepts
+ */
+template<typename T>
+concept HasOptionalPosition =
+    HasPosition<T> && HasOptionalComponent<CompId::POSITION, T>;
+
 /* Detector function to check if a class has Position available */
 
 /**
@@ -87,9 +96,9 @@ inline bool isPositionAvailableOn(const auto& element)
 
 /* Implementation of member functions */
 
-template<PointConcept P>
+template<PointConcept P, bool OPT>
 template<typename OtherElement>
-void Position<P>::importFrom(this auto&& self, const OtherElement& other, bool)
+void Position<P, OPT>::importFrom(this auto&& self, const OtherElement& other, bool)
 {
     if constexpr (HasPosition<OtherElement>) {
         if (isPositionAvailableOn(other)) {
@@ -109,8 +118,8 @@ void Position<P>::importFrom(this auto&& self, const OtherElement& other, bool)
  *
  * @ingroup components
  */
-template<typename Scalar>
-using Position3 = Position<Point3<Scalar>>;
+template<typename Scalar, bool OPT = false>
+using Position3 = Position<Point3<Scalar>, OPT>;
 
 /**
  * @brief The Position3f alias of the Position component that uses 3-dimensional
@@ -118,7 +127,7 @@ using Position3 = Position<Point3<Scalar>>;
  *
  * @ingroup components
  */
-using Position3f = Position3<float>;
+using Position3f = Position3<float, false>;
 
 /**
  * @brief The Position3d alias of the Position component that uses 3-dimensional
@@ -126,7 +135,23 @@ using Position3f = Position3<float>;
  *
  * @ingroup components
  */
-using Position3d = Position3<double>;
+using Position3d = Position3<double, false>;
+
+/**
+ * @brief The OptionalPosition3f alias of the Position component that uses 3-dimensional
+ * Points with float precision and is optional.
+ *
+ * @ingroup components
+ */
+using OptionalPosition3f = Position3<float, true>;
+
+/**
+ * @brief The OptionalPosition3d alias of the Position component that uses 3-dimensional
+ * Points with double precision and is optional.
+ *
+ * @ingroup components
+ */
+using OptionalPosition3d = Position3<double, true>;
 
 } // namespace vcl::meshv2::comp
 

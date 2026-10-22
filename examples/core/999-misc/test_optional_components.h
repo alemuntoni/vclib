@@ -60,12 +60,36 @@ inline void testEnableSameOptionalComponentsOf()
     assert((!meshTestedAgainstSimple.isEnabled<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
 }
 
+inline void testNonOptionalComponents()
+{
+    FullMesh mesh;
+    // By default, non-optional components are always available
+    assert((mesh.isAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::POSITION>()));
+    assert((mesh.isAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((mesh.isAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+    assert((mesh.isAvailable<meshv2::ElemId::FACE, meshv2::CompId::VERTEX_REFERENCES>()));
+    assert((mesh.isAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+
+    // disableAll does not disable non-optional components
+    mesh.disableAll();
+    assert((mesh.isAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((mesh.isAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+    assert((mesh.isAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+
+    // disableAllOptionalComponents also leaves non-optional components enabled
+    mesh.disableAllOptionalComponents();
+    assert((mesh.isAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((mesh.isAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+    assert((mesh.isAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+}
+
 inline void testOptionalComponents()
 {
-    std::println("--- Testing Optional Components & enableSameOptionalComponentsOf ---");
+    std::println("--- Testing Optional & Non-Optional Components ---");
     testEnableDisable();
     testEnableSameOptionalComponentsOf();
-    std::println("Optional components verified successfully!\n");
+    testNonOptionalComponents();
+    std::println("Optional & Non-Optional components verified successfully!\n");
 }
 
 #endif // TEST_OPTIONAL_COMPONENTS_H

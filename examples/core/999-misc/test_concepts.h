@@ -30,6 +30,14 @@ inline void testComponentConcepts()
     static_assert(meshv2::face::HasColor<MyMesh::ConstFace>);
     static_assert(meshv2::face::HasColor<MyFaceComponents>);
 
+    // Optional vs Non-Optional Concepts
+    static_assert(meshv2::vert::HasOptionalColor<MyMesh::Vertex>);
+    static_assert(!meshv2::vert::HasOptionalColor<FullMesh::Vertex>);
+    static_assert(meshv2::vert::HasOptionalNormal<MyMesh::Vertex>);
+    static_assert(!meshv2::vert::HasOptionalNormal<FullMesh::Vertex>);
+    static_assert(meshv2::face::HasOptionalColor<MyMesh::Face>);
+    static_assert(!meshv2::face::HasOptionalColor<FullMesh::Face>);
+
     // Container and Component Concepts
     static_assert(meshv2::ElementContainerConcept<
                   MyMesh::ContainerType<meshv2::ElemId::VERTEX>>);

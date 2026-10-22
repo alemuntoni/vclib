@@ -29,9 +29,10 @@ namespace vcl::meshv2::comp {
  *
  * @ingroup components
  */
-class Color : public Component<CompId::COLOR, vcl::Color>
+template<bool OPT = false>
+class Color : public Component<CompId::COLOR, vcl::Color, OPT>
 {
-    using Base = Component<CompId::COLOR, vcl::Color>;
+    using Base = Component<CompId::COLOR, vcl::Color, OPT>;
 
 public:
     /**
@@ -60,6 +61,10 @@ protected:
     void importFrom(this auto&& self, const OtherElement& other, bool = true);
 };
 
+/* Aliases */
+
+using OptionalColor = Color<true>;
+
 /* Concepts */
 
 /**
@@ -73,6 +78,17 @@ protected:
  */
 template<typename T>
 concept HasColor = HasComponent<CompId::COLOR, T>;
+
+/**
+ * @brief A concept that checks whether a type T has the Color component and it is optional.
+ *
+ * @tparam T The type to be tested for conformity to HasOptionalColor.
+ *
+ * @ingroup components_concepts
+ */
+template<typename T>
+concept HasOptionalColor =
+    HasColor<T> && HasOptionalComponent<CompId::COLOR, T>;
 
 /* Detector function to check if a class has Color available */
 
@@ -90,8 +106,9 @@ inline bool isColorAvailableOn(const auto& element)
 
 /* Implementation of member functions */
 
+template<bool OPT>
 template<typename OtherElement>
-void Color::importFrom(this auto&& self, const OtherElement& other, bool)
+void Color<OPT>::importFrom(this auto&& self, const OtherElement& other, bool)
 {
     if constexpr (HasColor<OtherElement>) {
         if (isColorAvailableOn(other)) {

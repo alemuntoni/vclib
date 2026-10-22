@@ -21,40 +21,51 @@ concept HasBitFlags = comp::HasBitFlags<T>;
 template<typename T>
 concept HasColor = comp::HasColor<T>;
 template<typename T>
+concept HasOptionalColor = comp::HasOptionalColor<T>;
+template<typename T>
 concept HasCustomComponents = comp::HasCustomComponents<T>;
 template<typename T>
 concept HasNormal = comp::HasNormal<T>;
 template<typename T>
+concept HasOptionalNormal = comp::HasOptionalNormal<T>;
+template<typename T>
 concept HasPosition = comp::HasPosition<T>;
+template<typename T>
+concept HasOptionalPosition = comp::HasOptionalPosition<T>;
 
 /* Port BitFlags class into vert namespace */
 using BitFlags = comp::BitFlags;
 
 /* Port Color class into vert namespace */
-using Color = comp::Color;
+using Color         = comp::Color<false>;
+using OptionalColor = comp::OptionalColor;
 
 /* Port CustomComponents class into vert namespace */
 using CustomComponents = comp::CustomComponents;
 
 /* Port Normal classes into vert namespace */
-template<typename ScalarType, int N>
-using Normal = comp::Normal<Point<ScalarType, N>>;
+template<typename ScalarType, int N, bool OPT = false>
+using Normal = comp::Normal<Point<ScalarType, N>, OPT>;
 
-template<typename ScalarType>
-using Normal3 = comp::Normal3<ScalarType>;
+template<typename ScalarType, bool OPT = false>
+using Normal3 = comp::Normal3<ScalarType, OPT>;
 
-using Normal3f = comp::Normal3f;
-using Normal3d = comp::Normal3d;
+using Normal3f         = comp::Normal3f;
+using Normal3d         = comp::Normal3d;
+using OptionalNormal3f = comp::OptionalNormal3f;
+using OptionalNormal3d = comp::OptionalNormal3d;
 
 /* Port Position class into vert namespace */
-template<typename ScalarType, int N>
-using Position = comp::Position<Point<ScalarType, N>>;
+template<typename ScalarType, int N, bool OPT = false>
+using Position = comp::Position<Point<ScalarType, N>, OPT>;
 
-template<typename ScalarType>
-using Position3 = comp::Position3<ScalarType>;
+template<typename ScalarType, bool OPT = false>
+using Position3 = comp::Position3<ScalarType, OPT>;
 
-using Position3f = comp::Position3f;
-using Position3d = comp::Position3d;
+using Position3f         = comp::Position3f;
+using Position3d         = comp::Position3d;
+using OptionalPosition3f = comp::OptionalPosition3f;
+using OptionalPosition3d = comp::OptionalPosition3d;
 
 } // namespace vcl::meshv2::vert
 

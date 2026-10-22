@@ -35,10 +35,11 @@ template<
     typename T,
     int  N,
     bool TTVC,
+    bool OPT = false,
     typename Container = vcl::Vector<T, N>>
-class ContainerComponent : public Component<COMP_ID, Container>
+class ContainerComponent : public Component<COMP_ID, Container, OPT>
 {
-    using Base = Component<COMP_ID, Container>;
+    using Base = Component<COMP_ID, Container, OPT>;
 
 protected:
     using ValueType                            = T;

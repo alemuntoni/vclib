@@ -217,13 +217,33 @@ public:
     }
 
     /**
+     * @brief Checks if component COMP_ID is available on container ELEM_ID.
+     */
+    template<uint ELEM_ID, uint COMP_ID>
+    requires (hasContainerOf<ELEM_ID>())
+    bool isComponentAvailable() const
+    {
+        return ContainerType<ELEM_ID>::template isComponentAvailable<COMP_ID>();
+    }
+
+    /**
+     * @brief Alias of isComponentAvailable.
+     */
+    template<uint ELEM_ID, uint COMP_ID>
+    requires (hasContainerOf<ELEM_ID>())
+    bool isAvailable() const
+    {
+        return isComponentAvailable<ELEM_ID, COMP_ID>();
+    }
+
+    /**
      * @brief Checks if component COMP_ID is enabled on container ELEM_ID.
      */
     template<uint ELEM_ID, uint COMP_ID>
     requires (hasContainerOf<ELEM_ID>())
     bool isEnabled() const
     {
-        return ContainerType<ELEM_ID>::template isEnabled<COMP_ID>();
+        return isComponentAvailable<ELEM_ID, COMP_ID>();
     }
 
     /**
@@ -246,6 +266,20 @@ public:
         ContainerType<ELEM_ID>::disableAll();
     }
 
+    template<uint ELEM_ID>
+    requires (hasContainerOf<ELEM_ID>())
+    void enableAllOptionalComponents()
+    {
+        enableAll<ELEM_ID>();
+    }
+
+    template<uint ELEM_ID>
+    requires (hasContainerOf<ELEM_ID>())
+    void disableAllOptionalComponents()
+    {
+        disableAll<ELEM_ID>();
+    }
+
     /**
      * @brief Enables all components across all element containers.
      */
@@ -256,6 +290,10 @@ public:
      * containers.
      */
     void disableAll() { (disableAllContainer<Rebound<Args>>(), ...); }
+
+    void enableAllOptionalComponents() { enableAll(); }
+
+    void disableAllOptionalComponents() { disableAll(); }
 
     /**
      * @brief Enables all the optional components of this Mesh that are also

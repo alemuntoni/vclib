@@ -137,18 +137,44 @@ struct IndexOfCompId<COMP_ID, vcl::TypeWrapper<Components...>>
 template<uint COMP_ID, typename ComponentListWrapper>
 struct ComponentType;
 
-template<uint COMP_ID, typename... Components>
-struct ComponentType<COMP_ID, vcl::TypeWrapper<Components...>>
+template<uint COMP_ID>
+struct ComponentType<COMP_ID, vcl::TypeWrapper<>>
 {
-    using type = std::tuple_element_t<
-        IndexOfCompId<COMP_ID, vcl::TypeWrapper<Components...>>::value,
-        std::tuple<Components...>>;
+    using type = void;
+};
+
+template<uint COMP_ID, typename First, typename... Rest>
+struct ComponentType<COMP_ID, vcl::TypeWrapper<First, Rest...>>
+{
+    using type = std::conditional_t<
+        First::COMPONENT_ID == COMP_ID,
+        First,
+        typename ComponentType<COMP_ID, vcl::TypeWrapper<Rest...>>::type>;
 };
 
 template<uint COMP_ID, typename T>
 using ComponentTypeT = typename ComponentType<
     COMP_ID,
     typename detail::ComponentListHelper<T>::type>::type;
+
+/**
+ * @brief Concept that checks whether a component type is optional
+ * (has static constexpr bool IS_OPTIONAL = true).
+ */
+template<typename Comp>
+concept IsOptionalComponent = requires {
+    requires std::remove_cvref_t<Comp>::IS_OPTIONAL;
+};
+
+/**
+ * @brief Concept that checks whether a type T (which can be a TypeWrapper of
+ * components, an ElementProxy, an ElementContainer, or a Mesh) contains an
+ * optional component with the given COMP_ID.
+ */
+template<uint COMP_ID, typename T>
+concept HasOptionalComponent =
+    HasComponent<COMP_ID, T> &&
+    IsOptionalComponent<ComponentTypeT<COMP_ID, T>>;
 
 /**
  * @brief Checks if the given Element has the component COMPONENT_ID available
@@ -164,8 +190,16 @@ template<uint COMPONENT_ID, typename Element>
 inline bool isComponentAvailableOn(const Element& element)
 {
     if constexpr (HasComponent<COMPONENT_ID, Element>) {
-        if constexpr (requires { element.template isComponentEnabled<COMPONENT_ID>(); }) {
-            return element.template isComponentEnabled<COMPONENT_ID>();
+        if constexpr (HasOptionalComponent<COMPONENT_ID, Element>) {
+            if constexpr (requires { element.template isComponentAvailable<COMPONENT_ID>(); }) {
+                return element.template isComponentAvailable<COMPONENT_ID>();
+            }
+            else if constexpr (requires { element.template isComponentEnabled<COMPONENT_ID>(); }) {
+                return element.template isComponentEnabled<COMPONENT_ID>();
+            }
+            else {
+                return true;
+            }
         }
         else {
             return true;

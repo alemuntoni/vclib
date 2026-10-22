@@ -45,17 +45,19 @@ template<
     std::unsigned_integral Index,
     uint                   REF_ELEM_ID,
     int                    N    = -1,
-    bool                   TTVC = false>
+    bool                   TTVC = false,
+    bool                   OPT  = false>
 class ContainerReferencesComponent :
         public ContainerComponent<
             COMP_ID,
             Index,
             N,
             TTVC,
+            OPT,
             ReferenceVector<Index, N>>
 {
     using Base =
-        ContainerComponent<COMP_ID, Index, N, TTVC, ReferenceVector<Index, N>>;
+        ContainerComponent<COMP_ID, Index, N, TTVC, OPT, ReferenceVector<Index, N>>;
 
 public:
     using IndexType = Index;

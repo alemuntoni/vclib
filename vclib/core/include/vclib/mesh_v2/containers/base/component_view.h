@@ -74,16 +74,24 @@ public:
     }
 
     /**
+     * @brief Checks if the component is available in the container.
+     */
+    bool isAvailable() const
+    {
+        return mContainer && mContainer->template isComponentAvailable<COMP_ID>();
+    }
+
+    /**
      * @brief Checks if the component is enabled in the container.
      */
     bool isEnabled() const
     {
-        return mContainer && mContainer->template isEnabled<COMP_ID>();
+        return isAvailable();
     }
 
     Iterator begin() const
     {
-        if (!mContainer || !isEnabled()) {
+        if (!mContainer || !isAvailable()) {
             return end();
         }
         bool needJump =
@@ -93,7 +101,7 @@ public:
 
     Iterator end() const
     {
-        IndexType endIdx = (mContainer && isEnabled()) ?
+        IndexType endIdx = (mContainer && isAvailable()) ?
                                mContainer->elementContainerSize() :
                                0;
         return Iterator(*mContainer, endIdx, false);
@@ -102,14 +110,14 @@ public:
     reference operator[](IndexType i) const
     {
         assert(mContainer != nullptr);
-        assert(isEnabled() && "Component is not enabled!");
+        assert(isAvailable() && "Component is not available!");
         assert(i < mContainer->elementContainerSize());
         return mContainer->template vector<COMP_ID>()[i];
     }
 
     pointer data() const
     {
-        if (!mContainer || !isEnabled()) {
+        if (!mContainer || !isAvailable()) {
             return nullptr;
         }
         return mContainer->template vector<COMP_ID>().data();
@@ -117,7 +125,7 @@ public:
 
     std::size_t size() const
     {
-        if (!mContainer || !isEnabled()) {
+        if (!mContainer || !isAvailable()) {
             return 0;
         }
         return mJumpDeleted ? mContainer->elementCount() :

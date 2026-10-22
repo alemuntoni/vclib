@@ -137,8 +137,7 @@ public:
 protected:
     ElementContainer()
     {
-        // BitFlags is mandatory and always enabled
-        enable<CompId::BIT_FLAGS>();
+        enableNonOptionalComponents(Components {});
     }
 
     /* Members that are inherited and wrapped by derived element containers */
@@ -604,19 +603,46 @@ protected:
     // ### Enable - Disable
 
     /**
-     * @brief Checks if the component with the given COMP_ID is enabled.
+     * @brief Checks if the component with the given COMP_ID is available
+     * (present at compile time and enabled at run time).
+     *
+     * Non-optional components are always available at compile-time (true).
+     * Optional components return true if currently enabled, false otherwise.
+     */
+    template<uint COMP_ID>
+    bool isComponentAvailable() const
+    {
+        if constexpr (comp::HasComponent<COMP_ID, Components>) {
+            if constexpr (comp::HasOptionalComponent<COMP_ID, Components>) {
+                constexpr uint N =
+                    comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+                return mElemComponents.template isEnabled<N>();
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * @brief Alias of isComponentAvailable.
+     */
+    template<uint COMP_ID>
+    bool isAvailable() const
+    {
+        return isComponentAvailable<COMP_ID>();
+    }
+
+    /**
+     * @brief Checks if the component with the given COMP_ID is enabled/available.
      */
     template<uint COMP_ID>
     bool isEnabled() const
     {
-        if constexpr (COMP_ID == CompId::CUSTOM_COMPONENTS) {
-            return comp::HasComponent<COMP_ID, Components>;
-        }
-        else {
-            constexpr uint N =
-                comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
-            return mElemComponents.template isEnabled<N>();
-        }
+        return isComponentAvailable<COMP_ID>();
     }
 
     /**
@@ -625,7 +651,10 @@ protected:
     template<uint COMP_ID>
     void enable()
     {
-        if constexpr (COMP_ID != CompId::CUSTOM_COMPONENTS) {
+        static_assert(
+            comp::HasComponent<COMP_ID, Components>,
+            "Component not found in container");
+        if constexpr (comp::HasOptionalComponent<COMP_ID, Components>) {
             constexpr uint N =
                 comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
             mElemComponents.template enable<N>();
@@ -634,29 +663,32 @@ protected:
 
     /**
      * @brief Disables the component with the given COMP_ID.
-     * Note: BitFlags cannot be disabled.
+     * Note: Non-optional components cannot be disabled.
      */
     template<uint COMP_ID>
     void disable()
     {
         static_assert(
-            COMP_ID != CompId::BIT_FLAGS,
-            "BitFlags component cannot be disabled");
-        if constexpr (COMP_ID != CompId::CUSTOM_COMPONENTS) {
-            constexpr uint N =
-                comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
-            mElemComponents.template disable<N>();
-        }
+            comp::HasComponent<COMP_ID, Components>,
+            "Component not found in container");
+        static_assert(
+            comp::HasOptionalComponent<COMP_ID, Components>,
+            "Cannot disable a non-optional component!");
+        constexpr uint N =
+            comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+        mElemComponents.template disable<N>();
     }
 
     void enableAll() { mElemComponents.enableAll(); }
 
     void disableAll()
     {
-        mElemComponents.disableAll();
-        // Keep BitFlags enabled
-        enable<CompId::BIT_FLAGS>();
+        disableOptionalComponents(Components {});
     }
+
+    void enableAllOptionalComponents() { enableAll(); }
+
+    void disableAllOptionalComponents() { disableAll(); }
 
     /**
      * @brief Enables in this container all the optional components that are
@@ -995,7 +1027,7 @@ protected:
     }
 
 private:
-    template<uint COMP_ID, typename Data>
+    template<uint COMP_ID, typename Data, bool OPT>
     friend class Component;
 
     template<typename>
@@ -1026,7 +1058,7 @@ private:
         template<typename...> class>
     friend class ElementContainer;
 
-    template<uint CID, std::unsigned_integral I, uint RID, int N, bool TTVC>
+    template<uint CID, std::unsigned_integral I, uint RID, int N, bool TTVC, bool OPT>
     friend class ContainerReferencesComponent;
 
     std::size_t size() const { return mElemComponents.size(); }
@@ -1049,7 +1081,7 @@ private:
         auto p          = element(i);
         auto resizeComp = [&]<typename Comp>() {
             if constexpr (comp::IsTiedToVertexCount<Comp>) {
-                if (this->template isEnabled<Comp::COMPONENT_ID>()) {
+                if (this->template isComponentAvailable<Comp::COMPONENT_ID>()) {
                     p.Comp::resize(n);
                 }
             }
@@ -1064,7 +1096,7 @@ private:
         auto p            = element(i);
         auto pushBackComp = [&]<typename Comp>() {
             if constexpr (comp::IsTiedToVertexCount<Comp>) {
-                if (this->template isEnabled<Comp::COMPONENT_ID>()) {
+                if (this->template isComponentAvailable<Comp::COMPONENT_ID>()) {
                     p.Comp::pushBack();
                 }
             }
@@ -1082,7 +1114,7 @@ private:
         auto p          = element(i);
         auto insertComp = [&]<typename Comp>() {
             if constexpr (comp::IsTiedToVertexCount<Comp>) {
-                if (this->template isEnabled<Comp::COMPONENT_ID>()) {
+                if (this->template isComponentAvailable<Comp::COMPONENT_ID>()) {
                     p.Comp::insert(pos);
                 }
             }
@@ -1100,7 +1132,7 @@ private:
         auto p         = element(i);
         auto eraseComp = [&]<typename Comp>() {
             if constexpr (comp::IsTiedToVertexCount<Comp>) {
-                if (this->template isEnabled<Comp::COMPONENT_ID>()) {
+                if (this->template isComponentAvailable<Comp::COMPONENT_ID>()) {
                     p.Comp::erase(pos);
                 }
             }
@@ -1115,7 +1147,7 @@ private:
         auto p         = element(i);
         auto clearComp = [&]<typename Comp>() {
             if constexpr (comp::IsTiedToVertexCount<Comp>) {
-                if (this->template isEnabled<Comp::COMPONENT_ID>()) {
+                if (this->template isComponentAvailable<Comp::COMPONENT_ID>()) {
                     p.Comp::clear();
                 }
             }
@@ -1148,18 +1180,46 @@ private:
         clearTTVCComponentsImpl(Components {}, i);
     }
 
+    template<typename... Comps>
+    void enableNonOptionalComponents(vcl::TypeWrapper<Comps...>)
+    {
+        auto enableIfNotOpt = [&]<typename Comp>() {
+            if constexpr (
+                detail::HasVectorColumnPred<Comp>::value &&
+                !comp::IsOptionalComponent<Comp>) {
+                constexpr uint N =
+                    comp::IndexOfCompId<Comp::COMPONENT_ID, VectorComponents>::value;
+                mElemComponents.template enable<N>();
+            }
+        };
+        (enableIfNotOpt.template operator()<Comps>(), ...);
+    }
+
+    template<typename... Comps>
+    void disableOptionalComponents(vcl::TypeWrapper<Comps...>)
+    {
+        auto disableIfOpt = [&]<typename Comp>() {
+            if constexpr (comp::IsOptionalComponent<Comp>) {
+                constexpr uint N =
+                    comp::IndexOfCompId<Comp::COMPONENT_ID, VectorComponents>::value;
+                mElemComponents.template disable<N>();
+            }
+        };
+        (disableIfOpt.template operator()<Comps>(), ...);
+    }
+
     template<typename... Comps, typename OtherContainer>
     void enableSameOptionalComponentsOfImpl(
         vcl::TypeWrapper<Comps...>,
         const OtherContainer& other)
     {
         auto enableIfAvailableInOther = [&]<typename Comp>() {
-            if constexpr (Comp::COMPONENT_ID != CompId::CUSTOM_COMPONENTS) {
-                if (!this->template isEnabled<Comp::COMPONENT_ID>()) {
+            if constexpr (comp::IsOptionalComponent<Comp>) {
+                if (!this->template isComponentAvailable<Comp::COMPONENT_ID>()) {
                     if constexpr (
                         comp::
                             HasComponent<Comp::COMPONENT_ID, OtherContainer>) {
-                        if (other.template isEnabled<Comp::COMPONENT_ID>()) {
+                        if (other.template isComponentAvailable<Comp::COMPONENT_ID>()) {
                             this->template enable<Comp::COMPONENT_ID>();
                         }
                     }
@@ -1183,8 +1243,8 @@ private:
 
         auto copyComponent = [&]<typename Comp>() {
             if constexpr (Comp::COMPONENT_ID != CompId::CUSTOM_COMPONENTS) {
-                if (this->template isEnabled<Comp::COMPONENT_ID>() &&
-                    other.template isEnabled<Comp::COMPONENT_ID>()) {
+                if (this->template isComponentAvailable<Comp::COMPONENT_ID>() &&
+                    other.template isComponentAvailable<Comp::COMPONENT_ID>()) {
                     auto& thisVec = this->template vector<Comp::COMPONENT_ID>();
                     const auto& otherVec =
                         other.template vector<Comp::COMPONENT_ID>();

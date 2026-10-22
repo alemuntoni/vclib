@@ -97,12 +97,39 @@ public:
     explicit operator bool() const { return isValid(); }
 
     /**
+     * @brief Checks if the component with COMP_ID is available (present and enabled).
+     */
+    template<uint COMP_ID>
+    bool isComponentAvailable() const
+    {
+        return mContainer && mContainer->template isComponentAvailable<COMP_ID>();
+    }
+
+    /**
+     * @brief Alias of isComponentAvailable.
+     */
+    template<uint COMP_ID>
+    bool isAvailable() const
+    {
+        return isComponentAvailable<COMP_ID>();
+    }
+
+    /**
      * @brief Checks if the component with COMP_ID is enabled in the container.
      */
     template<uint COMP_ID>
     bool isComponentEnabled() const
     {
-        return mContainer && mContainer->template isEnabled<COMP_ID>();
+        return isComponentAvailable<COMP_ID>();
+    }
+
+    /**
+     * @brief Alias of isComponentAvailable / isComponentEnabled.
+     */
+    template<uint COMP_ID>
+    bool isEnabled() const
+    {
+        return isComponentAvailable<COMP_ID>();
     }
 
     /**
@@ -126,7 +153,7 @@ public:
         auto importSingleComponent = [&]<typename Comp>() {
             if constexpr (requires { this->Comp::importFrom(other, importRefs); }) {
                 if constexpr (requires { Comp::COMPONENT_ID; }) {
-                    if (this->template isComponentEnabled<Comp::COMPONENT_ID>()) {
+                    if (this->template isComponentAvailable<Comp::COMPONENT_ID>()) {
                         this->Comp::importFrom(other, importRefs);
                     }
                 }
@@ -167,7 +194,7 @@ protected:
             if constexpr (
                 comp::ComponentReferencesElement<Comp, TARGET_ELEM_ID>) {
                 if constexpr (requires { Comp::COMPONENT_ID; }) {
-                    if (this->template isComponentEnabled<
+                    if (this->template isComponentAvailable<
                             Comp::COMPONENT_ID>()) {
                         this->Comp::template updateReferences<TARGET_ELEM_ID>(
                             newIndices);
@@ -190,7 +217,7 @@ protected:
             if constexpr (
                 comp::ComponentReferencesElement<Comp, TARGET_ELEM_ID>) {
                 if constexpr (requires { Comp::COMPONENT_ID; }) {
-                    if (this->template isComponentEnabled<
+                    if (this->template isComponentAvailable<
                             Comp::COMPONENT_ID>()) {
                         this->Comp::template shiftReferences<TARGET_ELEM_ID>(
                             offset);

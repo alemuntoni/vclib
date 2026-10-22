@@ -33,10 +33,10 @@ namespace vcl::meshv2::comp {
  *
  * @ingroup components
  */
-template<PointConcept P>
-class Normal : public Component<CompId::NORMAL, P>
+template<PointConcept P, bool OPT = false>
+class Normal : public Component<CompId::NORMAL, P, OPT>
 {
-    using Base = Component<CompId::NORMAL, P>;
+    using Base = Component<CompId::NORMAL, P, OPT>;
 public:
     /**
      * @brief Expose the type of the Normal.
@@ -78,6 +78,17 @@ protected:
 template<typename T>
 concept HasNormal = HasComponent<CompId::NORMAL, T>;
 
+/**
+ * @brief A concept that checks whether a type T has the Normal component and it is optional.
+ *
+ * @tparam T The type to be tested for conformity to HasOptionalNormal.
+ *
+ * @ingroup components_concepts
+ */
+template<typename T>
+concept HasOptionalNormal =
+    HasNormal<T> && HasOptionalComponent<CompId::NORMAL, T>;
+
 /* Detector function to check if a class has Normal available */
 
 /**
@@ -94,9 +105,9 @@ inline bool isNormalAvailableOn(const auto& element)
 
 /* Implementation of member functions */
 
-template<PointConcept P>
+template<PointConcept P, bool OPT>
 template<typename OtherElement>
-void Normal<P>::importFrom(this auto&& self, const OtherElement& other, bool)
+void Normal<P, OPT>::importFrom(this auto&& self, const OtherElement& other, bool)
 {
     if constexpr (HasNormal<OtherElement>) {
         if (isNormalAvailableOn(other)) {
@@ -116,8 +127,8 @@ void Normal<P>::importFrom(this auto&& self, const OtherElement& other, bool)
  *
  * @ingroup components
  */
-template<typename Scalar>
-using Normal3 = Normal<Point3<Scalar>>;
+template<typename Scalar, bool OPT = false>
+using Normal3 = Normal<Point3<Scalar>, OPT>;
 
 /**
  * @brief The Normal3f alias of the Normal component that uses 3-dimensional
@@ -125,7 +136,7 @@ using Normal3 = Normal<Point3<Scalar>>;
  *
  * @ingroup components
  */
-using Normal3f = Normal3<float>;
+using Normal3f = Normal3<float, false>;
 
 /**
  * @brief The Normal3d alias of the Normal component that uses 3-dimensional
@@ -133,7 +144,23 @@ using Normal3f = Normal3<float>;
  *
  * @ingroup components
  */
-using Normal3d = Normal3<double>;
+using Normal3d = Normal3<double, false>;
+
+/**
+ * @brief The OptionalNormal3f alias of the Normal component that uses 3-dimensional
+ * Points with float precision and is optional.
+ *
+ * @ingroup components
+ */
+using OptionalNormal3f = Normal3<float, true>;
+
+/**
+ * @brief The OptionalNormal3d alias of the Normal component that uses 3-dimensional
+ * Points with double precision and is optional.
+ *
+ * @ingroup components
+ */
+using OptionalNormal3d = Normal3<double, true>;
 
 } // namespace vcl::meshv2::comp
 
