@@ -48,6 +48,8 @@ namespace vcl::meshv2::comp {
  */
 class BitFlags : public Component<CompId::BIT_FLAGS, BitSet<uint>>
 {
+    using Base = Component<CompId::BIT_FLAGS, BitSet<uint>>;
+
     // indices of the bits
     enum {
         DELETED  = 0, // bit 0
@@ -199,10 +201,7 @@ protected:
     }
 
 private:
-    decltype(auto) flags(this auto&& self)
-    {
-        return self.container().template get<CompId::BIT_FLAGS>()[self.index()];
-    }
+    decltype(auto) flags(this auto&& self) { return Base::compData(self); }
 };
 
 /* Implementation of member functions */

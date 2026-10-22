@@ -38,42 +38,40 @@ template<
     typename Container = vcl::Vector<T, N>>
 class ContainerComponent : public Component<COMP_ID, Container>
 {
+    using Base = Component<COMP_ID, Container>;
+
 protected:
     using ValueType                            = T;
     using ContainerType                        = Container;
     static constexpr int  SIZE                 = N;
     static constexpr bool TIED_TO_VERTEX_COUNT = TTVC;
 
-    template<typename Self>
-    static decltype(auto) containerData(Self&& self)
+    static decltype(auto) container(auto&& self)
     {
-        return self.container().template get<COMP_ID>()[self.index()];
+        return Base::compData(self);
     }
 
     void resize(this auto&& self, uint n) requires (N < 0)
     {
-        containerData(self).resize(n);
+        container(self).resize(n);
     }
 
     void pushBack(this auto&& self, const T& v = T()) requires (N < 0)
     {
-        containerData(self).pushBack(v);
+        container(self).pushBack(v);
     }
 
     void insert(this auto&& self, uint pos, const T& v = T()) requires (N < 0)
     {
-        containerData(self).insert(pos, v);
+        container(self).insert(pos, v);
     }
 
     void erase(this auto&& self, uint pos) requires (N < 0)
     {
-        containerData(self).erase(pos);
+        container(self).erase(pos);
     }
 
-    void clear(this auto&& self) requires (N < 0)
-    {
-        containerData(self).clear();
-    }
+    void clear(this auto&& self) requires (N < 0) { container(self).clear(); }
 };
 
 } // namespace vcl::meshv2

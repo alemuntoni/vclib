@@ -63,7 +63,7 @@ public:
      */
     bool hasCustomComponent(this const auto& self, const std::string& compName)
     {
-        return self.container().hasElemCustomComponent(compName);
+        return self.parentContainer().hasElemCustomComponent(compName);
     }
 
     /**
@@ -80,7 +80,7 @@ public:
         this const auto&   self,
         const std::string& compName)
     {
-        return self.container().template isElemCustomComponentOfType<CompType>(
+        return self.parentContainer().template isElemCustomComponentOfType<CompType>(
             compName);
     }
 
@@ -95,7 +95,7 @@ public:
         this const auto&   self,
         const std::string& compName)
     {
-        return self.container().elemComponentType(compName);
+        return self.parentContainer().elemComponentType(compName);
     }
 
     /**
@@ -106,7 +106,7 @@ public:
      */
     std::vector<std::string> customComponentNames(this const auto& self)
     {
-        return self.container().elemCustomComponentNames();
+        return self.parentContainer().elemCustomComponentNames();
     }
 
     /**
@@ -120,7 +120,7 @@ public:
     template<typename CompType>
     std::vector<std::string> customComponentNamesOfType(this const auto& self)
     {
-        return self.container()
+        return self.parentContainer()
             .template elemCustomComponentNamesOfType<CompType>();
     }
 
@@ -142,7 +142,7 @@ public:
         this auto&&        self,
         const std::string& compName)
     {
-        return self.container().template elemCustomComponent<CompType>(
+        return self.parentContainer().template elemCustomComponent<CompType>(
             compName, self.index());
     }
 
@@ -174,8 +174,8 @@ void CustomComponents::importFrom(
     bool)
 {
     if constexpr (HasCustomComponents<OtherElement>) {
-        self.container().importElementCustomComponents(
-            self.index(), other.container(), other.index());
+        self.parentContainer().importElementCustomComponents(
+            self.index(), other.parentContainer(), other.index());
     }
 }
 

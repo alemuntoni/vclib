@@ -8,6 +8,7 @@
 #ifndef VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H
 #define VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H
 
+#include "base.h"
 #include "component_view.h"
 #include "custom_component_vector_handle.h"
 #include "custom_components_vector_map.h"
@@ -31,27 +32,6 @@
 #include <ostream>
 
 namespace vcl::meshv2 {
-
-namespace detail {
-
-// Trait to check if a component has a static vector column (DataType is not void)
-template<typename Comp>
-struct HasVectorColumnPred
-{
-    static constexpr bool value = !std::is_void_v<typename Comp::DataType>;
-};
-
-// Trait to convert TypeWrapper<Components...> in a ParallelVectorsTuple
-template<typename ComponentListWrapper>
-struct ParallelVectorsTupleFromComponents;
-
-template<typename... Components>
-struct ParallelVectorsTupleFromComponents<vcl::TypeWrapper<Components...>>
-{
-    using type = ParallelVectorsTuple<typename Components::DataType...>;
-};
-
-} // namespace detail
 
 /**
  * @brief The ElementContainer class is the low-level base container that
@@ -82,7 +62,7 @@ struct ParallelVectorsTupleFromComponents<vcl::TypeWrapper<Components...>>
  * @tparam ParentMesh: The enclosing Mesh class type to which this container
  * belongs, or void if used as an unbound placeholder prior to mesh rebinding.
  * Allows element proxies to navigate across containers (e.g. from Face to
- * Vertex) through container.mesh().
+ * Vertex) through container.parentMesh().
  *
  * @tparam Index: An unsigned integral type used for element indices.
  * Determines index representation width across the container (e.g. uint32_t
@@ -113,8 +93,8 @@ class ElementContainer
         detail::HasVectorColumnPred,
         ComponentList>::type;
 
-    using VectorTupleType =
-        typename detail::ParallelVectorsTupleFromComponents<VectorComponents>::type;
+    using VectorTupleType = typename detail::ParallelVectorsTupleFromComponents<
+        VectorComponents>::type;
 
     ParentMesh* mParentMesh = nullptr;
 
@@ -134,9 +114,8 @@ class ElementContainer
      */
     VectorTupleType mElemComponents;
 
-    [[no_unique_address]]
-    detail::CustomComponentsVectorMap<comp::HasCustomComponents<ComponentList>>
-        mCustomComponents;
+    [[no_unique_address]] detail::CustomComponentsVectorMap<
+        comp::HasCustomComponents<ComponentList>> mCustomComponents;
 
 public:
     using Components     = ComponentList;
@@ -149,29 +128,38 @@ public:
 
     static constexpr uint ELEMENT_ID = ProxyType::ELEMENT_ID;
 
+    // get the vector for the given component ID
+    // TODO: When C++26 variadic friends are fully supported on MSVC, move
+    // get() to protected so that ElementContainer is fully encapsulated.
+
     /**
      * @brief Returns the vector for the given component ID.
      */
     template<uint COMP_ID>
-    auto& get()
+    auto& vector()
     {
         static_assert(
             COMP_ID != CompId::CUSTOM_COMPONENTS,
-            "CustomComponents do not have a column in the parallel vectors tuple.");
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+            "CustomComponents do not have a column in the parallel vectors "
+            "tuple.");
+        constexpr uint N =
+            comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
         return mElemComponents.template get<N>();
     }
 
     template<uint COMP_ID>
-    const auto& get() const
+    const auto& vector() const
     {
         static_assert(
             COMP_ID != CompId::CUSTOM_COMPONENTS,
-            "CustomComponents do not have a column in the parallel vectors tuple.");
-        constexpr uint N = comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+            "CustomComponents do not have a column in the parallel vectors "
+            "tuple.");
+        constexpr uint N =
+            comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
         return mElemComponents.template get<N>();
     }
 
+protected:
     /**
      * @brief Returns a const proxy of the element at the i-th position in
      * the Element Container of the Mesh, which will be the element having index
@@ -236,7 +224,7 @@ public:
      */
     std::size_t deletedElementCount() const { return size() - elementCount(); }
 
-protected:
+
     ElementContainer()
     {
         // BitFlags is mandatory and always enabled
@@ -533,7 +521,8 @@ protected:
      * @brief Serializes the element container to the given output stream.
      *
      * Writes the active element count and the contents of the underlying
-     * parallel vectors tuple (including size, component enable flags, and data).
+     * parallel vectors tuple (including size, component enable flags, and
+     * data).
      *
      * @param os The output stream to write to.
      */
@@ -666,19 +655,19 @@ protected:
 
     // TODO: missing elements(begin, end)
 
-    decltype(auto) mesh() requires (!std::is_void_v<ParentMesh>)
+    decltype(auto) parentMesh() requires (!std::is_void_v<ParentMesh>)
     {
         assert(mParentMesh != nullptr && "Parent mesh pointer is null");
         return *mParentMesh;
     }
 
-    decltype(auto) mesh() const requires (!std::is_void_v<ParentMesh>)
+    decltype(auto) parentMesh() const requires (!std::is_void_v<ParentMesh>)
     {
         assert(mParentMesh != nullptr && "Parent mesh pointer is null");
         return std::as_const(*mParentMesh);
     }
 
-    void setMesh(ParentMesh* mesh) { mParentMesh = mesh; }
+    void setParentMesh(ParentMesh* mesh) { mParentMesh = mesh; }
 
     /**
      * @brief Checks if the component with the given COMP_ID is enabled.
@@ -690,7 +679,8 @@ protected:
             return comp::HasComponent<COMP_ID, Components>;
         }
         else {
-            constexpr uint N = comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+            constexpr uint N =
+                comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
             return mElemComponents.template isEnabled<N>();
         }
     }
@@ -702,7 +692,8 @@ protected:
     void enable()
     {
         if constexpr (COMP_ID != CompId::CUSTOM_COMPONENTS) {
-            constexpr uint N = comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+            constexpr uint N =
+                comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
             mElemComponents.template enable<N>();
         }
     }
@@ -718,7 +709,8 @@ protected:
             COMP_ID != CompId::BIT_FLAGS,
             "BitFlags component cannot be disabled");
         if constexpr (COMP_ID != CompId::CUSTOM_COMPONENTS) {
-            constexpr uint N = comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+            constexpr uint N =
+                comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
             mElemComponents.template disable<N>();
         }
     }
@@ -787,7 +779,8 @@ protected:
      * @brief Returns a vector containing the names of all the custom components
      * associated to the elements of this container.
      *
-     * @return A vector of strings containing the names of all custom components.
+     * @return A vector of strings containing the names of all custom
+     * components.
      */
     std::vector<std::string> elemCustomComponentNames() const
         requires comp::HasCustomComponents<Components>
@@ -881,8 +874,7 @@ protected:
      */
     template<typename K>
     CustomComponentVectorHandle<K> customComponentVectorHandle(
-        const std::string& name)
-        requires comp::HasCustomComponents<Components>
+        const std::string& name) requires comp::HasCustomComponents<Components>
     {
         return CustomComponentVectorHandle<K>(
             mCustomComponents.template componentVector<K>(name));
@@ -941,11 +933,10 @@ protected:
     void importElementCustomComponents(
         IndexType             thisIndex,
         const OtherContainer& otherContainer,
-        IndexType             otherIndex)
-        requires comp::HasCustomComponents<Components>
+        IndexType otherIndex) requires comp::HasCustomComponents<Components>
     {
-        if constexpr (comp::HasCustomComponents<
-                          typename OtherContainer::Components>) {
+        if constexpr (
+            comp::HasCustomComponents<typename OtherContainer::Components>) {
             for (const auto& name : mCustomComponents.allComponentNames()) {
                 mCustomComponents.importSameCustomComponentFrom(
                     thisIndex,
@@ -1032,7 +1023,7 @@ private:
     bool isDeleted(IndexType i) const
     {
         assert(i < size());
-        return get<CompId::BIT_FLAGS>()[i][0];
+        return vector<CompId::BIT_FLAGS>()[i][0];
     }
 
     // --- TTVC (Tied To Vertex Count) synchronization helpers ---
@@ -1155,7 +1146,8 @@ private:
             if constexpr (Comp::COMPONENT_ID != CompId::CUSTOM_COMPONENTS) {
                 if (!this->template isEnabled<Comp::COMPONENT_ID>()) {
                     if constexpr (
-                        comp::HasComponent<Comp::COMPONENT_ID, OtherContainer>) {
+                        comp::
+                            HasComponent<Comp::COMPONENT_ID, OtherContainer>) {
                         if (comp::isComponentAvailableOn<Comp::COMPONENT_ID>(
                                 other)) {
                             this->template enable<Comp::COMPONENT_ID>();
@@ -1183,9 +1175,11 @@ private:
             if constexpr (Comp::COMPONENT_ID != CompId::CUSTOM_COMPONENTS) {
                 if (this->template isEnabled<Comp::COMPONENT_ID>() &&
                     other.template isEnabled<Comp::COMPONENT_ID>()) {
-                    auto&       thisVec  = this->template get<Comp::COMPONENT_ID>();
-                    const auto& otherVec = other.template get<Comp::COMPONENT_ID>();
-                    std::copy(otherVec.begin(), otherVec.end(), thisVec.begin() + n);
+                    auto& thisVec = this->template vector<Comp::COMPONENT_ID>();
+                    const auto& otherVec =
+                        other.template vector<Comp::COMPONENT_ID>();
+                    std::copy(
+                        otherVec.begin(), otherVec.end(), thisVec.begin() + n);
                 }
             }
         };

@@ -67,12 +67,13 @@ private:
 public:
     static constexpr uint ELEMENT_ID = ELEM_ID;
 
-    // Methods accessed by the components ("deducing this" self.container()).
+    // Methods accessed by the components ("deducing this"
+    // self.parentContainer()).
     // TODO: When C++26 variadic friends are fully supported on MSVC, move
-    // container() to protected so that ElementProxy is fully encapsulated.
-    ContainerType& container() { return *mContainer; }
+    // parentContainer() to protected so that ElementProxy is fully encapsulated
+    ContainerType& parentContainer() { return *mContainer; }
 
-    const ContainerType& container() const { return *mContainer; }
+    const ContainerType& parentContainer() const { return *mContainer; }
 
     /**
      * @brief Returns the index of this element in the container.

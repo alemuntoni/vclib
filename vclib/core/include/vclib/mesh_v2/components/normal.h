@@ -36,6 +36,7 @@ namespace vcl::meshv2::comp {
 template<PointConcept P>
 class Normal : public Component<CompId::NORMAL, P>
 {
+    using Base = Component<CompId::NORMAL, P>;
 public:
     /**
      * @brief Expose the type of the Normal.
@@ -56,10 +57,7 @@ public:
      * Propagates constness automatically from the caller (proxy).
      * @return a reference to the normal of the element.
      */
-    decltype(auto) normal(this auto&& self)
-    {
-        return self.container().template get<CompId::NORMAL>()[self.index()];
-    }
+    decltype(auto) normal(this auto&& self) { return Base::compData(self); }
 
 protected:
     template<typename OtherElement>
@@ -103,7 +101,7 @@ void Normal<P>::importFrom(this auto&& self, const OtherElement& other, bool)
     if constexpr (HasNormal<OtherElement>) {
         if (isNormalAvailableOn(self) && isNormalAvailableOn(other)) {
             using ScalarType = NormalType::ScalarType;
-            self.normal() = other.normal().template cast<ScalarType>();
+            self.normal()    = other.normal().template cast<ScalarType>();
         }
     }
 }

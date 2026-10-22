@@ -9,6 +9,7 @@
 #define VCL_MESH_V2_CONTAINERS_BASE_BASE_H
 
 #include <vclib/base.h>
+#include <vclib/space/core.h>
 
 namespace vcl::meshv2 {
 
@@ -61,6 +62,23 @@ public:
         typename FindContainer<ELEM_ID, Tail...>::type>;
     static constexpr bool found =
         matches || FindContainer<ELEM_ID, Tail...>::found;
+};
+
+// Trait to check if a component has a static vector column (DataType is not void)
+template<typename Comp>
+struct HasVectorColumnPred
+{
+    static constexpr bool value = !std::is_void_v<typename Comp::DataType>;
+};
+
+// Trait to convert TypeWrapper<Components...> in a ParallelVectorsTuple
+template<typename ComponentListWrapper>
+struct ParallelVectorsTupleFromComponents;
+
+template<typename... Components>
+struct ParallelVectorsTupleFromComponents<vcl::TypeWrapper<Components...>>
+{
+    using type = ParallelVectorsTuple<typename Components::DataType...>;
 };
 
 } // namespace detail

@@ -36,6 +36,8 @@ namespace vcl::meshv2::comp {
 template<PointConcept P>
 class Position : public Component<CompId::POSITION, P>
 {
+    using Base = Component<CompId::POSITION, P>;
+
 public:
     /**
      * @brief Expose the type of the Position.
@@ -50,10 +52,7 @@ public:
      * @brief Returns a reference to the position of the element.
      * Propagates constness automatically from the caller (proxy).
      */
-    decltype(auto) position(this auto&& self)
-    {
-        return self.container().template get<CompId::POSITION>()[self.index()];
-    }
+    decltype(auto) position(this auto&& self) { return Base::compData(self); }
 
 protected:
     template<typename OtherElement>

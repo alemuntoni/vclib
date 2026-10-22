@@ -103,7 +103,7 @@ public:
      */
     uint vertexCount(this auto&& self)
     {
-        return Base::containerData(self).size();
+        return Base::container(self).size();
     }
 
     /**
@@ -170,7 +170,7 @@ public:
     void setVertex(this auto&& self, uint i, IndexType vi)
     {
         assert(i < self.vertexCount());
-        Base::containerData(self)[i] = vi;
+        Base::container(self)[i] = vi;
     }
 
     /**
@@ -185,10 +185,10 @@ public:
     {
         assert(i < self.vertexCount());
         if constexpr (requires { v.index(); }) {
-            Base::containerData(self)[i] = v.index();
+            Base::container(self)[i] = v.index();
         }
         else {
-            Base::containerData(self)[i] = v;
+            Base::container(self)[i] = v;
         }
     }
 
@@ -288,7 +288,7 @@ public:
      */
     bool containsVertex(this auto&& self, IndexType vi)
     {
-        return Base::containerData(self).contains(vi);
+        return Base::container(self).contains(vi);
     }
 
     /**
@@ -321,7 +321,7 @@ public:
      */
     uint indexOfVertex(this auto&& self, IndexType vi)
     {
-        return Base::containerData(self).indexOf(vi);
+        return Base::container(self).indexOf(vi);
     }
 
     /**
@@ -407,8 +407,8 @@ public:
      */
     void resizeVertices(this auto&& self, uint n) requires (N < 0)
     {
-        Base::containerData(self).resize(n);
-        self.container().resizeTTVCComponents(self.index(), n);
+        Base::container(self).resize(n);
+        self.parentContainer().resizeTTVCComponents(self.index(), n);
     }
 
     /**
@@ -418,8 +418,8 @@ public:
      */
     void pushVertex(this auto&& self, IndexType vi) requires (N < 0)
     {
-        Base::containerData(self).pushBack(vi);
-        self.container().pushBackTTVCComponents(self.index());
+        Base::container(self).pushBack(vi);
+        self.parentContainer().pushBackTTVCComponents(self.index());
     }
 
     /**
@@ -447,8 +447,8 @@ public:
      */
     void insertVertex(this auto&& self, uint i, IndexType vi) requires (N < 0)
     {
-        Base::containerData(self).insert(i, vi);
-        self.container().insertTTVCComponents(self.index(), i);
+        Base::container(self).insert(i, vi);
+        self.parentContainer().insertTTVCComponents(self.index(), i);
     }
 
     /**
@@ -476,8 +476,8 @@ public:
      */
     void eraseVertex(this auto&& self, uint i) requires (N < 0)
     {
-        Base::containerData(self).erase(i);
-        self.container().eraseTTVCComponents(self.index(), i);
+        Base::container(self).erase(i);
+        self.parentContainer().eraseTTVCComponents(self.index(), i);
     }
 
     /**
@@ -486,8 +486,8 @@ public:
      */
     void clearVertices(this auto&& self) requires (N < 0)
     {
-        Base::containerData(self).clear();
-        self.container().clearTTVCComponents(self.index());
+        Base::container(self).clear();
+        self.parentContainer().clearTTVCComponents(self.index());
     }
 
     // check this: is the behaviour the same of old mesh?
@@ -499,8 +499,8 @@ public:
     auto vertexIndices(this auto&& self)
     {
         return vcl::View(
-            Base::containerData(self).begin(),
-            Base::containerData(self).end());
+            Base::container(self).begin(),
+            Base::container(self).end());
     }
 
 protected:

@@ -170,8 +170,8 @@ inline bool isComponentAvailableOn(const T& obj)
         else if constexpr (requires { obj.template isComponentEnabled<COMPONENT_ID>(); }) {
             return obj.template isComponentEnabled<COMPONENT_ID>();
         }
-        else if constexpr (requires { obj.container().template isEnabled<COMPONENT_ID>(); }) {
-            return obj.container().template isEnabled<COMPONENT_ID>();
+        else if constexpr (requires { obj.parentContainer().template isEnabled<COMPONENT_ID>(); }) {
+            return obj.parentContainer().template isEnabled<COMPONENT_ID>();
         }
         else {
             return true;

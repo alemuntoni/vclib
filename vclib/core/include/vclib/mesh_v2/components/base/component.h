@@ -25,6 +25,13 @@ class Component
 public:
     using DataType                     = Data;
     static constexpr uint COMPONENT_ID = COMP_ID;
+
+protected:
+    // needs to be static to be accessible from the derived classes
+    static decltype(auto) compData(auto&& self)
+    {
+        return self.parentContainer().template vector<COMP_ID>()[self.index()];
+    }
 };
 
 /**

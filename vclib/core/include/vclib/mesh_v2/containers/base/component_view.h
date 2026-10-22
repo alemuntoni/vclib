@@ -104,7 +104,7 @@ public:
         assert(mContainer != nullptr);
         assert(isEnabled() && "Component is not enabled!");
         assert(i < mContainer->elementContainerSize());
-        return mContainer->template get<COMP_ID>()[i];
+        return mContainer->template vector<COMP_ID>()[i];
     }
 
     pointer data() const
@@ -112,7 +112,7 @@ public:
         if (!mContainer || !isEnabled()) {
             return nullptr;
         }
-        return mContainer->template get<COMP_ID>().data();
+        return mContainer->template vector<COMP_ID>().data();
     }
 
     std::size_t size() const

@@ -85,11 +85,11 @@ public:
     template<typename OtherContainerType>
         requires std::is_same_v<ContainerType, const OtherContainerType>
     ElementIterator(const ElementIterator<OtherContainerType>& other) :
-        mContainer(other.container()), mIndex(other.index()), mJumpDeleted(other.jumpDeleted())
+        mContainer(other.parentContainer()), mIndex(other.index()), mJumpDeleted(other.jumpDeleted())
     {
     }
 
-    ContainerType* container() const { return mContainer; }
+    ContainerType* parentContainer() const { return mContainer; }
     IndexType index() const { return mIndex; }
     bool jumpDeleted() const { return mJumpDeleted; }
 
@@ -138,7 +138,7 @@ public:
     template<typename OtherContainer>
     bool operator==(const ElementIterator<OtherContainer>& other) const
     {
-        return mIndex == other.index() && mContainer == other.container();
+        return mIndex == other.index() && mContainer == other.parentContainer();
     }
 
     template<typename OtherContainer>

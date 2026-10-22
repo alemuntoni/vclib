@@ -84,11 +84,11 @@ public:
     template<typename OtherContainerType>
         requires std::is_same_v<ContainerType, const OtherContainerType>
     ComponentIterator(const ComponentIterator<COMP_ID, OtherContainerType>& other) :
-        mContainer(other.container()), mIndex(other.index()), mJumpDeleted(other.jumpDeleted())
+        mContainer(other.parentContainer()), mIndex(other.index()), mJumpDeleted(other.jumpDeleted())
     {
     }
 
-    ContainerType* container() const { return mContainer; }
+    ContainerType* parentContainer() const { return mContainer; }
     IndexType index() const { return mIndex; }
     bool jumpDeleted() const { return mJumpDeleted; }
 
@@ -96,7 +96,7 @@ public:
     {
         assert(mContainer != nullptr);
         assert(mIndex < mContainer->elementContainerSize());
-        return mContainer->template get<COMP_ID>()[mIndex];
+        return mContainer->template vector<COMP_ID>()[mIndex];
     }
 
     pointer operator->() const
@@ -139,7 +139,7 @@ public:
     template<typename OtherContainer>
     bool operator==(const ComponentIterator<COMP_ID, OtherContainer>& other) const
     {
-        return mIndex == other.index() && mContainer == other.container();
+        return mIndex == other.index() && mContainer == other.parentContainer();
     }
 
     template<typename OtherContainer>

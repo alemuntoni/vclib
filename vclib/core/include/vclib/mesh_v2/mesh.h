@@ -732,7 +732,7 @@ private:
     void setParentMeshPointer()
     {
         if constexpr (ElementContainerConcept<T>) {
-            this->T::setMesh(this);
+            this->T::setParentMesh(this);
         }
     }
 

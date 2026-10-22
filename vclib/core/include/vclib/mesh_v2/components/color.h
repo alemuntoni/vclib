@@ -31,6 +31,8 @@ namespace vcl::meshv2::comp {
  */
 class Color : public Component<CompId::COLOR, vcl::Color>
 {
+    using Base = Component<CompId::COLOR, vcl::Color>;
+
 public:
     /**
      * @brief Expose the type of the Color.
@@ -51,10 +53,7 @@ public:
      * Propagates constness automatically from the caller (proxy).
      * @return a reference to the color of the element.
      */
-    decltype(auto) color(this auto&& self)
-    {
-        return self.container().template get<CompId::COLOR>()[self.index()];
-    }
+    decltype(auto) color(this auto&& self) { return Base::compData(self); }
 
 protected:
     template<typename OtherElement>

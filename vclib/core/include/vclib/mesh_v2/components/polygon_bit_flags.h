@@ -110,6 +110,8 @@ template<int N = -1>
 class PolygonBitFlags :
         public Component<CompId::BIT_FLAGS, PolygonBitFlagsData<N>>
 {
+    using Base = Component<CompId::BIT_FLAGS, PolygonBitFlagsData<N>>;
+
     static constexpr uint FIRST_USER_BIT      = 15;
     static constexpr uint FIRST_EDGE_USER_BIT = 3;
 
@@ -481,10 +483,7 @@ private:
     template<int OtherN>
     friend class PolygonBitFlags;
 
-    decltype(auto) data(this auto&& self)
-    {
-        return self.container().template get<CompId::BIT_FLAGS>()[self.index()];
-    }
+    decltype(auto) data(this auto&& self) { return Base::compData(self); }
 
     decltype(auto) flags(this auto&& self) { return (self.data().flags); }
 

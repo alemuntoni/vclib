@@ -47,7 +47,7 @@ class VertexContainer :
         Vertex>;
 
 protected:
-    using Base::get;
+    using Base::vector;
 
 public:
     using Components       = typename Base::Components;
@@ -65,11 +65,6 @@ public:
     VertexContainer()
     {
         Base::template enable<CompId::POSITION>();
-    }
-
-    VertexContainer(ParentMesh* parent) : VertexContainer()
-    {
-        Base::setMesh(parent);
     }
 
     Vertex vertex(Index i) { return Base::element(i); }

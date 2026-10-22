@@ -49,7 +49,7 @@ class FaceContainer :
         Face>;
 
 protected:
-    using Base::get;
+    using Base::vector;
 
 public:
     using Components     = typename Base::Components;
@@ -64,11 +64,6 @@ public:
     using Rebind = FaceContainer<CompList, Index, NewParent>;
 
     FaceContainer() { Base::template enable<CompId::VERTEX_REFERENCES>(); }
-
-    FaceContainer(ParentMesh* parent) : FaceContainer()
-    {
-        Base::setMesh(parent);
-    }
 
     Face face(Index i) { return Base::element(i); }
 

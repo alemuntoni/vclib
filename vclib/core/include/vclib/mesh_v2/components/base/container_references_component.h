@@ -77,7 +77,7 @@ protected:
         const std::vector<IndexType>& newIndices)
     {
         if constexpr (TARGET_ELEM_ID == REF_ELEM_ID) {
-            for (auto& ref : Base::containerData(self)) {
+            for (auto& ref : Base::container(self)) {
                 if (ref != std::numeric_limits<IndexType>::max()) {
                     assert(ref < newIndices.size());
                     ref = newIndices[ref];
@@ -95,7 +95,7 @@ protected:
     {
         if constexpr (TARGET_ELEM_ID == REF_ELEM_ID) {
             if (offset != 0) {
-                for (auto& ref : Base::containerData(self)) {
+                for (auto& ref : Base::container(self)) {
                     if (ref != std::numeric_limits<IndexType>::max()) {
                         ref += offset;
                     }
@@ -108,15 +108,15 @@ protected:
 
     decltype(auto) referencedElement(this auto&& self, uint i)
     {
-        return self.container().mesh().template element<REF_ELEM_ID>(
-            Base::containerData(self)[i]);
+        return self.parentContainer()
+            .parentMesh()
+            .template element<REF_ELEM_ID>(Base::container(self)[i]);
     }
 
     decltype(auto) referencedElements(this auto&& self)
     {
-        auto& m = self.container().mesh();
-        return Base::containerData(self) |
-               std::views::transform([&m](auto idx) {
+        auto& m = self.parentContainer().parentMesh();
+        return Base::container(self) | std::views::transform([&m](auto idx) {
                    return m.template element<REF_ELEM_ID>(idx);
                });
     }
