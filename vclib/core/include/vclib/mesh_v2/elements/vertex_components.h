@@ -13,6 +13,7 @@
 #include "../components/custom_components.h"
 #include "../components/normal.h"
 #include "../components/position.h"
+#include "../components/tex_coord.h"
 
 namespace vcl::meshv2::vert {
 
@@ -31,7 +32,9 @@ concept HasOptionalNormal = comp::HasOptionalNormal<T>;
 template<typename T>
 concept HasPosition = comp::HasPosition<T>;
 template<typename T>
-concept HasOptionalPosition = comp::HasOptionalPosition<T>;
+concept HasTexCoord = comp::HasTexCoord<T>;
+template<typename T>
+concept HasOptionalTexCoord = comp::HasOptionalTexCoord<T>;
 
 /* Port BitFlags class into vert namespace */
 using BitFlags = comp::BitFlags;
@@ -64,8 +67,18 @@ using Position3 = comp::Position3<ScalarType, OPT>;
 
 using Position3f         = comp::Position3f;
 using Position3d         = comp::Position3d;
-using OptionalPosition3f = comp::OptionalPosition3f;
-using OptionalPosition3d = comp::OptionalPosition3d;
+
+/* Port TexCoord class into vert namespace */
+template<typename ScalarType, bool OPT = false>
+using TexCoord = comp::TexCoord<ScalarType, OPT>;
+
+template <typename ScalarType>
+using OptionalTexCoord = comp::TexCoord<ScalarType, true>;
+
+using TexCoordf = comp::TexCoordf<false>;
+using TexCoordd = comp::TexCoordd<false>;
+using OptionalTexCoordf = comp::TexCoordf<true>;
+using OptionalTexCoordd = comp::TexCoordd<true>;
 
 } // namespace vcl::meshv2::vert
 

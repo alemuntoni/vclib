@@ -14,6 +14,7 @@
 #include "components/normal.h"
 #include "components/polygon_bit_flags.h"
 #include "components/position.h"
+#include "components/tex_coord.h"
 #include "components/triangle_bit_flags.h"
 #include "components/vertex_references.h"
 

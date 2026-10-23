@@ -47,6 +47,7 @@ struct CompId
         ADJACENT_FACES,
         ADJACENT_VERTICES,
         WEDGE_COLORS,
+        WEDGE_NORMALS,
         WEDGE_TEX_COORDS,
         BOUNDING_BOX,
         NAME,
@@ -73,10 +74,10 @@ constexpr const char* COMPONENT_ENUM_STRINGS[CompId::COMPONENT_COUNT] = {
     "Tangent",          "TexCoord",
     "VertexPointers",   "AdjacentEdges",
     "AdjacentFaces",    "AdjacentVertices",
-    "WedgeColors",      "WedgeTexCoords",
-    "BoundingBox",      "Name",
-    "Materials",        "TransformMatrix",
-    "CustomComponents",
+    "WedgeColors",      "WedgeNormals",
+    "WedgeTexCoords",   "BoundingBox",
+    "Name",             "Materials",
+    "TransformMatrix",  "CustomComponents",
 };
 
 /**
