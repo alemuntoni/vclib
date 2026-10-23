@@ -48,9 +48,6 @@ class FaceContainer :
         Index,
         Face>;
 
-protected:
-    using Base::vector;
-
 public:
     using Components     = typename Base::Components;
     using Face           = typename Base::ElementType;

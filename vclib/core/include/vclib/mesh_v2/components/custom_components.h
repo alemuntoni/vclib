@@ -174,8 +174,12 @@ void CustomComponents::importFrom(
     bool)
 {
     if constexpr (HasCustomComponents<OtherElement>) {
-        self.parentContainer().importElementCustomComponents(
-            self.index(), other.parentContainer(), other.index());
+        auto&       thisCC  = self.parentContainer().mCustomComponents;
+        const auto& otherCC = other.parentContainer().mCustomComponents;
+        for (const auto& name : thisCC.allComponentNames()) {
+            thisCC.importSameCustomComponentFrom(
+                self.index(), other.index(), name, otherCC);
+        }
     }
 }
 

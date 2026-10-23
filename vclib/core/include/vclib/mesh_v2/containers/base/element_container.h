@@ -134,11 +134,7 @@ public:
 
     static constexpr uint ELEMENT_ID = ElementType::ELEMENT_ID;
 
-protected:
-    ElementContainer()
-    {
-        enableNonOptionalComponents(Components {});
-    }
+    ElementContainer() { enableNonOptionalComponents(Components {}); }
 
     /* Members that are inherited and wrapped by derived element containers */
 
@@ -205,6 +201,12 @@ protected:
      * @return The number of deleted elements in the container.
      */
     std::size_t deletedElementCount() const { return size() - elementCount(); }
+
+    bool isElementDeleted(IndexType i) const
+    {
+        assert(i < size());
+        return vector<CompId::BIT_FLAGS>()[i][0];
+    }
 
     /**
      * @brief Adds an element to the Element Container.
@@ -293,7 +295,7 @@ protected:
         else if (newSize < oldSize) {
             mElemCount = 0;
             for (std::size_t i = 0; i < newSize; ++i) {
-                if (!isDeleted(i)) {
+                if (!isElementDeleted(i)) {
                     ++mElemCount;
                 }
             }
@@ -442,7 +444,7 @@ protected:
 
         IndexType currentIndex = 0;
         for (IndexType i = 0; i < size(); ++i) {
-            if (!isDeleted(i)) {
+            if (!isElementDeleted(i)) {
                 newIndices[i] = currentIndex++;
             }
             else {
@@ -450,49 +452,6 @@ protected:
             }
         }
         return newIndices;
-    }
-
-    /**
-     * @brief Appends all elements from another container of the same type.
-     *
-     * @param[in] other The other container whose elements will be appended.
-     */
-    void append(const ElementContainer& other)
-    {
-        appendImpl(Components {}, other);
-    }
-
-    /**
-     * @brief Serializes the element container to the given output stream.
-     *
-     * Writes the active element count and the contents of the underlying
-     * parallel vectors tuple (including size, component enable flags, and
-     * data).
-     *
-     * @param os The output stream to write to.
-     */
-    void serialize(std::ostream& os) const
-    {
-        vcl::serialize(os, mElemCount);
-        mElemComponents.serialize(os);
-    }
-
-    /**
-     * @brief Deserializes the element container from the given input stream.
-     *
-     * Reads the active element count and the contents of the underlying
-     * parallel vectors tuple. If custom components are supported, existing
-     * custom components are cleared.
-     *
-     * @param is The input stream to read from.
-     */
-    void deserialize(std::istream& is)
-    {
-        vcl::deserialize(is, mElemCount);
-        mElemComponents.deserialize(is);
-        if constexpr (comp::HasCustomComponents<ComponentList>) {
-            mCustomComponents.clear();
-        }
     }
 
     /**
@@ -753,8 +712,7 @@ protected:
     void addElemCustomComponent(const std::string& name)
         requires comp::HasCustomComponents<Components>
     {
-        mCustomComponents.template addNewComponent<K>(
-            name, elementContainerSize());
+        mCustomComponents.template addNewComponent<K>(name, size());
     }
 
     /**
@@ -829,8 +787,49 @@ protected:
         mCustomComponents.template deserializeCustomComponentsOfType<K>(is);
     }
 
-    // for internal usage
-    // TODO: understand which of these functions can be private
+protected:
+    /**
+     * @brief Appends all elements from another container of the same type.
+     *
+     * @param[in] other The other container whose elements will be appended.
+     */
+    void append(const ElementContainer& other)
+    {
+        appendImpl(Components {}, other);
+    }
+
+    /**
+     * @brief Serializes the element container to the given output stream.
+     *
+     * Writes the active element count and the contents of the underlying
+     * parallel vectors tuple (including size, component enable flags, and
+     * data).
+     *
+     * @param os The output stream to write to.
+     */
+    void serialize(std::ostream& os) const
+    {
+        vcl::serialize(os, mElemCount);
+        mElemComponents.serialize(os);
+    }
+
+    /**
+     * @brief Deserializes the element container from the given input stream.
+     *
+     * Reads the active element count and the contents of the underlying
+     * parallel vectors tuple. If custom components are supported, existing
+     * custom components are cleared.
+     *
+     * @param is The input stream to read from.
+     */
+    void deserialize(std::istream& is)
+    {
+        vcl::deserialize(is, mElemCount);
+        mElemComponents.deserialize(is);
+        if constexpr (comp::HasCustomComponents<ComponentList>) {
+            mCustomComponents.clear();
+        }
+    }
 
     decltype(auto) parentMesh() requires (!std::is_void_v<ParentMesh>)
     {
@@ -845,33 +844,6 @@ protected:
     }
 
     void setParentMesh(ParentMesh* mesh) { mParentMesh = mesh; }
-
-    /**
-     * @brief Returns the vector for the given component ID.
-     */
-    template<uint COMP_ID>
-    auto& vector()
-    {
-        static_assert(
-            COMP_ID != CompId::CUSTOM_COMPONENTS,
-            "CustomComponents do not have a column in the parallel vectors "
-            "tuple.");
-        constexpr uint N =
-            comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
-        return mElemComponents.template get<N>();
-    }
-
-    template<uint COMP_ID>
-    const auto& vector() const
-    {
-        static_assert(
-            COMP_ID != CompId::CUSTOM_COMPONENTS,
-            "CustomComponents do not have a column in the parallel vectors "
-            "tuple.");
-        constexpr uint N =
-            comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
-        return mElemComponents.template get<N>();
-    }
 
     template<uint TARGET_ELEM_ID>
     void updateReferences(const std::vector<IndexType>& newIndices)
@@ -924,7 +896,7 @@ protected:
             const auto& c = m.template container<ELEMENT_ID>();
             enableSameOptionalComponentsOf(c);
             clearElements();
-            const std::size_t n = c.elementContainerSize();
+            const std::size_t n = c.size();
             addElements(n);
             for (IndexType i = 0; i < n; ++i) {
                 element(i).importFrom(c.element(i));
@@ -938,8 +910,6 @@ protected:
             }
         }
     }
-
-
 
     /**
      * @brief Returns a reference to the custom component of type K at index i.
@@ -965,85 +935,34 @@ protected:
             mCustomComponents.template componentVector<K>(name)[i]);
     }
 
-    /**
-     * @brief Imports the custom components from another container for a
-     * specific element index.
-     *
-     * @param[in] thisIndex The index in this container.
-     * @param[in] otherContainer The other container to import from.
-     * @param[in] otherIndex The index in the other container.
-     */
-    template<typename OtherContainer>
-    void importElementCustomComponents(
-        IndexType             thisIndex,
-        const OtherContainer& otherContainer,
-        IndexType otherIndex) requires comp::HasCustomComponents<Components>
-    {
-        if constexpr (
-            comp::HasCustomComponents<typename OtherContainer::Components>) {
-            for (const auto& name : mCustomComponents.allComponentNames()) {
-                mCustomComponents.importSameCustomComponentFrom(
-                    thisIndex,
-                    otherIndex,
-                    name,
-                    otherContainer.mCustomComponents);
-            }
-        }
-    }
-
-    ElementType operator[](IndexType i)
-    {
-        assert(i < size() || i == std::numeric_limits<IndexType>::max());
-        return ElementType(*this, i);
-    }
-
-    ConstElementType operator[](IndexType i) const
-    {
-        assert(i < size() || i == std::numeric_limits<IndexType>::max());
-        return ConstElementType(*this, i);
-    }
-
 private:
-    template<uint COMP_ID, typename Data, bool OPT>
-    friend class Component;
+    // convenience function to get the size of the element container
+    std::size_t size() const { return elementContainerSize(); }
 
-    template<typename>
-    friend class ElementIterator;
+    // --- signle component vector accessors ---
 
-    template<uint, typename>
-    friend class ComponentIterator;
-
-    template<uint, typename>
-    friend class ComponentView;
-
-    template<typename>
-    friend class ElementContainerProxy;
-
-    // to allow TTVC resize, pushBack, insert, erase, clear members
-    template<int, std::unsigned_integral>
-    friend class comp::VertexReferences;
-
-    template<uint, typename CT, typename CLW>
-    friend class ElementProxy;
-
-    friend class comp::CustomComponents;
-
-    template<
-        typename,
-        typename,
-        std::unsigned_integral,
-        template<typename...> class>
-    friend class ElementContainer;
-
-    template<uint CID, std::unsigned_integral I, uint RID, int N, bool TTVC, bool OPT>
-    friend class ContainerReferencesComponent;
-
-    std::size_t size() const { return mElemComponents.size(); }
-
-    bool isDeleted(IndexType i) const
+    template<uint COMP_ID>
+    auto& vector()
     {
-        assert(i < size());
-        return vector<CompId::BIT_FLAGS>()[i][0];
+        static_assert(
+            COMP_ID != CompId::CUSTOM_COMPONENTS,
+            "CustomComponents do not have a column in the parallel vectors "
+            "tuple.");
+        constexpr uint N =
+            comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+        return mElemComponents.template get<N>();
+    }
+
+    template<uint COMP_ID>
+    const auto& vector() const
+    {
+        static_assert(
+            COMP_ID != CompId::CUSTOM_COMPONENTS,
+            "CustomComponents do not have a column in the parallel vectors "
+            "tuple.");
+        constexpr uint N =
+            comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+        return mElemComponents.template get<N>();
     }
 
     // --- TTVC (Tied To Vertex Count) synchronization helpers ---
@@ -1157,6 +1076,8 @@ private:
         clearTTVCComponentsImpl(Components {}, i);
     }
 
+    // --- Optional Components helpers ---
+
     template<typename... Comps>
     void enableNonOptionalComponents(vcl::TypeWrapper<Comps...>)
     {
@@ -1164,8 +1085,8 @@ private:
             if constexpr (
                 detail::HasVectorColumnPred<Comp>::value &&
                 !comp::IsOptionalComponent<Comp>) {
-                constexpr uint N =
-                    comp::IndexOfCompId<Comp::COMPONENT_ID, VectorComponents>::value;
+                constexpr uint N = comp::
+                    IndexOfCompId<Comp::COMPONENT_ID, VectorComponents>::value;
                 mElemComponents.template enable<N>();
             }
         };
@@ -1177,8 +1098,8 @@ private:
     {
         auto disableIfOpt = [&]<typename Comp>() {
             if constexpr (comp::IsOptionalComponent<Comp>) {
-                constexpr uint N =
-                    comp::IndexOfCompId<Comp::COMPONENT_ID, VectorComponents>::value;
+                constexpr uint N = comp::
+                    IndexOfCompId<Comp::COMPONENT_ID, VectorComponents>::value;
                 mElemComponents.template disable<N>();
             }
         };
@@ -1192,12 +1113,15 @@ private:
     {
         auto enableIfAvailableInOther = [&]<typename Comp>() {
             if constexpr (comp::IsOptionalComponent<Comp>) {
-                if (!this->template isComponentAvailable<Comp::COMPONENT_ID>()) {
+                if (!this->template isComponentAvailable<
+                        Comp::COMPONENT_ID>()) {
                     if constexpr (
                         comp::
                             HasComponent<Comp::COMPONENT_ID, OtherContainer>) {
-                        if (other.template isComponentAvailable<Comp::COMPONENT_ID>()) {
-                            this->template enableOptionalComponent<Comp::COMPONENT_ID>();
+                        if (other.template isComponentAvailable<
+                                Comp::COMPONENT_ID>()) {
+                            this->template enableOptionalComponent<
+                                Comp::COMPONENT_ID>();
                         }
                     }
                 }
@@ -1207,15 +1131,17 @@ private:
         (enableIfAvailableInOther.template operator()<Comps>(), ...);
     }
 
+    // --- Append Helpers ---
+
     template<typename... Comps>
     void appendImpl(vcl::TypeWrapper<Comps...>, const ElementContainer& other)
     {
-        const std::size_t on = other.elementContainerSize();
+        const std::size_t on = other.size();
         if (on == 0) {
             return;
         }
 
-        const std::size_t n = elementContainerSize();
+        const std::size_t n = size();
         addElements(on);
 
         auto copyComponent = [&]<typename Comp>() {
@@ -1239,6 +1165,43 @@ private:
 
         mElemCount = (mElemCount - on) + other.elementCount();
     }
+
+    // --- Friend classes ---
+
+    // to access to the parallel vectors tuple of the container
+    template<uint, typename, bool>
+    friend class Component;
+
+    // to access to the custom components map of the container
+    template<uint, std::unsigned_integral, uint, int, bool, bool>
+    friend class ContainerReferencesComponent;
+
+    // to access to the custom components map of the container
+    friend class comp::CustomComponents;
+
+    // to access the parallel vectors tuple of the container
+    template<typename>
+    friend class ElementContainerProxy;
+
+    // to access a specific component vector
+    template<uint, typename>
+    friend class ComponentIterator;
+
+    // to access a specific component vector
+    template<uint, typename>
+    friend class ComponentView;
+
+    // to allow TTVC resize, pushBack, insert, erase, clear members
+    template<int, std::unsigned_integral>
+    friend class comp::VertexReferences;
+
+    // to allow access to ElementContainers with different template parameters
+    template<
+        typename,
+        typename,
+        std::unsigned_integral,
+        template<typename...> class>
+    friend class ElementContainer;
 };
 
 /**

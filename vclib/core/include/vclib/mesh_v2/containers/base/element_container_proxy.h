@@ -81,7 +81,7 @@ public:
     ElementType operator[](IndexType i) const
     {
         assert(mContainer != nullptr);
-        return (*mContainer)[i];
+        return mContainer->element(i);
     }
 
     std::size_t size() const

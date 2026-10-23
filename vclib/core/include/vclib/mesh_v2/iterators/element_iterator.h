@@ -55,7 +55,7 @@ private:
     {
         if (mContainer) {
             std::size_t sz = mContainer->elementContainerSize();
-            while (mIndex < sz && mContainer->isDeleted(mIndex)) {
+            while (mIndex < sz && mContainer->isElementDeleted(mIndex)) {
                 ++mIndex;
             }
         }
@@ -64,7 +64,7 @@ private:
     void advanceBackward()
     {
         if (mContainer) {
-            while (mIndex > 0 && mContainer->isDeleted(mIndex)) {
+            while (mIndex > 0 && mContainer->isElementDeleted(mIndex)) {
                 --mIndex;
             }
         }

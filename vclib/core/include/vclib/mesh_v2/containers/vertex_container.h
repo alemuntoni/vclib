@@ -46,9 +46,6 @@ class VertexContainer :
         Index,
         Vertex>;
 
-protected:
-    using Base::vector;
-
 public:
     using Components       = typename Base::Components;
     using Vertex           = typename Base::ElementType;
