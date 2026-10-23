@@ -21,6 +21,7 @@
 #include "test_custom_components.h"
 #include "test_views.h"
 #include "test_serialization.h"
+#include "test_wedge.h"
 
 int main()
 {
@@ -38,6 +39,7 @@ int main()
     testCustomComponents();
     testViews();
     testSerialization();
+    testWedge();
 
     std::println("All mesh tests passed successfully!");
     return 0;

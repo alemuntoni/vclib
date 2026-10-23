@@ -15,6 +15,7 @@
 #include "../components/polygon_bit_flags.h"
 #include "../components/triangle_bit_flags.h"
 #include "../components/vertex_references.h"
+#include "../components/wedges.h"
 
 namespace vcl::meshv2::face {
 
@@ -42,6 +43,20 @@ template<typename T>
 concept HasTriangleVertexReferences = comp::HasTriangleVertexReferences<T>;
 template<typename T>
 concept HasPolygonVertexReferences = comp::HasPolygonVertexReferences<T>;
+template<typename T>
+concept HasWedgeColors = comp::HasWedgeColors<T>;
+template<typename T>
+concept HasOptionalWedgeColors = comp::HasOptionalWedgeColors<T>;
+template<typename T>
+concept HasWedgeTexCoords = comp::HasWedgeTexCoords<T>;
+template<typename T>
+concept HasOptionalWedgeTexCoords = comp::HasOptionalWedgeTexCoords<T>;
+template<typename T>
+concept HasWedgeNormals = comp::HasWedgeNormals<T>;
+template<typename T>
+concept HasOptionalWedgeNormals = comp::HasOptionalWedgeNormals<T>;
+template<typename T>
+concept HasWedges = comp::HasWedges<T>;
 
 /**
  * @brief Concept that checks whether a type T (which can be a TypeWrapper of
@@ -84,6 +99,79 @@ using TriangleVertexReferences = comp::TriangleVertexReferences<Index>;
 
 template<std::unsigned_integral Index = uint>
 using PolygonVertexReferences = comp::PolygonVertexReferences<Index>;
+
+/* Port Wedges class and aliases into face namespace */
+template<typename Comp, int N = 3, bool OPT = comp::IsCompOptional<Comp>::value>
+using Wedges = comp::Wedges<Comp, N, OPT>;
+
+template<typename Comp, int N = 3, bool OPT = comp::IsCompOptional<Comp>::value>
+using Wedge = comp::Wedge<Comp, N, OPT>;
+
+template<int N = 3, bool OPT = false>
+using WedgesColors = comp::WedgesColors<N, OPT>;
+
+template<int N = 3, bool OPT = false>
+using WedgeColors = comp::WedgeColors<N, OPT>;
+
+template<typename Scalar = float, int N = 3, bool OPT = false>
+using WedgesTexCoords = comp::WedgesTexCoords<Scalar, N, OPT>;
+
+template<typename Scalar = float, int N = 3, bool OPT = false>
+using WedgeTexCoords = comp::WedgeTexCoords<Scalar, N, OPT>;
+
+template<typename Point = Point3f, int N = 3, bool OPT = false>
+using WedgesNormals = comp::WedgesNormals<Point, N, OPT>;
+
+template<typename Point = Point3f, int N = 3, bool OPT = false>
+using WedgeNormals = comp::WedgeNormals<Point, N, OPT>;
+
+// Triangle wedge aliases (N = 3)
+using TriangleWedgesColors             = comp::TriangleWedgesColors;
+using OptionalTriangleWedgesColors     = comp::OptionalTriangleWedgesColors;
+using TriangleWedgeColors              = comp::TriangleWedgeColors;
+using OptionalTriangleWedgeColors      = comp::OptionalTriangleWedgeColors;
+
+using TriangleWedgesTexCoordsf         = comp::TriangleWedgesTexCoordsf;
+using OptionalTriangleWedgesTexCoordsf = comp::OptionalTriangleWedgesTexCoordsf;
+using TriangleWedgesTexCoordsd         = comp::TriangleWedgesTexCoordsd;
+using OptionalTriangleWedgesTexCoordsd = comp::OptionalTriangleWedgesTexCoordsd;
+using TriangleWedgeTexCoordsf          = comp::TriangleWedgeTexCoordsf;
+using OptionalTriangleWedgeTexCoordsf  = comp::OptionalTriangleWedgeTexCoordsf;
+using TriangleWedgeTexCoordsd          = comp::TriangleWedgeTexCoordsd;
+using OptionalTriangleWedgeTexCoordsd  = comp::OptionalTriangleWedgeTexCoordsd;
+
+using TriangleWedgesNormals3f          = comp::TriangleWedgesNormals3f;
+using OptionalTriangleWedgesNormals3f  = comp::OptionalTriangleWedgesNormals3f;
+using TriangleWedgesNormals3d          = comp::TriangleWedgesNormals3d;
+using OptionalTriangleWedgesNormals3d  = comp::OptionalTriangleWedgesNormals3d;
+using TriangleWedgeNormals3f           = comp::TriangleWedgeNormals3f;
+using OptionalTriangleWedgeNormals3f   = comp::OptionalTriangleWedgeNormals3f;
+using TriangleWedgeNormals3d           = comp::TriangleWedgeNormals3d;
+using OptionalTriangleWedgeNormals3d   = comp::OptionalTriangleWedgeNormals3d;
+
+// Polygon wedge aliases (N = -1)
+using PolygonWedgesColors              = comp::PolygonWedgesColors;
+using OptionalPolygonWedgesColors      = comp::OptionalPolygonWedgesColors;
+using PolygonWedgeColors               = comp::PolygonWedgeColors;
+using OptionalPolygonWedgeColors       = comp::OptionalPolygonWedgeColors;
+
+using PolygonWedgesTexCoordsf          = comp::PolygonWedgesTexCoordsf;
+using OptionalPolygonWedgesTexCoordsf  = comp::OptionalPolygonWedgesTexCoordsf;
+using PolygonWedgesTexCoordsd          = comp::PolygonWedgesTexCoordsd;
+using OptionalPolygonWedgesTexCoordsd  = comp::OptionalPolygonWedgesTexCoordsd;
+using PolygonWedgeTexCoordsf           = comp::PolygonWedgeTexCoordsf;
+using OptionalPolygonWedgeTexCoordsf   = comp::OptionalPolygonWedgeTexCoordsf;
+using PolygonWedgeTexCoordsd           = comp::PolygonWedgeTexCoordsd;
+using OptionalPolygonWedgeTexCoordsd   = comp::OptionalPolygonWedgeTexCoordsd;
+
+using PolygonWedgesNormals3f           = comp::PolygonWedgesNormals3f;
+using OptionalPolygonWedgesNormals3f   = comp::OptionalPolygonWedgesNormals3f;
+using PolygonWedgesNormals3d           = comp::PolygonWedgesNormals3d;
+using OptionalPolygonWedgesNormals3d   = comp::OptionalPolygonWedgesNormals3d;
+using PolygonWedgeNormals3f            = comp::PolygonWedgeNormals3f;
+using OptionalPolygonWedgeNormals3f    = comp::OptionalPolygonWedgeNormals3f;
+using PolygonWedgeNormals3d            = comp::PolygonWedgeNormals3d;
+using OptionalPolygonWedgeNormals3d    = comp::OptionalPolygonWedgeNormals3d;
 
 } // namespace vcl::meshv2::face
 

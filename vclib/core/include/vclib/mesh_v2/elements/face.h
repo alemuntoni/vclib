@@ -72,6 +72,28 @@ public:
         Base::importFrom(other, importRefs);
     }
 
+    /**
+     * @brief Returns a proxy to the i-th wedge (corner) of the face.
+     * @param[in] i The index of the wedge (0 <= i < vertexCount()).
+     * @return A WedgeProxy for the i-th corner.
+     */
+    decltype(auto) wedge(this auto&& self, uint i)
+    {
+        assert(i < self.vertexCount());
+        return comp::WedgeProxy(self, i);
+    }
+
+    /**
+     * @brief Returns the container proxy for all wedges of the face.
+     * Allows iterating over wedges (for auto w : f.wedges()) or direct
+     * column container access (for auto& n : f.wedges().normals()).
+     * @return A WedgeContainerProxy for this face.
+     */
+    decltype(auto) wedges(this auto&& self)
+    {
+        return comp::WedgeContainerProxy(self);
+    }
+
 protected:
     Face(ContainerType& container, IndexType index) : Base(container, index) {}
 

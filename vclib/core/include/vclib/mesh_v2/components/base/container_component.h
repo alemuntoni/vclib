@@ -41,11 +41,12 @@ class ContainerComponent : public Component<COMP_ID, Container, OPT>
 {
     using Base = Component<COMP_ID, Container, OPT>;
 
+public:
+    static constexpr bool TIED_TO_VERTEX_COUNT = TTVC;
+
 protected:
     using ValueType                            = T;
     using ContainerType                        = Container;
-    static constexpr int  SIZE                 = N;
-    static constexpr bool TIED_TO_VERTEX_COUNT = TTVC;
 
     static decltype(auto) container(auto&& self)
     {
