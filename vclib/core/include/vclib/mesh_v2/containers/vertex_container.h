@@ -58,10 +58,7 @@ public:
     template<typename NewParent>
     using Rebind = VertexContainer<CompList, Index, NewParent>;
 
-    VertexContainer()
-    {
-        Base::template enable<CompId::POSITION>();
-    }
+    VertexContainer() = default;
 
     Vertex vertex(Index i) { return Base::element(i); }
     ConstVertex vertex(Index i) const { return Base::element(i); }
@@ -235,7 +232,7 @@ public:
     std::type_index perVertexCustomComponentType(const std::string& name) const
         requires vert::HasCustomComponents<Components>
     {
-        return Base::elemComponentType(name);
+        return Base::elemCustomComponentType(name);
     }
 
     /**

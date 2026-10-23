@@ -203,7 +203,7 @@ public:
     requires (hasContainerOf<ELEM_ID>())
     void enable()
     {
-        ContainerType<ELEM_ID>::template enable<COMP_ID>();
+        ContainerType<ELEM_ID>::template enableOptionalComponent<COMP_ID>();
     }
 
     /**
@@ -213,7 +213,7 @@ public:
     requires (hasContainerOf<ELEM_ID>())
     void disable()
     {
-        ContainerType<ELEM_ID>::template disable<COMP_ID>();
+        ContainerType<ELEM_ID>::template disableOptionalComponent<COMP_ID>();
     }
 
     /**
@@ -633,7 +633,7 @@ public:
     requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     std::type_index perElementCustomComponentType(const std::string& name) const
     {
-        return ContainerType<ELEM_ID>::elemComponentType(name);
+        return ContainerType<ELEM_ID>::elemCustomComponentType(name);
     }
 
     /**
@@ -783,7 +783,7 @@ private:
     void enableAllContainer()
     {
         if constexpr (ElementContainerConcept<T>) {
-            this->T::enableAll();
+            this->T::enableAllOptionalComponents();
         }
     }
 
@@ -791,7 +791,7 @@ private:
     void disableAllContainer()
     {
         if constexpr (ElementContainerConcept<T>) {
-            this->T::disableAll();
+            this->T::disableAllOptionalComponents();
         }
     }
 

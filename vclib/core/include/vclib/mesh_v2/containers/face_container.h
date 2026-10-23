@@ -59,7 +59,7 @@ public:
     template<typename NewParent>
     using Rebind = FaceContainer<CompList, Index, NewParent>;
 
-    FaceContainer() { Base::template enable<CompId::VERTEX_REFERENCES>(); }
+    FaceContainer() = default;
 
     Face face(Index i) { return Base::element(i); }
 
@@ -241,7 +241,7 @@ public:
     std::type_index perFaceCustomComponentType(const std::string& name) const
         requires face::HasCustomComponents<Components>
     {
-        return Base::elemComponentType(name);
+        return Base::elemCustomComponentType(name);
     }
 
     /**

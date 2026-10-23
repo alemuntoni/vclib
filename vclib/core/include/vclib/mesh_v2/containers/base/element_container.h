@@ -602,6 +602,13 @@ protected:
 
     // ### Enable - Disable
 
+    void enableAllOptionalComponents() { mElemComponents.enableAll(); }
+
+    void disableAllOptionalComponents()
+    {
+        disableOptionalComponents(Components {});
+    }
+
     /**
      * @brief Checks if the component with the given COMP_ID is available
      * (present at compile time and enabled at run time).
@@ -628,28 +635,10 @@ protected:
     }
 
     /**
-     * @brief Alias of isComponentAvailable.
-     */
-    template<uint COMP_ID>
-    bool isAvailable() const
-    {
-        return isComponentAvailable<COMP_ID>();
-    }
-
-    /**
-     * @brief Checks if the component with the given COMP_ID is enabled/available.
-     */
-    template<uint COMP_ID>
-    bool isEnabled() const
-    {
-        return isComponentAvailable<COMP_ID>();
-    }
-
-    /**
      * @brief Enables the component with the given COMP_ID.
      */
     template<uint COMP_ID>
-    void enable()
+    void enableOptionalComponent()
     {
         static_assert(
             comp::HasComponent<COMP_ID, Components>,
@@ -666,7 +655,7 @@ protected:
      * Note: Non-optional components cannot be disabled.
      */
     template<uint COMP_ID>
-    void disable()
+    void disableOptionalComponent()
     {
         static_assert(
             comp::HasComponent<COMP_ID, Components>,
@@ -679,29 +668,183 @@ protected:
         mElemComponents.template disable<N>();
     }
 
-    void enableAll() { mElemComponents.enableAll(); }
+    // Custom Components
 
-    void disableAll()
-    {
-        disableOptionalComponents(Components {});
-    }
-
-    void enableAllOptionalComponents() { enableAll(); }
-
-    void disableAllOptionalComponents() { disableAll(); }
+    // --- Custom Components ---
 
     /**
-     * @brief Enables in this container all the optional components that are
-     * available and enabled in the given other container.
+     * @brief Returns true if the element has a custom component with the given
+     * name, false otherwise.
      *
-     * @tparam OtherContainer The type of the container to check against.
-     * @param[in] other The other container.
+     * @param[in] name: The name of the custom component.
+     * @return true if the custom component exists, false otherwise.
      */
-    template<typename OtherContainer>
-    void enableSameOptionalComponentsOf(const OtherContainer& other)
+    bool hasElemCustomComponent(const std::string& name) const
+        requires comp::HasCustomComponents<Components>
     {
-        enableSameOptionalComponentsOfImpl(Components {}, other);
+        return mCustomComponents.componentExists(name);
     }
+
+    /**
+     * @brief Returns a vector containing the names of all the custom components
+     * associated to the elements of this container.
+     *
+     * @return A vector of strings containing the names of all custom
+     * components.
+     */
+    std::vector<std::string> elemCustomComponentNames() const
+        requires comp::HasCustomComponents<Components>
+    {
+        return mCustomComponents.allComponentNames();
+    }
+
+    /**
+     * @brief Returns true if the custom component of the given name is of the
+     * type given as template argument, false otherwise.
+     *
+     * @tparam K: The type of the custom component to check.
+     * @param[in] name: The name of the custom component.
+     * @return true if the custom component is of type K, false otherwise.
+     */
+    template<typename K>
+    bool isElemCustomComponentOfType(const std::string& name) const
+        requires comp::HasCustomComponents<Components>
+    {
+        return mCustomComponents.template isComponentOfType<K>(name);
+    }
+
+    /**
+     * @brief Returns the `std::type_index` of the custom component of the given
+     * name.
+     *
+     * @param[in] name: The name of the custom component.
+     * @return The `std::type_index` of the custom component.
+     */
+    std::type_index elemCustomComponentType(const std::string& name) const
+        requires comp::HasCustomComponents<Components>
+    {
+        return mCustomComponents.componentType(name);
+    }
+
+    /**
+     * @brief Returns a vector of strings containing the names of all the custom
+     * components of type K.
+     *
+     * @tparam K: The type of the custom components.
+     * @return A vector of strings containing the names of custom components of
+     * type K.
+     */
+    template<typename K>
+    std::vector<std::string> elemCustomComponentNamesOfType() const
+        requires comp::HasCustomComponents<Components>
+    {
+        return mCustomComponents.template allComponentNamesOfType<K>();
+    }
+
+    /**
+     * @brief Adds a new vector of custom components with the given name and
+     * type. All existing elements are initialized with the default constructor
+     * of K.
+     *
+     * @tparam K: The type of the custom component.
+     * @param[in] name: The name of the custom component.
+     */
+    template<typename K>
+    void addElemCustomComponent(const std::string& name)
+        requires comp::HasCustomComponents<Components>
+    {
+        mCustomComponents.template addNewComponent<K>(
+            name, elementContainerSize());
+    }
+
+    /**
+     * @brief Deletes the custom component with the given name.
+     *
+     * @param[in] name: The name of the custom component to delete.
+     */
+    void deleteElemCustomComponent(const std::string& name)
+        requires comp::HasCustomComponents<Components>
+    {
+        mCustomComponents.deleteComponent(name);
+    }
+
+    /**
+     * @brief Returns a vector handle to access the custom component of type K
+     * with the given name.
+     *
+     * @tparam K: The type of the custom component.
+     * @param[in] name: The name of the custom component.
+     * @return A CustomComponentVectorHandle<K>.
+     */
+    template<typename K>
+    CustomComponentVectorHandle<K> customComponentVectorHandle(
+        const std::string& name) requires comp::HasCustomComponents<Components>
+    {
+        return CustomComponentVectorHandle<K>(
+            mCustomComponents.template componentVector<K>(name));
+    }
+
+    /**
+     * @brief Returns a const vector handle to access the custom component of
+     * type K with the given name.
+     *
+     * @tparam K: The type of the custom component.
+     * @param[in] name: The name of the custom component.
+     * @return A ConstCustomComponentVectorHandle<K>.
+     */
+    template<typename K>
+    ConstCustomComponentVectorHandle<K> customComponentVectorHandle(
+        const std::string& name) const
+        requires comp::HasCustomComponents<Components>
+    {
+        return ConstCustomComponentVectorHandle<K>(
+            mCustomComponents.template componentVector<K>(name));
+    }
+
+    /**
+     * @brief Serializes all custom components of type K stored in this
+     * container to the given output stream.
+     *
+     * @tparam K: The type of the custom components to serialize.
+     * @param os: The output stream to write to.
+     */
+    template<typename K>
+    void serializeElemCustomComponentsOfType(std::ostream& os) const
+        requires comp::HasCustomComponents<Components>
+    {
+        mCustomComponents.template serializeCustomComponentsOfType<K>(os);
+    }
+
+    /**
+     * @brief Deserializes all custom components of type K from the given
+     * input stream and stores them into this container.
+     *
+     * @tparam K: The type of the custom components to deserialize.
+     * @param is: The input stream to read from.
+     */
+    template<typename K>
+    void deserializeElemCustomComponentsOfType(std::istream& is)
+        requires comp::HasCustomComponents<Components>
+    {
+        mCustomComponents.template deserializeCustomComponentsOfType<K>(is);
+    }
+
+    // for internal usage
+    // TODO: understand which of these functions can be private
+
+    decltype(auto) parentMesh() requires (!std::is_void_v<ParentMesh>)
+    {
+        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
+        return *mParentMesh;
+    }
+
+    decltype(auto) parentMesh() const requires (!std::is_void_v<ParentMesh>)
+    {
+        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
+        return std::as_const(*mParentMesh);
+    }
+
+    void setParentMesh(ParentMesh* mesh) { mParentMesh = mesh; }
 
     /**
      * @brief Returns the vector for the given component ID.
@@ -728,6 +871,44 @@ protected:
         constexpr uint N =
             comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
         return mElemComponents.template get<N>();
+    }
+
+    template<uint TARGET_ELEM_ID>
+    void updateReferences(const std::vector<IndexType>& newIndices)
+    {
+        if constexpr (
+            ElementType::template referencesElement<TARGET_ELEM_ID>()) {
+            for (std::size_t i = 0; i < size(); ++i) {
+                element(i).template updateReferences<TARGET_ELEM_ID>(
+                    newIndices);
+            }
+        }
+    }
+
+    template<uint TARGET_ELEM_ID>
+    void shiftReferences(IndexType startFrom, IndexType offset)
+    {
+        if constexpr (
+            ElementType::template referencesElement<TARGET_ELEM_ID>()) {
+            if (offset != 0) {
+                for (std::size_t i = startFrom; i < size(); ++i) {
+                    element(i).template shiftReferences<TARGET_ELEM_ID>(offset);
+                }
+            }
+        }
+    }
+
+    /**
+     * @brief Enables in this container all the optional components that are
+     * available and enabled in the given other container.
+     *
+     * @tparam OtherContainer The type of the container to check against.
+     * @param[in] other The other container.
+     */
+    template<typename OtherContainer>
+    void enableSameOptionalComponentsOf(const OtherContainer& other)
+    {
+        enableSameOptionalComponentsOfImpl(Components {}, other);
     }
 
     /**
@@ -758,183 +939,7 @@ protected:
         }
     }
 
-    decltype(auto) parentMesh() requires (!std::is_void_v<ParentMesh>)
-    {
-        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
-        return *mParentMesh;
-    }
 
-    decltype(auto) parentMesh() const requires (!std::is_void_v<ParentMesh>)
-    {
-        assert(mParentMesh != nullptr && "Parent mesh pointer is null");
-        return std::as_const(*mParentMesh);
-    }
-
-    void setParentMesh(ParentMesh* mesh) { mParentMesh = mesh; }
-
-
-
-    template<uint TARGET_ELEM_ID>
-    void updateReferences(const std::vector<IndexType>& newIndices)
-    {
-        if constexpr (
-            ElementType::template referencesElement<TARGET_ELEM_ID>()) {
-            for (std::size_t i = 0; i < size(); ++i) {
-                element(i).template updateReferences<TARGET_ELEM_ID>(
-                    newIndices);
-            }
-        }
-    }
-
-    template<uint TARGET_ELEM_ID>
-    void shiftReferences(IndexType startFrom, IndexType offset)
-    {
-        if constexpr (
-            ElementType::template referencesElement<TARGET_ELEM_ID>()) {
-            if (offset != 0) {
-                for (std::size_t i = startFrom; i < size(); ++i) {
-                    element(i).template shiftReferences<TARGET_ELEM_ID>(offset);
-                }
-            }
-        }
-    }
-
-    // --- Custom Components ---
-
-    /**
-     * @brief Returns true if the element has a custom component with the given
-     * name, false otherwise.
-     *
-     * @param[in] name The name of the custom component.
-     * @return true if the custom component exists, false otherwise.
-     */
-    bool hasElemCustomComponent(const std::string& name) const
-        requires comp::HasCustomComponents<Components>
-    {
-        return mCustomComponents.componentExists(name);
-    }
-
-    /**
-     * @brief Returns a vector containing the names of all the custom components
-     * associated to the elements of this container.
-     *
-     * @return A vector of strings containing the names of all custom
-     * components.
-     */
-    std::vector<std::string> elemCustomComponentNames() const
-        requires comp::HasCustomComponents<Components>
-    {
-        return mCustomComponents.allComponentNames();
-    }
-
-    /**
-     * @brief Returns true if the custom component of the given name is of the
-     * type given as template argument, false otherwise.
-     *
-     * @tparam K The type of the custom component to check.
-     * @param[in] name The name of the custom component.
-     * @return true if the custom component is of type K, false otherwise.
-     */
-    template<typename K>
-    bool isElemCustomComponentOfType(const std::string& name) const
-        requires comp::HasCustomComponents<Components>
-    {
-        return mCustomComponents.template isComponentOfType<K>(name);
-    }
-
-    /**
-     * @brief Returns the `std::type_index` of the custom component of the given
-     * name.
-     *
-     * @param[in] name The name of the custom component.
-     * @return The `std::type_index` of the custom component.
-     */
-    std::type_index elemComponentType(const std::string& name) const
-        requires comp::HasCustomComponents<Components>
-    {
-        return mCustomComponents.componentType(name);
-    }
-
-    std::type_index elemCustomComponentType(const std::string& name) const
-        requires comp::HasCustomComponents<Components>
-    {
-        return elemComponentType(name);
-    }
-
-    /**
-     * @brief Returns a vector of strings containing the names of all the custom
-     * components of type K.
-     *
-     * @tparam K The type of the custom components.
-     * @return A vector of strings containing the names of custom components of
-     * type K.
-     */
-    template<typename K>
-    std::vector<std::string> elemCustomComponentNamesOfType() const
-        requires comp::HasCustomComponents<Components>
-    {
-        return mCustomComponents.template allComponentNamesOfType<K>();
-    }
-
-    /**
-     * @brief Adds a new vector of custom components with the given name and
-     * type. All existing elements are initialized with the default constructor
-     * of K.
-     *
-     * @tparam K The type of the custom component.
-     * @param[in] name The name of the custom component.
-     */
-    template<typename K>
-    void addElemCustomComponent(const std::string& name)
-        requires comp::HasCustomComponents<Components>
-    {
-        mCustomComponents.template addNewComponent<K>(
-            name, elementContainerSize());
-    }
-
-    /**
-     * @brief Deletes the custom component with the given name.
-     *
-     * @param[in] name The name of the custom component to delete.
-     */
-    void deleteElemCustomComponent(const std::string& name)
-        requires comp::HasCustomComponents<Components>
-    {
-        mCustomComponents.deleteComponent(name);
-    }
-
-    /**
-     * @brief Returns a vector handle to access the custom component of type K
-     * with the given name.
-     *
-     * @tparam K The type of the custom component.
-     * @param[in] name The name of the custom component.
-     * @return A CustomComponentVectorHandle<K>.
-     */
-    template<typename K>
-    CustomComponentVectorHandle<K> customComponentVectorHandle(
-        const std::string& name) requires comp::HasCustomComponents<Components>
-    {
-        return CustomComponentVectorHandle<K>(
-            mCustomComponents.template componentVector<K>(name));
-    }
-
-    /**
-     * @brief Returns a const vector handle to access the custom component of
-     * type K with the given name.
-     *
-     * @tparam K The type of the custom component.
-     * @param[in] name The name of the custom component.
-     * @return A ConstCustomComponentVectorHandle<K>.
-     */
-    template<typename K>
-    ConstCustomComponentVectorHandle<K> customComponentVectorHandle(
-        const std::string& name) const
-        requires comp::HasCustomComponents<Components>
-    {
-        return ConstCustomComponentVectorHandle<K>(
-            mCustomComponents.template componentVector<K>(name));
-    }
 
     /**
      * @brief Returns a reference to the custom component of type K at index i.
@@ -984,34 +989,6 @@ protected:
                     otherContainer.mCustomComponents);
             }
         }
-    }
-
-    /**
-     * @brief Serializes all custom components of type K stored in this
-     * container to the given output stream.
-     *
-     * @tparam K The type of the custom components to serialize.
-     * @param os The output stream to write to.
-     */
-    template<typename K>
-    void serializeElemCustomComponentsOfType(std::ostream& os) const
-        requires comp::HasCustomComponents<Components>
-    {
-        mCustomComponents.template serializeCustomComponentsOfType<K>(os);
-    }
-
-    /**
-     * @brief Deserializes all custom components of type K from the given
-     * input stream and stores them into this container.
-     *
-     * @tparam K The type of the custom components to deserialize.
-     * @param is The input stream to read from.
-     */
-    template<typename K>
-    void deserializeElemCustomComponentsOfType(std::istream& is)
-        requires comp::HasCustomComponents<Components>
-    {
-        mCustomComponents.template deserializeCustomComponentsOfType<K>(is);
     }
 
     ElementType operator[](IndexType i)
@@ -1220,7 +1197,7 @@ private:
                         comp::
                             HasComponent<Comp::COMPONENT_ID, OtherContainer>) {
                         if (other.template isComponentAvailable<Comp::COMPONENT_ID>()) {
-                            this->template enable<Comp::COMPONENT_ID>();
+                            this->template enableOptionalComponent<Comp::COMPONENT_ID>();
                         }
                     }
                 }
