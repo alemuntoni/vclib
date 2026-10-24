@@ -71,7 +71,7 @@ public:
      * the Mesh, which will be the vertex having index = i.
      *
      * This function does not perform any sanity check: if i is less than
-     * vertexContainerSize(), this function will return a valid Vertex reference
+     * vertexContainerSize(), this function will return a valid Vertex
      * (note that the Vertex may have been flagged as deleted).
      *
      * @param[in] i: the index of the vertex that will be returned.
@@ -85,7 +85,7 @@ public:
      * Container of the Mesh, which will be the vertex having index = i.
      *
      * This function does not perform any sanity check: if i is less than
-     * vertexContainerSize(), this function will return a valid Vertex reference
+     * vertexContainerSize(), this function will return a valid ConstVertex
      * (note that the Vertex may have been flagged as deleted).
      *
      * @param[in] i: the index of the vertex that will be returned.
@@ -212,10 +212,8 @@ public:
      * not only marked as deleted. Therefore, the container will have size 0
      * (`vertexContainerSize() == 0`) after the call of this function.
      *
-     * @warning Any index to deleted vertices in the Mesh will be left
-     * unchanged, and therefore will point to invalid vertices. This means that
-     * if you call this member function with a lower number of vertices, you'll
-     * need to manually manage the indices to the deleted vertices.
+     * @warning Any index or reference to vertices in the Mesh will be left
+     * unchanged, and therefore will point to invalid vertices.
      */
     void clearVertices() { Base::clearElements(); }
 
@@ -224,47 +222,39 @@ public:
      *
      * If the new size is greater than the old one, new vertices are added to
      * the container. If the new size is smaller than the old one, the container
-     * will keep its first non-deleted `n` vertices, and the remaining vertices
-     * are marked as deleted.
+     * is truncated to `n` vertices (vertices beyond `n` are removed).
      *
-     * @warning The given size `n` is relative to the number of non-deleted
-     * vertices, not to the size of the vertex container. For example, if you
-     * have a mesh with 10 vertices and vertexContainerSize() == 20, calling
-     * resizeVertices(5) will not cause a reallocation of the container, but
-     * will mark as deleted the least 5 non-deleted vertices of the container.
-     * In the same scenario, calling resizeVertices(15) will result in a vertex
-     * container having 15 vertices and vertexContainerSize() == 25. The latest
-     * 5 vertices will be the newly added.
-     *
-     * @warning Any index to deleted vertices in the Mesh will be left
-     * unchanged, and therefore will point to invalid vertices. This means that
-     * if you call this member function with a lower number of vertices, you'll
-     * need to manually manage the indices to the deleted vertices.
+     * @warning Any index to removed vertices in the Mesh will be left
+     * unchanged, and therefore will point to invalid vertices.
      *
      * @param[in] n: the new size of the Vertex container.
      */
     void resizeVertices(std::size_t n) { Base::resizeElements(n); }
 
     /**
-     * @brief Reserve a number of vertices in the container of Vertices. This is
-     * useful when you know (or you have an idea) of how much vertices are going
-     * to add into a newly or existing mesh. Calling this function before any
-     * addVertex() call will avoid unuseful reallocations of the container,
+     * @brief Reserves a number of vertices in the container of Vertices. This is
+     * useful when you know (or you have an idea) of how many vertices will be
+     * added to a new or existing mesh. Calling this function before any
+     * addVertex() call will avoid unnecessary reallocations of the container,
      * saving execution time.
      *
-     * The filosofy of this function is similar to the one of the
+     * The philosophy of this function is similar to the one of the
      * [reserve()](https://en.cppreference.com/w/cpp/container/vector/reserve)
      * function of the [std::vector
      * class](https://en.cppreference.com/w/cpp/container/vector).
      *
-     * @param n: the new capacity of the vertex container.
+     * @param[in] n: the new capacity of the vertex container.
      */
     void reserveVertices(std::size_t n) { Base::reserveElements(n); }
 
     /**
      * @brief Compacts the Vertex Container, removing all the vertices marked as
-     * deleted. Vertices reference will automatically change accordingly in all
+     * deleted. Vertex references will automatically change accordingly in all
      * the containers of the Mesh.
+     *
+     * @return A vector that maps each old vertex index to its new index in the
+     * compacted container (or std::numeric_limits<Index>::max() if it was
+     * deleted).
      */
     std::vector<Index> compactVertices() { return Base::compactElements(); }
 
@@ -278,13 +268,12 @@ public:
      * Deleted vertices are automatically jumped by the iterators provided by
      * the Vertex Container.
      *
-     * @param[in] i: the id of the vertex that will be marked as deleted.
+     * @param[in] i: the index of the vertex that will be marked as deleted.
      */
     void deleteVertex(Index i) { Base::deleteElement(i); }
 
     /**
-     * @brief Marks as deleted the given vertex, before asserting that the
-     * vertex belongs to this container.
+     * @brief Marks as deleted the given vertex.
      *
      * This member function does not perform any reallocation of the vertices:
      * the deleted vertices will stay in the Vertex Container, but will be
@@ -293,13 +282,13 @@ public:
      * Deleted vertices are automatically jumped by the iterators provided by
      * the Vertex Container.
      *
-     * @param[in] v: the pointer of the vertex that will be marked as deleted.
+     * @param[in] v: the vertex that will be marked as deleted.
      */
     void deleteVertex(const Vertex& v) { Base::deleteElement(v.index()); }
 
     /**
-     * @brief This is an utility member function that returns the index of an
-     * element if the container would be compact, that is the number of
+     * @brief This is a utility member function that returns the index of an
+     * element if the container were compact, that is the number of
      * non-deleted elements before the vertex with the given index.
      *
      * Complexity: O(n), with n the number of vertices in the container.
@@ -308,9 +297,9 @@ public:
      *
      * @param[in] i: the index of a vertex of the container.
      * @return The index that the vertex with index i would have if this
-     * container would be compact.
+     * container were compact.
      */
-    uint vertexIndexIfCompact(uint i) const
+    Index vertexIndexIfCompact(Index i) const
     {
         return Base::elementIndexIfCompact(i);
     }
@@ -319,24 +308,70 @@ public:
      * @brief Returns a vector that tells, for each actual vertex index, the new
      * index that the vertex would have in a compacted container. For each
      * deleted vertex index, the value of the vector will be
-     * std::numeric_limits<uint>::max().
+     * std::numeric_limits<Index>::max().
      *
      * This is useful if you need to know the indices of the vertices that they
      * would have in a compact container, without considering the deleted ones.
      *
      * @return A vector containing, for each vertex index, its index if the
-     * container would be compact.
+     * container were compact.
      */
-    std::vector<uint> vertexCompactIndices() const
+    std::vector<Index> vertexCompactIndices() const
     {
         return Base::elementCompactIndices();
     }
 
+    /**
+     * @brief Returns an ElementContainerProxy object that allows to iterate over
+     * the vertices of the container, providing begin() and end() member
+     * functions.
+     *
+     * This member function is very useful when you want to iterate over the
+     * vertices using the C++ range-based for loop syntax:
+     *
+     * @code{.cpp}
+     * for (Vertex v : m.vertices()) {
+     *     // do something with this vertex
+     * }
+     * @endcode
+     *
+     * The iterator used to iterate over vertices is automatically initialized
+     * to jump deleted vertices of the container. You can change this option by
+     * calling this function with jumpDeleted = false.
+     *
+     * @param[in] jumpDeleted (default: true): boolean that tells if the
+     * iterator should jump deleted vertices.
+     * @return An object having begin() and end() functions, allowing to
+     * iterate over the container.
+     */
     auto vertices(bool jumpDeleted = true)
     {
         return Base::elements(jumpDeleted);
     }
 
+    /**
+     * @brief Returns an ElementContainerProxy object that allows to iterate over
+     * the vertices of the container, providing begin() and end() member
+     * functions.
+     *
+     * This member function is very useful when you want to iterate over the
+     * vertices using the C++ range-based for loop syntax:
+     *
+     * @code{.cpp}
+     * for (ConstVertex v : m.vertices()) {
+     *     // do something with this vertex
+     * }
+     * @endcode
+     *
+     * The iterator used to iterate over vertices is automatically initialized
+     * to jump deleted vertices of the container. You can change this option by
+     * calling this function with jumpDeleted = false.
+     *
+     * @param[in] jumpDeleted (default: true): boolean that tells if the
+     * iterator should jump deleted vertices.
+     * @return An object having begin() and end() functions, allowing to
+     * iterate over the container.
+     */
     auto vertices(bool jumpDeleted = true) const
     {
         return Base::elements(jumpDeleted);
@@ -353,7 +388,7 @@ public:
      * @note This function is available only if the Vertex Element has the
      * CustomComponents Component.
      *
-     * @param[in] name The name of the custom component to check.
+     * @param[in] name: The name of the custom component to check.
      * @return `true` if the Vertex Element has a custom component with the
      * given name.
      */
@@ -387,8 +422,8 @@ public:
      * @note This function is available only if the Vertex Element has the
      * CustomComponents Component.
      *
-     * @tparam K The type of the custom component to check.
-     * @param[in] name The name of the custom component to check.
+     * @tparam K: The type of the custom component to check.
+     * @param[in] name: The name of the custom component to check.
      * @throws std::out_of_range if no custom component of the given name was
      * found.
      * @return `true` if the custom component is of the same type of the
@@ -408,7 +443,7 @@ public:
      * @note This function is available only if the Vertex Element has the
      * CustomComponents Component.
      *
-     * @param[in] name The name of the custom component to get the
+     * @param[in] name: The name of the custom component to get the
      * std::type_index from.
      * @throws std::out_of_range if no custom component of the given name was
      * found.
@@ -429,7 +464,7 @@ public:
      * @note This function is available only if the Vertex Element has the
      * CustomComponents Component.
      *
-     * @tparam K The type of the custom component names.
+     * @tparam K: The type of the custom component names.
      * @return A vector of strings representing the names of the custom
      * components of a given type.
      */
@@ -447,8 +482,8 @@ public:
      * @note This function is available only if the Vertex Element has the
      * CustomComponents Component.
      *
-     * @tparam K The type of the custom component added to the Vertex.
-     * @param[in] name The name of the custom component added to the Vertex.
+     * @tparam K: The type of the custom component added to the Vertex.
+     * @param[in] name: The name of the custom component added to the Vertex.
      */
     template<typename K>
     void addPerVertexCustomComponent(const std::string& name)
@@ -461,12 +496,12 @@ public:
      * @brief Deletes the custom component of the given name from the Vertex
      * Element.
      *
-     * The function does nothing if the custom component does not exists.
+     * The function does nothing if the custom component does not exist.
      *
      * @note This function is available only if the Vertex Element has the
      * CustomComponents Component.
      *
-     * @param[in] name The name of the custom component that will be removed
+     * @param[in] name: The name of the custom component that will be removed
      * from the Vertex.
      */
     void deletePerVertexCustomComponent(const std::string& name)
@@ -482,9 +517,9 @@ public:
      * @note This function is available only if the Vertex Element has the
      * CustomComponents Component.
      *
-     * @tparam K The type of the custom component on which return the handle.
-     * @param[in] name Name of the custom component on which return the handle.
-     * @return A vector handle that allows to access to the custom component.
+     * @tparam K: The type of the custom component for which to return the handle.
+     * @param[in] name: Name of the custom component for which to return the handle.
+     * @return A vector handle that allows access to the custom component.
      */
     template<typename K>
     CustomComponentVectorHandle<K> perVertexCustomComponentVectorHandle(
@@ -501,9 +536,9 @@ public:
      * @note This function is available only if the Vertex Element has the
      * CustomComponents Component.
      *
-     * @tparam K The type of the custom component on which return the handle.
-     * @param[in] name Name of the custom component on which return the handle.
-     * @return A const vector handle that allows to access to the custom
+     * @tparam K: The type of the custom component for which to return the handle.
+     * @param[in] name: Name of the custom component for which to return the handle.
+     * @return A const vector handle that allows access to the custom
      * component.
      */
     template<typename K>
@@ -518,8 +553,8 @@ public:
      * @brief Serializes all per-vertex custom components of type K stored in
      * this container to the given output stream.
      *
-     * @tparam K The type of the custom components to serialize.
-     * @param os The output stream to write to.
+     * @tparam K: The type of the custom components to serialize.
+     * @param os: The output stream to write to.
      */
     template<typename K>
     void serializePerVertexCustomComponentsOfType(std::ostream& os) const
@@ -532,8 +567,8 @@ public:
      * @brief Deserializes all per-vertex custom components of type K from the
      * given input stream and stores them into this container.
      *
-     * @tparam K The type of the custom components to deserialize.
-     * @param is The input stream to read from.
+     * @tparam K: The type of the custom components to deserialize.
+     * @param is: The input stream to read from.
      */
     template<typename K>
     void deserializePerVertexCustomComponentsOfType(std::istream& is)

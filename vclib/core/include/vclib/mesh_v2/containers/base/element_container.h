@@ -144,10 +144,11 @@ public:
      * = i.
      *
      * This function does not perform any sanity check: if i is less than
-     * elementContainerSize(), this function will return a valid Element
-     * reference (note that the Element may have been flagged as deleted).
+     * elementContainerSize(), this function will return a valid ConstElementType
+     * (note that the Element may have been flagged as deleted).
      *
      * @param[in] i: the index of the element that will be returned.
+     * @return A const proxy of the i-th element of the Element Container.
      */
     ConstElementType element(IndexType i) const
     {
@@ -161,10 +162,11 @@ public:
      * i.
      *
      * This function does not perform any sanity check: if i is less than
-     * elementContainerSize(), this function will return a valid Element
-     * reference (note that the Element may have been flagged as deleted).
+     * elementContainerSize(), this function will return a valid ElementType
+     * (note that the Element may have been flagged as deleted).
      *
      * @param[in] i: the index of the element that will be returned.
+     * @return A proxy of the i-th element of the Element Container.
      */
     ElementType element(IndexType i)
     {
@@ -202,6 +204,12 @@ public:
      */
     std::size_t deletedElementCount() const { return size() - elementCount(); }
 
+    /**
+     * @brief Returns whether the element at the given index is marked as deleted.
+     *
+     * @param[in] i: the index of the element to check.
+     * @return `true` if the element is marked as deleted, `false` otherwise.
+     */
     bool isElementDeleted(IndexType i) const
     {
         assert(i < size());
@@ -245,6 +253,16 @@ public:
         return static_cast<IndexType>(baseId);
     }
 
+    /**
+     * @brief Clears the Element container, deleting all the elements.
+     *
+     * The contained element components are actually removed from the container,
+     * not only marked as deleted. Therefore, the container will have size 0
+     * (`elementContainerSize() == 0`) after the call of this function.
+     *
+     * @warning Any index or reference to elements in this container stored in
+     * this or other containers of the Mesh will become invalid.
+     */
     void clearElements()
     {
         mElemComponents.clear();
@@ -255,28 +273,16 @@ public:
     }
 
     /**
-     * @brief Resizes the element container to contain `size` elements.
+     * @brief Resizes the element container to contain `newSize` elements.
      *
      * If the new size is greater than the old one, new elements are added to
-     * the container, and a reallocation may happen. If the new size is smaller
-     * than the old one, the container will keep its first non-deleted `size`
-     * elements, and the remaining elements are marked as deleted.
+     * the container. If the new size is smaller than the old one, the container
+     * is truncated to `newSize` elements (elements beyond `newSize` are removed).
      *
-     * @warning The given `size` is relative to the number of non-deleted
-     * elements, not to the size of the element container. For example, if you
-     * have a mesh with 10 elements and elementContainerSize() == 20, calling
-     * resizeElements(5) will not cause a reallocation of the container, but
-     * will mark as deleted the least 5 non-deleted elements of the container.
-     * In the same scenario, calling resizeElements(15) will result in a element
-     * container having 15 elements and elementContainerSize() == 25. The
-     * latest 5 elements will be the newly added.
+     * @warning Any index to removed elements in the Mesh will be left
+     * unchanged, and therefore will point to invalid elements.
      *
-     * @warning Any index to deleted elements in the Mesh will be left
-     * unchanged, and therefore will point to invalid elements. This means that
-     * if you call this member function with a lower number of elements, you'll
-     * need to manually manage the indices to the deleted elements.
-     *
-     * @param[in] size: the new size of the Element container.
+     * @param[in] newSize: the new size of the Element container.
      */
     void resizeElements(std::size_t newSize)
     {
@@ -298,6 +304,14 @@ public:
         }
     }
 
+    /**
+     * @brief Reserves storage for a given number of elements in the container.
+     *
+     * Calling this function before multiple element additions avoids
+     * unnecessary reallocations of the underlying parallel vectors.
+     *
+     * @param[in] capacity: the new capacity of the element container.
+     */
     void reserveElements(std::size_t capacity)
     {
         mElemComponents.reserve(capacity);
@@ -308,11 +322,12 @@ public:
 
     /**
      * @brief Compacts the element container, keeping only the non-deleted
-     * elements.
+     * elements. References to elements will automatically change accordingly in
+     * all the containers of the parent mesh if present.
      *
-     * @return a vector that tells, for each old element index, the new index of
-     * the element. Will contain std::numeric_limits<IndexType>::max() if the
-     * element has been deleted.
+     * @return A vector that maps each old element index to its new index in the
+     * compacted container (or std::numeric_limits<IndexType>::max() if it was
+     * deleted).
      */
     std::vector<IndexType> compactElements()
     {
@@ -344,10 +359,10 @@ public:
      * Deleted elements are automatically jumped by the iterators provided by
      * the Element Container.
      *
-     * @warning If there were pointers/indices to the deleted element in this or
-     * other containers, they will not be updated.
+     * @warning If there were indices or references to the deleted element in
+     * this or other containers, they will not be updated.
      *
-     * @param[in] i: the id of the element that will be marked as deleted.
+     * @param[in] i: the index of the element that will be marked as deleted.
      */
     void deleteElement(IndexType i)
     {
@@ -369,18 +384,18 @@ public:
      * Deleted elements are automatically jumped by the iterators provided by
      * the Element Container.
      *
-     * @warning If there were pointers/indices to the deleted element in this or
-     * other containers, they will not be updated.
+     * @warning If there were indices or references to the deleted element in
+     * this or other containers, they will not be updated.
      *
      * @param[in] e: the element that will be marked as deleted.
      */
     void deleteElement(const ElementType& e) { deleteElement(e.index()); }
 
     /**
-     * @brief Returns true if the container is compact, i.e. there are no
+     * @brief Returns whether the container is compact, i.e. there are no
      * deleted elements.
      *
-     * @return true if the container is compact, false otherwise.
+     * @return `true` if the container is compact, `false` otherwise.
      */
     bool isElementContainerCompact() const
     {
@@ -388,17 +403,17 @@ public:
     }
 
     /**
-     * @brief This is an utility member function that returns the index of an
-     * element if the container would be compact, that is the number of
+     * @brief This is a utility member function that returns the index of an
+     * element if the container were compact, that is the number of
      * non-deleted elements before the element with the given index.
      *
      * Complexity: O(n), with n the number of elements in the container.
      *
      * This function does not perform any sanity check on the given index.
      *
-     * @param[in] i: the index of a element of the container.
+     * @param[in] i: the index of an element of the container.
      * @return The index that the element with index i would have if this
-     * container would be compact.
+     * container were compact.
      */
     IndexType elementIndexIfCompact(IndexType i) const
     {
@@ -426,7 +441,7 @@ public:
      * would have in a compact container, without considering the deleted ones.
      *
      * @return A vector containing, for each element index, its index if the
-     * container would be compact.
+     * container were compact.
      */
     std::vector<IndexType> elementCompactIndices() const
     {
@@ -455,11 +470,11 @@ public:
      *
      * The iterator is automatically initialized to jump deleted elements of the
      * container. You can change this option by calling this function with
-     * jumpDeleted=false.
+     * jumpDeleted = false.
      *
-     * @param[in] jumpDeleted (def: true): boolean that tells if the iterator
+     * @param[in] jumpDeleted (default: true): boolean that tells if the iterator
      * should jump deleted elements.
-     * @return An iterator the the first element of the container.
+     * @return An iterator to the first element of the container.
      */
     Iterator begin(bool jumpDeleted = true)
     {
@@ -469,6 +484,7 @@ public:
 
     /**
      * @brief Returns an iterator to the end of the container.
+     *
      * @return An iterator to the end of the container.
      */
     Iterator end() { return Iterator(*this, size(), false); }
@@ -478,11 +494,11 @@ public:
      *
      * The iterator is automatically initialized to jump deleted elements of the
      * container. You can change this option by calling this function with
-     * jumpDeleted=false.
+     * jumpDeleted = false.
      *
-     * @param[in] jumpDeleted (def: true): boolean that tells if the iterator
+     * @param[in] jumpDeleted (default: true): boolean that tells if the iterator
      * should jump deleted elements.
-     * @return A const iterator the the first element of the container.
+     * @return A const iterator to the first element of the container.
      */
     ConstIterator begin(bool jumpDeleted = true) const
     {
@@ -492,31 +508,32 @@ public:
 
     /**
      * @brief Returns a const iterator to the end of the container.
+     *
      * @return A const iterator to the end of the container.
      */
     ConstIterator end() const { return ConstIterator(*this, size(), false); }
 
     /**
-     * @brief Returns a ElementContainerProxy object that allows to iterate over
-     * the elements of the containers, providing two member functions begin()
+     * @brief Returns an ElementContainerProxy object that allows to iterate over
+     * the elements of the container, providing two member functions begin()
      * and end(), and allows access to the vector of components.
      *
      * This member function is very useful when you want to iterate over the
-     * elements using the C++ foreach syntax:
+     * elements using the C++ range-based for loop syntax:
      *
      * @code{.cpp}
-     * for (Element& f : m.elements()){
+     * for (ElementType e : m.elements()) {
      *     // do something with this element
      * }
      * @endcode
      *
      * The iterator used to iterate over elements is automatically initialized
      * to jump deleted elements of the container. You can change this option by
-     * calling this function with jumpDeleted=false.
+     * calling this function with jumpDeleted = false.
      *
-     * @param[in] jumpDeleted (def: true): boolean that tells if the iterator
+     * @param[in] jumpDeleted (default: true): boolean that tells if the iterator
      * should jump deleted elements.
-     * @return An object having begin() and end() function, allowing to iterate
+     * @return An object having begin() and end() functions, allowing to iterate
      * over the container.
      */
     auto elements(bool jumpDeleted = true)
@@ -525,26 +542,26 @@ public:
     }
 
     /**
-     * @brief Returns a ElementContainerProxy object that allows to iterate over
-     * the elements of the containers, providing two member functions begin()
+     * @brief Returns an ElementContainerProxy object that allows to iterate over
+     * the elements of the container, providing two member functions begin()
      * and end(), and allows access to the vector of components.
      *
      * This member function is very useful when you want to iterate over the
-     * elements using the C++ foreach syntax:
+     * elements using the C++ range-based for loop syntax:
      *
      * @code{.cpp}
-     * for (Element& f : m.elements()){
+     * for (ConstElementType e : m.elements()) {
      *     // do something with this element
      * }
      * @endcode
      *
      * The iterator used to iterate over elements is automatically initialized
      * to jump deleted elements of the container. You can change this option by
-     * calling this function with jumpDeleted=false.
+     * calling this function with jumpDeleted = false.
      *
-     * @param[in] jumpDeleted (def: true): boolean that tells if the iterator
+     * @param[in] jumpDeleted (default: true): boolean that tells if the iterator
      * should jump deleted elements.
-     * @return An object having begin() and end() function, allowing to iterate
+     * @return An object having begin() and end() functions, allowing to iterate
      * over the container.
      */
     auto elements(bool jumpDeleted = true) const
@@ -557,8 +574,14 @@ public:
 
     // ### Enable - Disable
 
+    /**
+     * @brief Enables all optional components in the container.
+     */
     void enableAllOptionalComponents() { mElemComponents.enableAll(); }
 
+    /**
+     * @brief Disables all optional components in the container.
+     */
     void disableAllOptionalComponents()
     {
         disableOptionalComponents(Components {});
@@ -570,6 +593,9 @@ public:
      *
      * Non-optional components are always available at compile-time (true).
      * Optional components return true if currently enabled, false otherwise.
+     *
+     * @tparam COMP_ID: The ID of the component to check.
+     * @return `true` if currently available, `false` otherwise.
      */
     template<uint COMP_ID>
     bool isComponentAvailable() const
@@ -591,6 +617,8 @@ public:
 
     /**
      * @brief Enables the component with the given COMP_ID.
+     *
+     * @tparam COMP_ID: The ID of the component to enable.
      */
     template<uint COMP_ID>
     void enableOptionalComponent()
@@ -608,6 +636,8 @@ public:
     /**
      * @brief Disables the component with the given COMP_ID.
      * Note: Non-optional components cannot be disabled.
+     *
+     * @tparam COMP_ID: The ID of the component to disable.
      */
     template<uint COMP_ID>
     void disableOptionalComponent()
@@ -760,7 +790,7 @@ public:
      * container to the given output stream.
      *
      * @tparam K: The type of the custom components to serialize.
-     * @param os: The output stream to write to.
+     * @param[out] os: The output stream to write to.
      */
     template<typename K>
     void serializeElemCustomComponentsOfType(std::ostream& os) const
@@ -774,7 +804,7 @@ public:
      * input stream and stores them into this container.
      *
      * @tparam K: The type of the custom components to deserialize.
-     * @param is: The input stream to read from.
+     * @param[in] is: The input stream to read from.
      */
     template<typename K>
     void deserializeElemCustomComponentsOfType(std::istream& is)
@@ -787,7 +817,7 @@ protected:
     /**
      * @brief Appends all elements from another container of the same type.
      *
-     * @param[in] other The other container whose elements will be appended.
+     * @param[in] other: The other container whose elements will be appended.
      */
     void append(const ElementContainer& other)
     {
@@ -801,7 +831,7 @@ protected:
      * parallel vectors tuple (including size, component enable flags, and
      * data).
      *
-     * @param os The output stream to write to.
+     * @param[out] os: The output stream to write to.
      */
     void serialize(std::ostream& os) const
     {
@@ -816,7 +846,7 @@ protected:
      * parallel vectors tuple. If custom components are supported, existing
      * custom components are cleared.
      *
-     * @param is The input stream to read from.
+     * @param[in] is: The input stream to read from.
      */
     void deserialize(std::istream& is)
     {
@@ -827,20 +857,42 @@ protected:
         }
     }
 
+    /**
+     * @brief Returns a reference to the enclosing parent mesh.
+     *
+     * @return A reference to the parent mesh.
+     */
     decltype(auto) parentMesh() requires (!std::is_void_v<ParentMesh>)
     {
         assert(mParentMesh != nullptr && "Parent mesh pointer is null");
         return *mParentMesh;
     }
 
+    /**
+     * @brief Returns a const reference to the enclosing parent mesh.
+     *
+     * @return A const reference to the parent mesh.
+     */
     decltype(auto) parentMesh() const requires (!std::is_void_v<ParentMesh>)
     {
         assert(mParentMesh != nullptr && "Parent mesh pointer is null");
         return std::as_const(*mParentMesh);
     }
 
+    /**
+     * @brief Sets the pointer to the enclosing parent mesh.
+     *
+     * @param[in] mesh: Pointer to the parent mesh.
+     */
     void setParentMesh(ParentMesh* mesh) { mParentMesh = mesh; }
 
+    /**
+     * @brief Updates references to elements of type TARGET_ELEM_ID according to
+     * the newIndices mapping vector.
+     *
+     * @tparam TARGET_ELEM_ID: The element ID whose references should be updated.
+     * @param[in] newIndices: A vector mapping old element indices to new ones.
+     */
     template<uint TARGET_ELEM_ID>
     void updateReferences(const std::vector<IndexType>& newIndices)
     {
@@ -853,6 +905,14 @@ protected:
         }
     }
 
+    /**
+     * @brief Shifts references to elements of type TARGET_ELEM_ID starting from
+     * a given index by an offset.
+     *
+     * @tparam TARGET_ELEM_ID: The element ID whose references should be shifted.
+     * @param[in] startFrom: The starting index.
+     * @param[in] offset: The offset value to add to the references.
+     */
     template<uint TARGET_ELEM_ID>
     void shiftReferences(IndexType startFrom, IndexType offset)
     {
@@ -870,8 +930,8 @@ protected:
      * @brief Enables in this container all the optional components that are
      * available and enabled in the given other container.
      *
-     * @tparam OtherContainer The type of the container to check against.
-     * @param[in] other The other container.
+     * @tparam OtherContainer: The type of the container to check against.
+     * @param[in] other: The other container.
      */
     template<typename OtherContainer>
     void enableSameOptionalComponentsOf(const OtherContainer& other)
@@ -883,7 +943,8 @@ protected:
      * @brief Imports all elements from the corresponding container of the
      * other mesh into this container.
      *
-     * @param[in] m The other mesh to import from.
+     * @tparam OtherMesh: The type of the other mesh.
+     * @param[in] m: The other mesh to import from.
      */
     template<typename OtherMesh>
     void importFrom(const OtherMesh& m)
@@ -910,9 +971,9 @@ protected:
     /**
      * @brief Returns a reference to the custom component of type K at index i.
      *
-     * @tparam K The type of the custom component.
-     * @param[in] name The name of the custom component.
-     * @param[in] i The index of the element.
+     * @tparam K: The type of the custom component.
+     * @param[in] name: The name of the custom component.
+     * @param[in] i: The index of the element.
      * @return A reference to the custom component value.
      */
     template<typename K>
@@ -923,6 +984,15 @@ protected:
             mCustomComponents.template componentVector<K>(name)[i]);
     }
 
+    /**
+     * @brief Returns a const reference to the custom component of type K at
+     * index i.
+     *
+     * @tparam K: The type of the custom component.
+     * @param[in] name: The name of the custom component.
+     * @param[in] i: The index of the element.
+     * @return A const reference to the custom component value.
+     */
     template<typename K>
     const K& elemCustomComponent(const std::string& name, IndexType i) const
         requires comp::HasCustomComponents<Components>
@@ -1202,6 +1272,8 @@ private:
 
 /**
  * @brief Concept that checks whether a type T is an ElementContainer.
+ *
+ * @tparam T: The type to check.
  */
 template<typename T>
 concept ElementContainerConcept = requires {
