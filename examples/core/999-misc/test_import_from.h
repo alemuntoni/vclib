@@ -17,14 +17,14 @@ inline void testVertexImportFrom()
     mDouble.addVertex(Point3d(1.5, 2.5, 3.5));
 
     MyMesh mFloat;
-    mFloat.enableAll();
+    mFloat.enableAllOptionalComponents();
     mFloat.addVertex(Point3f(0.0f, 0.0f, 0.0f));
 
     // 2. ElementProxy::importFrom on Vertex:
     // mFloat has Position, BitFlags, Normal (optional), Color (optional).
     // mSource has Position, BitFlags, Normal, Color.
     MyMesh mSource;
-    mSource.enableAll();
+    mSource.enableAllOptionalComponents();
     mSource.addVertex(Point3f(1.5f, 2.5f, 3.5f));
     mSource.vertex(0).normal() = Point3f(1.0f, 0.0f, 0.0f);
     mSource.vertex(0).color() = vcl::Color::Green;

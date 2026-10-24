@@ -134,13 +134,15 @@ public:
      * @brief Compacts each custom component vector according to the given
      * indices.
      *
-     * All the indices  of the newIndices vector with value UINT_NULL are
-     * considered as deleted, and the corresponding elements in the custom
-     * component vectors are removed. The remaining indices are compacted, and
-     * the custom component vectors are resized to the new size.
+     * All the indices of the newIndices vector with value
+     * `std::numeric_limits<Index>::max()` are considered as deleted, and the
+     * corresponding elements in the custom component vectors are removed. The
+     * remaining indices are compacted, and the custom component vectors are
+     * resized to the new size.
      *
      * @param[in] newIndices: a vector that tells, for each element index, the
-     * new index of the element, and UINT_NULL if the element has been deleted.
+     * new index of the element, and `std::numeric_limits<Index>::max()` if the
+     * element has been deleted.
      */
     template<typename Index>
     void compact(const std::vector<Index>& newIndices)

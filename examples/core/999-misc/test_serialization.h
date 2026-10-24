@@ -111,7 +111,7 @@ inline void testMeshSerialization()
     {
         MyMesh m = createSampleQuadMesh();
         m.color() = vcl::Color::Cyan;
-        m.enable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
+        m.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
         m.vertex(0).color() = vcl::Color::Red;
         m.vertex(1).color() = vcl::Color::Green;
         m.vertex(2).color() = vcl::Color::Blue;
@@ -140,7 +140,7 @@ inline void testMeshSerialization()
         assert(mRead.vertex(3).position() == m.vertex(3).position());
 
         // Verify Optional Components
-        assert((mRead.isEnabled<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+        assert((mRead.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
         assert(mRead.vertex(0).color() == vcl::Color::Red);
         assert(mRead.vertex(2).color() == vcl::Color::Blue);
         assert(mRead.vertex(3).color() == vcl::Color::White);

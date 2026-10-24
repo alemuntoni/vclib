@@ -322,6 +322,27 @@ public:
     }
 
     /**
+     * @brief Updates references to the vertices of this mesh according to the
+     * mapping stored in the newIndices vector.
+     *
+     * This function is useful when vertices are deleted, compacted, or
+     * permuted, and you want to update all references stored across the
+     * mesh containers to point to their new indices.
+     *
+     * @note This function does not change the position of the vertices in this
+     * container. It updates vertex references stored in this and other
+     * containers of the mesh.
+     *
+     * @param[in] newIndices: A vector mapping old vertex indices to new ones.
+     * If a vertex was deleted or should become unreferenced, its mapping entry
+     * must be std::numeric_limits<Index>::max().
+     */
+    void updateVertexReferences(const std::vector<Index>& newIndices)
+    {
+        Base::updateElementReferences(newIndices);
+    }
+
+    /**
      * @brief Returns an ElementContainerProxy object that allows to iterate over
      * the vertices of the container, providing begin() and end() member
      * functions.

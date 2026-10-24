@@ -320,6 +320,27 @@ public:
     }
 
     /**
+     * @brief Updates references to the faces of this mesh according to the
+     * mapping stored in the newIndices vector.
+     *
+     * This function is useful when faces are deleted, compacted, or
+     * permuted, and you want to update all references stored across the
+     * mesh containers to point to their new indices.
+     *
+     * @note This function does not change the position of the faces in this
+     * container. It updates face references stored in this and other
+     * containers of the mesh.
+     *
+     * @param[in] newIndices: A vector mapping old face indices to new ones.
+     * If a face was deleted or should become unreferenced, its mapping entry
+     * must be std::numeric_limits<Index>::max().
+     */
+    void updateFaceReferences(const std::vector<Index>& newIndices)
+    {
+        Base::updateElementReferences(newIndices);
+    }
+
+    /**
      * @brief Returns an ElementContainerProxy object that allows to iterate over
      * the faces of the container, providing begin() and end() member
      * functions.
@@ -607,8 +628,8 @@ protected:
             using OtherFace = OtherMesh::ConstFace;
 
             // if this is not a triangle mesh nor a polygon mesh (meaning that
-            // we can't control the number of vertex pointers in this mesh), and
-            // this mesh does not have the same number of vertex pointers of the
+            // we can't control the number of vertex references in this mesh), and
+            // this mesh does not have the same number of vertex references of the
             // other, it means that we don't know how to convert these type of
             // meshes (e.g. we don't know how to convert a polygon mesh into a
             // quad mesh, or convert a quad mesh into a pentagonal mesh...)

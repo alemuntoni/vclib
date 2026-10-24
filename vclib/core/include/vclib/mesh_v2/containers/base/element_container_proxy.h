@@ -31,7 +31,7 @@ namespace vcl::meshv2 {
  * Iteration over elements or component views automatically skips elements
  * marked as deleted by default (when jumpDeleted is true).
  *
- * @tparam ContainerType The type of the container (mutable or const).
+ * @tparam Container: The type of the container (mutable or const).
  */
 template<typename Container>
 class ElementContainerProxy :

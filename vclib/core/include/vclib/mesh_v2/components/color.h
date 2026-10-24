@@ -72,7 +72,7 @@ using OptionalColor = Color<true>;
  * components, an ElementProxy, an ElementContainer, or a Mesh) has the Color
  * component (COMP_ID = CompId::COLOR).
  *
- * @tparam T The type to be tested for conformity to HasColor.
+ * @tparam T: The type to be tested for conformity to HasColor.
  *
  * @ingroup components_concepts
  */
@@ -82,7 +82,7 @@ concept HasColor = HasComponent<CompId::COLOR, T>;
 /**
  * @brief A concept that checks whether a type T has the Color component and it is optional.
  *
- * @tparam T The type to be tested for conformity to HasOptionalColor.
+ * @tparam T: The type to be tested for conformity to HasOptionalColor.
  *
  * @ingroup components_concepts
  */
@@ -95,7 +95,7 @@ concept HasOptionalColor =
 /**
  * @brief Checks if the given Element has Color component available.
  *
- * @param[in] element The element to check.
+ * @param[in] element: The element to check.
  * @return `true` if the element has Color component available, `false`
  * otherwise.
  */

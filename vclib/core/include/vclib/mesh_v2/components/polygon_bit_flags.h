@@ -20,7 +20,7 @@ namespace vcl::meshv2::comp {
  * @brief Struct that holds the data for PolygonBitFlags: a BitSet<uint> for the
  * face flags and a Vector of BitSet<uchar> for the per-edge flags.
  *
- * @tparam N The size of the container representing the number of storable bit
+ * @tparam N: The size of the container representing the number of storable bit
  * flags for each edge of the Polygon. If negative (default -1), the container
  * is dynamic and tied to the vertex count.
  */

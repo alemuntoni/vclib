@@ -70,8 +70,12 @@ public:
 
 protected:
     /**
-     * @brief Updates the stored reference indices according to newIndices
-     * mapping after compaction of the referenced element container.
+     * @brief Updates the stored reference indices according to the newIndices
+     * mapping after compaction, permutation, or renumbering of the referenced
+     * element container.
+     *
+     * @tparam TARGET_ELEM_ID: The element ID of the referenced elements.
+     * @param[in] newIndices: A vector mapping old element indices to new ones.
      */
     template<uint TARGET_ELEM_ID>
     void updateReferences(
@@ -91,6 +95,9 @@ protected:
     /**
      * @brief Shifts the stored reference indices by offset if they match
      * TARGET_ELEM_ID. Used during append operations.
+     *
+     * @tparam TARGET_ELEM_ID: The element ID of the referenced elements.
+     * @param[in] offset: The offset value to add to the references.
      */
     template<uint TARGET_ELEM_ID>
     void shiftReferences(this auto&& self, IndexType offset)

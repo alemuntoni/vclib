@@ -27,8 +27,8 @@ namespace vcl::meshv2 {
  * It does not allow mutating the container size or capacity, protecting the
  * Structure of Arrays (SoA) synchronization invariants.
  *
- * @tparam COMP_ID The component ID.
- * @tparam ContainerType The type of the container (mutable or const).
+ * @tparam COMP_ID: The component ID.
+ * @tparam Container: The type of the container (mutable or const).
  */
 template<uint COMP_ID, typename Container>
 class ComponentView :

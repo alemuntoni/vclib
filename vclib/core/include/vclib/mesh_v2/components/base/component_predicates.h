@@ -180,8 +180,8 @@ concept HasOptionalComponent =
  * @brief Checks if the given Element has the component COMPONENT_ID available
  * (present at compile time and enabled at run time).
  *
- * @tparam COMPONENT_ID The component ID to check.
- * @param[in] element The element to check.
+ * @tparam COMPONENT_ID: The component ID to check.
+ * @param[in] element: The element to check.
  * @return true if the element has the component and it is enabled, false otherwise.
  *
  * @ingroup base

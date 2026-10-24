@@ -23,7 +23,7 @@ namespace vcl::meshv2::comp {
 
 /**
  * @brief The VertexReferences class represents a component that stores a
- * container of indices or pointers to vertices that will be part of an Element
+ * container of indices to vertices that will be part of an Element
  * (e.g. Face, Edge, Tetrahedron, etc.).
  *
  * The container of Vertex references is a random access container that could
@@ -44,7 +44,7 @@ namespace vcl::meshv2::comp {
  *
  * @code{.cpp}
  * uint n = f.vertexCount();
- * auto* v = f.vertex(0);
+ * auto v = f.vertex(0);
  * uint vi = f.vertexIndex(0);
  * @endcode
  *
@@ -90,8 +90,8 @@ public:
      * @brief Empty constructor.
      *
      * If the VertexReferences container size is static, initializes all the
-     * pointers/indices to `nullptr`/`UINT_NULL`, otherwise the container will
-     * be empty.
+     * indices to `std::numeric_limits<IndexType>::max()`, otherwise the container
+     * will be empty.
      */
     VertexReferences() = default;
 

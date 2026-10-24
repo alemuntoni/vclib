@@ -28,7 +28,7 @@ namespace vcl::meshv2::comp {
  * auto pos = v.position();
  * @endcode
  *
- * @tparam P The type of the position. This template argument must satisfy the
+ * @tparam P: The type of the position. This template argument must satisfy the
  * PointConcept.
  *
  * @ingroup components
@@ -85,7 +85,7 @@ concept HasOptionalPosition =
 /**
  * @brief Checks if the given Element has Position component available.
  *
- * @param[in] element The element to check.
+ * @param[in] element: The element to check.
  * @return `true` if the element has Position component available, `false`
  * otherwise.
  */
@@ -114,7 +114,7 @@ void Position<P, OPT>::importFrom(this auto&& self, const OtherElement& other, b
  * @brief The Position3 alias of the Position component that uses 3-dimensional
  * Points.
  *
- * @tparam Scalar The scalar type of the point (e.g. float, double).
+ * @tparam Scalar: The scalar type of the point (e.g. float, double).
  *
  * @ingroup components
  */

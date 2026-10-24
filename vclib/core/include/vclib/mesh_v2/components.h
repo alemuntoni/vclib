@@ -19,6 +19,15 @@
 #include "components/vertex_references.h"
 #include "components/wedges.h"
 
+
+/**
+ * @defgroup components Components
+ * @ingroup mesh
+ *
+ * @brief List of all the Component classes, along with their concepts and
+ * functions.
+ */
+
 /**
  * @defgroup components_concepts Components Concepts
  * @ingroup mesh_concepts

@@ -76,7 +76,7 @@ protected:
  * components, an ElementProxy, an ElementContainer, or a Mesh) has the TexCoord
  * component (COMP_ID = CompId::TEX_COORD).
  *
- * @tparam T The type to be tested for conformity to HasTexCoord.
+ * @tparam T: The type to be tested for conformity to HasTexCoord.
  *
  * @ingroup components_concepts
  */
@@ -86,7 +86,7 @@ concept HasTexCoord = HasComponent<CompId::TEX_COORD, T>;
 /**
  * @brief A concept that checks whether a type T has the TexCoord component and it is optional.
  *
- * @tparam T The type to be tested for conformity to HasOptionalTexCoord.
+ * @tparam T: The type to be tested for conformity to HasOptionalTexCoord.
  *
  * @ingroup components_concepts
  */

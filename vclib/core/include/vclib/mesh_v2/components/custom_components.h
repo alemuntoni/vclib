@@ -57,7 +57,7 @@ public:
      * @brief Returns true if the element has a custom component with the given
      * name, false otherwise. The type of the custom component is not checked.
      *
-     * @param[in] compName The name of the custom component.
+     * @param[in] compName: The name of the custom component.
      * @return true if the element has a custom component with the given name,
      * false otherwise.
      */
@@ -70,8 +70,8 @@ public:
      * @brief Returns true if the custom component of the given name is of the
      * type given as template argument, false otherwise.
      *
-     * @tparam CompType The type of the custom component to check.
-     * @param[in] compName The name of the custom component.
+     * @tparam CompType: The type of the custom component to check.
+     * @param[in] compName: The name of the custom component.
      * @return true if the custom component of the given name is of the type
      * CompType, false otherwise.
      */
@@ -88,7 +88,7 @@ public:
      * @brief Returns the `std::type_index` of the custom component of the given
      * name.
      *
-     * @param[in] compName The name of the custom component.
+     * @param[in] compName: The name of the custom component.
      * @return The `std::type_index` of the custom component of the given name.
      */
     std::type_index customComponentType(
@@ -113,7 +113,7 @@ public:
      * @brief Returns a vector of strings containing the names of the custom
      * components of the type given as template argument.
      *
-     * @tparam CompType The type of the custom components to retrieve.
+     * @tparam CompType: The type of the custom components to retrieve.
      * @return A vector of strings containing the names of the custom
      * components of the type given as template argument.
      */
@@ -133,8 +133,8 @@ public:
      * @throws vcl::BadCustomComponentTypeException if the custom component
      * is not of type CompType.
      *
-     * @tparam CompType The type of the custom component to retrieve.
-     * @param[in] compName The name of the custom component.
+     * @tparam CompType: The type of the custom component to retrieve.
+     * @param[in] compName: The name of the custom component.
      * @return A reference to the custom component of the given name.
      */
     template<typename CompType>
@@ -158,7 +158,7 @@ protected:
  * components, an ElementProxy, an ElementContainer, or a Mesh) has the
  * CustomComponents component (COMP_ID = CompId::CUSTOM_COMPONENTS).
  *
- * @tparam T The type to be tested for conformity to HasCustomComponents.
+ * @tparam T: The type to be tested for conformity to HasCustomComponents.
  *
  * @ingroup components_concepts
  */

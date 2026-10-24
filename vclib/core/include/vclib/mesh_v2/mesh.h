@@ -8,15 +8,11 @@
 #ifndef VCL_MESH_V2_MESH_H
 #define VCL_MESH_V2_MESH_H
 
+#include "containers.h"
+#include "elements.h"
+#include "mesh_components.h"
+
 #include <vclib/base.h>
-#include <vclib/mesh_v2/containers/base/base.h>
-#include <vclib/mesh_v2/containers/base/custom_component_vector_handle.h>
-#include <vclib/mesh_v2/containers/face_container.h>
-#include <vclib/mesh_v2/containers/vertex_container.h>
-#include <vclib/mesh_v2/elements/base/base.h>
-#include <vclib/mesh_v2/elements/face.h>
-#include <vclib/mesh_v2/elements/vertex.h>
-#include <vclib/mesh_v2/mesh_components.h>
 
 #include <array>
 #include <concepts>
@@ -29,12 +25,19 @@
 namespace vcl::meshv2 {
 
 /**
+ * @defgroup mesh Mesh
+ *
+ * @brief List of classes, aliases, concepts and functions used for the
+ * creation, customization, usage and manipulation of Mesh classes.
+ */
+
+/**
  * @brief The Mesh class represents a generic mesh composed of element
  * containers (VertexContainer, FaceContainer, etc.) and mesh-level components.
  *
- * The Mesh class will expose all the public members of its containers and is
+ * The Mesh class will expose all the public members of its containers and its
  * components, and its role is to implement all the functionalities that allow
- * these containers to comunicate (e.g. an operation on the vertex container
+ * these containers to communicate (e.g. an operation on the vertex container
  * that requires to update also some face information).
  *
  * Therefore, in this page are documented only the functions that in some way
@@ -43,7 +46,7 @@ namespace vcl::meshv2 {
  * or from its Components, and depend on all the templates that compose a
  * specific Mesh definition.
  *
- * @tparam Args Container types (e.g. VertexContainer<...>, FaceContainer<...>)
+ * @tparam Args: Container types (e.g. VertexContainer<...>, FaceContainer<...>)
  * and mesh-level components.
  *
  * @ingroup mesh
@@ -96,7 +99,30 @@ public:
         TypeWrapper<Rebound<Args>...>>::type;
 
     /**
-     * @brief Checks at compile-time if this Mesh has a container for ELEM_ID.
+     * @brief Type alias for the container of the given ELEM_ID.
+     */
+    template<uint ELEM_ID>
+    using ContainerType =
+        typename detail::FindContainer<ELEM_ID, Rebound<Args>...>::type;
+
+    /* Constexpr static member functions */
+
+    /**
+     * @brief Returns true if this Mesh has a container of elements having the
+     * same Element ID of the template ELEM_ID.
+     *
+     * Example of usage (Note: EdgeMesh has Vertices, but not Faces):
+     *
+     * @code{.cpp}
+     * static_assert(vcl::EdgeMesh::hasContainerOf<vcl::ElemId::VERTEX>(),
+     *                    "EdgeMesh does not have Vertices");
+     * static_assert(!vcl::EdgeMesh::hasContainerOf<vcl::ElemId::FACE>(),
+     *                    "EdgeMesh has Faces");
+     * @endcode
+     *
+     * @tparam ELEM_ID: the Element ID to check.
+     * @return true if this Mesh has a container of elements having the same
+     * Element ID of the template ELEM_ID.
      */
     template<uint ELEM_ID>
     static constexpr bool hasContainerOf()
@@ -105,24 +131,68 @@ public:
     }
 
     /**
-     * @brief Type alias for the container of the given ELEM_ID.
-     */
-    template<uint ELEM_ID>
-    using ContainerType =
-        typename detail::FindContainer<ELEM_ID, Rebound<Args>...>::type;
-
-    /**
-     * @brief Returns true if this Mesh has a container for ELEM_ID and that
-     * container contains the component COMP_ID.
+     * @brief Returns true if this Mesh has a container of elements having the
+     * same Element ID of the template ELEM_ID and that container has a
+     * Component having the same Component ID of the template COMP_ID.
      *
-     * @tparam ELEM_ID The ID of the element (e.g. ElemId::VERTEX).
-     * @tparam COMP_ID The ID of the component (e.g. CompId::CUSTOM_COMPONENTS).
+     * Example of usage (Note: TriMesh has per Vertex TexCoords, but not adj
+     * edges):
+     *
+     * @code{.cpp}
+     * static_assert(vcl::TriMesh::hasPerElementComponent<
+     *         vcl::ElemId::VERTEX, vcl::CompId::TEX_COORD>(),
+     *         "TriMesh does not have per Vertex TexCoords");
+     *
+     * static_assert(!vcl::TriMesh::hasPerElementComponent<
+     *        vcl::ElemId::VERTEX, vcl::CompId::ADJACENT_EDGES>(),
+     *        "TriMesh has per Vertex Adjacent Edges");
+     * @endcode
+     *
+     * @tparam ELEM_ID: the Element ID to check.
+     * @tparam COMP_ID: the Component ID to check.
+     * @return `true` if this Mesh has a container of elements having ID ELEM_ID
+     * and that container has a component having ID COMP_ID, `false` otherwise.
      */
     template<uint ELEM_ID, uint COMP_ID>
     static constexpr bool hasPerElementComponent()
     {
         if constexpr (hasContainerOf<ELEM_ID>()) {
             return comp::HasComponent<COMP_ID, ContainerType<ELEM_ID>>;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * @brief Returns true if this Mesh has a container of elements having the
+     * same Element ID of the template ELEM_ID and that container has an
+     * Optional Component having the same Component ID of the template COMP_ID.
+     *
+     * Example of usage (Note: TriMesh has per Vertex optional TexCoords, and
+     * non-optional Normals):
+     *
+     * @code{.cpp}
+     * static_assert(vcl::TriMesh::hasPerElementOptionalComponent<
+     *         vcl::ElemId::VERTEX, vcl::CompId::TEX_COORD>(),
+     *         "TriMesh does not have per Vertex Optional TexCoords");
+     *
+     * static_assert(!vcl::TriMesh::hasPerElementOptionalComponent<
+     *        vcl::ElemId::VERTEX, vcl::CompId::NORMAL>(),
+     *        "TriMesh has per Vertex Optional Normals");
+     * @endcode
+     *
+     * @tparam ELEM_ID: the Element ID to check.
+     * @tparam COMP_ID: the Component ID to check.
+     * @return `true` if this Mesh has a container of elements having ID ELEM_ID
+     * and that container has an optional component having ID COMP_ID, `false`
+     * otherwise.
+     */
+    template<uint ELEM_ID, uint COMP_ID>
+    static constexpr bool hasPerElementOptionalComponent()
+    {
+        if constexpr (hasContainerOf<ELEM_ID>()) {
+            return comp::HasOptionalComponent<COMP_ID, ContainerType<ELEM_ID>>;
         }
         else {
             return false;
@@ -139,7 +209,7 @@ public:
     /**
      * @brief Copy constructor: deep copies containers and components.
      *
-     * @param oth: the mesh from which constructo this Mesh.
+     * @param other: the mesh from which to construct this Mesh.
      */
     Mesh(const Mesh& other) :
             Rebound<Args>(static_cast<const Rebound<Args>&>(other))...
@@ -192,116 +262,81 @@ public:
 
     friend void swap(Mesh& a, Mesh& b) noexcept { a.swap(b); }
 
-    /* Container introspection and retrieval */
-
-    /* Component Enable / Disable */
-
     /**
-     * @brief Enables the component COMP_ID on container ELEM_ID.
+     * @brief Checks if all containers in the mesh are compact (no deleted
+     * elements).
      */
-    template<uint ELEM_ID, uint COMP_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    void enable()
+    bool isCompact() const
     {
-        ContainerType<ELEM_ID>::template enableOptionalComponent<COMP_ID>();
+        return (isContainerCompact<Rebound<Args>>() && ...);
     }
 
     /**
-     * @brief Disables the component COMP_ID on container ELEM_ID.
+     * @brief Clears all elements across all containers in the mesh.
      */
-    template<uint ELEM_ID, uint COMP_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    void disable()
-    {
-        ContainerType<ELEM_ID>::template disableOptionalComponent<COMP_ID>();
-    }
+    void clear() { (clearContainer<Rebound<Args>>(), ...); }
 
     /**
-     * @brief Checks if component COMP_ID is available on container ELEM_ID.
+     * @brief Compacts all the containers of the mesh.
+     *
+     * Removes all the deleted elements from each container, compacting
+     * the containers and then updating automatically all the reference indices.
      */
-    template<uint ELEM_ID, uint COMP_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    bool isComponentAvailable() const
-    {
-        return ContainerType<ELEM_ID>::template isComponentAvailable<COMP_ID>();
-    }
+    void compact() { (compactContainer<Rebound<Args>>(), ...); }
 
     /**
-     * @brief Alias of isComponentAvailable.
+     * @brief Checks if all containers in the mesh are empty.
      */
-    template<uint ELEM_ID, uint COMP_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    bool isAvailable() const
-    {
-        return isComponentAvailable<ELEM_ID, COMP_ID>();
-    }
+    bool empty() const { return (isContainerEmpty<Rebound<Args>>() && ...); }
 
     /**
-     * @brief Checks if component COMP_ID is enabled on container ELEM_ID.
+     * @brief Enables all the optional components of the elements of the
+     * containers of the mesh.
      */
-    template<uint ELEM_ID, uint COMP_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    bool isEnabled() const
-    {
-        return isComponentAvailable<ELEM_ID, COMP_ID>();
-    }
-
-    /**
-     * @brief Enables all components on container ELEM_ID.
-     */
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    void enableAll()
-    {
-        ContainerType<ELEM_ID>::enableAll();
-    }
-
-    /**
-     * @brief Disables all non-mandatory components on container ELEM_ID.
-     */
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    void disableAll()
-    {
-        ContainerType<ELEM_ID>::disableAll();
-    }
-
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
     void enableAllOptionalComponents()
     {
-        enableAll<ELEM_ID>();
+        (enableAllContainer<Rebound<Args>>(), ...);
     }
 
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
+    /**
+     * @brief Disables all the optional components of the elements of the
+     * containers of the mesh.
+     */
     void disableAllOptionalComponents()
     {
-        disableAll<ELEM_ID>();
+        (disableAllContainer<Rebound<Args>>(), ...);
     }
 
-    /**
-     * @brief Enables all components across all element containers.
-     */
-    void enableAll() { (enableAllContainer<Rebound<Args>>(), ...); }
+    // TODO: transformedBoundingBox()
 
     /**
-     * @brief Disables all non-mandatory components across all element
-     * containers.
-     */
-    void disableAll() { (disableAllContainer<Rebound<Args>>(), ...); }
-
-    void enableAllOptionalComponents() { enableAll(); }
-
-    void disableAllOptionalComponents() { disableAll(); }
-
-    /**
-     * @brief Enables all the optional components of this Mesh that are also
-     * available and enabled in the other mesh m.
+     * @brief Enables all the OptionalComponents of this mesh according to the
+     * Components available on the OtherMeshType m.
      *
-     * @tparam OtherMeshType The type of the mesh from which to copy component
-     * states.
-     * @param[in] m The other mesh to check.
+     * This function is useful to call before importing data from another
+     * MeshType, to be sure that all the available data contained in the
+     * MeshType mesh will be imported.
+     *
+     * This function:
+     * - disables all the optional components that are not available in m
+     * - enables all the optional components that are available in m (which can
+     *   be both optional or not)
+     *
+     * Example of usage:
+     *
+     * @code{.cpp}
+     * MeshType m1;
+     * OtherMeshType m2;
+     *
+     * // do stuff on m2
+     *
+     * m1.enableSameOptionalComponentsOf(m2); // m1 enables all the available
+     *                                        // components of m2
+     * m1.importFrom(m2); // m1 will import all the data contained
+     *                    // in m2 that can be stored in m1
+     * @endcode
+     *
+     * @param[in] m: the mesh from which to enable the optional components.
      */
     template<typename OtherMeshType>
     void enableSameOptionalComponentsOf(const OtherMeshType& m)
@@ -310,33 +345,17 @@ public:
     }
 
     /**
-     * @brief Imports all the data (elements and mesh-level components) from the
-     * input Mesh m to this Mesh.
+     * @brief Appends all the elements contained in the mesh m to this mesh.
      *
-     * This function calls, for each Container and Component of the mesh, its
-     * importFrom function.
+     * @note This function does not enable the optional components that are
+     * disabled in this mesh, but are available in m. Enabling the components
+     * that are available in m, but not in this mesh, is up to the user.
      *
-     * @param[in] m The mesh from which to import all the data.
-     */
-    template<typename OtherMeshType>
-    void importFrom(const OtherMeshType& m)
-    {
-        (importFromHelper<Rebound<Args>>(m), ...);
-    }
-
-    /**
-     * @brief Appends the contents of another Mesh of the exact same type to
-     * this Mesh.
+     * @warning This function is applied only to the containers of the meshes.
+     * It does not import all the other components of the mesh m (e.g
+     * BoundingBox, TransformMatrix, ...).
      *
-     * Appends the elements of all containers (vertices, faces, etc.) from the
-     * input Mesh m to this Mesh, preserving active and deleted element states,
-     * and shifts all topological references (e.g. face vertex indices) in the
-     * newly appended elements so that they correctly point to the appended
-     * elements.
-     *
-     * @note This operation is only allowed between meshes of the exact same type.
-     *
-     * @param[in] m The mesh to append to this mesh.
+     * @param[in] m: The mesh to append to this mesh.
      */
     void append(const Mesh& m)
     {
@@ -363,62 +382,25 @@ public:
         // textures and remap material indices of the newly appended faces.
     }
 
-    /* Unified mesh state */
-
     /**
-     * @brief Checks if all containers in the mesh are compact (no deleted
-     * elements).
+     * @brief Imports all the components that can be imported from another type
+     * of mesh.
+     *
+     * This function can be called from any Mesh type having all the Elements
+     * and Components that implement the member function importFrom.
+     *
+     * @note this function does not enable optional components that are
+     * disabled. If you want to import all the possible data including also
+     * disabled components of this mesh, you should call the function
+     * m1.enableSameOptionalComponentsOf(m2) before this function.
+     *
+     * @param[in] m: the mesh from which to import all the data.
      */
-    bool isCompact() const
+    template<typename OtherMeshType>
+    void importFrom(const OtherMeshType& m)
     {
-        return (isContainerCompact<Rebound<Args>>() && ...);
+        (importFromHelper<Rebound<Args>>(m), ...);
     }
-
-    /**
-     * @brief Checks if the container of elements having ID ELEM_ID is compact.
-     */
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    bool isCompact() const
-    {
-        return this->ContainerType<ELEM_ID>::isElementContainerCompact();
-    }
-
-    /**
-     * @brief Compacts all containers in the mesh, removing all deleted elements
-     * and updating all cross-container references.
-     */
-    void compact() { (compactContainer<Rebound<Args>>(), ...); }
-
-    /**
-     * @brief Compacts the container of elements having ID ELEM_ID.
-     */
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    auto compact()
-    {
-        return this->ContainerType<ELEM_ID>::compactElements();
-    }
-
-    /**
-     * @brief Broadcasts updated element indices of ELEM_ID to all containers
-     * so that any referencing components are updated.
-     */
-    template<uint ELEM_ID>
-    void updateAllReferences(const std::vector<IndexType>& newIndices)
-    {
-        (updateContainerReferences<Rebound<Args>, ELEM_ID>(newIndices), ...);
-    }
-
-    /**
-     * @brief Clears all elements across all containers in the mesh.
-     */
-    void clear() { (clearContainer<Rebound<Args>>(), ...); }
-
-    /**
-     * @brief Checks if all containers in the mesh are empty.
-     */
-    bool empty() const { return (isContainerEmpty<Rebound<Args>>() && ...); }
 
     /**
      * @brief Serializes the mesh to the given binary output stream.
@@ -428,7 +410,7 @@ public:
      * containers (with their SoA column buffers and component enable states)
      * and serializable mesh-level components.
      *
-     * @param[out] os The binary output stream to write to.
+     * @param[out] os: The binary output stream to write to.
      */
     void serialize(std::ostream& os) const
     {
@@ -448,8 +430,9 @@ public:
      * components, and reconnects all child container parent pointers back
      * to this mesh.
      *
-     * @param[in] is The binary input stream to read from.
-     * @throws std::runtime_error If the magic header or format version is invalid.
+     * @param[in] is: The binary input stream to read from.
+     * @throws std::runtime_error: If the magic header or format version is
+     * invalid.
      */
     void deserialize(std::istream& is)
     {
@@ -472,278 +455,653 @@ public:
         setParentMeshPointersToContainers();
     }
 
-    /* Generic element access by ELEM_ID */
+    /*** Generic Element functions ***/
 
+    /**
+     * @brief Returns the element of the given type at the given index inside
+     * its container of this mesh.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * The function does not perform any check on the index. If the index is out
+     * of range, the behaviour is undefined.
+     *
+     * @tparam ELEM_ID: the ID of the element to return.
+     * @return the element of the given type ID at the given index inside its
+     * container of this mesh.
+     */
     template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    decltype(auto) element(uint i)
+    decltype(auto) element(this auto&& self, uint i)
+        requires (hasContainerOf<ELEM_ID>())
     {
-        return ContainerType<ELEM_ID>::element(i);
+        return self.ContainerType<ELEM_ID>::element(i);
     }
 
+    /**
+     * @brief Returns the number of elements of the given type in this mesh.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @return the number of elements of the given type in this mesh.
+     */
     template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    decltype(auto) element(uint i) const
-    {
-        return ContainerType<ELEM_ID>::element(i);
-    }
-
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    decltype(auto) elements(bool jumpDeleted = true)
-    {
-        return ContainerType<ELEM_ID>::elements(jumpDeleted);
-    }
-
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    decltype(auto) elements(bool jumpDeleted = true) const
-    {
-        return ContainerType<ELEM_ID>::elements(jumpDeleted);
-    }
-
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    std::size_t count() const
+    std::size_t count() const requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::elementCount();
     }
 
+    /**
+     * @brief Returns the size of the container of elements of the given type in
+     * this mesh.
+     *
+     * The size of a container may be different from the number of elements, if
+     * the container has some deleted elements.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @return the size of the container of elements of the given type in this
+     * mesh.
+     */
     template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    std::size_t containerSize() const
+    std::size_t containerSize() const requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::elementContainerSize();
     }
 
+    /**
+     * @brief Returns the number of deleted elements of the given type in this
+     * mesh.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @return the number of deleted elements of the given type in this mesh.
+     */
     template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    std::size_t deletedCount() const
+    std::size_t deletedCount() const requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::deletedElementCount();
     }
 
+    /**
+     * @brief Adds a new element of the given type into its container, returning
+     * the index of the added element in its container.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @return the index of the added element in its container.
+     */
     template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    decltype(auto) add()
+    decltype(auto) add() requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::addElement();
     }
 
+    /**
+     * @brief Adds `n` new elements of the given type into its container,
+     * returning the index of the first added element in its container.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @param[in] n: the number of elements to add.
+     * @return the index of the first added element in its container.
+     */
     template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    decltype(auto) add(std::size_t n)
+    decltype(auto) add(std::size_t n) requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::addElements(n);
     }
 
+    /**
+     * @brief Clears the container of ELEM_ID elements in the Mesh, deleting all
+     * the Elements.
+     *
+     * The contained elements are actually removed from the container, not only
+     * marked as deleted. Therefore, the container will have size 0
+     * (`mesh.containerSize<ELEM_ID>() == 0`) after the call of this function.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @note This function does not cause a reallocation of the container.
+     *
+     * @warning Any references to ELEM_ID elements in the Mesh will be left
+     * unchanged, and therefore will point to invalid indices.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     */
     template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    void resize(std::size_t n)
-    {
-        ContainerType<ELEM_ID>::resizeElements(n);
-    }
-
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    void reserve(std::size_t n)
-    {
-        ContainerType<ELEM_ID>::reserveElements(n);
-    }
-
-    template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    void clear()
+    void clearElements() requires (hasContainerOf<ELEM_ID>())
     {
         ContainerType<ELEM_ID>::clearElements();
     }
 
+    /**
+     * @brief Resizes the Element container to contain `n` Elements of type
+     * ELEM_ID.
+     *
+     * If the new size is greater than the old one, new Elements are added to
+     * the container, and a reallocation may happen. If the new size is smaller
+     * than the old one, the container will keep its first non-deleted `n`
+     * Elements, and the remaining Elements are marked as deleted.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @warning The given size `n` is relative to the number of non-deleted
+     * Elements, not to the size of the Element container. For example, if you
+     * have a mesh with 10 Faces and faceContainerSize() == 20, calling
+     * resize<ElemId::FACE>(5) will not cause a reallocation of the container,
+     * but will mark as deleted the least 5 non-deleted Faces of the container.
+     * In the same scenario, calling resize<ElemId::FACE>(15) will result in a
+     * Face container having 15 new Faces and faceContainerSize() == 25. The
+     * latest 5 Faces will be the newly added.
+     *
+     * @warning Any references to deleted Elements in the Mesh will be left
+     * unchanged, and therefore will point to invalid Elements. This means that
+     * if you call this member function with a lower number of Elements, you'll
+     * need to manually manage the references/indices to the deleted Elements.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @param[in] n: the new size of the container in the mesh.
+     */
     template<uint ELEM_ID>
-    requires (hasContainerOf<ELEM_ID>())
-    void deleteElement(uint i)
+    void resize(std::size_t n) requires (hasContainerOf<ELEM_ID>())
+    {
+        ContainerType<ELEM_ID>::resizeElements(n);
+    }
+
+    /**
+     * @brief Reserves a number of elements of the given type in its container.
+     * The function does not add any element to the container, but it just
+     * reserves a number of elements that can be added without causing a
+     * reallocation of the container.
+     *
+     * This is useful when you know (or you have an idea) of how much elements
+     * are going to add in a mesh, and you want to avoid multiple (expansive)
+     * reallocations of the container during the addition of the elements.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the type ID of the element.
+     * @param[in] n: the new capacity of the container in the mesh.
+     */
+    template<uint ELEM_ID>
+    void reserve(std::size_t n) requires (hasContainerOf<ELEM_ID>())
+    {
+        ContainerType<ELEM_ID>::reserveElements(n);
+    }
+
+    /**
+     * @brief Compacts the Container of the given element, removing all the
+     * elements marked as deleted. Element indices will change accordingly. The
+     * function will automatically take care of updating all the Element
+     * references contained in the Mesh.
+     */
+    template<uint ELEM_ID>
+    auto compactElements() requires (hasContainerOf<ELEM_ID>())
+    {
+        return this->ContainerType<ELEM_ID>::compactElements();
+    }
+
+    /**
+     * @brief Marks as deleted the element at the given index from its
+     * container, deduced from the template index ELEM_ID.
+     *
+     * The function does not remove the element from the container, and
+     * therefore it does not cause reallocation or compacting of the container.
+     * The element will be removed from the container only when the container
+     * will be compacted.
+     *
+     * The complexity of this function is O(1).
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @param[in] i: the index of the element to delete.
+     */
+    template<uint ELEM_ID>
+    void deleteElement(std::size_t i) requires (hasContainerOf<ELEM_ID>())
     {
         ContainerType<ELEM_ID>::deleteElement(i);
     }
 
-    /* Element operations by proxy */
-
     template<ElementConcept El>
-    requires (hasContainerOf<std::remove_cvref_t<El>::ELEMENT_ID>())
     void deleteElement(const El& e)
+        requires (hasContainerOf<std::remove_cvref_t<El>::ELEMENT_ID>())
     {
         deleteElement<std::remove_cvref_t<El>::ELEMENT_ID>(e.index());
     }
 
-    /* Per-Element Custom Components */
-
     /**
-     * @brief Checks if the Element container with ELEM_ID has a custom
-     * component with the given name.
+     * @brief Returns a vector that tells, for each element of the container of
+     * ELEM_ID in the mesh, the new index of the element after the container has
+     * been compacted. For each deleted element, its position will be set to
+     * std::numeric_limits<IndexType>::max().
      *
-     * @tparam ELEM_ID The ID of the element (e.g. ElemId::VERTEX).
-     * @param[in] name The name of the custom component to check.
-     * @return true if the element has the custom component, false otherwise.
+     * This function is useful when you need to know the indices of the elements
+     * that they would have in a compact container, without considering the
+     * deleted ones.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @return a vector containing, for each element index, the new index if the
+     * container would be compacted.
      */
     template<uint ELEM_ID>
-    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    auto compactIndices() const requires (hasContainerOf<ELEM_ID>())
+    {
+        return ContainerType<ELEM_ID>::elementCompactIndices();
+    }
+
+    /**
+     * @brief Returns the new index of the element at index `i` of the container
+     * of ELEM_ID after compaction, or std::numeric_limits<IndexType>::max() if
+     * the element is deleted.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @param[in] i: the index of the element.
+     * @return the new index after compaction, or max() if deleted.
+     */
+    template<uint ELEM_ID>
+    auto compactIndices(std::size_t i) const requires (hasContainerOf<ELEM_ID>())
+    {
+        return ContainerType<ELEM_ID>::elementCompactIndices(i);
+    }
+
+    /**
+     * @brief Updates all the indices and references of the elements of the
+     * container of ELEM_ID in the mesh, according to the mapping stored in the
+     * newIndices vector, that tells for each old element index, the new index
+     * of the element in the same container (or
+     * std::numeric_limits<IndexType>::max() if the element must be left as
+     * unreferenced - useful when an element is deleted).
+     *
+     * This function is useful when you move some vertices (e.g. it is
+     * automatically called after every compacting of a container), and you want
+     * to update the indices/references of the elements stored in all the
+     * containers of the mesh.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @note This function *does not change the position of the elements in
+     * their container*. It just updates the indices/references of the elements
+     * stored in their or other containers. This function should be called after
+     * the elements have been actually moved in their container.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @param[in] newIndices: a vector that tells, for each old element index,
+     * the new element index. If the old element must be left as unreferenced,
+     * the value of the vector must be std::numeric_limits<IndexType>::max().
+     */
+    template<uint ELEM_ID>
+    void updateReferences(const std::vector<IndexType>& newIndices)
+        requires (hasContainerOf<ELEM_ID>())
+    {
+        (updateContainerReferences<Rebound<Args>, ELEM_ID>(newIndices), ...);
+    }
+
+    /**
+     * Returns a lightweight view object that stores the begin and end iterators
+     * of the container of the elements having ID ELEM_ID in the mesh. The view
+     * object exposes the iterators trough the `begin()` and `end()` member
+     * functions, and therefore the returned object can be used in range-based
+     * for loops:
+     *
+     * @code{.cpp}
+     * for (auto& el : mesh.elements<ElemId::VERTEX>()) {
+     *     // Do something with el
+     * }
+     * @endcode
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @param[in] jumpDeleted: if `true`, the view will be initialized to jump
+     * deleted elements in the container.
+     * @return a lightweight view object that can be used in range-based for
+     * loops to iterate over elements.
+     */
+    template<uint ELEM_ID>
+    decltype(auto) elements(this auto&& self, bool jumpDeleted = true)
+        requires (hasContainerOf<ELEM_ID>())
+    {
+        return self.ContainerType<ELEM_ID>::elements(jumpDeleted);
+    }
+
+    /**
+     * @brief Returns `true` if Component having ID `COMP_ID` is available
+     * (present at compile time and enabled at run time) for elements having ID
+     * `ELEM_ID` in the mesh.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @tparam COMP_ID: the ID of the component.
+     * @return `true` if Component `COMP_ID` is available for elements of
+     * type `ELEM_ID` in the mesh.
+     */
+    template<uint ELEM_ID, uint COMP_ID>
+    bool isPerElementComponentAvailable() const
+        requires (hasContainerOf<ELEM_ID>())
+    {
+        return ContainerType<ELEM_ID>::template isComponentAvailable<
+            COMP_ID>();
+    }
+
+    /**
+     * @brief Enables the optional Component having ID `COMP_ID` for elements
+     * having ID `ELEM_ID` in the mesh.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID, and that the Element has a optional component having ID
+     * COMP_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @tparam COMP_ID: the ID of the component.
+     */
+    template<uint ELEM_ID, uint COMP_ID>
+    void enablePerElementComponent()
+        requires (hasPerElementOptionalComponent<ELEM_ID, COMP_ID>())
+    {
+        ContainerType<ELEM_ID>::template enableOptionalComponent<COMP_ID>();
+    }
+
+    /**
+     * @brief Disables the optional Component having ID `COMP_ID` for elements
+     * having ID `ELEM_ID` in the mesh.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID, and that the Element has a optional component having ID COMP_ID.
+     * Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @tparam COMP_ID: the ID of the component.
+     */
+    template<uint ELEM_ID, uint COMP_ID>
+    void disablePerElementComponent()
+        requires (hasPerElementOptionalComponent<ELEM_ID, COMP_ID>())
+    {
+        ContainerType<ELEM_ID>::template disableOptionalComponent<COMP_ID>();
+    }
+
+    template<uint ELEM_ID>
+    void enableAllPerElementOptionalComponents()
+        requires (hasContainerOf<ELEM_ID>())
+    {
+        ContainerType<ELEM_ID>::enableAllOptionalComponents();
+    }
+
+    template<uint ELEM_ID>
+    void disableAllPerElementOptionalComponents()
+        requires (hasContainerOf<ELEM_ID>())
+    {
+        ContainerType<ELEM_ID>::disableAllOptionalComponents();
+    }
+
+    /**
+     * @brief Returns `true` if the Element having ID `ELEM_ID` has a custom
+     * component with the given name.
+     *
+     * This function does not take into account the type of the custom
+     * component.
+     *
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID, and that the Element has CustomComponents.
+     * Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @param[in] name: the name of the custom component.
+     * @return `true` if the Element having ID `ELEM_ID` has a custom component
+     * having the given name.
+     */
+    template<uint ELEM_ID>
     bool hasPerElementCustomComponent(const std::string& name) const
+        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         return ContainerType<ELEM_ID>::hasElemCustomComponent(name);
     }
 
     /**
      * @brief Returns a vector containing all the names of the custom components
-     * associated to the Element with ELEM_ID.
+     * of any type associated to the Element having ID `ELEM_ID`.
      *
-     * @tparam ELEM_ID The ID of the element.
-     * @return A vector of strings with all custom component names.
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID, and that the Element has CustomComponents.
+     * Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @return A vector of strings representing all the names of the custom
+     * components for the Element having ID `ELEM_ID`.
      */
     template<uint ELEM_ID>
-    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     std::vector<std::string> perElementCustomComponentNames() const
+        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         return ContainerType<ELEM_ID>::elemCustomComponentNames();
     }
 
     /**
-     * @brief Checks if the custom component of the Element with ELEM_ID is of
-     * type K.
+     * @brief Returns `true` if the Element having ID `ELEM_ID` has a custom
+     * component of type `K` with the given name.
      *
-     * @tparam ELEM_ID The ID of the element.
-     * @tparam K The type of the custom component to check.
-     * @param[in] name The name of the custom component.
-     * @return true if the custom component is of type K, false otherwise.
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID, and that the Element has CustomComponents.
+     * Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @tparam K: the type of the custom component.
+     * @param[in] name: the name of the custom component.
+     * @return `true` if the Element having ID `ELEM_ID` has a custom component
+     * of type `K` having the given name.
      */
     template<uint ELEM_ID, typename K>
-    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     bool isPerElementCustomComponentOfType(const std::string& name) const
+        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
-        return ContainerType<ELEM_ID>::template isElemCustomComponentOfType<K>(name);
+        return ContainerType<ELEM_ID>::template isElemCustomComponentOfType<K>(
+            name);
     }
 
     /**
-     * @brief Returns the std::type_index of the custom component of the Element
-     * with ELEM_ID.
+     * @brief Returns the std::type_index of the custom component having the
+     * given name associated to the Element having ID `ELEM_ID`.
      *
-     * @tparam ELEM_ID The ID of the element.
-     * @param[in] name The name of the custom component.
-     * @return The std::type_index of the custom component.
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID, and that the Element has CustomComponents.
+     * Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @param[in] name: the name of the custom component.
+     * @return The std::type_index of the custom component having the given name
+     * associated to the Element having ID `ELEM_ID`.
      */
     template<uint ELEM_ID>
-    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     std::type_index perElementCustomComponentType(const std::string& name) const
+        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         return ContainerType<ELEM_ID>::elemCustomComponentType(name);
     }
 
     /**
-     * @brief Returns a vector of strings containing the names of all custom
-     * components of type K associated to the Element with ELEM_ID.
+     * @brief Returns a vector containing all the names of the custom components
+     * of type `K` associated to the Element having ID `ELEM_ID`.
      *
-     * @tparam ELEM_ID The ID of the element.
-     * @tparam K The type of the custom components.
-     * @return A vector of strings with custom component names of type K.
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID, and that the Element has CustomComponents.
+     * Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @tparam K: the type of the custom component.
+     * @return A vector of strings representing all the names of the custom
+     * components of type `K` for the Element having ID `ELEM_ID`.
      */
     template<uint ELEM_ID, typename K>
-    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     std::vector<std::string> perElementCustomComponentNamesOfType() const
+        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
-        return ContainerType<ELEM_ID>::template elemCustomComponentNamesOfType<K>();
+        return ContainerType<ELEM_ID>::template elemCustomComponentNamesOfType<
+            K>();
     }
 
     /**
-     * @brief Adds a custom component of type K with the given name to the
-     * Element container with ELEM_ID.
+     * @brief Adds a custom component of type K having the given name to the
+     * Element having ID `ELEM_ID`.
      *
-     * @tparam ELEM_ID The ID of the element.
-     * @tparam K The type of the custom component.
-     * @param[in] name The name of the custom component to add.
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID, and that the Element has CustomComponents.
+     * Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @tparam K: the type of the custom component.
+     * @param[in] name: the name of the custom component.
      */
     template<uint ELEM_ID, typename K>
-    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     void addPerElementCustomComponent(const std::string& name)
+        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         ContainerType<ELEM_ID>::template addElemCustomComponent<K>(name);
     }
 
     /**
-     * @brief Deletes the custom component with the given name from the Element
-     * container with ELEM_ID.
+     * @brief Deletes the custom component of the given name from the Element
+     * having ID `ELEM_ID`.
      *
-     * @tparam ELEM_ID The ID of the element.
-     * @param[in] name The name of the custom component to delete.
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID, and that the Element has CustomComponents.
+     * Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @param[in] name: the name of the custom component.
      */
     template<uint ELEM_ID>
-    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     void deletePerElementCustomComponent(const std::string& name)
+        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         ContainerType<ELEM_ID>::deleteElemCustomComponent(name);
     }
 
     /**
-     * @brief Returns a vector handle to access the custom component of type K
-     * with the given name on the Element container with ELEM_ID.
+     * @brief Returns a vector handle to the custom component of type `K` having
+     * the given name associated to the Element having ID `ELEM_ID`.
      *
-     * @tparam ELEM_ID The ID of the element.
-     * @tparam K The type of the custom component.
-     * @param[in] name The name of the custom component.
-     * @return A CustomComponentVectorHandle<K>.
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID, and that the Element has CustomComponents.
+     * Otherwise, a compiler error will be triggered.
+     *
+     * The handle can be used like a normal std::vector, but does not have
+     * access to the modifiers member functions (resize, push_back...). The
+     * handle contains **references** to the custom component, therefore you can
+     * modify the custom component by modifying the element of the handle vector
+     * normally. Since the handle stores references, there are no copies
+     * performed when calling this function.
+     *
+     * For example, assuming that the mesh has a vertex custom component named
+     * "cc" of type int:
+     *
+     * @code{.cpp}
+     * auto handle = m.perElementCustomComponentVectorHandle<
+     *      ElemId::VERTEX, int>("cc");
+     * for (Vertex& v : m.vertices()) {
+     *    handle[m.index(v)] = 5; // v.customComponent<int>("cc") == 5
+     *    assert(v.customComponent<int>("cc") == 5);
+     * }
+     * @endcode
+     *
+     * Using handles allows to access more efficiently to custom components
+     * rather accessing from an element object. However, note that references
+     * are bound to the container of the mesh.
+     *
+     * @note Since the handle contains references, any operation that changes
+     * the size of the container could be destructive and invalidate the
+     * references contained in the handle.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @tparam K: the type of the custom component.
+     * @param[in] name: the name of the custom component.
+     * @return A handle to the custom component of type `K` having the given
+     * name associated to the Element having ID `ELEM_ID`.
      */
     template<uint ELEM_ID, typename K>
-    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
-    CustomComponentVectorHandle<K> perElementCustomComponentVectorHandle(
+    decltype(auto) perElementCustomComponentVectorHandle(
+        this auto&&        self,
         const std::string& name)
+        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
-        return ContainerType<ELEM_ID>::template customComponentVectorHandle<K>(name);
+        return self
+            .ContainerType<ELEM_ID>::template customComponentVectorHandle<K>(
+                name);
     }
 
     /**
-     * @brief Returns a const vector handle to access the custom component of
-     * type K with the given name on the Element container with ELEM_ID.
+     * @brief Serializes the custom components of type `CompType` of the element
+     * with ID ELEM_ID.
      *
-     * @tparam ELEM_ID The ID of the element.
-     * @tparam K The type of the custom component.
-     * @param[in] name The name of the custom component.
-     * @return A ConstCustomComponentVectorHandle<K>.
-     */
-    template<uint ELEM_ID, typename K>
-    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
-    ConstCustomComponentVectorHandle<K> perElementCustomComponentVectorHandle(
-        const std::string& name) const
-    {
-        return ContainerType<ELEM_ID>::template customComponentVectorHandle<K>(name);
-    }
-
-    /**
-     * @brief Serializes all per-element custom components of type CompType
-     * for the container having ID ELEM_ID to the output stream.
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
      *
-     * @tparam ELEM_ID The ID of the element (e.g. ElemId::VERTEX).
-     * @tparam CompType The type of custom components to serialize.
-     * @param[out] os The output stream.
+     * E.g. suppose to have a Mesh having vertices with three custom components,
+     * two of type `float` and one of type `int`. To serialize ONLY the custom
+     * components of type `float`, you can call:
+     *
+     * @code{.cpp}
+     * MeshType m;
+     * std::ofstream os("customComponents.bin");
+     * m.template
+     *     serializePerElementCustomComponentsOfType<
+     *         ElemId::VERTEX, float>(os);
+     * os.close();
+     * @endcode
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @tparam CompType: the type of the component to serialize.
+     * @param[in] os: the output stream to which serialize the custom
+     * components.
      */
     template<uint ELEM_ID, typename CompType>
-    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     void serializePerElementCustomComponentsOfType(std::ostream& os) const
+        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
-        ContainerType<ELEM_ID>::template serializeElemCustomComponentsOfType<CompType>(os);
+        ContainerType<ELEM_ID>::template serializeElemCustomComponentsOfType<
+            CompType>(os);
     }
 
     /**
-     * @brief Deserializes all per-element custom components of type CompType
-     * for the container having ID ELEM_ID from the input stream.
+     * @brief Deserializes the custom components of type `CompType` of the element
+     * with ID ELEM_ID.
      *
-     * @tparam ELEM_ID The ID of the element (e.g. ElemId::VERTEX).
-     * @tparam CompType The type of custom components to deserialize.
-     * @param[in] is The input stream.
+     * The function requires that the Mesh has a Container of Elements having ID
+     * ELEM_ID. Otherwise, a compiler error will be triggered.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @tparam CompType: the type of the component to deserialize.
+     * @param[in] is: the input stream from which deserialize the custom
+     * components.
      */
     template<uint ELEM_ID, typename CompType>
-    requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     void deserializePerElementCustomComponentsOfType(std::istream& is)
+        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
-        ContainerType<ELEM_ID>::template deserializeElemCustomComponentsOfType<CompType>(is);
+        ContainerType<ELEM_ID>::template deserializeElemCustomComponentsOfType<
+            CompType>(is);
     }
-
 
 private:
     /**
@@ -799,7 +1157,8 @@ private:
     void enableSameOptionalComponentsOfContainer(const OtherMeshType& m)
     {
         if constexpr (ElementContainerConcept<Cont>) {
-            if constexpr (OtherMeshType::template hasContainerOf<Cont::ELEMENT_ID>()) {
+            if constexpr (
+                OtherMeshType::template hasContainerOf<Cont::ELEMENT_ID>()) {
                 this->Cont::enableSameOptionalComponentsOf(
                     m.template container<Cont::ELEMENT_ID>());
             }
@@ -848,7 +1207,7 @@ private:
                 (shiftContainerReferences<Cont, TargetIDs>(
                      startFrom, initialSizes[TargetIDs]),
                  ...);
-            }(std::make_integer_sequence<uint, ElemId::ELEMENT_COUNT>{});
+            }(std::make_integer_sequence<uint, ElemId::ELEMENT_COUNT> {});
         }
     }
 
@@ -969,7 +1328,20 @@ concept HasTriangles = HasFaces<MeshType> && requires {
 template<typename MeshType, uint ELEM_ID, uint COMP_ID>
 concept HasPerElementComponent =
     HasContainerOf<MeshType, ELEM_ID> &&
-    comp::HasComponent<COMP_ID, typename MeshType::template ContainerType<ELEM_ID>>;
+    comp::HasComponent<
+        COMP_ID,
+        typename MeshType::template ContainerType<ELEM_ID>>;
+
+/**
+ * @brief Concept that checks whether a Mesh has a container for the given
+ * ELEM_ID with the given optional component COMP_ID.
+ */
+template<typename MeshType, uint ELEM_ID, uint COMP_ID>
+concept HasPerElementOptionalComponent =
+    HasContainerOf<MeshType, ELEM_ID> &&
+    comp::HasOptionalComponent<
+        COMP_ID,
+        typename MeshType::template ContainerType<ELEM_ID>>;
 
 /**
  * @brief Concept that checks whether a Mesh has per-element custom components

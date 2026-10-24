@@ -24,7 +24,7 @@ namespace vcl::meshv2 {
  * It inherits from ElementProxy and provides object-oriented access to
  * the per-vertex components stored in the container's Structure of Arrays.
  *
- * @tparam ContainerType The type of the container (mutable or const).
+ * @tparam ContainerType: The type of the container (mutable or const).
  *
  * @ingroup elements
  */
@@ -85,7 +85,7 @@ private:
  * of a Vertex, checking at compile-time that the required components (BitFlags,
  * Position) are present.
  *
- * @tparam Comps The components that compose the Vertex.
+ * @tparam Comps: The components that compose the Vertex.
  *
  * @ingroup elements
  */

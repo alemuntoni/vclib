@@ -54,7 +54,7 @@ public:
     /**
      * @brief Checks if the mesh has a custom component with the given name.
      *
-     * @param[in] compName The name of the custom component to check.
+     * @param[in] compName: The name of the custom component to check.
      * @return true if the custom component exists, false otherwise.
      */
     bool hasCustomComponent(this const auto& self, const std::string& compName)
@@ -65,8 +65,8 @@ public:
     /**
      * @brief Checks if the custom component of the given name is of type CompType.
      *
-     * @tparam CompType The type of the custom component to check.
-     * @param[in] compName The name of the custom component.
+     * @tparam CompType: The type of the custom component to check.
+     * @param[in] compName: The name of the custom component.
      * @throws std::out_of_range if the custom component does not exist.
      * @return true if the custom component is of type CompType, false otherwise.
      */
@@ -82,7 +82,7 @@ public:
     /**
      * @brief Returns the std::type_index of the custom component of the given name.
      *
-     * @param[in] compName The name of the custom component.
+     * @param[in] compName: The name of the custom component.
      * @throws std::out_of_range if the custom component does not exist.
      * @return The std::type_index of the custom component.
      */
@@ -113,7 +113,7 @@ public:
      * @brief Returns a vector of strings containing the names of all custom components
      * of type CompType stored on the mesh.
      *
-     * @tparam CompType The type of the custom components to retrieve.
+     * @tparam CompType: The type of the custom components to retrieve.
      * @return A vector of strings containing the names of custom components of type CompType.
      */
     template<typename CompType>
@@ -132,9 +132,9 @@ public:
     /**
      * @brief Adds or replaces a custom component of type CompType with the given name.
      *
-     * @tparam CompType The type of the custom component to add.
-     * @param[in] compName The name of the custom component.
-     * @param[in] value The initial value (default: CompType()).
+     * @tparam CompType: The type of the custom component to add.
+     * @param[in] compName: The name of the custom component.
+     * @param[in] value: The initial value (default: CompType()).
      */
     template<typename CompType>
     void addCustomComponent(
@@ -150,7 +150,7 @@ public:
      * @brief Deletes the custom component with the given name.
      * If the component does not exist, this function does nothing.
      *
-     * @param[in] compName The name of the custom component to delete.
+     * @param[in] compName: The name of the custom component to delete.
      */
     void deleteCustomComponent(this auto& self, const std::string& compName)
     {
@@ -170,8 +170,8 @@ public:
     /**
      * @brief Returns a reference to the custom component of type CompType with the given name.
      *
-     * @tparam CompType The type of the custom component to retrieve.
-     * @param[in] compName The name of the custom component.
+     * @tparam CompType: The type of the custom component to retrieve.
+     * @param[in] compName: The name of the custom component.
      * @throws std::out_of_range if the custom component does not exist.
      * @throws vcl::BadCustomComponentTypeException if the custom component is not of type CompType.
      * @return A reference to the custom component value.
@@ -192,8 +192,8 @@ public:
     /**
      * @brief Serializes all custom components of type CompType to the output stream.
      *
-     * @tparam CompType The type of the custom components to serialize.
-     * @param[out] os The output stream.
+     * @tparam CompType: The type of the custom components to serialize.
+     * @param[out] os: The output stream.
      */
     template<typename CompType>
     void serializeCustomComponentsOfType(
@@ -217,8 +217,8 @@ public:
     /**
      * @brief Deserializes custom components of type CompType from the input stream.
      *
-     * @tparam CompType The type of the custom components to deserialize.
-     * @param[in] is The input stream.
+     * @tparam CompType: The type of the custom components to deserialize.
+     * @param[in] is: The input stream.
      */
     template<typename CompType>
     void deserializeCustomComponentsOfType(this auto& self, std::istream& is)

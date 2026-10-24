@@ -341,7 +341,7 @@ public:
 
             if constexpr (!std::is_void_v<ParentMesh>) {
                 if (mParentMesh != nullptr) {
-                    mParentMesh->template updateAllReferences<ELEMENT_ID>(
+                    mParentMesh->template updateReferences<ELEMENT_ID>(
                         newIndices);
                 }
             }
@@ -424,7 +424,7 @@ public:
         else {
             IndexType cnt = 0;
             for (IndexType ii = 0; ii < i; ++ii) {
-                if (!isDeleted(ii))
+                if (!isElementDeleted(ii))
                     ++cnt;
             }
             return cnt;
@@ -899,8 +899,10 @@ protected:
         if constexpr (
             ElementType::template referencesElement<TARGET_ELEM_ID>()) {
             for (std::size_t i = 0; i < size(); ++i) {
-                element(i).template updateReferences<TARGET_ELEM_ID>(
-                    newIndices);
+                if (!isElementDeleted(i)) {
+                    element(i).template updateReferences<TARGET_ELEM_ID>(
+                        newIndices);
+                }
             }
         }
     }
@@ -920,8 +922,31 @@ protected:
             ElementType::template referencesElement<TARGET_ELEM_ID>()) {
             if (offset != 0) {
                 for (std::size_t i = startFrom; i < size(); ++i) {
-                    element(i).template shiftReferences<TARGET_ELEM_ID>(offset);
+                    if (!isElementDeleted(i)) {
+                        element(i).template shiftReferences<TARGET_ELEM_ID>(
+                            offset);
+                    }
                 }
+            }
+        }
+    }
+
+    /**
+     * @brief Updates references to the elements of this container type across
+     * all containers of the mesh according to the newIndices mapping vector.
+     *
+     * This function is useful when elements of this container were compacted,
+     * permuted, or deleted, and you want to update all references stored in the
+     * mesh to point to their new indices.
+     *
+     * @param[in] newIndices: A vector mapping old element indices to new ones
+     * (or std::numeric_limits<IndexType>::max() if the element was removed).
+     */
+    void updateElementReferences(const std::vector<IndexType>& newIndices)
+    {
+        if constexpr (!std::is_void_v<ParentMesh>) {
+            if (mParentMesh != nullptr) {
+                mParentMesh->template updateReferences<ELEMENT_ID>(newIndices);
             }
         }
     }

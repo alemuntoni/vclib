@@ -25,8 +25,8 @@ namespace vcl::meshv2 {
  * It yields references to the component data. By default, it jumps elements
  * that are marked as deleted (jumpDeleted = true).
  *
- * @tparam COMP_ID The ID of the component to iterate over.
- * @tparam ContainerType The type of the container (mutable or const).
+ * @tparam COMP_ID: The ID of the component to iterate over.
+ * @tparam ContainerType: The type of the container (mutable or const).
  */
 template<uint COMP_ID, typename ContainerType>
 class ComponentIterator

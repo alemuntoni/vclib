@@ -57,13 +57,13 @@ public:
 protected:
     /**
      * @brief Serializes the mesh color to the given output stream.
-     * @param[in] os The output stream.
+     * @param[out] os: The output stream.
      */
     void serialize(std::ostream& os) const { vcl::serialize(os, mColor); }
 
     /**
      * @brief Deserializes the mesh color from the given input stream.
-     * @param[in] is The input stream.
+     * @param[in] is: The input stream.
      */
     void deserialize(std::istream& is) { vcl::deserialize(is, mColor); }
 

@@ -26,7 +26,7 @@ namespace vcl::meshv2 {
  * It inherits from ElementProxy and provides object-oriented access to
  * the per-face components stored in the container's Structure of Arrays.
  *
- * @tparam ContainerType The type of the container (mutable or const).
+ * @tparam ContainerType: The type of the container (mutable or const).
  *
  * @ingroup elements
  */
@@ -74,7 +74,7 @@ public:
 
     /**
      * @brief Returns a proxy to the i-th wedge (corner) of the face.
-     * @param[in] i The index of the wedge (0 <= i < vertexCount()).
+     * @param[in] i: The index of the wedge (0 <= i < vertexCount()).
      * @return A WedgeProxy for the i-th corner.
      */
     decltype(auto) wedge(this auto&& self, uint i)
@@ -123,7 +123,7 @@ private:
  * of a Face, checking at compile-time that the required components (BitFlags,
  * VertexReferences) are present.
  *
- * @tparam Comps The components that compose the Face.
+ * @tparam Comps: The components that compose the Face.
  *
  * @ingroup elements
  */

@@ -24,7 +24,7 @@ namespace vcl::meshv2 {
  * It yields lightweight ElementProxy objects by value. By default, it jumps
  * elements that are marked as deleted (jumpDeleted = true).
  *
- * @tparam ContainerType The type of the container (mutable or const).
+ * @tparam ContainerType: The type of the container (mutable or const).
  */
 template<typename ContainerType>
 class ElementIterator

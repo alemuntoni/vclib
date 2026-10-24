@@ -29,7 +29,7 @@ namespace vcl::meshv2::comp {
  * 1. Range iteration over WedgeProxy (for auto w : f.wedges())
  * 2. Component views for direct column access (f.wedges().colors(), f.wedges().normals(), etc.)
  *
- * @tparam FaceType The type of the parent Face (mutable or const).
+ * @tparam FaceType: The type of the parent Face (mutable or const).
  *
  * @ingroup elements
  */

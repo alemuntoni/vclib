@@ -22,7 +22,7 @@ namespace vcl::meshv2::comp {
  *
  * Dereferences to a lightweight WedgeProxy<FaceType>.
  *
- * @tparam FaceType The type of the parent Face (mutable or const).
+ * @tparam FaceType: The type of the parent Face (mutable or const).
  */
 template<typename FaceType>
 class WedgeIterator

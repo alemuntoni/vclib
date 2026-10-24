@@ -28,7 +28,7 @@ namespace vcl::meshv2::comp {
  * auto n = v.normal();
  * @endcode
  *
- * @tparam P The type of the normal. This template argument must satisfy the
+ * @tparam P: The type of the normal. This template argument must satisfy the
  * PointConcept.
  *
  * @ingroup components
@@ -71,7 +71,7 @@ protected:
  * components, an ElementProxy, an ElementContainer, or a Mesh) has the Normal
  * component (COMP_ID = CompId::NORMAL).
  *
- * @tparam T The type to be tested for conformity to HasNormal.
+ * @tparam T: The type to be tested for conformity to HasNormal.
  *
  * @ingroup components_concepts
  */
@@ -81,7 +81,7 @@ concept HasNormal = HasComponent<CompId::NORMAL, T>;
 /**
  * @brief A concept that checks whether a type T has the Normal component and it is optional.
  *
- * @tparam T The type to be tested for conformity to HasOptionalNormal.
+ * @tparam T: The type to be tested for conformity to HasOptionalNormal.
  *
  * @ingroup components_concepts
  */
@@ -94,7 +94,7 @@ concept HasOptionalNormal =
 /**
  * @brief Checks if the given Element has Normal component available.
  *
- * @param[in] element The element to check.
+ * @param[in] element: The element to check.
  * @return `true` if the element has Normal component available, `false`
  * otherwise.
  */
@@ -123,7 +123,7 @@ void Normal<P, OPT>::importFrom(this auto&& self, const OtherElement& other, boo
  * @brief The Normal3 alias of the Normal component that uses 3-dimensional
  * Points.
  *
- * @tparam Scalar The scalar type of the point (e.g. float, double).
+ * @tparam Scalar: The scalar type of the point (e.g. float, double).
  *
  * @ingroup components
  */

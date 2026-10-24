@@ -26,7 +26,7 @@ namespace vcl::meshv2::comp {
  *
  * It automatically propagates constness from the parent Face.
  *
- * @tparam FaceType The type of the parent Face (mutable or const).
+ * @tparam FaceType: The type of the parent Face (mutable or const).
  *
  * @ingroup elements
  */

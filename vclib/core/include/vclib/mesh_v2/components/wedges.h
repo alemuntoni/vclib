@@ -41,9 +41,9 @@ namespace vcl::meshv2::comp {
  * Access to individual wedges is provided via Face::wedge(i) (returning WedgeProxy)
  * or Face::wedges() (returning WedgeContainerProxy).
  *
- * @tparam Comp The base component type (e.g. Color, TexCoordf, Normal3f) or raw value type.
- * @tparam N The number of wedges per element (default 3; negative for dynamic/polygonal faces).
- * @tparam OPT True if the component is optional (defaults to Comp::IS_OPTIONAL if Comp is a Component).
+ * @tparam Comp: The base component type (e.g. Color, TexCoordf, Normal3f) or raw value type.
+ * @tparam N: The number of wedges per element (default 3; negative for dynamic/polygonal faces).
+ * @tparam OPT: True if the component is optional (defaults to Comp::IS_OPTIONAL if Comp is a Component).
  *
  * @ingroup components
  */

@@ -21,7 +21,7 @@ inline void testMeshCreationAndColors(const MyMesh& mesh)
     assert(meshv2::comp::isColorAvailableOn(mesh));
 
     // Vertex colors
-    assert((mesh.isEnabled<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
     assert(meshv2::comp::isColorAvailableOn(mesh.vertex(0)));
     assert(mesh.vertex(0).color() == Color::Blue);
     assert(mesh.vertex(1).color() == Color::Green);
@@ -29,7 +29,7 @@ inline void testMeshCreationAndColors(const MyMesh& mesh)
     assert(mesh.vertex(3).color() == Color::Cyan);
 
     // Face colors
-    assert((mesh.isEnabled<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
     assert(meshv2::comp::isColorAvailableOn(mesh.face(0)));
     assert(mesh.face(0).color() == Color::DarkRed);
     assert(mesh.face(1).color() == Color::DarkBlue);

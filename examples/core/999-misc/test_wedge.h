@@ -99,7 +99,7 @@ inline void testTriangleWedges()
     assert(!f.wedge(0).isNormalAvailable());
     assert(!f.wedges().isNormalsAvailable());
 
-    m.enable<meshv2::ElemId::FACE, meshv2::CompId::WEDGE_NORMALS>();
+    m.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::WEDGE_NORMALS>();
     assert(f.wedge(0).isNormalAvailable());
     assert(f.wedges().isNormalsAvailable());
 
@@ -145,7 +145,7 @@ inline void testTriangleWedges()
 
     // Test importFrom between faces
     WedgeMesh m2;
-    m2.enable<meshv2::ElemId::FACE, meshv2::CompId::WEDGE_NORMALS>();
+    m2.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::WEDGE_NORMALS>();
     m2.addVertices(3);
     vcl::uint fi2 = m2.addFace(0, 1, 2);
     auto f2 = m2.face(fi2);

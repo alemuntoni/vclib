@@ -138,8 +138,8 @@ public:
      * Iterates over all components that compose this element and calls their
      * importFrom method on the other element if available/enabled.
      *
-     * @param[in] other The other element to import from.
-     * @param[in] importRefs Boolean flag indicating if references (e.g. vertex
+     * @param[in] other: The other element to import from.
+     * @param[in] importRefs: Boolean flag indicating if references (e.g. vertex
      * indices) should be imported (default: true).
      */
     template<typename OtherElement>
