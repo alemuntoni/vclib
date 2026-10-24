@@ -105,6 +105,24 @@ inline void testMeshConcepts()
     static_assert(meshv2::HasVertices<PolyMesh>);
     static_assert(meshv2::HasFaces<PolyMesh>);
     static_assert(meshv2::MeshConcept<PolyMesh>);
+
+    // NULL_INDEX exposure and consistency across all levels
+    static_assert(MyMesh::NULL_INDEX == vcl::NULL_INDEX<MyMesh::IndexType>);
+    static_assert(MyMesh::NULL_INDEX == MyMesh::Vertex::NULL_INDEX);
+    static_assert(MyMesh::NULL_INDEX == MyMesh::Face::NULL_INDEX);
+    static_assert(MyMesh::NULL_INDEX == MyMesh::VertexContainer::NULL_INDEX);
+    static_assert(MyMesh::NULL_INDEX == MyMesh::FaceContainer::NULL_INDEX);
+    static_assert(vcl::meshv2::comp::VertexReferences<3>::NULL_INDEX == vcl::NULL_INDEX<uint>);
+
+    // 64-bit Mesh NULL_INDEX verification
+    static_assert(std::is_same_v<Mesh64::IndexType, uint64_t>);
+    static_assert(Mesh64::NULL_INDEX == 0xFFFFFFFFFFFFFFFFULL);
+    static_assert(Mesh64::NULL_INDEX == vcl::NULL_INDEX<uint64_t>);
+    static_assert(Mesh64::NULL_INDEX == Mesh64::Vertex::NULL_INDEX);
+    static_assert(Mesh64::NULL_INDEX == Mesh64::Face::NULL_INDEX);
+    static_assert(Mesh64::NULL_INDEX == Mesh64::VertexContainer::NULL_INDEX);
+    static_assert(Mesh64::NULL_INDEX == Mesh64::FaceContainer::NULL_INDEX);
+    static_assert(Mesh64::NULL_INDEX != MyMesh::NULL_INDEX);
 }
 
 inline void testConcepts()

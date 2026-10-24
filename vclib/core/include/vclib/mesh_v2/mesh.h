@@ -86,6 +86,11 @@ class Mesh : public detail::RebindContainer<Args, Mesh<Args...>>...
 public:
     using IndexType = typename VertexContainerType::IndexType;
 
+    /**
+     * @brief The null/invalid sentinel value for this Mesh's index type.
+     */
+    static constexpr IndexType NULL_INDEX = vcl::NULL_INDEX<IndexType>;
+
     static_assert(
         (ContainerIndexMatches<Rebound<Args>, IndexType> && ...),
         "All element containers in a Mesh must share the exact same "
@@ -482,7 +487,7 @@ public:
      * container of this mesh.
      */
     template<uint ELEM_ID>
-    decltype(auto) element(this auto&& self, uint i)
+    decltype(auto) element(this auto&& self, IndexType i)
         requires (hasContainerOf<ELEM_ID>())
     {
         return self.ContainerType<ELEM_ID>::element(i);
@@ -699,7 +704,7 @@ public:
      * @brief Returns a vector that tells, for each element of the container of
      * ELEM_ID in the mesh, the new index of the element after the container has
      * been compacted. For each deleted element, its position will be set to
-     * std::numeric_limits<IndexType>::max().
+     * NULL_INDEX.
      *
      * This function is useful when you need to know the indices of the elements
      * that they would have in a compact container, without considering the
@@ -720,12 +725,12 @@ public:
 
     /**
      * @brief Returns the new index of the element at index `i` of the container
-     * of ELEM_ID after compaction, or std::numeric_limits<IndexType>::max() if
+     * of ELEM_ID after compaction, or NULL_INDEX if
      * the element is deleted.
      *
      * @tparam ELEM_ID: the ID of the element.
      * @param[in] i: the index of the element.
-     * @return the new index after compaction, or max() if deleted.
+     * @return the new index after compaction, or NULL_INDEX if deleted.
      */
     template<uint ELEM_ID>
     auto compactIndices(std::size_t i) const requires (hasContainerOf<ELEM_ID>())
@@ -737,9 +742,8 @@ public:
      * @brief Updates all the indices and references of the elements of the
      * container of ELEM_ID in the mesh, according to the mapping stored in the
      * newIndices vector, that tells for each old element index, the new index
-     * of the element in the same container (or
-     * std::numeric_limits<IndexType>::max() if the element must be left as
-     * unreferenced - useful when an element is deleted).
+     * of the element in the same container (or NULL_INDEX if the element must
+     * be left as unreferenced - useful when an element is deleted).
      *
      * This function is useful when you move some vertices (e.g. it is
      * automatically called after every compacting of a container), and you want
@@ -757,7 +761,7 @@ public:
      * @tparam ELEM_ID: the ID of the element.
      * @param[in] newIndices: a vector that tells, for each old element index,
      * the new element index. If the old element must be left as unreferenced,
-     * the value of the vector must be std::numeric_limits<IndexType>::max().
+     * the value of the vector must be NULL_INDEX.
      */
     template<uint ELEM_ID>
     void updateReferences(const std::vector<IndexType>& newIndices)
@@ -810,7 +814,7 @@ public:
      * range. It must be less than or equal to elementContainerSize() and less than
      * or equal to the end index.
      * @param[in] end: the index of the last element to be included in the
-     * range (exclusive). If UINT_NULL (default) or greater than
+     * range (exclusive). If NULL_INDEX (default) or greater than
      * elementContainerSize(), it will be set to elementContainerSize().
      * @return A View object allowing to iterate over the given range of the container.
      */
@@ -818,7 +822,7 @@ public:
     decltype(auto) elements(
         this auto&& self,
         IndexType   begin,
-        IndexType   end = UINT_NULL)
+        IndexType   end = NULL_INDEX)
         requires (hasContainerOf<ELEM_ID>())
     {
         return self.ContainerType<ELEM_ID>::elements(begin, end);

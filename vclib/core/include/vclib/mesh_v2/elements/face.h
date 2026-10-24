@@ -38,6 +38,7 @@ class Face : public ElementProxy<ElemId::FACE, ContainerType>
 public:
     using typename Base::Components;
     using typename Base::IndexType;
+    using Base::NULL_INDEX;
 
     static constexpr int VERTEX_COUNT =
         comp::ComponentTypeT<CompId::VERTEX_REFERENCES, Components>::VERTEX_COUNT;

@@ -72,11 +72,11 @@ inline void testMeshCompaction(MyMesh& mesh)
 
     using VertexIndex = MyMesh::Vertex::IndexType;
     auto formatVIdx = [](VertexIndex idx) {
-        return idx == std::numeric_limits<VertexIndex>::max() ? "NULL" : std::to_string(idx);
+        return idx == MyMesh::NULL_INDEX ? "NULL" : std::to_string(idx);
     };
 
     // Vertex 1 was deleted, so Face 0 corner 1 is now NULL
-    assert(mesh.face(0).vertexIndex(1) == vcl::UINT_NULL);
+    assert(mesh.face(0).vertexIndex(1) == MyMesh::NULL_INDEX);
     assert(!mesh.face(0).vertex(1).isValid());
     // Corner 0 is vertex 0
     assert(mesh.face(0).vertexIndex(0) == 0);
@@ -96,6 +96,30 @@ inline void testFaceDeletionAndCompaction(MyMesh& mesh)
     assert(mesh.faceContainerSize() == 1);
 }
 
+inline void test64BitNullIndexAndCompaction()
+{
+    Mesh64 m;
+    m.addVertices(4);
+    m.addFace(0, 1, 2);
+    m.addFace(1, 3, 2);
+
+    assert(m.vertex(0).index() != Mesh64::NULL_INDEX);
+    assert(m.face(0).vertexIndex(0) == 0);
+
+    // Delete vertex 1
+    m.deleteVertex(1);
+    assert(m.vertex(1).deleted());
+
+    // Compact vertices
+    m.compactVertices();
+    assert(m.vertexCount() == 3);
+
+    // Vertex 1 was deleted, so Face 0 corner 1 must be Mesh64::NULL_INDEX, NOT 32-bit UINT_NULL
+    assert(m.face(0).vertexIndex(1) == Mesh64::NULL_INDEX);
+    assert(m.face(0).vertexIndex(1) != vcl::UINT_NULL);
+    assert(!m.face(0).vertex(1).isValid());
+}
+
 inline void testDeletionCompaction()
 {
     std::println("--- Testing Deletion & Compaction ---");
@@ -105,6 +129,7 @@ inline void testDeletionCompaction()
     testComponentViewWithDeleted(mesh);
     testMeshCompaction(mesh);
     testFaceDeletionAndCompaction(mesh);
+    test64BitNullIndexAndCompaction();
 
     std::println("Deletion and compaction verified successfully!\n");
 }

@@ -129,6 +129,18 @@ using CCMesh = meshv2::Mesh<
     meshv2::FaceContainer<CCMeshFaceComponents>,
     meshv2::mesh::CustomComponents>;
 
+using VertexComponents64 = meshv2::VertexComponents<
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3d>;
+
+using FaceComponents64 = meshv2::FaceComponents<
+    meshv2::face::BitFlags,
+    meshv2::face::TriangleVertexReferences<uint64_t>>;
+
+using Mesh64 = meshv2::Mesh<
+    meshv2::VertexContainer<VertexComponents64, uint64_t>,
+    meshv2::FaceContainer<FaceComponents64, uint64_t>>;
+
 // Concept checking templates
 template<typename T>
 concept CanCallBitFlags = requires (T t) { t.bitFlags(); };

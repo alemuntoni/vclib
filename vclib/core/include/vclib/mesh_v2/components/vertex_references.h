@@ -83,6 +83,7 @@ class VertexReferences :
 public:
     using IndexType                   = Index;
     static constexpr int VERTEX_COUNT = N;
+    using Base::NULL_INDEX;
 
     /* Constructors */
 
@@ -90,8 +91,7 @@ public:
      * @brief Empty constructor.
      *
      * If the VertexReferences container size is static, initializes all the
-     * indices to `std::numeric_limits<IndexType>::max()`, otherwise the container
-     * will be empty.
+     * indices to `NULL_INDEX`, otherwise the container will be empty.
      */
     VertexReferences() = default;
 

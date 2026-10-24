@@ -19,7 +19,7 @@ class ReferenceVector : public vcl::Vector<Index, N>
 
 public:
     using Base::Base;
-    static constexpr Index NULL_INDEX = std::numeric_limits<Index>::max();
+    static constexpr Index NULL_INDEX = vcl::NULL_INDEX<Index>;
 
     ReferenceVector()
     {

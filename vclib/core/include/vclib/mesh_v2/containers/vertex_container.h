@@ -55,6 +55,7 @@ public:
     using ConstVertex      = typename Base::ConstElementType;
     using VertexComponents = typename Base::Components;
     using PositionType     = typename Vertex::PositionType;
+    using Base::NULL_INDEX;
 
     // Rebind idiom to allow changing the ParentMesh type while keeping the same
     // component list and index type.
@@ -253,8 +254,7 @@ public:
      * the containers of the Mesh.
      *
      * @return A vector that maps each old vertex index to its new index in the
-     * compacted container (or std::numeric_limits<Index>::max() if it was
-     * deleted).
+     * compacted container (or NULL_INDEX if it was deleted).
      */
     std::vector<Index> compactVertices() { return Base::compactElements(); }
 
@@ -307,8 +307,7 @@ public:
     /**
      * @brief Returns a vector that tells, for each actual vertex index, the new
      * index that the vertex would have in a compacted container. For each
-     * deleted vertex index, the value of the vector will be
-     * std::numeric_limits<Index>::max().
+     * deleted vertex index, the value of the vector will be NULL_INDEX.
      *
      * This is useful if you need to know the indices of the vertices that they
      * would have in a compact container, without considering the deleted ones.
@@ -335,7 +334,7 @@ public:
      *
      * @param[in] newIndices: A vector mapping old vertex indices to new ones.
      * If a vertex was deleted or should become unreferenced, its mapping entry
-     * must be std::numeric_limits<Index>::max().
+     * must be NULL_INDEX.
      */
     void updateVertexReferences(const std::vector<Index>& newIndices)
     {
@@ -412,11 +411,11 @@ public:
      * range. It must be less than or equal to vertexContainerSize() and less than
      * or equal to the end index.
      * @param[in] end: the index of the last vertex to be included in the
-     * range (exclusive). If UINT_NULL (default) or greater than
+     * range (exclusive). If NULL_INDEX (default) or greater than
      * vertexContainerSize(), it will be set to vertexContainerSize().
      * @return A View object allowing to iterate over the given range of the container.
      */
-    auto vertices(Index begin, Index end = UINT_NULL)
+    auto vertices(Index begin, Index end = NULL_INDEX)
     {
         return Base::elements(begin, end);
     }
@@ -435,11 +434,11 @@ public:
      * range. It must be less than or equal to vertexContainerSize() and less than
      * or equal to the end index.
      * @param[in] end: the index of the last vertex to be included in the
-     * range (exclusive). If UINT_NULL (default) or greater than
+     * range (exclusive). If NULL_INDEX (default) or greater than
      * vertexContainerSize(), it will be set to vertexContainerSize().
      * @return A View object allowing to iterate over the given range of the container.
      */
-    auto vertices(Index begin, Index end = UINT_NULL) const
+    auto vertices(Index begin, Index end = NULL_INDEX) const
     {
         return Base::elements(begin, end);
     }

@@ -62,6 +62,11 @@ class ContainerReferencesComponent :
 public:
     using IndexType = Index;
 
+    /**
+     * @brief The null/invalid sentinel value for this component's index type.
+     */
+    static constexpr IndexType NULL_INDEX = vcl::NULL_INDEX<IndexType>;
+
     template<uint TARGET_ELEM_ID>
     static constexpr bool referencesElement()
     {
@@ -84,7 +89,7 @@ protected:
     {
         if constexpr (TARGET_ELEM_ID == REF_ELEM_ID) {
             for (auto& ref : Base::container(self)) {
-                if (ref != std::numeric_limits<IndexType>::max()) {
+                if (ref != NULL_INDEX) {
                     assert(ref < newIndices.size());
                     ref = newIndices[ref];
                 }
@@ -105,7 +110,7 @@ protected:
         if constexpr (TARGET_ELEM_ID == REF_ELEM_ID) {
             if (offset != 0) {
                 for (auto& ref : Base::container(self)) {
-                    if (ref != std::numeric_limits<IndexType>::max()) {
+                    if (ref != NULL_INDEX) {
                         ref += offset;
                     }
                 }

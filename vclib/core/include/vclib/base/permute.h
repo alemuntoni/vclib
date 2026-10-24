@@ -24,7 +24,7 @@ namespace vcl {
  * - for each position i:
  *   - newIndices[i] contains the new position of the element vec[i] after the
  *     compactness
- *   - newIndices[i] contains the value std::numeric_limits<Index>::max() if the
+ *   - newIndices[i] contains the value NULL_INDEX<Index> if the
  *     element vec[i] must be deleted
  * - the non-null elements of newIndices are unique and sorted in ascending
  *   order
@@ -44,7 +44,7 @@ void compactVector(
     assert(vec.size() == newIndices.size());
     std::size_t newSize = 0;
     for (std::size_t i = 0; i < newIndices.size(); ++i) {
-        if (newIndices[i] != std::numeric_limits<Index>::max()) {
+        if (newIndices[i] != NULL_INDEX<Index>) {
             ++newSize;
             if (newIndices[i] != i) {
                 // must move the element from position i to position

@@ -132,6 +132,11 @@ public:
     using ElementType      = Element<ElementContainer>;
     using ConstElementType = Element<const ElementContainer>;
 
+    /**
+     * @brief The null/invalid sentinel value for this container's index type.
+     */
+    static constexpr IndexType NULL_INDEX = vcl::NULL_INDEX<IndexType>;
+
     static constexpr uint ELEMENT_ID = ElementType::ELEMENT_ID;
 
     ElementContainer() { enableNonOptionalComponents(Components {}); }
@@ -152,7 +157,7 @@ public:
      */
     ConstElementType element(IndexType i) const
     {
-        assert(i < size() || i == std::numeric_limits<IndexType>::max());
+        assert(i < size() || i == NULL_INDEX);
         return ConstElementType(*this, i);
     }
 
@@ -170,7 +175,7 @@ public:
      */
     ElementType element(IndexType i)
     {
-        assert(i < size() || i == std::numeric_limits<IndexType>::max());
+        assert(i < size() || i == NULL_INDEX);
         return ElementType(*this, i);
     }
 
@@ -326,8 +331,7 @@ public:
      * all the containers of the parent mesh if present.
      *
      * @return A vector that maps each old element index to its new index in the
-     * compacted container (or std::numeric_limits<IndexType>::max() if it was
-     * deleted).
+     * compacted container (or NULL_INDEX if it was deleted).
      */
     std::vector<IndexType> compactElements()
     {
@@ -434,8 +438,7 @@ public:
     /**
      * @brief Returns a vector that tells, for each actual element index, the
      * new index that the element would have in a compacted container. For each
-     * deleted element index, the value of the vector will be
-     * std::numeric_limits<IndexType>::max().
+     * deleted element index, the value of the vector will be NULL_INDEX.
      *
      * This is useful if you need to know the indices of the elements that they
      * would have in a compact container, without considering the deleted ones.
@@ -459,7 +462,7 @@ public:
                 newIndices[i] = currentIndex++;
             }
             else {
-                newIndices[i] = std::numeric_limits<IndexType>::max();
+                newIndices[i] = NULL_INDEX;
             }
         }
         return newIndices;
@@ -584,14 +587,14 @@ public:
      * range. It must be less than or equal to elementContainerSize() and less than
      * or equal to the end index.
      * @param[in] end: the index of the last element to be included in the
-     * range (exclusive). If UINT_NULL (default) or greater than
+     * range (exclusive). If NULL_INDEX (default) or greater than
      * elementContainerSize(), it will be set to elementContainerSize().
      * @return A View object allowing to iterate over the given range of the container.
      */
-    View<Iterator> elements(IndexType begin, IndexType end = UINT_NULL)
+    View<Iterator> elements(IndexType begin, IndexType end = NULL_INDEX)
     {
         assert(begin <= elementContainerSize());
-        if (end == UINT_NULL || end > elementContainerSize()) {
+        if (end == NULL_INDEX || end > elementContainerSize()) {
             end = elementContainerSize();
         }
         assert(begin <= end);
@@ -612,14 +615,14 @@ public:
      * range. It must be less than or equal to elementContainerSize() and less than
      * or equal to the end index.
      * @param[in] end: the index of the last element to be included in the
-     * range (exclusive). If UINT_NULL (default) or greater than
+     * range (exclusive). If NULL_INDEX (default) or greater than
      * elementContainerSize(), it will be set to elementContainerSize().
      * @return A View object allowing to iterate over the given range of the container.
      */
-    View<ConstIterator> elements(IndexType begin, IndexType end = UINT_NULL) const
+    View<ConstIterator> elements(IndexType begin, IndexType end = NULL_INDEX) const
     {
         assert(begin <= elementContainerSize());
-        if (end == UINT_NULL || end > elementContainerSize()) {
+        if (end == NULL_INDEX || end > elementContainerSize()) {
             end = elementContainerSize();
         }
         assert(begin <= end);
@@ -995,7 +998,7 @@ protected:
      * mesh to point to their new indices.
      *
      * @param[in] newIndices: A vector mapping old element indices to new ones
-     * (or std::numeric_limits<IndexType>::max() if the element was removed).
+     * (or NULL_INDEX if the element was removed).
      */
     void updateElementReferences(const std::vector<IndexType>& newIndices)
     {

@@ -55,6 +55,11 @@ public:
     using Components = vcl::TypeWrapper<Comps...>;
     using IndexType  = typename std::remove_cv_t<ContainerType>::IndexType;
 
+    /**
+     * @brief The null/invalid sentinel value for this element's index type.
+     */
+    static constexpr IndexType NULL_INDEX = vcl::NULL_INDEX<IndexType>;
+
     static_assert(
         comp::HasBitFlags<Components>,
         "An Element must have the BitFlags component "
@@ -62,7 +67,7 @@ public:
 
 private:
     ContainerType* mContainer = nullptr;
-    IndexType      mIndex     = std::numeric_limits<IndexType>::max();
+    IndexType      mIndex     = NULL_INDEX;
 
 public:
     static constexpr uint ELEMENT_ID = ELEM_ID;
@@ -83,12 +88,12 @@ public:
     /**
      * @brief Checks if this proxy points to a valid element.
      * A proxy is considered invalid if it points to a valid container and its
-     * index is the maximum value of IndexType (NULL index). This naturally
-     * represents missing topology references (e.g., boundary faces).
+     * index is the NULL_INDEX value. This naturally represents missing topology
+     * references (e.g., boundary faces).
      */
     bool isValid() const
     {
-        return mContainer && mIndex != std::numeric_limits<IndexType>::max();
+        return mContainer && mIndex != NULL_INDEX;
     }
 
     /**
