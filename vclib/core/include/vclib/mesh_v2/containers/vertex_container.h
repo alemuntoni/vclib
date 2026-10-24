@@ -18,14 +18,18 @@
 namespace vcl::meshv2 {
 
 /**
- * @brief VertexContainer stores the per-vertex data in a Structure of Arrays (SoA).
+ * @brief VertexContainer stores the per-vertex data in a Structure of Arrays
+ * (SoA), and it is meant to be used as a template parameter of the Mesh class.
  *
- * It accepts the Vertex component list (satisfying HasRequiredVertexComponents),
- * instantiates the underlying storage and exposes the Vertex element view.
+ * It accepts the Vertex component list (satisfying
+ * HasRequiredVertexComponents), instantiates the underlying storage and exposes
+ * the Vertex element view.
  *
- * @tparam CompList The vertex components type (e.g. VertexComponents<BitFlags, Position3f, Normal3f>).
- * @tparam Index The index type (default uint).
- * @tparam ParentMesh The parent mesh type (default void).
+ * @tparam CompList: The vertex components type (e.g. VertexComponents<BitFlags,
+ * Position3f, Normal3f>).
+ * @tparam Index: The index type (default uint).
+ * @tparam ParentMesh: The parent mesh type. On Mesh instantiation, this is
+ * automatically set to the Mesh type. Default is void.
  *
  * @ingroup containers
  */
@@ -47,21 +51,77 @@ class VertexContainer :
         Vertex>;
 
 public:
-    using Components       = typename Base::Components;
     using Vertex           = typename Base::ElementType;
     using ConstVertex      = typename Base::ConstElementType;
+    using VertexComponents = typename Base::Components;
     using PositionType     = typename Vertex::PositionType;
 
+    // Rebind idiom to allow changing the ParentMesh type while keeping the same
+    // component list and index type.
     template<typename NewParent>
     using Rebind = VertexContainer<CompList, Index, NewParent>;
 
+    /**
+     * @brief Empty constructor that creates an empty container of Vertices.
+     */
     VertexContainer() = default;
 
+    /**
+     * @brief Returns the Vertex at the i-th position in the Vertex Container of
+     * the Mesh, which will be the vertex having index = i.
+     *
+     * This function does not perform any sanity check: if i is less than
+     * vertexContainerSize(), this function will return a valid Vertex reference
+     * (note that the Vertex may have been flagged as deleted).
+     *
+     * @param[in] i: the index of the vertex that will be returned.
+     *
+     * @return The i-th Vertex of the Vertex Container.
+     */
     Vertex vertex(Index i) { return Base::element(i); }
+
+    /**
+     * @brief Returns the const Vertex at the i-th position in the Vertex
+     * Container of the Mesh, which will be the vertex having index = i.
+     *
+     * This function does not perform any sanity check: if i is less than
+     * vertexContainerSize(), this function will return a valid Vertex reference
+     * (note that the Vertex may have been flagged as deleted).
+     *
+     * @param[in] i: the index of the vertex that will be returned.
+     *
+     * @return The i-th const Vertex of the Vertex Container.
+     */
     ConstVertex vertex(Index i) const { return Base::element(i); }
 
+    /**
+     * @brief Returns the number of **non-deleted** vertices contained in the
+     * Vertex container of the Mesh.
+     *
+     * If vertexCount() != vertexContainerSize(), it means that there are some
+     * vertices that are flagged as deleted.
+     *
+     * @return The number of non-deleted vertices of the Mesh.
+     */
     std::size_t vertexCount() const { return Base::elementCount(); }
+
+    /**
+     * @brief Returns the number of vertices (also deleted) contained in the
+     * Vertex container of the Mesh.
+     *
+     * If vertexCount() != vertexContainerSize(), it means that there are some
+     * vertices that are flagged as deleted.
+     *
+     * @return The number of all the vertices contained in the Mesh.
+     */
     std::size_t vertexContainerSize() const { return Base::elementContainerSize(); }
+
+    /**
+     * @brief Returns the number of deleted vertices in the Vertex container,
+     * that is vertexContainerSize() - vertexCount().
+     *
+     * @return The number of deleted vertices in the container.
+     */
     std::size_t deletedVertexCount() const { return Base::deletedElementCount(); }
 
     /**
@@ -99,6 +159,16 @@ public:
      * @brief Adds an arbitrary number of vertices with the given positions,
      * returning the index of the first added vertex.
      *
+     * You can call this member function like:
+     *
+     * @code{.cpp}
+     * PositionType p0, p1, p2, p3;
+     * // init positions...
+     * m.addVertices(p0, p1, p2, p3);
+     * @endcode
+     *
+     * The number of accepted PositionType arguments is variable.
+     *
      * @param[in] p: first vertex position.
      * @param[in] v: list of other vertex positions.
      * @return The index of the first added vertex.
@@ -134,14 +204,133 @@ public:
         return vid;
     }
 
-    std::vector<Index> compactVertices() { return Base::compactElements(); }
-
-    void resizeVertices(std::size_t n) { Base::resizeElements(n); }
-    void reserveVertices(std::size_t n) { Base::reserveElements(n); }
+    /**
+     * @brief Clears the Vertex container of the Mesh, deleting all the
+     * vertices.
+     *
+     * The contained vertex components are actually removed from the container,
+     * not only marked as deleted. Therefore, the container will have size 0
+     * (`vertexContainerSize() == 0`) after the call of this function.
+     *
+     * @warning Any index to deleted vertices in the Mesh will be left
+     * unchanged, and therefore will point to invalid vertices. This means that
+     * if you call this member function with a lower number of vertices, you'll
+     * need to manually manage the indices to the deleted vertices.
+     */
     void clearVertices() { Base::clearElements(); }
 
+    /**
+     * @brief Resizes the Vertex container to contain `n` vertices.
+     *
+     * If the new size is greater than the old one, new vertices are added to
+     * the container. If the new size is smaller than the old one, the container
+     * will keep its first non-deleted `n` vertices, and the remaining vertices
+     * are marked as deleted.
+     *
+     * @warning The given size `n` is relative to the number of non-deleted
+     * vertices, not to the size of the vertex container. For example, if you
+     * have a mesh with 10 vertices and vertexContainerSize() == 20, calling
+     * resizeVertices(5) will not cause a reallocation of the container, but
+     * will mark as deleted the least 5 non-deleted vertices of the container.
+     * In the same scenario, calling resizeVertices(15) will result in a vertex
+     * container having 15 vertices and vertexContainerSize() == 25. The latest
+     * 5 vertices will be the newly added.
+     *
+     * @warning Any index to deleted vertices in the Mesh will be left
+     * unchanged, and therefore will point to invalid vertices. This means that
+     * if you call this member function with a lower number of vertices, you'll
+     * need to manually manage the indices to the deleted vertices.
+     *
+     * @param[in] n: the new size of the Vertex container.
+     */
+    void resizeVertices(std::size_t n) { Base::resizeElements(n); }
+
+    /**
+     * @brief Reserve a number of vertices in the container of Vertices. This is
+     * useful when you know (or you have an idea) of how much vertices are going
+     * to add into a newly or existing mesh. Calling this function before any
+     * addVertex() call will avoid unuseful reallocations of the container,
+     * saving execution time.
+     *
+     * The filosofy of this function is similar to the one of the
+     * [reserve()](https://en.cppreference.com/w/cpp/container/vector/reserve)
+     * function of the [std::vector
+     * class](https://en.cppreference.com/w/cpp/container/vector).
+     *
+     * @param n: the new capacity of the vertex container.
+     */
+    void reserveVertices(std::size_t n) { Base::reserveElements(n); }
+
+    /**
+     * @brief Compacts the Vertex Container, removing all the vertices marked as
+     * deleted. Vertices reference will automatically change accordingly in all
+     * the containers of the Mesh.
+     */
+    std::vector<Index> compactVertices() { return Base::compactElements(); }
+
+    /**
+     * @brief Marks as deleted the vertex with the given id.
+     *
+     * This member function does not perform any reallocation of the vertices:
+     * the deleted vertices will stay in the Vertex Container, but will be
+     * marked as deleted.
+     *
+     * Deleted vertices are automatically jumped by the iterators provided by
+     * the Vertex Container.
+     *
+     * @param[in] i: the id of the vertex that will be marked as deleted.
+     */
     void deleteVertex(Index i) { Base::deleteElement(i); }
+
+    /**
+     * @brief Marks as deleted the given vertex, before asserting that the
+     * vertex belongs to this container.
+     *
+     * This member function does not perform any reallocation of the vertices:
+     * the deleted vertices will stay in the Vertex Container, but will be
+     * marked as deleted.
+     *
+     * Deleted vertices are automatically jumped by the iterators provided by
+     * the Vertex Container.
+     *
+     * @param[in] v: the pointer of the vertex that will be marked as deleted.
+     */
     void deleteVertex(const Vertex& v) { Base::deleteElement(v.index()); }
+
+    /**
+     * @brief This is an utility member function that returns the index of an
+     * element if the container would be compact, that is the number of
+     * non-deleted elements before the vertex with the given index.
+     *
+     * Complexity: O(n), with n the number of vertices in the container.
+     *
+     * This function does not perform any sanity check on the given index.
+     *
+     * @param[in] i: the index of a vertex of the container.
+     * @return The index that the vertex with index i would have if this
+     * container would be compact.
+     */
+    uint vertexIndexIfCompact(uint i) const
+    {
+        return Base::elementIndexIfCompact(i);
+    }
+
+    /**
+     * @brief Returns a vector that tells, for each actual vertex index, the new
+     * index that the vertex would have in a compacted container. For each
+     * deleted vertex index, the value of the vector will be
+     * std::numeric_limits<uint>::max().
+     *
+     * This is useful if you need to know the indices of the vertices that they
+     * would have in a compact container, without considering the deleted ones.
+     *
+     * @return A vector containing, for each vertex index, its index if the
+     * container would be compact.
+     */
+    std::vector<uint> vertexCompactIndices() const
+    {
+        return Base::elementCompactIndices();
+    }
 
     auto vertices(bool jumpDeleted = true)
     {
@@ -169,7 +358,7 @@ public:
      * given name.
      */
     bool hasPerVertexCustomComponent(const std::string& name) const
-        requires vert::HasCustomComponents<Components>
+        requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::hasElemCustomComponent(name);
     }
@@ -185,7 +374,7 @@ public:
      * components.
      */
     std::vector<std::string> perVertexCustomComponentNames() const
-        requires vert::HasCustomComponents<Components>
+        requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::elemCustomComponentNames();
     }
@@ -207,7 +396,7 @@ public:
      */
     template<typename K>
     bool isPerVertexCustomComponentOfType(const std::string& name) const
-        requires vert::HasCustomComponents<Components>
+        requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::template isElemCustomComponentOfType<K>(name);
     }
@@ -227,7 +416,7 @@ public:
      * input name.
      */
     std::type_index perVertexCustomComponentType(const std::string& name) const
-        requires vert::HasCustomComponents<Components>
+        requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::elemCustomComponentType(name);
     }
@@ -246,7 +435,7 @@ public:
      */
     template<typename K>
     std::vector<std::string> perVertexCustomComponentNamesOfType() const
-        requires vert::HasCustomComponents<Components>
+        requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::template elemCustomComponentNamesOfType<K>();
     }
@@ -263,7 +452,7 @@ public:
      */
     template<typename K>
     void addPerVertexCustomComponent(const std::string& name)
-        requires vert::HasCustomComponents<Components>
+        requires vert::HasCustomComponents<VertexComponents>
     {
         Base::template addElemCustomComponent<K>(name);
     }
@@ -281,7 +470,7 @@ public:
      * from the Vertex.
      */
     void deletePerVertexCustomComponent(const std::string& name)
-        requires vert::HasCustomComponents<Components>
+        requires vert::HasCustomComponents<VertexComponents>
     {
         Base::deleteElemCustomComponent(name);
     }
@@ -300,7 +489,7 @@ public:
     template<typename K>
     CustomComponentVectorHandle<K> perVertexCustomComponentVectorHandle(
         const std::string& name)
-        requires vert::HasCustomComponents<Components>
+        requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::template customComponentVectorHandle<K>(name);
     }
@@ -320,7 +509,7 @@ public:
     template<typename K>
     ConstCustomComponentVectorHandle<K> perVertexCustomComponentVectorHandle(
         const std::string& name) const
-        requires vert::HasCustomComponents<Components>
+        requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::template customComponentVectorHandle<K>(name);
     }
@@ -334,7 +523,7 @@ public:
      */
     template<typename K>
     void serializePerVertexCustomComponentsOfType(std::ostream& os) const
-        requires vert::HasCustomComponents<Components>
+        requires vert::HasCustomComponents<VertexComponents>
     {
         Base::template serializeElemCustomComponentsOfType<K>(os);
     }
@@ -348,7 +537,7 @@ public:
      */
     template<typename K>
     void deserializePerVertexCustomComponentsOfType(std::istream& is)
-        requires vert::HasCustomComponents<Components>
+        requires vert::HasCustomComponents<VertexComponents>
     {
         Base::template deserializeElemCustomComponentsOfType<K>(is);
     }

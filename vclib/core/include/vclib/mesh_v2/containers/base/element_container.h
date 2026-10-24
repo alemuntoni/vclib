@@ -262,10 +262,6 @@ public:
      * than the old one, the container will keep its first non-deleted `size`
      * elements, and the remaining elements are marked as deleted.
      *
-     * If the call of this function will cause a reallocation of the Element
-     * container, the function will automatically take care of updating all the
-     * Element pointers contained in the Mesh.
-     *
      * @warning The given `size` is relative to the number of non-deleted
      * elements, not to the size of the element container. For example, if you
      * have a mesh with 10 elements and elementContainerSize() == 20, calling
@@ -278,7 +274,7 @@ public:
      * @warning Any index to deleted elements in the Mesh will be left
      * unchanged, and therefore will point to invalid elements. This means that
      * if you call this member function with a lower number of elements, you'll
-     * need to manually manage the pointers/indices to the deleted elements.
+     * need to manually manage the indices to the deleted elements.
      *
      * @param[in] size: the new size of the Element container.
      */

@@ -26,8 +26,8 @@ int main(int argc, char** argv)
     }
     else {
 #ifdef VCLIB_EXAMPLE_MESHES_PATH
-        // path = VCLIB_EXAMPLE_MESHES_PATH "/bimba.obj";
-        path = "/home/alessandro/devel/3DMeshes/3DMeshes/ESTE_PRINT.ply"; // LIN
+        path = VCLIB_EXAMPLE_MESHES_PATH "/bimba.obj";
+        // path = "/home/alessandro/devel/3DMeshes/3DMeshes/ESTE_PRINT.ply"; // LIN
         // path = "C:/Users/Alessandro/Desktop/ESTE_PRINT.ply"; // WIN
         // path = "/Users/alessandro/ESTE_PRINT.ply"; // MAC
 #else
@@ -61,8 +61,6 @@ int main(int argc, char** argv)
         bench::benchmarkTraversal(m1, m2, 5);
 
         // Run Task 4: Normals Computation
-        m2.enable<vcl::meshv2::ElemId::VERTEX, vcl::meshv2::CompId::NORMAL>();
-        m2.enable<vcl::meshv2::ElemId::FACE, vcl::meshv2::CompId::NORMAL>();
         bench::benchmarkNormals(m1, m2, 5);
 
         // Run Task 5: Matrix Transform
