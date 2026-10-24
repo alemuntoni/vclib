@@ -50,6 +50,18 @@ inline void testComponentConcepts()
     static_assert(!meshv2::ComponentConcept<
                   MyMesh::ContainerType<meshv2::ElemId::FACE>>);
     static_assert(std::is_same_v<MyMesh::Components, vcl::TypeWrapper<meshv2::mesh::Color>>);
+
+    // TransformMatrix Component Concepts
+    static_assert(meshv2::mesh::HasTransformMatrix<TransformedMesh>);
+    static_assert(meshv2::mesh::HasTransformMatrix<meshv2::mesh::TransformMatrixf>);
+    static_assert(!meshv2::mesh::HasTransformMatrix<MyMesh>);
+    static_assert(meshv2::HasTransformMatrix<TransformedMesh>);
+    static_assert(!meshv2::HasTransformMatrix<MyMesh>);
+    static_assert(!meshv2::ElementContainerConcept<meshv2::mesh::TransformMatrixf>);
+    static_assert(meshv2::ComponentConcept<meshv2::mesh::TransformMatrixf>);
+    static_assert(std::is_same_v<
+                  TransformedMesh::Components,
+                  vcl::TypeWrapper<meshv2::mesh::Color, meshv2::mesh::TransformMatrixf>>);
 }
 
 inline void testElementConcepts()

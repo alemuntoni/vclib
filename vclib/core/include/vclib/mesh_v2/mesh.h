@@ -11,7 +11,9 @@
 #include "containers.h"
 #include "elements.h"
 #include "mesh_components.h"
+#include "views.h"
 
+#include <vclib/algorithms/core.h>
 #include <vclib/base.h>
 
 #include <array>
@@ -372,11 +374,19 @@ public:
 
         (shiftReferencesOfContainer<Rebound<Args>>(initialSizes), ...);
 
-        // TODO: When mesh::TransformMatrix is implemented, apply relative
-        // transformation matrix to the newly appended vertex positions and
-        // normals: matrix = this->transformMatrix().inverse() *
-        // m.transformMatrix(); transform positions and normals from
-        // initialSizes[ElemId::VERTEX] to end.
+        if constexpr (mesh::HasTransformMatrix<Mesh<Args...>>) {
+            using MatrixType = typename Mesh<Args...>::TransformMatrixType;
+
+            MatrixType matrix = this->transformMatrix();
+            matrix            = matrix.inverse().eval();
+            matrix *= m.transformMatrix();
+
+            if (matrix != MatrixType::Identity()) {
+                (updatePosAndNormalsOfContainerAfterAppend<Rebound<Args>>(
+                     initialSizes, matrix),
+                 ...);
+            }
+        }
 
         // TODO: When mesh::Materials is implemented, merge materials and
         // textures and remap material indices of the newly appended faces.
@@ -783,6 +793,35 @@ public:
         requires (hasContainerOf<ELEM_ID>())
     {
         return self.ContainerType<ELEM_ID>::elements(jumpDeleted);
+    }
+
+    /**
+     * @brief Returns a view object that allows to iterate over the elements of
+     * the container of type ELEM_ID in the range [begin, end), providing begin()
+     * and end() member functions.
+     *
+     * @note Unlike the elements() function, this member function does not
+     * automatically jump deleted elements, but it iterates over the
+     * elements in the given range, regardless of whether they are deleted or
+     * not.
+     *
+     * @tparam ELEM_ID: the ID of the element.
+     * @param[in] begin: the index of the first element to be included in the
+     * range. It must be less than or equal to elementContainerSize() and less than
+     * or equal to the end index.
+     * @param[in] end: the index of the last element to be included in the
+     * range (exclusive). If UINT_NULL (default) or greater than
+     * elementContainerSize(), it will be set to elementContainerSize().
+     * @return A View object allowing to iterate over the given range of the container.
+     */
+    template<uint ELEM_ID>
+    decltype(auto) elements(
+        this auto&& self,
+        IndexType   begin,
+        IndexType   end = UINT_NULL)
+        requires (hasContainerOf<ELEM_ID>())
+    {
+        return self.ContainerType<ELEM_ID>::elements(begin, end);
     }
 
     /**
@@ -1211,6 +1250,46 @@ private:
         }
     }
 
+    template<typename Cont, typename MatrixType>
+    void updatePosAndNormalsOfContainerAfterAppend(
+        const std::array<IndexType, ElemId::ELEMENT_COUNT>& initialSizes,
+        const MatrixType& matrix)
+    {
+        if constexpr (ElementContainerConcept<Cont>) {
+            constexpr uint ELEM_ID = Cont::ELEMENT_ID;
+            const IndexType startFrom = initialSizes[ELEM_ID];
+            if (startFrom >= this->Cont::elementContainerSize()) {
+                return;
+            }
+
+            if constexpr (comp::HasComponent<CompId::POSITION, Cont>) {
+                if (this->Cont::template isComponentAvailable<CompId::POSITION>()) {
+                    auto posview = this->template elements<ELEM_ID>(startFrom) |
+                                   views::positions;
+                    multiplyPointsByMatrix(posview, matrix);
+                }
+            }
+
+            if constexpr (comp::HasComponent<CompId::NORMAL, Cont>) {
+                if (this->Cont::template isComponentAvailable<CompId::NORMAL>()) {
+                    auto norview = this->template elements<ELEM_ID>(startFrom) |
+                                   views::normals;
+                    multiplyNormalsByMatrix(norview, matrix);
+                }
+            }
+
+            if constexpr (comp::HasComponent<CompId::WEDGE_NORMALS, Cont>) {
+                if (this->Cont::template isComponentAvailable<CompId::WEDGE_NORMALS>()) {
+                    for (auto f : this->template elements<ELEM_ID>(startFrom)) {
+                        for (auto w : f.wedges()) {
+                            w.normal() = multiplyNormalByMatrix(w.normal(), matrix);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     template<typename T>
     bool isContainerCompact() const
     {
@@ -1374,6 +1453,24 @@ concept MeshConcept = requires (T& m) {
     { m.empty() } -> std::same_as<bool>;
     m.clear();
 };
+
+/**
+ * @brief Concept that checks whether a Mesh has the Color component.
+ */
+template<typename MeshType>
+concept HasColor = mesh::HasColor<MeshType>;
+
+/**
+ * @brief Concept that checks whether a Mesh has the CustomComponents component.
+ */
+template<typename MeshType>
+concept HasCustomComponents = mesh::HasCustomComponents<MeshType>;
+
+/**
+ * @brief Concept that checks whether a Mesh has the TransformMatrix component.
+ */
+template<typename MeshType>
+concept HasTransformMatrix = mesh::HasTransformMatrix<MeshType>;
 
 } // namespace vcl::meshv2
 

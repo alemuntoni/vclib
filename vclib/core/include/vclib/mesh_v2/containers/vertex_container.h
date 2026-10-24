@@ -398,6 +398,52 @@ public:
         return Base::elements(jumpDeleted);
     }
 
+    /**
+     * @brief Returns a view object that allows to iterate over the vertices of
+     * the container in the range [begin, end), providing begin() and end()
+     * member functions.
+     *
+     * @note Unlike the vertices() function, this member function does not
+     * automatically jump deleted vertices, but it iterates over the
+     * vertices in the given range, regardless of whether they are deleted or
+     * not.
+     *
+     * @param[in] begin: the index of the first vertex to be included in the
+     * range. It must be less than or equal to vertexContainerSize() and less than
+     * or equal to the end index.
+     * @param[in] end: the index of the last vertex to be included in the
+     * range (exclusive). If UINT_NULL (default) or greater than
+     * vertexContainerSize(), it will be set to vertexContainerSize().
+     * @return A View object allowing to iterate over the given range of the container.
+     */
+    auto vertices(Index begin, Index end = UINT_NULL)
+    {
+        return Base::elements(begin, end);
+    }
+
+    /**
+     * @brief Returns a view object that allows to iterate over the vertices of
+     * the container in the range [begin, end), providing begin() and end()
+     * member functions.
+     *
+     * @note Unlike the vertices() function, this member function does not
+     * automatically jump deleted vertices, but it iterates over the
+     * vertices in the given range, regardless of whether they are deleted or
+     * not.
+     *
+     * @param[in] begin: the index of the first vertex to be included in the
+     * range. It must be less than or equal to vertexContainerSize() and less than
+     * or equal to the end index.
+     * @param[in] end: the index of the last vertex to be included in the
+     * range (exclusive). If UINT_NULL (default) or greater than
+     * vertexContainerSize(), it will be set to vertexContainerSize().
+     * @return A View object allowing to iterate over the given range of the container.
+     */
+    auto vertices(Index begin, Index end = UINT_NULL) const
+    {
+        return Base::elements(begin, end);
+    }
+
     // --- Custom Components ---
 
     /**

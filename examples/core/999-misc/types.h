@@ -61,6 +61,12 @@ using MyMesh = meshv2::Mesh<
     meshv2::FaceContainer<MyFaceComponents>,
     meshv2::mesh::Color>;
 
+using TransformedMesh = meshv2::Mesh<
+    meshv2::VertexContainer<MyVertexComponents>,
+    meshv2::FaceContainer<MyFaceComponents>,
+    meshv2::mesh::Color,
+    meshv2::mesh::TransformMatrixf>;
+
 using FullVertexComponents = meshv2::VertexComponents<
     meshv2::vert::BitFlags,
     meshv2::vert::Position3f,
@@ -153,6 +159,43 @@ concept CanCallVertexIndices = requires (T t) { t.vertexIndices(); };
 inline MyMesh createSampleQuadMesh()
 {
     MyMesh mesh;
+    mesh.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
+    mesh.resizeVertices(4);
+    mesh.resizeFaces(2);
+
+    mesh.vertex(0).position() = Point3f(0.0f, 0.0f, 1.0f);
+    mesh.vertex(0).normal()   = Point3f(0.0f, 0.0f, 1.0f);
+
+    mesh.vertex(1).position() = Point3f(1.0f, 0.0f, 0.0f);
+    mesh.vertex(1).normal()   = Point3f(0.0f, 0.0f, 1.0f);
+
+    mesh.vertex(2).position() = Point3f(0.0f, 1.0f, 0.0f);
+    mesh.vertex(2).normal()   = Point3f(0.0f, 0.0f, 1.0f);
+
+    mesh.vertex(3).position() = Point3f(1.0f, 1.0f, 0.0f);
+    mesh.vertex(3).normal()   = Point3f(0.0f, 0.0f, 1.0f);
+
+    mesh.face(0).setVertices(0, 1, 2);
+    mesh.face(1).setVertices(mesh.vertex(1), mesh.vertex(3), mesh.vertex(2));
+
+    mesh.color() = Color::Red;
+
+    mesh.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
+    mesh.vertex(0).color() = Color::Blue;
+    mesh.vertex(1).color() = Color::Green;
+    mesh.vertex(2).color() = Color::Yellow;
+    mesh.vertex(3).color() = Color::Cyan;
+
+    mesh.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::COLOR>();
+    mesh.face(0).color() = Color::DarkRed;
+    mesh.face(1).color() = Color::DarkBlue;
+
+    return mesh;
+}
+
+inline TransformedMesh createSampleTransformedMesh()
+{
+    TransformedMesh mesh;
     mesh.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
     mesh.resizeVertices(4);
     mesh.resizeFaces(2);

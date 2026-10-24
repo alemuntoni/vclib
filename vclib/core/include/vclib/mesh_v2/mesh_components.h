@@ -10,5 +10,6 @@
 
 #include "mesh_components/color.h"
 #include "mesh_components/custom_components.h"
+#include "mesh_components/transform_matrix.h"
 
 #endif // VCL_MESH_V2_MESH_COMPONENTS_H

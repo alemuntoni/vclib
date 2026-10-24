@@ -178,6 +178,22 @@ inline void testMeshImportFromMeshComponents()
     assert(m2.color() == Color::Red);
     assert(m2.vertexCount() == 3);
     assert(m2.faceCount() == 1);
+
+    // TransformMatrix importFrom test
+    TransformedMesh tm1;
+    tm1.color() = Color::Blue;
+    Matrix44f mat = Matrix44f::Identity();
+    mat(0, 3) = 99.0f;
+    tm1.transformMatrix() = mat;
+    tm1.addVertices(3);
+    tm1.addFace(0, 1, 2);
+
+    TransformedMesh tm2;
+    tm2.importFrom(tm1);
+    assert(tm2.color() == Color::Blue);
+    assert(tm2.transformMatrix() == mat);
+    assert(tm2.vertexCount() == 3);
+    assert(tm2.faceCount() == 1);
 }
 
 inline void testImportFrom()

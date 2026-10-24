@@ -396,6 +396,52 @@ public:
         return Base::elements(jumpDeleted);
     }
 
+    /**
+     * @brief Returns a view object that allows to iterate over the faces of
+     * the container in the range [begin, end), providing begin() and end()
+     * member functions.
+     *
+     * @note Unlike the faces() function, this member function does not
+     * automatically jump deleted faces, but it iterates over the
+     * faces in the given range, regardless of whether they are deleted or
+     * not.
+     *
+     * @param[in] begin: the index of the first face to be included in the
+     * range. It must be less than or equal to faceContainerSize() and less than
+     * or equal to the end index.
+     * @param[in] end: the index of the last face to be included in the
+     * range (exclusive). If UINT_NULL (default) or greater than
+     * faceContainerSize(), it will be set to faceContainerSize().
+     * @return A View object allowing to iterate over the given range of the container.
+     */
+    auto faces(Index begin, Index end = UINT_NULL)
+    {
+        return Base::elements(begin, end);
+    }
+
+    /**
+     * @brief Returns a view object that allows to iterate over the faces of
+     * the container in the range [begin, end), providing begin() and end()
+     * member functions.
+     *
+     * @note Unlike the faces() function, this member function does not
+     * automatically jump deleted faces, but it iterates over the
+     * faces in the given range, regardless of whether they are deleted or
+     * not.
+     *
+     * @param[in] begin: the index of the first face to be included in the
+     * range. It must be less than or equal to faceContainerSize() and less than
+     * or equal to the end index.
+     * @param[in] end: the index of the last face to be included in the
+     * range (exclusive). If UINT_NULL (default) or greater than
+     * faceContainerSize(), it will be set to faceContainerSize().
+     * @return A View object allowing to iterate over the given range of the container.
+     */
+    auto faces(Index begin, Index end = UINT_NULL) const
+    {
+        return Base::elements(begin, end);
+    }
+
     // --- Custom Components ---
 
     /**

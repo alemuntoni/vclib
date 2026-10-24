@@ -289,6 +289,26 @@ inline void testMeshSerialization()
         assert(caughtMismatch);
     }
 
+    // 5. TransformedMesh serialization test
+    {
+        TransformedMesh tm = createSampleTransformedMesh();
+        Matrix44f mat = Matrix44f::Identity();
+        mat(0, 3) = 12.34f;
+        mat(1, 3) = 56.78f;
+        mat(2, 2) = -1.0f;
+        tm.transformMatrix() = mat;
+
+        std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        tm.serialize(ss);
+
+        TransformedMesh tmRead;
+        tmRead.deserialize(ss);
+
+        assert(tmRead.vertexCount() == tm.vertexCount());
+        assert(tmRead.faceCount() == tm.faceCount());
+        assert(tmRead.transformMatrix() == mat);
+    }
+
     std::println("Mesh serialization tests passed!");
 }
 

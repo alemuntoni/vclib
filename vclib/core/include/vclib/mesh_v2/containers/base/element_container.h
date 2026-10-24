@@ -570,7 +570,62 @@ public:
             *this, jumpDeleted);
     }
 
-    // TODO: missing elements(begin, end)
+    /**
+     * @brief Returns a view object that allows to iterate over the elements of
+     * the container in the range [begin, end), providing begin() and end()
+     * member functions.
+     *
+     * @note Unlike the elements() function, this member function does not
+     * automatically jump deleted elements, but it iterates over the
+     * elements in the given range, regardless of whether they are deleted or
+     * not.
+     *
+     * @param[in] begin: the index of the first element to be included in the
+     * range. It must be less than or equal to elementContainerSize() and less than
+     * or equal to the end index.
+     * @param[in] end: the index of the last element to be included in the
+     * range (exclusive). If UINT_NULL (default) or greater than
+     * elementContainerSize(), it will be set to elementContainerSize().
+     * @return A View object allowing to iterate over the given range of the container.
+     */
+    View<Iterator> elements(IndexType begin, IndexType end = UINT_NULL)
+    {
+        assert(begin <= elementContainerSize());
+        if (end == UINT_NULL || end > elementContainerSize()) {
+            end = elementContainerSize();
+        }
+        assert(begin <= end);
+        return View(Iterator(*this, begin, false), Iterator(*this, end, false));
+    }
+
+    /**
+     * @brief Returns a view object that allows to iterate over the elements of
+     * the container in the range [begin, end), providing begin() and end()
+     * member functions.
+     *
+     * @note Unlike the elements() function, this member function does not
+     * automatically jump deleted elements, but it iterates over the
+     * elements in the given range, regardless of whether they are deleted or
+     * not.
+     *
+     * @param[in] begin: the index of the first element to be included in the
+     * range. It must be less than or equal to elementContainerSize() and less than
+     * or equal to the end index.
+     * @param[in] end: the index of the last element to be included in the
+     * range (exclusive). If UINT_NULL (default) or greater than
+     * elementContainerSize(), it will be set to elementContainerSize().
+     * @return A View object allowing to iterate over the given range of the container.
+     */
+    View<ConstIterator> elements(IndexType begin, IndexType end = UINT_NULL) const
+    {
+        assert(begin <= elementContainerSize());
+        if (end == UINT_NULL || end > elementContainerSize()) {
+            end = elementContainerSize();
+        }
+        assert(begin <= end);
+        return View(
+            ConstIterator(*this, begin, false), ConstIterator(*this, end, false));
+    }
 
     // ### Enable - Disable
 
