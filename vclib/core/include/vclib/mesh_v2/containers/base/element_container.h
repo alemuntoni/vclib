@@ -121,11 +121,9 @@ class ElementContainer
     [[no_unique_address]] detail::CustomComponentsVectorMap<
         comp::HasCustomComponents<ComponentList>> mCustomComponents;
 
-protected:
-    using Iterator      = ElementIterator<ElementContainer>;
-    using ConstIterator = ElementIterator<const ElementContainer>;
-
 public:
+    using Iterator         = ElementIterator<ElementContainer>;
+    using ConstIterator    = ElementIterator<const ElementContainer>;
     using Components       = ComponentList;
     using IndexType        = Index;
     using ParentMeshType   = ParentMesh;

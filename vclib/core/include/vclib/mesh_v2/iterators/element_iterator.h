@@ -43,8 +43,8 @@ public:
     using value_type        = ElementType;
     using reference         = ElementType;
     using pointer           = FakePointerWithValue<ElementType>;
-    using iterator_concept  = std::bidirectional_iterator_tag;
-    using iterator_category = std::bidirectional_iterator_tag;
+    using iterator_concept  = std::random_access_iterator_tag;
+    using iterator_category = std::random_access_iterator_tag;
 
 private:
     ContainerType* mContainer   = nullptr;
@@ -67,6 +67,35 @@ private:
             while (mIndex > 0 && mContainer->isElementDeleted(mIndex)) {
                 --mIndex;
             }
+        }
+    }
+
+    template<typename OtherIt>
+    difference_type differenceImpl(const OtherIt& other) const
+    {
+        if (!mJumpDeleted || (mContainer && mContainer->isElementContainerCompact())) {
+            return static_cast<difference_type>(mIndex) -
+                   static_cast<difference_type>(other.index());
+        }
+        if (mIndex == other.index()) {
+            return 0;
+        }
+        if (mIndex > other.index()) {
+            auto it = other;
+            difference_type diff = 0;
+            while (it.index() < mIndex) {
+                ++it;
+                ++diff;
+            }
+            return diff;
+        } else {
+            auto it = *this;
+            difference_type diff = 0;
+            while (it.index() < other.index()) {
+                ++it;
+                ++diff;
+            }
+            return -diff;
         }
     }
 
@@ -135,16 +164,131 @@ public:
         return tmp;
     }
 
+    ElementIterator& operator+=(difference_type n)
+    {
+        if (!mJumpDeleted || (mContainer && mContainer->isElementContainerCompact())) {
+            mIndex = static_cast<IndexType>(static_cast<difference_type>(mIndex) + n);
+            return *this;
+        }
+        if (n > 0) {
+            while (n--) {
+                ++(*this);
+            }
+        } else if (n < 0) {
+            while (n++) {
+                --(*this);
+            }
+        }
+        return *this;
+    }
+
+    ElementIterator& operator-=(difference_type n)
+    {
+        return *this += -n;
+    }
+
+    ElementIterator operator+(difference_type n) const
+    {
+        ElementIterator tmp = *this;
+        tmp += n;
+        return tmp;
+    }
+
+    friend ElementIterator operator+(
+        difference_type n,
+        const ElementIterator& it)
+    {
+        return it + n;
+    }
+
+    ElementIterator operator-(difference_type n) const
+    {
+        ElementIterator tmp = *this;
+        tmp -= n;
+        return tmp;
+    }
+
+    difference_type operator-(const ElementIterator& other) const
+    {
+        return differenceImpl(other);
+    }
+
+    template<typename OtherContainer>
+    difference_type operator-(
+        const ElementIterator<OtherContainer>& other) const
+    {
+        return differenceImpl(other);
+    }
+
+    reference operator[](difference_type n) const
+    {
+        return *(*this + n);
+    }
+
+    bool operator==(const ElementIterator& other) const
+    {
+        return mIndex == other.mIndex && mContainer == other.mContainer;
+    }
+
     template<typename OtherContainer>
     bool operator==(const ElementIterator<OtherContainer>& other) const
     {
         return mIndex == other.index() && mContainer == other.parentContainer();
     }
 
+    auto operator<=>(const ElementIterator& other) const
+    {
+        return mIndex <=> other.mIndex;
+    }
+
     template<typename OtherContainer>
     auto operator<=>(const ElementIterator<OtherContainer>& other) const
     {
         return mIndex <=> other.index();
+    }
+
+    bool operator<(const ElementIterator& other) const
+    {
+        return mIndex < other.mIndex;
+    }
+
+    template<typename OtherContainer>
+    bool operator<(const ElementIterator<OtherContainer>& other) const
+    {
+        return mIndex < other.index();
+    }
+
+    bool operator<=(const ElementIterator& other) const
+    {
+        return mIndex <= other.mIndex;
+    }
+
+    template<typename OtherContainer>
+    bool operator<=(const ElementIterator<OtherContainer>& other) const
+    {
+        return mIndex <= other.index();
+    }
+
+    bool operator>(const ElementIterator& other) const
+    {
+        return mIndex > other.mIndex;
+    }
+
+    template<typename OtherContainer>
+    bool operator>(const ElementIterator<OtherContainer>& other) const
+    {
+        return mIndex > other.index();
+    }
+
+    bool operator>=(const ElementIterator& other) const
+    {
+        return mIndex >= other.mIndex;
+    }
+
+    template<typename OtherContainer>
+    bool operator>=(const ElementIterator<OtherContainer>& other) const
+    {
+        return mIndex >= other.index();
     }
 };
 

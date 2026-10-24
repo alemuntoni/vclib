@@ -125,12 +125,41 @@ inline void testMeshConcepts()
     static_assert(Mesh64::NULL_INDEX != MyMesh::NULL_INDEX);
 }
 
+inline void testIteratorConcepts()
+{
+    // Random access iterators
+    static_assert(std::random_access_iterator<MyMesh::VertexContainer::Iterator>);
+    static_assert(std::random_access_iterator<MyMesh::VertexContainer::ConstIterator>);
+    static_assert(std::random_access_iterator<MyMesh::FaceContainer::Iterator>);
+    static_assert(std::random_access_iterator<MyMesh::FaceContainer::ConstIterator>);
+
+    // Component iterators
+    static_assert(std::random_access_iterator<
+        vcl::meshv2::ComponentIterator<vcl::meshv2::CompId::POSITION, MyMesh::VertexContainer>>);
+    static_assert(std::random_access_iterator<
+        vcl::meshv2::ComponentIterator<vcl::meshv2::CompId::NORMAL, MyMesh::VertexContainer>>);
+
+    // Random access ranges
+    static_assert(std::ranges::random_access_range<decltype(std::declval<MyMesh>().vertices())>);
+    static_assert(std::ranges::random_access_range<decltype(std::declval<MyMesh>().faces())>);
+    static_assert(std::ranges::random_access_range<decltype(std::declval<MyMesh>().vertices().positions())>);
+
+    // Views over elements and components
+    static_assert(std::ranges::random_access_range<
+        decltype(std::declval<MyMesh>().elements<vcl::meshv2::ElemId::VERTEX>(0u))>);
+    static_assert(std::ranges::random_access_range<
+        decltype(std::declval<MyMesh>().elements<vcl::meshv2::ElemId::VERTEX>(0u) | vcl::meshv2::views::positions)>);
+    static_assert(std::ranges::random_access_range<
+        decltype(std::declval<MyMesh>().elements<vcl::meshv2::ElemId::VERTEX>(0u) | vcl::meshv2::views::normals)>);
+}
+
 inline void testConcepts()
 {
     std::println("--- Testing Concepts & Strong Typing ---");
     testComponentConcepts();
     testElementConcepts();
     testMeshConcepts();
+    testIteratorConcepts();
     std::println("Compile-time concepts verified successfully!\n");
 }
 
