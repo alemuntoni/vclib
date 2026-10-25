@@ -26,11 +26,13 @@
 namespace vcl::meshv2::mesh {
 
 /**
- * @brief The CustomComponents class is a Mesh component that manages runtime-defined
- * custom components at the mesh level (horizontal dynamic attributes stored on the mesh).
+ * @brief The CustomComponents class is a Mesh component that manages
+ * runtime-defined custom components at the mesh level (horizontal dynamic
+ * attributes stored on the mesh).
  *
- * Each mesh-level custom component is identified by a unique name (std::string) and
- * stores an instance of any type (std::any), with its std::type_index tracked.
+ * Each mesh-level custom component is identified by a unique name (std::string)
+ * and stores an instance of any type (std::any), with its std::type_index
+ * tracked.
  *
  * E.g., to add and access a mesh-level custom component from a mesh `m`:
  * @code{.cpp}
@@ -47,7 +49,8 @@ class CustomComponents : public Component<CompId::CUSTOM_COMPONENTS, void>
 
 public:
     /**
-     * @brief Default constructor. Initializes an empty container of custom components.
+     * @brief Default constructor. Initializes an empty container of custom
+     * components.
      */
     CustomComponents() = default;
 
@@ -63,12 +66,14 @@ public:
     }
 
     /**
-     * @brief Checks if the custom component of the given name is of type CompType.
+     * @brief Checks if the custom component of the given name is of type
+     * CompType.
      *
      * @tparam CompType: The type of the custom component to check.
      * @param[in] compName: The name of the custom component.
      * @throws std::out_of_range if the custom component does not exist.
-     * @return true if the custom component is of type CompType, false otherwise.
+     * @return true if the custom component is of type CompType, false
+     * otherwise.
      */
     template<typename CompType>
     bool isCustomComponentOfType(
@@ -80,7 +85,8 @@ public:
     }
 
     /**
-     * @brief Returns the std::type_index of the custom component of the given name.
+     * @brief Returns the std::type_index of the custom component of the given
+     * name.
      *
      * @param[in] compName: The name of the custom component.
      * @throws std::out_of_range if the custom component does not exist.
@@ -94,10 +100,11 @@ public:
     }
 
     /**
-     * @brief Returns a vector of strings containing the names of all custom components
-     * stored on the mesh.
+     * @brief Returns a vector of strings containing the names of all custom
+     * components stored on the mesh.
      *
-     * @return A vector of strings containing the names of all custom components.
+     * @return A vector of strings containing the names of all custom
+     * components.
      */
     std::vector<std::string> customComponentNames(this const auto& self)
     {
@@ -110,11 +117,12 @@ public:
     }
 
     /**
-     * @brief Returns a vector of strings containing the names of all custom components
-     * of type CompType stored on the mesh.
+     * @brief Returns a vector of strings containing the names of all custom
+     * components of type CompType stored on the mesh.
      *
      * @tparam CompType: The type of the custom components to retrieve.
-     * @return A vector of strings containing the names of custom components of type CompType.
+     * @return A vector of strings containing the names of custom components of
+     * type CompType.
      */
     template<typename CompType>
     std::vector<std::string> customComponentNamesOfType(this const auto& self)
@@ -130,7 +138,8 @@ public:
     }
 
     /**
-     * @brief Adds or replaces a custom component of type CompType with the given name.
+     * @brief Adds or replaces a custom component of type CompType with the
+     * given name.
      *
      * @tparam CompType: The type of the custom component to add.
      * @param[in] compName: The name of the custom component.
@@ -168,12 +177,14 @@ public:
     }
 
     /**
-     * @brief Returns a reference to the custom component of type CompType with the given name.
+     * @brief Returns a reference to the custom component of type CompType with
+     * the given name.
      *
      * @tparam CompType: The type of the custom component to retrieve.
      * @param[in] compName: The name of the custom component.
      * @throws std::out_of_range if the custom component does not exist.
-     * @throws vcl::BadCustomComponentTypeException if the custom component is not of type CompType.
+     * @throws vcl::BadCustomComponentTypeException if the custom component is
+     * not of type CompType.
      * @return A reference to the custom component value.
      */
     template<typename CompType>
@@ -190,7 +201,8 @@ public:
     }
 
     /**
-     * @brief Serializes all custom components of type CompType to the output stream.
+     * @brief Serializes all custom components of type CompType to the output
+     * stream.
      *
      * @tparam CompType: The type of the custom components to serialize.
      * @param[out] os: The output stream.
@@ -215,7 +227,8 @@ public:
     }
 
     /**
-     * @brief Deserializes custom components of type CompType from the input stream.
+     * @brief Deserializes custom components of type CompType from the input
+     * stream.
      *
      * @tparam CompType: The type of the custom components to deserialize.
      * @param[in] is: The input stream.
@@ -224,10 +237,11 @@ public:
     void deserializeCustomComponentsOfType(this auto& self, std::istream& is)
     {
         constexpr uint32_t CCMP_TAG = 0x504D4343;
-        uint32_t tag = 0;
+        uint32_t           tag      = 0;
         vcl::deserialize(is, tag);
         if (tag != CCMP_TAG) {
-            throw std::runtime_error("Invalid custom component block magic header");
+            throw std::runtime_error(
+                "Invalid custom component block magic header");
         }
         uint32_t typeSize = 0;
         vcl::deserialize(is, typeSize);
@@ -247,13 +261,13 @@ public:
 
 protected:
     template<typename OtherMesh>
-    void importFrom(this auto&& self, const OtherMesh& m)
+    void importFrom(const OtherMesh& m)
     {
         if constexpr (comp::HasCustomComponents<OtherMesh>) {
             if constexpr (std::is_base_of_v<CustomComponents, OtherMesh>) {
                 const auto& other = static_cast<const CustomComponents&>(m);
-                self.mMap         = other.mMap;
-                self.mCompType    = other.mCompType;
+                mMap              = other.mMap;
+                mCompType         = other.mCompType;
             }
         }
     }
@@ -273,8 +287,8 @@ private:
 };
 
 /**
- * @brief Concept that checks whether a type T has the mesh-level CustomComponents
- * component (COMP_ID = CompId::CUSTOM_COMPONENTS).
+ * @brief Concept that checks whether a type T has the mesh-level
+ * CustomComponents component (COMP_ID = CompId::CUSTOM_COMPONENTS).
  *
  * @ingroup components_concepts
  */

@@ -68,10 +68,10 @@ protected:
     void deserialize(std::istream& is) { vcl::deserialize(is, mColor); }
 
     template<typename OtherMesh>
-    void importFrom(this auto&& self, const OtherMesh& m)
+    void importFrom(const OtherMesh& m)
     {
         if constexpr (comp::HasColor<OtherMesh>) {
-            self.mColor = m.color();
+            mColor = m.color();
         }
     }
 };

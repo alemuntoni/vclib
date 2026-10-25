@@ -101,7 +101,7 @@ protected:
     }
 
     template<typename OtherMesh>
-    void importFrom(this auto&& self, const OtherMesh& m);
+    void importFrom(const OtherMesh& m);
 };
 
 /* Concepts */
@@ -120,11 +120,10 @@ concept HasTransformMatrix = comp::HasComponent<CompId::TRANSFORM_MATRIX, T>;
 
 template<typename Scalar>
 template<typename OtherMesh>
-void TransformMatrix<Scalar>::importFrom(this auto&& self, const OtherMesh& m)
+void TransformMatrix<Scalar>::importFrom(const OtherMesh& m)
 {
     if constexpr (HasTransformMatrix<OtherMesh>) {
-        self.mTransformMatrix =
-            m.transformMatrix().template cast<Scalar>();
+        mTransformMatrix = m.transformMatrix().template cast<Scalar>();
     }
 }
 
