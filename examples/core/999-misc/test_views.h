@@ -454,6 +454,29 @@ inline void testComponentViews()
         ++compCount;
     }
     assert(compCount == 2); // Vertices 1 and 3 are selected
+
+    // --- 7. PrincipalCurvatures View ---
+    CurvatureMesh cmesh;
+    cmesh.addVertices(3);
+    cmesh.vertex(0).principalCurvature().maxValue() = 1.0f;
+    cmesh.vertex(1).principalCurvature().maxValue() = 2.0f;
+    cmesh.vertex(2).principalCurvature().maxValue() = 3.0f;
+
+    static_assert(meshv2::PrincipalCurvaturesRangeConcept<decltype(cmesh.vertices())>);
+    static_assert(std::ranges::range<decltype(cmesh.vertices() | views::principalCurvatures)>);
+
+    std::size_t curvCount = 0;
+    float sumMaxCurv = 0.0f;
+    for (const auto& pc : cmesh.vertices() | views::principalCurvatures) {
+        sumMaxCurv += pc.maxValue();
+        ++curvCount;
+    }
+    assert(curvCount == 3);
+    assert(sumMaxCurv == 6.0f);
+
+    // Direct proxy member
+    assert(cmesh.vertices().principalCurvatures().size() == 3);
+    assert(cmesh.vertices().principalCurvatures()[1].maxValue() == 2.0f);
 }
 
 inline void testViews()

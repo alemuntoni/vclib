@@ -32,7 +32,7 @@ namespace vcl::meshv2::mesh {
  * m.name();
  * @endcode
  *
- * @ingroup components
+ * @ingroup mesh_components
  */
 class Name : public Component<CompId::NAME, std::string>
 {
@@ -42,7 +42,7 @@ public:
     /* Constructors */
 
     /**
-     * @brief Initilizes an empty name.
+     * @brief Initializes an empty name.
      */
     Name() = default;
 

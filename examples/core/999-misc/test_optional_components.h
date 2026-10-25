@@ -37,6 +37,14 @@ inline void testEnableDisable()
     assert((!mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
     assert((!mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
     assert((!mesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+
+    // CurvatureMesh optional principal curvature
+    CurvatureMesh cmesh;
+    assert((!cmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>()));
+    cmesh.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>();
+    assert((cmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>()));
+    cmesh.disablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>();
+    assert((!cmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>()));
 }
 
 inline void testEnableSameOptionalComponentsOf()

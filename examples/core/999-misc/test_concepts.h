@@ -87,6 +87,32 @@ inline void testComponentConcepts()
                   BoundingBoxMesh::Components,
                   vcl::TypeWrapper<meshv2::mesh::BoundingBox3f>>);
 
+    // Name Component Concepts
+    static_assert(meshv2::mesh::HasName<NamedMesh>);
+    static_assert(meshv2::mesh::HasName<meshv2::mesh::Name>);
+    static_assert(!meshv2::mesh::HasName<MyMesh>);
+    static_assert(meshv2::HasName<NamedMesh>);
+    static_assert(!meshv2::HasName<MyMesh>);
+    static_assert(!meshv2::ElementContainerConcept<meshv2::mesh::Name>);
+    static_assert(meshv2::ComponentConcept<meshv2::mesh::Name>);
+    static_assert(std::is_same_v<
+                  NamedMesh::Components,
+                  vcl::TypeWrapper<meshv2::mesh::Name>>);
+
+    // PrincipalCurvature Component Concepts
+    static_assert(meshv2::vert::HasPrincipalCurvature<CurvatureMesh::Vertex>);
+    static_assert(meshv2::vert::HasPrincipalCurvature<CurvatureMesh::ConstVertex>);
+    static_assert(meshv2::vert::HasPrincipalCurvature<CurvatureVertexComponents>);
+    static_assert(!meshv2::vert::HasPrincipalCurvature<MyMesh::Vertex>);
+    static_assert(!meshv2::vert::HasOptionalPrincipalCurvature<CurvatureVertexComponents>);
+    static_assert(meshv2::vert::HasOptionalPrincipalCurvature<OptionalCurvatureVertexComponents>);
+    static_assert(meshv2::vert::HasOptionalPrincipalCurvature<OptionalCurvatureMesh::Vertex>);
+    static_assert(meshv2::face::HasPrincipalCurvature<CurvatureMesh::Face>);
+    static_assert(meshv2::face::HasOptionalPrincipalCurvature<CurvatureMesh::Face>);
+    static_assert(!meshv2::face::HasPrincipalCurvature<MyMesh::Face>);
+    static_assert(vcl::PrincipalCurvatureConcept<vcl::PrincipalCurvaturef>);
+    static_assert(vcl::PrincipalCurvatureConcept<vcl::PrincipalCurvatured>);
+
     // MaterialIndex Component Concepts
     static_assert(meshv2::face::HasMaterialIndex<MaterialFaceComponents>);
     static_assert(meshv2::face::HasMaterialIndex<MaterialMesh::Face>);

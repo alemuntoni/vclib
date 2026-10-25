@@ -44,6 +44,32 @@ inline void testVertexImportFrom()
     assert(mFloat.vertex(0).onBorder() == true);
     assert(mFloat.vertex(0).userBit(3) == true);
     assert(mFloat.vertex(0).userBit(2) == false);
+
+    // 3. PrincipalCurvature importFrom on Vertex
+    CurvatureMesh cm1;
+    cm1.addVertices(1);
+    cm1.vertex(0).principalCurvature().maxDir() = Point3f(1.0f, 0.0f, 0.0f);
+    cm1.vertex(0).principalCurvature().minDir() = Point3f(0.0f, 1.0f, 0.0f);
+    cm1.vertex(0).principalCurvature().maxValue() = 3.5f;
+    cm1.vertex(0).principalCurvature().minValue() = 1.2f;
+
+    CurvatureMesh cm2;
+    cm2.addVertices(1);
+    cm2.vertex(0).importFrom(cm1.vertex(0));
+    assert(cm2.vertex(0).principalCurvature().maxDir() == Point3f(1.0f, 0.0f, 0.0f));
+    assert(cm2.vertex(0).principalCurvature().minDir() == Point3f(0.0f, 1.0f, 0.0f));
+    assert(cm2.vertex(0).principalCurvature().maxValue() == 3.5f);
+    assert(cm2.vertex(0).principalCurvature().minValue() == 1.2f);
+
+    // 4. PrincipalCurvature importFrom with cross-precision cast (float to double) into optional component
+    OptionalCurvatureMesh ocm;
+    ocm.addVertices(1);
+    ocm.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::PRINCIPAL_CURVATURE>();
+    ocm.vertex(0).importFrom(cm1.vertex(0));
+    assert(ocm.vertex(0).principalCurvature().maxDir() == Point3d(1.0, 0.0, 0.0));
+    assert(ocm.vertex(0).principalCurvature().minDir() == Point3d(0.0, 1.0, 0.0));
+    assert(ocm.vertex(0).principalCurvature().maxValue() == 3.5);
+    assert(ocm.vertex(0).principalCurvature().minValue() == 1.2);
 }
 
 inline void testFaceImportFrom()
@@ -223,6 +249,18 @@ inline void testMeshImportFromMeshComponents()
     assert(tbbm.boundingBox().min() == Point3f(0.0f, 0.0f, 0.0f));
     assert(tbbm.transformedBoundingBox().min() == Point3f(10.0f, 0.0f, 0.0f));
     assert(tbbm.transformedBoundingBox().max() == Point3f(11.0f, 1.0f, 1.0f));
+
+    // Name importFrom test
+    NamedMesh nm1;
+    nm1.name() = "SampleMesh";
+    nm1.addVertices(3);
+    nm1.addFace(0, 1, 2);
+
+    NamedMesh nm2;
+    nm2.importFrom(nm1);
+    assert(nm2.name() == "SampleMesh");
+    assert(nm2.vertexCount() == 3);
+    assert(nm2.faceCount() == 1);
 }
 
 inline void testImportFrom()

@@ -17,6 +17,7 @@
 #include "../components/material_index.h"
 #include "../components/normal.h"
 #include "../components/position.h"
+#include "../components/principal_curvature.h"
 #include "../components/tex_coord.h"
 
 namespace vcl::meshv2::vert {
@@ -54,6 +55,10 @@ template<typename T>
 concept HasOptionalNormal = comp::HasOptionalNormal<T>;
 template<typename T>
 concept HasPosition = comp::HasPosition<T>;
+template<typename T>
+concept HasPrincipalCurvature = comp::HasPrincipalCurvature<T>;
+template<typename T>
+concept HasOptionalPrincipalCurvature = comp::HasOptionalPrincipalCurvature<T>;
 template<typename T>
 concept HasTexCoord = comp::HasTexCoord<T>;
 template<typename T>
@@ -131,6 +136,18 @@ using Position3 = comp::Position3<ScalarType, OPT>;
 
 using Position3f         = comp::Position3f;
 using Position3d         = comp::Position3d;
+
+/* Port PrincipalCurvature classes into vert namespace */
+template<typename ScalarType, bool OPT = false>
+using PrincipalCurvature = comp::PrincipalCurvature<ScalarType, OPT>;
+
+template<typename ScalarType>
+using OptionalPrincipalCurvature = comp::PrincipalCurvature<ScalarType, true>;
+
+using PrincipalCurvaturef         = comp::PrincipalCurvaturef<false>;
+using PrincipalCurvatured         = comp::PrincipalCurvatured<false>;
+using OptionalPrincipalCurvaturef = comp::PrincipalCurvaturef<true>;
+using OptionalPrincipalCurvatured = comp::PrincipalCurvatured<true>;
 
 /* Port TexCoord class into vert namespace */
 template<typename ScalarType, bool OPT = false>

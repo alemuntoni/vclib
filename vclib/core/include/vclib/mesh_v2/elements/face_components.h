@@ -16,6 +16,7 @@
 #include "../components/material_index.h"
 #include "../components/normal.h"
 #include "../components/polygon_bit_flags.h"
+#include "../components/principal_curvature.h"
 #include "../components/triangle_bit_flags.h"
 #include "../components/vertex_references.h"
 #include "../components/wedges.h"
@@ -64,6 +65,10 @@ template<typename T>
 concept HasNormal = comp::HasNormal<T>;
 template<typename T>
 concept HasOptionalNormal = comp::HasOptionalNormal<T>;
+template<typename T>
+concept HasPrincipalCurvature = comp::HasPrincipalCurvature<T>;
+template<typename T>
+concept HasOptionalPrincipalCurvature = comp::HasOptionalPrincipalCurvature<T>;
 template<typename T>
 concept HasVertexReferences = comp::HasVertexReferences<T>;
 template<typename T>
@@ -169,6 +174,18 @@ using Normal3f         = comp::Normal3f;
 using Normal3d         = comp::Normal3d;
 using OptionalNormal3f = comp::OptionalNormal3f;
 using OptionalNormal3d = comp::OptionalNormal3d;
+
+/* Port PrincipalCurvature classes into face namespace */
+template<typename ScalarType, bool OPT = false>
+using PrincipalCurvature = comp::PrincipalCurvature<ScalarType, OPT>;
+
+template<typename ScalarType>
+using OptionalPrincipalCurvature = comp::PrincipalCurvature<ScalarType, true>;
+
+using PrincipalCurvaturef         = comp::PrincipalCurvaturef<false>;
+using PrincipalCurvatured         = comp::PrincipalCurvatured<false>;
+using OptionalPrincipalCurvaturef = comp::PrincipalCurvaturef<true>;
+using OptionalPrincipalCurvatured = comp::PrincipalCurvatured<true>;
 
 /* Port VertexReferences class into face namespace */
 template<int N, std::unsigned_integral Index = uint>

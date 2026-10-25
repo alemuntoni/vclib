@@ -1626,6 +1626,12 @@ concept HasTransformMatrix = mesh::HasTransformMatrix<MeshType>;
 template<typename MeshType>
 concept HasBoundingBox = mesh::HasBoundingBox<MeshType>;
 
+/**
+ * @brief Concept that checks whether a Mesh has the Name component.
+ */
+template<typename MeshType>
+concept HasName = mesh::HasName<MeshType>;
+
 } // namespace vcl::meshv2
 
 #endif // VCL_MESH_V2_MESH_H

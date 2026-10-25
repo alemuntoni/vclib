@@ -348,6 +348,46 @@ inline void testMeshSerialization()
         assert(bbmRead.boundingBox().max() == Point3f(10.0f, 20.0f, 30.0f));
     }
 
+    // 8. NamedMesh serialization test
+    {
+        NamedMesh nm;
+        nm.name() = "SerializedMeshName";
+        nm.addVertices(2);
+
+        std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        nm.serialize(ss);
+
+        NamedMesh nmRead;
+        nmRead.deserialize(ss);
+
+        assert(nmRead.name() == "SerializedMeshName");
+        assert(nmRead.vertexCount() == 2);
+    }
+
+    // 9. CurvatureMesh serialization test
+    {
+        CurvatureMesh cm;
+        cm.name() = "CurvatureMeshTest";
+        cm.addVertices(2);
+        cm.vertex(0).principalCurvature().maxDir() = Point3f(1.0f, 0.0f, 0.0f);
+        cm.vertex(0).principalCurvature().minDir() = Point3f(0.0f, 1.0f, 0.0f);
+        cm.vertex(0).principalCurvature().maxValue() = 10.0f;
+        cm.vertex(0).principalCurvature().minValue() = 2.0f;
+
+        std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        cm.serialize(ss);
+
+        CurvatureMesh cmRead;
+        cmRead.deserialize(ss);
+
+        assert(cmRead.name() == "CurvatureMeshTest");
+        assert(cmRead.vertexCount() == 2);
+        assert(cmRead.vertex(0).principalCurvature().maxDir() == Point3f(1.0f, 0.0f, 0.0f));
+        assert(cmRead.vertex(0).principalCurvature().minDir() == Point3f(0.0f, 1.0f, 0.0f));
+        assert(cmRead.vertex(0).principalCurvature().maxValue() == 10.0f);
+        assert(cmRead.vertex(0).principalCurvature().minValue() == 2.0f);
+    }
+
     std::println("Mesh serialization tests passed!");
 }
 

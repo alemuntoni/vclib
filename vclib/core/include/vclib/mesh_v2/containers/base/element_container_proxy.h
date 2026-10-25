@@ -132,6 +132,15 @@ public:
         return component<CompId::VERTEX_REFERENCES>();
     }
 
+    /**
+     * @brief Returns a ComponentView over the principal curvatures of the elements.
+     */
+    auto principalCurvatures() const
+        requires comp::HasPrincipalCurvature<Container>
+    {
+        return component<CompId::PRINCIPAL_CURVATURE>();
+    }
+
 private:
     /**
      * @brief Generic access to a ComponentView for a specific COMP_ID.

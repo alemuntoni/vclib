@@ -78,6 +78,36 @@ using TransformedBoundingBoxMesh = meshv2::Mesh<
     meshv2::mesh::BoundingBox3f,
     meshv2::mesh::TransformMatrixf>;
 
+using NamedMesh = meshv2::Mesh<
+    meshv2::VertexContainer<MyVertexComponents>,
+    meshv2::FaceContainer<MyFaceComponents>,
+    meshv2::mesh::Name>;
+
+using CurvatureVertexComponents = meshv2::VertexComponents<
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3f,
+    meshv2::vert::PrincipalCurvaturef>;
+
+using OptionalCurvatureVertexComponents = meshv2::VertexComponents<
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3f,
+    meshv2::vert::OptionalPrincipalCurvatured>;
+
+using CurvatureFaceComponents = meshv2::FaceComponents<
+    meshv2::face::BitFlags,
+    meshv2::face::TriangleVertexReferences<vcl::uint>,
+    meshv2::face::OptionalPrincipalCurvaturef>;
+
+using CurvatureMesh = meshv2::Mesh<
+    meshv2::VertexContainer<CurvatureVertexComponents>,
+    meshv2::FaceContainer<CurvatureFaceComponents>,
+    meshv2::mesh::Name>;
+
+using OptionalCurvatureMesh = meshv2::Mesh<
+    meshv2::VertexContainer<OptionalCurvatureVertexComponents>,
+    meshv2::FaceContainer<CurvatureFaceComponents>,
+    meshv2::mesh::Name>;
+
 using FullVertexComponents = meshv2::VertexComponents<
     meshv2::vert::BitFlags,
     meshv2::vert::Position3f,
