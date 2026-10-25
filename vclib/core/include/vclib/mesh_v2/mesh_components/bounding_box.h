@@ -66,12 +66,6 @@ public:
      */
     BoundingBox() = default;
 
-    /**
-     * @brief Constructs the BoundingBox initialized with the given box.
-     * @param[in] box: The initial bounding box.
-     */
-    BoundingBox(const Box<Point>& box) : mBoundingBox(box) {}
-
     /* Member functions */
 
     /**

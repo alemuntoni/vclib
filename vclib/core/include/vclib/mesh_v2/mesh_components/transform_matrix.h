@@ -62,14 +62,6 @@ public:
      */
     TransformMatrix() = default;
 
-    /**
-     * @brief Constructs the TransformMatrix initialized with the given matrix.
-     * @param[in] matrix: The initial matrix.
-     */
-    TransformMatrix(const Matrix44<Scalar>& matrix) : mTransformMatrix(matrix)
-    {
-    }
-
     /* Member functions */
 
     /**
