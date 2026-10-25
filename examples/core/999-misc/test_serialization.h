@@ -332,6 +332,22 @@ inline void testMeshSerialization()
         assert(mmRead.face(1).materialIndex() == 1);
     }
 
+    // 7. BoundingBoxMesh serialization test
+    {
+        BoundingBoxMesh bbm;
+        bbm.boundingBox().min() = Point3f(-10.0f, -20.0f, -30.0f);
+        bbm.boundingBox().max() = Point3f(10.0f, 20.0f, 30.0f);
+
+        std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        bbm.serialize(ss);
+
+        BoundingBoxMesh bbmRead;
+        bbmRead.deserialize(ss);
+
+        assert(bbmRead.boundingBox().min() == Point3f(-10.0f, -20.0f, -30.0f));
+        assert(bbmRead.boundingBox().max() == Point3f(10.0f, 20.0f, 30.0f));
+    }
+
     std::println("Mesh serialization tests passed!");
 }
 

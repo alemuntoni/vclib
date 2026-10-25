@@ -194,6 +194,35 @@ inline void testMeshImportFromMeshComponents()
     assert(tm2.transformMatrix() == mat);
     assert(tm2.vertexCount() == 3);
     assert(tm2.faceCount() == 1);
+
+    // BoundingBox importFrom test
+    BoundingBoxMesh bbm1;
+    bbm1.boundingBox().min() = Point3f(-1.0f, -2.0f, -3.0f);
+    bbm1.boundingBox().max() = Point3f(1.0f, 2.0f, 3.0f);
+    bbm1.addVertices(3);
+    bbm1.addFace(0, 1, 2);
+
+    BoundingBoxMesh bbm2;
+    bbm2.importFrom(bbm1);
+    assert(bbm2.boundingBox().min() == Point3f(-1.0f, -2.0f, -3.0f));
+    assert(bbm2.boundingBox().max() == Point3f(1.0f, 2.0f, 3.0f));
+    assert(bbm2.vertexCount() == 3);
+    assert(bbm2.faceCount() == 1);
+
+    // transformedBoundingBox test
+    TransformedBoundingBoxMesh tbbm;
+    tbbm.boundingBox().min() = Point3f(0.0f, 0.0f, 0.0f);
+    tbbm.boundingBox().max() = Point3f(1.0f, 1.0f, 1.0f);
+    assert(tbbm.transformedBoundingBox().min() == Point3f(0.0f, 0.0f, 0.0f));
+    assert(tbbm.transformedBoundingBox().max() == Point3f(1.0f, 1.0f, 1.0f));
+
+    Matrix44f tmat = Matrix44f::Identity();
+    tmat(0, 3) = 10.0f; // translate X by +10
+    tbbm.transformMatrix() = tmat;
+
+    assert(tbbm.boundingBox().min() == Point3f(0.0f, 0.0f, 0.0f));
+    assert(tbbm.transformedBoundingBox().min() == Point3f(10.0f, 0.0f, 0.0f));
+    assert(tbbm.transformedBoundingBox().max() == Point3f(11.0f, 1.0f, 1.0f));
 }
 
 inline void testImportFrom()

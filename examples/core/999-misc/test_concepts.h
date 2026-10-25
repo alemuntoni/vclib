@@ -75,6 +75,18 @@ inline void testComponentConcepts()
                   MaterialMeshWithMaterials::Components,
                   vcl::TypeWrapper<meshv2::mesh::Materials>>);
 
+    // BoundingBox Component Concepts
+    static_assert(meshv2::mesh::HasBoundingBox<BoundingBoxMesh>);
+    static_assert(meshv2::mesh::HasBoundingBox<meshv2::mesh::BoundingBox3f>);
+    static_assert(!meshv2::mesh::HasBoundingBox<MyMesh>);
+    static_assert(meshv2::HasBoundingBox<BoundingBoxMesh>);
+    static_assert(!meshv2::HasBoundingBox<MyMesh>);
+    static_assert(!meshv2::ElementContainerConcept<meshv2::mesh::BoundingBox3f>);
+    static_assert(meshv2::ComponentConcept<meshv2::mesh::BoundingBox3f>);
+    static_assert(std::is_same_v<
+                  BoundingBoxMesh::Components,
+                  vcl::TypeWrapper<meshv2::mesh::BoundingBox3f>>);
+
     // MaterialIndex Component Concepts
     static_assert(meshv2::face::HasMaterialIndex<MaterialFaceComponents>);
     static_assert(meshv2::face::HasMaterialIndex<MaterialMesh::Face>);

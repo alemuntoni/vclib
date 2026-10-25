@@ -315,7 +315,26 @@ public:
         (disableAllContainer<Rebound<Args>>(), ...);
     }
 
-    // TODO: transformedBoundingBox()
+    /**
+     * @brief Returns the transformed bounding box of the mesh.
+     *
+     * If the mesh has both the BoundingBox and TransformMatrix components, the
+     * bounding box is transformed by the transform matrix. Otherwise, it simply
+     * returns the bounding box.
+     *
+     * @return The transformed bounding box, or the unmodified bounding box if
+     * the transform matrix is not available.
+     */
+    auto transformedBoundingBox() const
+        requires (mesh::HasBoundingBox<Mesh<Args...>>)
+    {
+        if constexpr (mesh::HasTransformMatrix<Mesh<Args...>>) {
+            return transformBox(this->boundingBox(), this->transformMatrix());
+        }
+        else {
+            return this->boundingBox();
+        }
+    }
 
     /**
      * @brief Enables all the OptionalComponents of this mesh according to the
@@ -1600,6 +1619,12 @@ concept HasAdjacentVertices = comp::HasAdjacentVertices<T>;
  */
 template<typename MeshType>
 concept HasTransformMatrix = mesh::HasTransformMatrix<MeshType>;
+
+/**
+ * @brief Concept that checks whether a Mesh has the BoundingBox component.
+ */
+template<typename MeshType>
+concept HasBoundingBox = mesh::HasBoundingBox<MeshType>;
 
 } // namespace vcl::meshv2
 

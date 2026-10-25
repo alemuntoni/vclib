@@ -67,6 +67,17 @@ using TransformedMesh = meshv2::Mesh<
     meshv2::mesh::Color,
     meshv2::mesh::TransformMatrixf>;
 
+using BoundingBoxMesh = meshv2::Mesh<
+    meshv2::VertexContainer<MyVertexComponents>,
+    meshv2::FaceContainer<MyFaceComponents>,
+    meshv2::mesh::BoundingBox3f>;
+
+using TransformedBoundingBoxMesh = meshv2::Mesh<
+    meshv2::VertexContainer<MyVertexComponents>,
+    meshv2::FaceContainer<MyFaceComponents>,
+    meshv2::mesh::BoundingBox3f,
+    meshv2::mesh::TransformMatrixf>;
+
 using FullVertexComponents = meshv2::VertexComponents<
     meshv2::vert::BitFlags,
     meshv2::vert::Position3f,

@@ -8,6 +8,7 @@
 #ifndef VCL_MESH_V2_MESH_COMPONENTS_H
 #define VCL_MESH_V2_MESH_COMPONENTS_H
 
+#include "mesh_components/bounding_box.h"
 #include "mesh_components/color.h"
 #include "mesh_components/custom_components.h"
 #include "mesh_components/materials.h"
