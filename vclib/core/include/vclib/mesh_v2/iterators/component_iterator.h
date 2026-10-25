@@ -27,44 +27,50 @@ namespace vcl::meshv2 {
  */
 template<uint COMP_ID, typename ContainerType>
 class ComponentIterator :
-    public ContainerIndexIterator<
-        ContainerType,
-        typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType,
-        std::conditional_t<
-            std::is_const_v<ContainerType>,
-            const typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType&,
-            typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType&>,
-        std::conditional_t<
-            std::is_const_v<ContainerType>,
-            const typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType*,
-            typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType*>>
+        public ContainerIndexIterator<
+            ContainerType,
+            typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType,
+            std::conditional_t<
+                std::is_const_v<ContainerType>,
+                const typename comp::ComponentTypeT<COMP_ID, ContainerType>::
+                    DataType&,
+                typename comp::ComponentTypeT<COMP_ID, ContainerType>::
+                    DataType&>,
+            std::conditional_t<
+                std::is_const_v<ContainerType>,
+                const typename comp::ComponentTypeT<COMP_ID, ContainerType>::
+                    DataType*,
+                typename comp::ComponentTypeT<COMP_ID, ContainerType>::
+                    DataType*>>
 {
     using Base = ContainerIndexIterator<
         ContainerType,
         typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType,
         std::conditional_t<
             std::is_const_v<ContainerType>,
-            const typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType&,
+            const typename comp::ComponentTypeT<COMP_ID, ContainerType>::
+                DataType&,
             typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType&>,
         std::conditional_t<
             std::is_const_v<ContainerType>,
-            const typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType*,
+            const typename comp::ComponentTypeT<COMP_ID, ContainerType>::
+                DataType*,
             typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType*>>;
 
 public:
     using Base::Base;
 
-    using ContainerTraits = typename Base::ContainerTraits;
-    using IndexType       = typename Base::IndexType;
+    using ContainerTraits = Base::ContainerTraits;
+    using IndexType       = Base::IndexType;
     using CompType        = comp::ComponentTypeT<COMP_ID, ContainerType>;
-    using RawDataType     = typename CompType::DataType;
+    using RawDataType     = CompType::DataType;
     using DataType        = std::conditional_t<
         std::is_const_v<ContainerType>,
         const RawDataType,
         RawDataType>;
-    using reference       = typename Base::reference;
-    using pointer         = typename Base::pointer;
-    using difference_type = typename Base::difference_type;
+    using reference       = Base::reference;
+    using pointer         = Base::pointer;
+    using difference_type = Base::difference_type;
 
     ComponentIterator() = default;
 
@@ -73,7 +79,7 @@ public:
     requires std::is_same_v<ContainerType, const OtherContainerType>
     ComponentIterator(
         const ComponentIterator<COMP_ID, OtherContainerType>& other) :
-        Base(other)
+            Base(other)
     {
     }
 
@@ -84,13 +90,10 @@ public:
         return this->mContainer->template vector<COMP_ID>()[this->mIndex];
     }
 
-    pointer operator->() const
-    {
-        return &(operator*());
-    }
+    pointer operator->() const { return &(operator*()); }
 
     friend ComponentIterator operator+(
-        difference_type n,
+        difference_type          n,
         const ComponentIterator& it)
     {
         return it + n;

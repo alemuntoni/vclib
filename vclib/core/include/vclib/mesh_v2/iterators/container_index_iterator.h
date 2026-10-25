@@ -18,13 +18,15 @@
 namespace vcl::meshv2 {
 
 /**
- * @brief Base class for random-access iterators that index into an ElementContainer.
+ * @brief Base class for random-access iterators that index into an
+ * ElementContainer.
  *
- * It manages the container pointer, current element index, skipping of deleted elements,
- * random-access movement arithmetic, and comparisons using C++23 deducing this.
+ * It manages the container pointer, current element index, skipping of deleted
+ * elements, random-access movement arithmetic, and comparisons using C++23
+ * deducing this.
  *
- * Derived classes (such as ElementIterator and ComponentIterator) only need to provide
- * `operator*()` and `operator->()`.
+ * Derived classes (such as ElementIterator and ComponentIterator) only need to
+ * provide `operator*()` and `operator->()`.
  *
  * @tparam ContainerType: The container type (const or non-const).
  * @tparam ValueType: The value_type of the iterator.
@@ -40,7 +42,7 @@ class ContainerIndexIterator
 {
 public:
     using ContainerTraits = std::remove_cv_t<ContainerType>;
-    using IndexType       = typename ContainerTraits::IndexType;
+    using IndexType       = ContainerTraits::IndexType;
 
     // Modern C++ standard iterator traits
     using difference_type   = std::ptrdiff_t;
@@ -54,54 +56,6 @@ protected:
     ContainerType* mContainer   = nullptr;
     IndexType      mIndex       = 0;
     bool           mJumpDeleted = true;
-
-    void advanceForward()
-    {
-        if (mContainer) {
-            std::size_t sz = mContainer->elementContainerSize();
-            while (mIndex < sz && mContainer->isElementDeleted(mIndex)) {
-                ++mIndex;
-            }
-        }
-    }
-
-    void advanceBackward()
-    {
-        if (mContainer) {
-            while (mIndex > 0 && mContainer->isElementDeleted(mIndex)) {
-                --mIndex;
-            }
-        }
-    }
-
-    template<typename OtherIt>
-    difference_type differenceImpl(const OtherIt& other) const
-    {
-        if (!mJumpDeleted || (mContainer && mContainer->isElementContainerCompact())) {
-            return static_cast<difference_type>(mIndex) -
-                   static_cast<difference_type>(other.index());
-        }
-        if (mIndex == other.index()) {
-            return 0;
-        }
-        if (mIndex > other.index()) {
-            auto it = other;
-            difference_type diff = 0;
-            while (it.index() < mIndex) {
-                ++it;
-                ++diff;
-            }
-            return diff;
-        } else {
-            auto it = *this;
-            difference_type diff = 0;
-            while (it.index() < other.index()) {
-                ++it;
-                ++diff;
-            }
-            return -diff;
-        }
-    }
 
 public:
     ContainerIndexIterator() = default;
@@ -117,13 +71,21 @@ public:
         }
     }
 
-    // Conversion constructor from compatible (e.g. mutable to const) iterator base
-    template<typename OtherContainerType, typename OtherV, typename OtherR, typename OtherP>
+    // Conversion constructor from compatible (e.g. mutable to const) iterator
+    // base
+    template<
+        typename OtherContainerType,
+        typename OtherV,
+        typename OtherR,
+        typename OtherP>
     requires std::is_same_v<ContainerType, const OtherContainerType>
     ContainerIndexIterator(
-        const ContainerIndexIterator<OtherContainerType, OtherV, OtherR, OtherP>& other) :
-            mContainer(other.parentContainer()),
-            mIndex(other.index()),
+        const ContainerIndexIterator<
+            OtherContainerType,
+            OtherV,
+            OtherR,
+            OtherP>& other) :
+            mContainer(other.parentContainer()), mIndex(other.index()),
             mJumpDeleted(other.jumpDeleted())
     {
     }
@@ -173,15 +135,18 @@ public:
     // Addition assignment
     decltype(auto) operator+=(this auto&& self, difference_type n)
     {
-        if (!self.mJumpDeleted || (self.mContainer && self.mContainer->isElementContainerCompact())) {
-            self.mIndex = static_cast<IndexType>(static_cast<difference_type>(self.mIndex) + n);
+        if (!self.mJumpDeleted ||
+            (self.mContainer && self.mContainer->isElementContainerCompact())) {
+            self.mIndex = static_cast<IndexType>(
+                static_cast<difference_type>(self.mIndex) + n);
             return (self);
         }
         if (n > 0) {
             while (n--) {
                 ++self;
             }
-        } else if (n < 0) {
+        }
+        else if (n < 0) {
             while (n++) {
                 --self;
             }
@@ -227,7 +192,8 @@ public:
     // Comparisons
     bool operator==(this const auto& self, const auto& other)
     {
-        return self.mIndex == other.index() && self.mContainer == other.parentContainer();
+        return self.mIndex == other.index() &&
+               self.mContainer == other.parentContainer();
     }
 
     auto operator<=>(this const auto& self, const auto& other)
@@ -253,6 +219,57 @@ public:
     bool operator>=(this const auto& self, const auto& other)
     {
         return self.mIndex >= other.index();
+    }
+
+protected:
+    void advanceForward()
+    {
+        if (mContainer) {
+            std::size_t sz = mContainer->elementContainerSize();
+            while (mIndex < sz && mContainer->isElementDeleted(mIndex)) {
+                ++mIndex;
+            }
+        }
+    }
+
+    void advanceBackward()
+    {
+        if (mContainer) {
+            while (mIndex > 0 && mContainer->isElementDeleted(mIndex)) {
+                --mIndex;
+            }
+        }
+    }
+
+    template<typename OtherIt>
+    difference_type differenceImpl(const OtherIt& other) const
+    {
+        if (!mJumpDeleted ||
+            (mContainer && mContainer->isElementContainerCompact())) {
+            return static_cast<difference_type>(mIndex) -
+                   static_cast<difference_type>(other.index());
+        }
+        if (mIndex == other.index()) {
+            return 0;
+        }
+        if (mIndex > other.index()) {
+            auto            it   = other;
+            difference_type diff = 0;
+            while (it.index() < mIndex) {
+                ++it;
+                ++diff;
+            }
+            return diff;
+        }
+        else {
+            auto            it   = *this;
+            difference_type diff = 0;
+            while (it.index() < other.index()) {
+                ++it;
+                ++diff;
+            }
+            return -diff;
+        }
     }
 };
 

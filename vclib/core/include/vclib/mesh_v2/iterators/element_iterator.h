@@ -26,20 +26,20 @@ namespace vcl::meshv2 {
  */
 template<typename ContainerType>
 class ElementIterator :
-    public ContainerIndexIterator<
-        ContainerType,
-        std::conditional_t<
-            std::is_const_v<ContainerType>,
-            typename std::remove_cv_t<ContainerType>::ConstElementType,
-            typename std::remove_cv_t<ContainerType>::ElementType>,
-        std::conditional_t<
-            std::is_const_v<ContainerType>,
-            typename std::remove_cv_t<ContainerType>::ConstElementType,
-            typename std::remove_cv_t<ContainerType>::ElementType>,
-        FakePointerWithValue<std::conditional_t<
-            std::is_const_v<ContainerType>,
-            typename std::remove_cv_t<ContainerType>::ConstElementType,
-            typename std::remove_cv_t<ContainerType>::ElementType>>>
+        public ContainerIndexIterator<
+            ContainerType,
+            std::conditional_t<
+                std::is_const_v<ContainerType>,
+                typename std::remove_cv_t<ContainerType>::ConstElementType,
+                typename std::remove_cv_t<ContainerType>::ElementType>,
+            std::conditional_t<
+                std::is_const_v<ContainerType>,
+                typename std::remove_cv_t<ContainerType>::ConstElementType,
+                typename std::remove_cv_t<ContainerType>::ElementType>,
+            FakePointerWithValue<std::conditional_t<
+                std::is_const_v<ContainerType>,
+                typename std::remove_cv_t<ContainerType>::ConstElementType,
+                typename std::remove_cv_t<ContainerType>::ElementType>>>
 {
     using Base = ContainerIndexIterator<
         ContainerType,
@@ -59,13 +59,13 @@ class ElementIterator :
 public:
     using Base::Base;
 
-    using ContainerTraits = typename Base::ContainerTraits;
-    using IndexType       = typename Base::IndexType;
-    using Components      = typename ContainerTraits::Components;
-    using ElementType     = typename Base::value_type;
-    using reference       = typename Base::reference;
-    using pointer         = typename Base::pointer;
-    using difference_type = typename Base::difference_type;
+    using ContainerTraits = Base::ContainerTraits;
+    using IndexType       = Base::IndexType;
+    using Components      = ContainerTraits::Components;
+    using ElementType     = Base::value_type;
+    using reference       = Base::reference;
+    using pointer         = Base::pointer;
+    using difference_type = Base::difference_type;
 
     ElementIterator() = default;
 
@@ -73,7 +73,7 @@ public:
     template<typename OtherContainerType>
     requires std::is_same_v<ContainerType, const OtherContainerType>
     ElementIterator(const ElementIterator<OtherContainerType>& other) :
-        Base(other)
+            Base(other)
     {
     }
 
@@ -82,13 +82,10 @@ public:
         return ElementType(*this->mContainer, this->mIndex);
     }
 
-    pointer operator->() const
-    {
-        return pointer(operator*());
-    }
+    pointer operator->() const { return pointer(operator*()); }
 
     friend ElementIterator operator+(
-        difference_type n,
+        difference_type        n,
         const ElementIterator& it)
     {
         return it + n;
