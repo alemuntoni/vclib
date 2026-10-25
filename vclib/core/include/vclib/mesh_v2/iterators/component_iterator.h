@@ -8,18 +8,15 @@
 #ifndef VCL_MESH_V2_ITERATORS_COMPONENT_ITERATOR_H
 #define VCL_MESH_V2_ITERATORS_COMPONENT_ITERATOR_H
 
+#include "container_index_iterator.h"
+
 #include <vclib/base.h>
 #include <vclib/mesh_v2/components/base/component_predicates.h>
-
-#include <cassert>
-#include <compare>
-#include <iterator>
-#include <type_traits>
 
 namespace vcl::meshv2 {
 
 /**
- * @brief Bidirectional iterator over a single component column in an
+ * @brief Random-access iterator over a single component column in an
  * ElementContainer.
  *
  * It yields references to the component data. By default, it jumps elements
@@ -29,178 +26,67 @@ namespace vcl::meshv2 {
  * @tparam ContainerType: The type of the container (mutable or const).
  */
 template<uint COMP_ID, typename ContainerType>
-class ComponentIterator
+class ComponentIterator :
+    public ContainerIndexIterator<
+        ContainerType,
+        typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType,
+        std::conditional_t<
+            std::is_const_v<ContainerType>,
+            const typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType&,
+            typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType&>,
+        std::conditional_t<
+            std::is_const_v<ContainerType>,
+            const typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType*,
+            typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType*>>
 {
+    using Base = ContainerIndexIterator<
+        ContainerType,
+        typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType,
+        std::conditional_t<
+            std::is_const_v<ContainerType>,
+            const typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType&,
+            typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType&>,
+        std::conditional_t<
+            std::is_const_v<ContainerType>,
+            const typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType*,
+            typename comp::ComponentTypeT<COMP_ID, ContainerType>::DataType*>>;
+
 public:
-    using ContainerTraits = std::remove_cv_t<ContainerType>;
-    using IndexType       = typename ContainerTraits::IndexType;
+    using Base::Base;
+
+    using ContainerTraits = typename Base::ContainerTraits;
+    using IndexType       = typename Base::IndexType;
     using CompType        = comp::ComponentTypeT<COMP_ID, ContainerType>;
     using RawDataType     = typename CompType::DataType;
     using DataType        = std::conditional_t<
         std::is_const_v<ContainerType>,
         const RawDataType,
         RawDataType>;
+    using reference       = typename Base::reference;
+    using pointer         = typename Base::pointer;
+    using difference_type = typename Base::difference_type;
 
-    // Modern C++ standard iterator traits
-    using difference_type   = std::ptrdiff_t;
-    using value_type        = RawDataType;
-    using reference         = DataType&;
-    using pointer           = DataType*;
-    using iterator_concept  = std::random_access_iterator_tag;
-    using iterator_category = std::random_access_iterator_tag;
-
-private:
-    ContainerType* mContainer   = nullptr;
-    IndexType      mIndex       = 0;
-    bool           mJumpDeleted = true;
-
-    void advanceForward()
-    {
-        if (mContainer) {
-            std::size_t sz = mContainer->elementContainerSize();
-            while (mIndex < sz && mContainer->isElementDeleted(mIndex)) {
-                ++mIndex;
-            }
-        }
-    }
-
-    void advanceBackward()
-    {
-        if (mContainer) {
-            while (mIndex > 0 && mContainer->isElementDeleted(mIndex)) {
-                --mIndex;
-            }
-        }
-    }
-
-    template<typename OtherIt>
-    difference_type differenceImpl(const OtherIt& other) const
-    {
-        if (!mJumpDeleted || (mContainer && mContainer->isElementContainerCompact())) {
-            return static_cast<difference_type>(mIndex) -
-                   static_cast<difference_type>(other.index());
-        }
-        if (mIndex == other.index()) {
-            return 0;
-        }
-        if (mIndex > other.index()) {
-            auto it = other;
-            difference_type diff = 0;
-            while (it.index() < mIndex) {
-                ++it;
-                ++diff;
-            }
-            return diff;
-        } else {
-            auto it = *this;
-            difference_type diff = 0;
-            while (it.index() < other.index()) {
-                ++it;
-                ++diff;
-            }
-            return -diff;
-        }
-    }
-
-public:
     ComponentIterator() = default;
-
-    ComponentIterator(
-        ContainerType& container,
-        IndexType      index,
-        bool           jumpDeleted = true) :
-            mContainer(&container), mIndex(index), mJumpDeleted(jumpDeleted)
-    {
-        if (mJumpDeleted) [[unlikely]] {
-            advanceForward();
-        }
-    }
 
     // Implicit conversion from mutable iterator to const iterator
     template<typename OtherContainerType>
     requires std::is_same_v<ContainerType, const OtherContainerType>
     ComponentIterator(
         const ComponentIterator<COMP_ID, OtherContainerType>& other) :
-            mContainer(other.parentContainer()), mIndex(other.index()),
-            mJumpDeleted(other.jumpDeleted())
+        Base(other)
     {
     }
-
-    ContainerType* parentContainer() const { return mContainer; }
-
-    IndexType index() const { return mIndex; }
-
-    bool jumpDeleted() const { return mJumpDeleted; }
 
     reference operator*() const
     {
-        assert(mContainer != nullptr);
-        assert(mIndex < mContainer->elementContainerSize());
-        return mContainer->template vector<COMP_ID>()[mIndex];
+        assert(this->mContainer != nullptr);
+        assert(this->mIndex < this->mContainer->elementContainerSize());
+        return this->mContainer->template vector<COMP_ID>()[this->mIndex];
     }
 
-    pointer operator->() const { return &(operator*()); }
-
-    ComponentIterator& operator++()
+    pointer operator->() const
     {
-        ++mIndex;
-        if (mJumpDeleted) [[unlikely]] {
-            advanceForward();
-        }
-        return *this;
-    }
-
-    ComponentIterator operator++(int)
-    {
-        ComponentIterator tmp = *this;
-        ++(*this);
-        return tmp;
-    }
-
-    ComponentIterator& operator--()
-    {
-        --mIndex;
-        if (mJumpDeleted) [[unlikely]] {
-            advanceBackward();
-        }
-        return *this;
-    }
-
-    ComponentIterator operator--(int)
-    {
-        ComponentIterator tmp = *this;
-        --(*this);
-        return tmp;
-    }
-
-    ComponentIterator& operator+=(difference_type n)
-    {
-        if (!mJumpDeleted || (mContainer && mContainer->isElementContainerCompact())) {
-            mIndex = static_cast<IndexType>(static_cast<difference_type>(mIndex) + n);
-            return *this;
-        }
-        if (n > 0) {
-            while (n--) {
-                ++(*this);
-            }
-        } else if (n < 0) {
-            while (n++) {
-                --(*this);
-            }
-        }
-        return *this;
-    }
-
-    ComponentIterator& operator-=(difference_type n)
-    {
-        return *this += -n;
-    }
-
-    ComponentIterator operator+(difference_type n) const
-    {
-        ComponentIterator tmp = *this;
-        tmp += n;
-        return tmp;
+        return &(operator*());
     }
 
     friend ComponentIterator operator+(
@@ -208,102 +94,6 @@ public:
         const ComponentIterator& it)
     {
         return it + n;
-    }
-
-    ComponentIterator operator-(difference_type n) const
-    {
-        ComponentIterator tmp = *this;
-        tmp -= n;
-        return tmp;
-    }
-
-    difference_type operator-(const ComponentIterator& other) const
-    {
-        return differenceImpl(other);
-    }
-
-    template<typename OtherContainer>
-    difference_type operator-(
-        const ComponentIterator<COMP_ID, OtherContainer>& other) const
-    {
-        return differenceImpl(other);
-    }
-
-    reference operator[](difference_type n) const
-    {
-        return *(*this + n);
-    }
-
-    bool operator==(const ComponentIterator& other) const
-    {
-        return mIndex == other.mIndex && mContainer == other.mContainer;
-    }
-
-    template<typename OtherContainer>
-    bool operator==(
-        const ComponentIterator<COMP_ID, OtherContainer>& other) const
-    {
-        return mIndex == other.index() && mContainer == other.parentContainer();
-    }
-
-    auto operator<=>(const ComponentIterator& other) const
-    {
-        return mIndex <=> other.mIndex;
-    }
-
-    template<typename OtherContainer>
-    auto operator<=>(
-        const ComponentIterator<COMP_ID, OtherContainer>& other) const
-    {
-        return mIndex <=> other.index();
-    }
-
-    bool operator<(const ComponentIterator& other) const
-    {
-        return mIndex < other.mIndex;
-    }
-
-    template<typename OtherContainer>
-    bool operator<(
-        const ComponentIterator<COMP_ID, OtherContainer>& other) const
-    {
-        return mIndex < other.index();
-    }
-
-    bool operator<=(const ComponentIterator& other) const
-    {
-        return mIndex <= other.mIndex;
-    }
-
-    template<typename OtherContainer>
-    bool operator<=(
-        const ComponentIterator<COMP_ID, OtherContainer>& other) const
-    {
-        return mIndex <= other.index();
-    }
-
-    bool operator>(const ComponentIterator& other) const
-    {
-        return mIndex > other.mIndex;
-    }
-
-    template<typename OtherContainer>
-    bool operator>(
-        const ComponentIterator<COMP_ID, OtherContainer>& other) const
-    {
-        return mIndex > other.index();
-    }
-
-    bool operator>=(const ComponentIterator& other) const
-    {
-        return mIndex >= other.mIndex;
-    }
-
-    template<typename OtherContainer>
-    bool operator>=(
-        const ComponentIterator<COMP_ID, OtherContainer>& other) const
-    {
-        return mIndex >= other.index();
     }
 };
 
