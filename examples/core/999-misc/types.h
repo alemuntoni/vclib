@@ -160,6 +160,11 @@ using OptionalMaterialMesh = meshv2::Mesh<
     meshv2::VertexContainer<MyVertexComponents>,
     meshv2::FaceContainer<OptionalMaterialFaceComponents>>;
 
+using MaterialMeshWithMaterials = meshv2::Mesh<
+    meshv2::VertexContainer<MyVertexComponents>,
+    meshv2::FaceContainer<MaterialFaceComponents>,
+    meshv2::mesh::Materials>;
+
 // Concept checking templates
 template<typename T>
 concept CanCallBitFlags = requires (T t) { t.bitFlags(); };
@@ -257,6 +262,34 @@ inline TransformedMesh createSampleTransformedMesh()
     mesh.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::COLOR>();
     mesh.face(0).color() = Color::DarkRed;
     mesh.face(1).color() = Color::DarkBlue;
+
+    return mesh;
+}
+
+inline MaterialMeshWithMaterials createSampleMaterialMesh()
+{
+    MaterialMeshWithMaterials mesh;
+    mesh.resizeVertices(4);
+    mesh.resizeFaces(2);
+
+    mesh.vertex(0).position() = Point3f(0.0f, 0.0f, 1.0f);
+    mesh.vertex(1).position() = Point3f(1.0f, 0.0f, 0.0f);
+    mesh.vertex(2).position() = Point3f(0.0f, 1.0f, 0.0f);
+    mesh.vertex(3).position() = Point3f(1.0f, 1.0f, 0.0f);
+
+    mesh.face(0).setVertices(0, 1, 2);
+    mesh.face(1).setVertices(1, 3, 2);
+
+    Material mat0;
+    mat0.name() = "Material_0";
+    Material mat1;
+    mat1.name() = "Material_1";
+
+    mesh.pushMaterial(mat0);
+    mesh.pushMaterial(mat1);
+
+    mesh.face(0).materialIndex() = 0;
+    mesh.face(1).materialIndex() = 1;
 
     return mesh;
 }

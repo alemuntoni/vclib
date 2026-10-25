@@ -16,6 +16,7 @@
 #include <vclib/algorithms/core.h>
 #include <vclib/base.h>
 
+#include <algorithm>
 #include <array>
 #include <concepts>
 #include <cstring>
@@ -393,8 +394,37 @@ public:
             }
         }
 
-        // TODO: When mesh::Materials is implemented, merge materials and
-        // textures and remap material indices of the newly appended faces.
+        if constexpr (mesh::HasMaterials<Mesh<Args...>>) {
+            uint nMaterials = this->materialCount();
+
+            // mapping from material indices of m to material indices of this
+            std::vector<uint> mapping(m.materialCount());
+
+            // for each material of the other mesh, add it to this mesh
+            // if it does not exist yet
+            for (uint i = 0; i < m.materialCount(); ++i) {
+                auto it = std::find(
+                    this->materialBegin(), this->materialEnd(), m.material(i));
+
+                if (it == this->materialEnd()) {
+                    this->pushMaterial(m.material(i));
+                    mapping[i] = nMaterials++;
+                }
+                else {
+                    mapping[i] = std::distance(this->materialBegin(), it);
+                }
+            }
+
+            for (const auto& [path, img] : m.textureImages()) {
+                this->pushTextureImage(path, img);
+            }
+
+            if (!mapping.empty()) {
+                (updateMaterialIndicesOfContainerAfterAppend<Rebound<Args>>(
+                     initialSizes, mapping),
+                 ...);
+            }
+        }
     }
 
     /**
@@ -1294,6 +1324,33 @@ private:
         }
     }
 
+    template<typename Cont, typename MappingType>
+    void updateMaterialIndicesOfContainerAfterAppend(
+        const std::array<IndexType, ElemId::ELEMENT_COUNT>& initialSizes,
+        const MappingType& mapping)
+    {
+        if constexpr (ElementContainerConcept<Cont>) {
+            constexpr uint ELEM_ID = Cont::ELEMENT_ID;
+            const IndexType startFrom = initialSizes[ELEM_ID];
+            if (startFrom >= this->Cont::elementContainerSize()) {
+                return;
+            }
+
+            if constexpr (comp::HasComponent<CompId::MATERIAL_INDEX, Cont>) {
+                if (this->Cont::template isComponentAvailable<CompId::MATERIAL_INDEX>()) {
+                    using MatIndexType = typename Cont::ElementType::MaterialIndexType;
+                    constexpr auto nullIdx = Cont::ElementType::NULL_MATERIAL_INDEX;
+                    for (auto e : this->template elements<ELEM_ID>(startFrom)) {
+                        if (e.materialIndex() != nullIdx &&
+                            e.materialIndex() < mapping.size()) {
+                            e.materialIndex() = static_cast<MatIndexType>(mapping[e.materialIndex()]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     template<typename T>
     bool isContainerCompact() const
     {
@@ -1469,6 +1526,12 @@ concept HasColor = mesh::HasColor<MeshType>;
  */
 template<typename MeshType>
 concept HasCustomComponents = mesh::HasCustomComponents<MeshType>;
+
+/**
+ * @brief Concept that checks whether a Mesh has the Materials component.
+ */
+template<typename MeshType>
+concept HasMaterials = mesh::HasMaterials<MeshType>;
 
 /**
  * @brief Concept that checks whether a Mesh has the TransformMatrix component.

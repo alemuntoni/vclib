@@ -63,6 +63,18 @@ inline void testComponentConcepts()
                   TransformedMesh::Components,
                   vcl::TypeWrapper<meshv2::mesh::Color, meshv2::mesh::TransformMatrixf>>);
 
+    // Materials Component Concepts
+    static_assert(meshv2::mesh::HasMaterials<MaterialMeshWithMaterials>);
+    static_assert(meshv2::mesh::HasMaterials<meshv2::mesh::Materials>);
+    static_assert(!meshv2::mesh::HasMaterials<MyMesh>);
+    static_assert(meshv2::HasMaterials<MaterialMeshWithMaterials>);
+    static_assert(!meshv2::HasMaterials<MyMesh>);
+    static_assert(!meshv2::ElementContainerConcept<meshv2::mesh::Materials>);
+    static_assert(meshv2::ComponentConcept<meshv2::mesh::Materials>);
+    static_assert(std::is_same_v<
+                  MaterialMeshWithMaterials::Components,
+                  vcl::TypeWrapper<meshv2::mesh::Materials>>);
+
     // MaterialIndex Component Concepts
     static_assert(meshv2::face::HasMaterialIndex<MaterialFaceComponents>);
     static_assert(meshv2::face::HasMaterialIndex<MaterialMesh::Face>);

@@ -240,6 +240,79 @@ inline void testAppendWithTransformMatrix()
     assert(mSelf.vertex(5).position() == mSelf.vertex(1).position());
 }
 
+inline void testAppendWithMaterials()
+{
+    // 1. Basic material append and remapping
+    MaterialMeshWithMaterials m1 = createSampleMaterialMesh();
+    MaterialMeshWithMaterials m2;
+    m2.resizeVertices(4);
+    m2.resizeFaces(3);
+
+    m2.vertex(0).position() = Point3f(10.0f, 0.0f, 0.0f);
+    m2.vertex(1).position() = Point3f(11.0f, 0.0f, 0.0f);
+    m2.vertex(2).position() = Point3f(10.0f, 1.0f, 0.0f);
+    m2.vertex(3).position() = Point3f(11.0f, 1.0f, 0.0f);
+
+    m2.face(0).setVertices(0, 1, 2);
+    m2.face(1).setVertices(1, 3, 2);
+    m2.face(2).setVertices(0, 2, 3);
+
+    Material matDuplicate;
+    matDuplicate.name() = "Material_1"; // duplicate of m1's material 1
+    Material matNew;
+    matNew.name() = "Material_2"; // new material
+
+    m2.pushMaterial(matDuplicate);
+    m2.pushMaterial(matNew);
+
+    m2.face(0).materialIndex() = 0; // "Material_1" (should remap to index 1 of m1)
+    m2.face(1).materialIndex() = 1; // "Material_2" (should become index 2 of m1)
+    m2.face(2).materialIndex() =
+        MaterialMeshWithMaterials::Face::NULL_MATERIAL_INDEX; // unassigned
+
+    m2.pushTextureImage("textures/wood.png", Image());
+
+    m1.append(m2);
+
+    // Verify vertices and faces
+    assert(m1.vertexCount() == 8);
+    assert(m1.faceCount() == 5);
+
+    // Verify materials count: Material_0, Material_1, Material_2 (duplicate was merged)
+    assert(m1.materialCount() == 3);
+    assert(m1.material(0).name() == "Material_0");
+    assert(m1.material(1).name() == "Material_1");
+    assert(m1.material(2).name() == "Material_2");
+
+    // Verify texture images
+    assert(m1.textureImageCount() == 1);
+
+    // Verify face material indices:
+    // Original faces of m1:
+    assert(m1.face(0).materialIndex() == 0);
+    assert(m1.face(1).materialIndex() == 1);
+
+    // Appended faces from m2:
+    // face 2 was m2 face 0 (had mat 0 = Material_1 -> remapped to m1's index 1)
+    assert(m1.face(2).materialIndex() == 1);
+    // face 3 was m2 face 1 (had mat 1 = Material_2 -> remapped to m1's index 2)
+    assert(m1.face(3).materialIndex() == 2);
+    // face 4 was m2 face 2 (NULL_MATERIAL_INDEX -> remained NULL_MATERIAL_INDEX)
+    assert(m1.face(4).materialIndex() ==
+           MaterialMeshWithMaterials::Face::NULL_MATERIAL_INDEX);
+
+    // 2. Self-append on a mesh with materials
+    MaterialMeshWithMaterials mSelf = createSampleMaterialMesh();
+    mSelf.append(mSelf);
+    assert(mSelf.vertexCount() == 8);
+    assert(mSelf.faceCount() == 4);
+    assert(mSelf.materialCount() == 2); // all materials already exist, count unchanged
+    assert(mSelf.face(0).materialIndex() == 0);
+    assert(mSelf.face(1).materialIndex() == 1);
+    assert(mSelf.face(2).materialIndex() == 0);
+    assert(mSelf.face(3).materialIndex() == 1);
+}
+
 inline void testAppend()
 {
     std::println("--- Testing Mesh::append ---");
@@ -248,6 +321,7 @@ inline void testAppend()
     testSelfAppend();
     testContainerRangeViews();
     testAppendWithTransformMatrix();
+    testAppendWithMaterials();
     std::println("Mesh::append verified successfully!\n");
 }
 

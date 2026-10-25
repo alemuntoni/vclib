@@ -309,6 +309,29 @@ inline void testMeshSerialization()
         assert(tmRead.transformMatrix() == mat);
     }
 
+    // 6. MaterialMeshWithMaterials serialization test
+    {
+        MaterialMeshWithMaterials mm = createSampleMaterialMesh();
+        mm.meshBasePath() = "/path/to/mesh";
+        mm.pushTextureImage("textures/wood.png", Image());
+
+        std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        mm.serialize(ss);
+
+        MaterialMeshWithMaterials mmRead;
+        mmRead.deserialize(ss);
+
+        assert(mmRead.vertexCount() == mm.vertexCount());
+        assert(mmRead.faceCount() == mm.faceCount());
+        assert(mmRead.materialCount() == 2);
+        assert(mmRead.material(0).name() == "Material_0");
+        assert(mmRead.material(1).name() == "Material_1");
+        assert(mmRead.meshBasePath() == "/path/to/mesh");
+        assert(mmRead.textureImageCount() == 1);
+        assert(mmRead.face(0).materialIndex() == 0);
+        assert(mmRead.face(1).materialIndex() == 1);
+    }
+
     std::println("Mesh serialization tests passed!");
 }
 

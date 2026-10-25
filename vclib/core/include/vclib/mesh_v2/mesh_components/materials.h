@@ -13,6 +13,12 @@
 
 #include <vclib/space/core.h>
 
+#include <istream>
+#include <map>
+#include <ostream>
+#include <string>
+#include <vector>
+
 namespace vcl::meshv2::mesh {
 
 namespace detail {
