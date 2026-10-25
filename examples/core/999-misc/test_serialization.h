@@ -406,6 +406,28 @@ inline void testMeshSerialization()
         assert(qmRead.vertex(1).quality() == 56.78f);
     }
 
+    // 11. TangentMesh serialization test
+    {
+        TangentMesh tm;
+        tm.addVertices(2);
+        tm.vertex(0).tangent() = Point3f(1.0f, 2.0f, 3.0f);
+        tm.vertex(0).tangentRightHanded() = true;
+        tm.vertex(1).tangent() = Point3f(4.0f, 5.0f, 6.0f);
+        tm.vertex(1).tangentRightHanded() = false;
+
+        std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        tm.serialize(ss);
+
+        TangentMesh tmRead;
+        tmRead.deserialize(ss);
+
+        assert(tmRead.vertexCount() == 2);
+        assert(tmRead.vertex(0).tangent() == Point3f(1.0f, 2.0f, 3.0f));
+        assert(tmRead.vertex(0).tangentRightHanded() == true);
+        assert(tmRead.vertex(1).tangent() == Point3f(4.0f, 5.0f, 6.0f));
+        assert(tmRead.vertex(1).tangentRightHanded() == false);
+    }
+
     std::println("Mesh serialization tests passed!");
 }
 

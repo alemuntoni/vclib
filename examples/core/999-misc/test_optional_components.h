@@ -53,6 +53,14 @@ inline void testEnableDisable()
     assert((qmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>()));
     qmesh.disablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>();
     assert((!qmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>()));
+
+    // TangentMesh optional tangent
+    TangentMesh tmesh;
+    assert((!tmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>()));
+    tmesh.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>();
+    assert((tmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>()));
+    tmesh.disablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>();
+    assert((!tmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>()));
 }
 
 inline void testEnableSameOptionalComponentsOf()

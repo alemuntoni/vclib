@@ -509,6 +509,48 @@ inline void testComponentViews()
     // Direct proxy member
     assert(qmesh.vertices().qualities().size() == 3);
     assert(qmesh.vertices().qualities()[1] == 20.0f);
+
+    // --- 9. Tangents View & bitangent ---
+    TangentMesh tmesh;
+    tmesh.addVertices(3);
+    tmesh.vertex(0).tangent() = Point3f(1.0f, 0.0f, 0.0f);
+    tmesh.vertex(1).tangent() = Point3f(0.0f, 2.0f, 0.0f);
+    tmesh.vertex(2).tangent() = Point3f(0.0f, 0.0f, 3.0f);
+    tmesh.vertex(0).normal() = Point3f(0.0f, 0.0f, 1.0f);
+
+    static_assert(meshv2::TangentsRangeConcept<decltype(tmesh.vertices())>);
+    static_assert(meshv2::TangentRangeConcept<decltype(tmesh.vertices())>);
+    static_assert(std::ranges::range<decltype(tmesh.vertices() | views::tangents)>);
+    static_assert(std::ranges::range<decltype(tmesh.vertices() | views::tangent)>);
+
+    std::size_t tCount = 0;
+    Point3f sumTan(0.0f, 0.0f, 0.0f);
+    for (const auto& t : tmesh.vertices() | views::tangents) {
+        sumTan += t;
+        ++tCount;
+    }
+    assert(tCount == 3);
+    assert(sumTan == Point3f(1.0f, 2.0f, 3.0f));
+
+    // Both views::tangents and views::tangent work identically
+    Point3f sumTanAlt(0.0f, 0.0f, 0.0f);
+    for (const auto& t : tmesh.vertices() | views::tangent) {
+        sumTanAlt += t;
+    }
+    assert(sumTanAlt == Point3f(1.0f, 2.0f, 3.0f));
+
+    // Direct proxy member (returns ComponentView over std::pair<Point3f, bool>)
+    assert(tmesh.vertices().tangents().size() == 3);
+    assert(tmesh.vertices().tangents()[1].first == Point3f(0.0f, 2.0f, 0.0f));
+    assert(tmesh.vertices().tangents()[1].second == true);
+
+    // bitangent calculation: n = (0, 0, 1), t = (1, 0, 0), rightHanded = true => n x t = (0, 1, 0)
+    Point3f bitan = tmesh.vertex(0).bitangent();
+    assert(bitan == Point3f(0.0f, 1.0f, 0.0f));
+
+    // left-handed bitangent: t x n = (0, -1, 0)
+    tmesh.vertex(0).tangentRightHanded() = false;
+    assert(tmesh.vertex(0).bitangent() == Point3f(0.0f, -1.0f, 0.0f));
 }
 
 inline void testViews()

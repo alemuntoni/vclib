@@ -149,6 +149,14 @@ public:
         return component<CompId::QUALITY>();
     }
 
+    /**
+     * @brief Returns a ComponentView over the tangents of the elements.
+     */
+    auto tangents() const requires comp::HasTangent<Container>
+    {
+        return component<CompId::TANGENT>();
+    }
+
 private:
     /**
      * @brief Generic access to a ComponentView for a specific COMP_ID.

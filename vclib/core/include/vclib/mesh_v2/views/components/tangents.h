@@ -10,11 +10,59 @@
 
 #include "../component.h"
 
-// TODO: When Tangent component is ported to mesh_v2:
-// 1. Define TangentRangeConcept
-// 2. Define detail::getTangent lambda
-// 3. Define TangentsView : std::ranges::range_adaptor_closure<TangentsView>
-// 4. Define inline constexpr detail::TangentsView tangents;
-// 5. Specialize template<> inline constexpr auto component<CompId::TANGENT> = tangents;
+#include <vclib/base.h>
+
+#include <ranges>
+
+namespace vcl::meshv2 {
+
+template<typename T>
+concept HasTangentMember = requires(T&& t) {
+    { t.tangent() };
+};
+
+template<typename R>
+concept TangentsRangeConcept =
+    std::ranges::range<R> &&
+    HasTangentMember<std::ranges::range_reference_t<R>>;
+
+template<typename R>
+concept TangentRangeConcept = TangentsRangeConcept<R>;
+
+namespace views {
+
+namespace detail {
+
+inline constexpr auto getTangent = [](auto&& p) -> decltype(auto) {
+    return p.tangent();
+};
+
+struct TangentsView : std::ranges::range_adaptor_closure<TangentsView>
+{
+    template<TangentsRangeConcept R>
+    constexpr auto operator()(R&& r) const
+    {
+        return std::forward<R>(r) | std::views::transform(getTangent);
+    }
+};
+
+} // namespace detail
+
+/**
+ * @brief View adaptor that transforms a range of elements into a range of their tangents.
+ *
+ * When applied to a range of elements (e.g. `mesh.vertices() | views::tangents` or
+ * `mesh.vertices() | views::selected | views::tangents`), it transforms each element to its tangent reference.
+ *
+ * @ingroup views
+ */
+inline constexpr detail::TangentsView tangents;
+inline constexpr auto tangent = tangents;
+
+template<>
+inline constexpr auto component<CompId::TANGENT> = tangents;
+
+} // namespace views
+} // namespace vcl::meshv2
 
 #endif // VCL_MESH_V2_VIEWS_COMPONENTS_TANGENTS_H

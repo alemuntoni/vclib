@@ -131,6 +131,32 @@ using OptionalQualityMesh = meshv2::Mesh<
     meshv2::VertexContainer<OptionalQualityVertexComponents>,
     meshv2::FaceContainer<QualityFaceComponents>>;
 
+using TangentVertexComponents = meshv2::VertexComponents<
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3f,
+    meshv2::vert::Normal3f,
+    meshv2::vert::Tangent3f>;
+
+using OptionalTangentVertexComponents = meshv2::VertexComponents<
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3f,
+    meshv2::vert::Normal3d,
+    meshv2::vert::OptionalTangent3d>;
+
+using TangentFaceComponents = meshv2::FaceComponents<
+    meshv2::face::BitFlags,
+    meshv2::face::TriangleVertexReferences<vcl::uint>,
+    meshv2::face::Normal3f,
+    meshv2::face::OptionalTangent3f>;
+
+using TangentMesh = meshv2::Mesh<
+    meshv2::VertexContainer<TangentVertexComponents>,
+    meshv2::FaceContainer<TangentFaceComponents>>;
+
+using OptionalTangentMesh = meshv2::Mesh<
+    meshv2::VertexContainer<OptionalTangentVertexComponents>,
+    meshv2::FaceContainer<TangentFaceComponents>>;
+
 using FullVertexComponents = meshv2::VertexComponents<
     meshv2::vert::BitFlags,
     meshv2::vert::Position3f,

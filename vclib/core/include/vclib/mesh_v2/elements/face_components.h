@@ -18,6 +18,7 @@
 #include "../components/polygon_bit_flags.h"
 #include "../components/principal_curvature.h"
 #include "../components/quality.h"
+#include "../components/tangent.h"
 #include "../components/triangle_bit_flags.h"
 #include "../components/vertex_references.h"
 #include "../components/wedges.h"
@@ -74,6 +75,10 @@ template<typename T>
 concept HasQuality = comp::HasQuality<T>;
 template<typename T>
 concept HasOptionalQuality = comp::HasOptionalQuality<T>;
+template<typename T>
+concept HasTangent = comp::HasTangent<T>;
+template<typename T>
+concept HasOptionalTangent = comp::HasOptionalTangent<T>;
 template<typename T>
 concept HasVertexReferences = comp::HasVertexReferences<T>;
 template<typename T>
@@ -204,6 +209,19 @@ using Qualityf         = comp::Qualityf<false>;
 using Qualityd         = comp::Qualityd<false>;
 using OptionalQualityf = comp::Qualityf<true>;
 using OptionalQualityd = comp::Qualityd<true>;
+
+/* Port Tangent classes into face namespace */
+
+template<typename ScalarType, int N, bool OPT = false>
+using Tangent = comp::Tangent<Point<ScalarType, N>, OPT>;
+
+template<typename ScalarType, bool OPT = false>
+using Tangent3 = comp::Tangent3<ScalarType, OPT>;
+
+using Tangent3f         = comp::Tangent3f;
+using Tangent3d         = comp::Tangent3d;
+using OptionalTangent3f = comp::OptionalTangent3f;
+using OptionalTangent3d = comp::OptionalTangent3d;
 
 /* Port VertexReferences class into face namespace */
 template<int N, std::unsigned_integral Index = uint>

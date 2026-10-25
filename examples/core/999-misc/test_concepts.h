@@ -127,6 +127,21 @@ inline void testComponentConcepts()
     static_assert(std::is_same_v<QualityMesh::Vertex::QualityType, float>);
     static_assert(std::is_same_v<OptionalQualityMesh::Vertex::QualityType, double>);
 
+    // Tangent Component Concepts
+    static_assert(meshv2::vert::HasTangent<TangentMesh::Vertex>);
+    static_assert(meshv2::vert::HasTangent<TangentMesh::ConstVertex>);
+    static_assert(meshv2::vert::HasTangent<TangentVertexComponents>);
+    static_assert(!meshv2::vert::HasTangent<MyMesh::Vertex>);
+    static_assert(!meshv2::vert::HasOptionalTangent<TangentVertexComponents>);
+    static_assert(meshv2::vert::HasOptionalTangent<OptionalTangentVertexComponents>);
+    static_assert(meshv2::vert::HasOptionalTangent<OptionalTangentMesh::Vertex>);
+    static_assert(meshv2::face::HasTangent<TangentMesh::Face>);
+    static_assert(meshv2::face::HasOptionalTangent<TangentMesh::Face>);
+    static_assert(!meshv2::face::HasTangent<MyMesh::Face>);
+    static_assert(std::is_same_v<TangentMesh::Vertex::TangentType, Point3f>);
+    static_assert(std::is_same_v<OptionalTangentMesh::Vertex::TangentType, Point3d>);
+    static_assert(meshv2::comp::HasDefaultValue<meshv2::vert::Tangent3f>);
+
     // MaterialIndex Component Concepts
     static_assert(meshv2::face::HasMaterialIndex<MaterialFaceComponents>);
     static_assert(meshv2::face::HasMaterialIndex<MaterialMesh::Face>);
@@ -253,12 +268,15 @@ inline void testIteratorConcepts()
         vcl::meshv2::ComponentIterator<vcl::meshv2::CompId::NORMAL, MyMesh::VertexContainer>>);
     static_assert(std::random_access_iterator<
         vcl::meshv2::ComponentIterator<vcl::meshv2::CompId::QUALITY, QualityMesh::VertexContainer>>);
+    static_assert(std::random_access_iterator<
+        vcl::meshv2::ComponentIterator<vcl::meshv2::CompId::TANGENT, TangentMesh::VertexContainer>>);
 
     // Random access ranges
     static_assert(std::ranges::random_access_range<decltype(std::declval<MyMesh>().vertices())>);
     static_assert(std::ranges::random_access_range<decltype(std::declval<MyMesh>().faces())>);
     static_assert(std::ranges::random_access_range<decltype(std::declval<MyMesh>().vertices().positions())>);
     static_assert(std::ranges::random_access_range<decltype(std::declval<QualityMesh>().vertices().qualities())>);
+    static_assert(std::ranges::random_access_range<decltype(std::declval<TangentMesh>().vertices().tangents())>);
 
     // Views over elements and components
     static_assert(std::ranges::random_access_range<
@@ -269,6 +287,8 @@ inline void testIteratorConcepts()
         decltype(std::declval<MyMesh>().elements<vcl::meshv2::ElemId::VERTEX>(0u) | vcl::meshv2::views::normals)>);
     static_assert(std::ranges::random_access_range<
         decltype(std::declval<QualityMesh>().elements<vcl::meshv2::ElemId::VERTEX>(0u) | vcl::meshv2::views::qualities)>);
+    static_assert(std::ranges::random_access_range<
+        decltype(std::declval<TangentMesh>().elements<vcl::meshv2::ElemId::VERTEX>(0u) | vcl::meshv2::views::tangents)>);
 }
 
 inline void testConcepts()
