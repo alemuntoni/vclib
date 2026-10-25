@@ -234,6 +234,7 @@ public:
             mCustomComponents.resize(id + 1);
         }
         ++mElemCount;
+        initDefaultComponents(id, id + 1);
         return static_cast<IndexType>(id);
     }
 
@@ -253,6 +254,7 @@ public:
             mCustomComponents.resize(baseId + n);
         }
         mElemCount += n;
+        initDefaultComponents(baseId, baseId + n);
         return static_cast<IndexType>(baseId);
     }
 
@@ -296,6 +298,7 @@ public:
         }
         if (newSize > oldSize) {
             mElemCount += (newSize - oldSize);
+            initDefaultComponents(oldSize, newSize);
         }
         else if (newSize < oldSize) {
             mElemCount = 0;
@@ -633,7 +636,10 @@ public:
     /**
      * @brief Enables all optional components in the container.
      */
-    void enableAllOptionalComponents() { mElemComponents.enableAll(); }
+    void enableAllOptionalComponents()
+    {
+        enableAllOptionalComponentsImpl(Components {});
+    }
 
     /**
      * @brief Disables all optional components in the container.
@@ -683,9 +689,17 @@ public:
             comp::HasComponent<COMP_ID, Components>,
             "Component not found in container");
         if constexpr (comp::HasOptionalComponent<COMP_ID, Components>) {
-            constexpr uint N =
-                comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
-            mElemComponents.template enable<N>();
+            if (!isComponentAvailable<COMP_ID>()) {
+                constexpr uint N =
+                    comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
+                mElemComponents.template enable<N>();
+                using Comp = comp::ComponentTypeT<COMP_ID, Components>;
+                if constexpr (comp::HasDefaultValue<Comp>) {
+                    auto& vec = this->template vector<COMP_ID>();
+                    std::fill(
+                        vec.begin(), vec.end(), comp::defaultValue<Comp>());
+                }
+            }
         }
     }
 
@@ -1251,6 +1265,50 @@ private:
             }
         };
         (disableIfOpt.template operator()<Comps>(), ...);
+    }
+
+    template<typename... Comps>
+    void enableAllOptionalComponentsImpl(vcl::TypeWrapper<Comps...>)
+    {
+        auto enableIfOpt = [&]<typename Comp>() {
+            if constexpr (comp::IsOptionalComponent<Comp>) {
+                enableOptionalComponent<Comp::COMPONENT_ID>();
+            }
+        };
+        (enableIfOpt.template operator()<Comps>(), ...);
+    }
+
+    // --- Default Component Values helpers ---
+
+    template<typename... Comps>
+    void initDefaultComponentsImpl(
+        vcl::TypeWrapper<Comps...>,
+        std::size_t begin,
+        std::size_t end)
+    {
+        auto initComp = [&]<typename Comp>() {
+            if constexpr (detail::HasVectorColumnPred<Comp>::value) {
+                if constexpr (comp::HasDefaultValue<Comp>) {
+                    if (this->template isComponentAvailable<
+                            Comp::COMPONENT_ID>()) {
+                        auto& vec =
+                            this->template vector<Comp::COMPONENT_ID>();
+                        std::fill(
+                            vec.begin() + begin,
+                            vec.begin() + end,
+                            comp::defaultValue<Comp>());
+                    }
+                }
+            }
+        };
+        (initComp.template operator()<Comps>(), ...);
+    }
+
+    void initDefaultComponents(std::size_t begin, std::size_t end)
+    {
+        if (begin < end) {
+            initDefaultComponentsImpl(Components {}, begin, end);
+        }
     }
 
     template<typename... Comps, typename OtherContainer>

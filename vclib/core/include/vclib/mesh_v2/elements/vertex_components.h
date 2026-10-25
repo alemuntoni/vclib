@@ -11,6 +11,7 @@
 #include "../components/bit_flags.h"
 #include "../components/color.h"
 #include "../components/custom_components.h"
+#include "../components/material_index.h"
 #include "../components/normal.h"
 #include "../components/position.h"
 #include "../components/tex_coord.h"
@@ -25,6 +26,10 @@ template<typename T>
 concept HasOptionalColor = comp::HasOptionalColor<T>;
 template<typename T>
 concept HasCustomComponents = comp::HasCustomComponents<T>;
+template<typename T>
+concept HasMaterialIndex = comp::HasMaterialIndex<T>;
+template<typename T>
+concept HasOptionalMaterialIndex = comp::HasOptionalMaterialIndex<T>;
 template<typename T>
 concept HasNormal = comp::HasNormal<T>;
 template<typename T>
@@ -45,6 +50,17 @@ using OptionalColor = comp::OptionalColor;
 
 /* Port CustomComponents class into vert namespace */
 using CustomComponents = comp::CustomComponents;
+
+/* Port MaterialIndex class into vert namespace */
+template<std::unsigned_integral Index = ushort, bool OPT = false>
+using CustomMaterialIndex = comp::MaterialIndex<Index, OPT>;
+
+using MaterialIndex           = comp::MaterialIndex<ushort, false>;
+using OptionalMaterialIndex   = comp::OptionalMaterialIndex<ushort>;
+using MaterialIndexus         = comp::MaterialIndexus;
+using MaterialIndexu          = comp::MaterialIndexu;
+using OptionalMaterialIndexus = comp::OptionalMaterialIndexus;
+using OptionalMaterialIndexu  = comp::OptionalMaterialIndexu;
 
 /* Port Normal classes into vert namespace */
 template<typename ScalarType, int N, bool OPT = false>

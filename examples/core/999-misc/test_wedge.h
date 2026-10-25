@@ -16,9 +16,9 @@
 using WedgeFaceComponents = meshv2::FaceComponents<
     meshv2::face::BitFlags,
     meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::TriangleWedgesColors,
-    meshv2::face::TriangleWedgesTexCoordsf,
-    meshv2::face::OptionalTriangleWedgesNormals3f>;
+    meshv2::face::TriangleWedgeColors,
+    meshv2::face::TriangleWedgeTexCoordsf,
+    meshv2::face::OptionalTriangleWedgeNormals3f>;
 
 using WedgeMesh = meshv2::Mesh<
     meshv2::VertexContainer<SimpleVertexComponents>,
@@ -27,8 +27,8 @@ using WedgeMesh = meshv2::Mesh<
 using PolyWedgeFaceComponents = meshv2::FaceComponents<
     meshv2::face::PolygonBitFlags,
     meshv2::face::PolygonVertexReferences<vcl::uint>,
-    meshv2::face::PolygonWedgesColors,
-    meshv2::face::PolygonWedgesTexCoordsf>;
+    meshv2::face::PolygonWedgeColors,
+    meshv2::face::PolygonWedgeTexCoordsf>;
 
 using PolyWedgeMesh = meshv2::Mesh<
     meshv2::VertexContainer<SimpleVertexComponents>,
@@ -57,11 +57,11 @@ inline void testWedgeConcepts()
     static_assert(!meshv2::face::HasWedgeNormals<PolyWedgeMesh::Face>);
 
     // ComponentConcept check
-    static_assert(meshv2::ComponentConcept<meshv2::face::TriangleWedgesColors>);
-    static_assert(meshv2::ComponentConcept<meshv2::face::TriangleWedgesTexCoordsf>);
-    static_assert(meshv2::ComponentConcept<meshv2::face::OptionalTriangleWedgesNormals3f>);
-    static_assert(meshv2::comp::IsTiedToVertexCount<meshv2::face::PolygonWedgesColors>);
-    static_assert(!meshv2::comp::IsTiedToVertexCount<meshv2::face::TriangleWedgesColors>);
+    static_assert(meshv2::ComponentConcept<meshv2::face::TriangleWedgeColors>);
+    static_assert(meshv2::ComponentConcept<meshv2::face::TriangleWedgeTexCoordsf>);
+    static_assert(meshv2::ComponentConcept<meshv2::face::OptionalTriangleWedgeNormals3f>);
+    static_assert(meshv2::comp::IsTiedToVertexCount<meshv2::face::PolygonWedgeColors>);
+    static_assert(!meshv2::comp::IsTiedToVertexCount<meshv2::face::TriangleWedgeColors>);
 }
 
 inline void testTriangleWedges()

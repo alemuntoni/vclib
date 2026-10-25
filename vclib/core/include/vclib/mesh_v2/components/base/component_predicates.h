@@ -210,6 +210,54 @@ inline bool isComponentAvailableOn(const Element& element)
     }
 }
 
+/**
+ * @brief Concept that checks whether a component type provides a default value,
+ * either through a static constexpr defaultValue() member function or a
+ * static constexpr DEFAULT_VALUE variable.
+ *
+ * @tparam Comp: The component type to check.
+ *
+ * @ingroup components_concepts
+ */
+template<typename Comp>
+concept HasDefaultValue = requires {
+    {
+        std::remove_cvref_t<Comp>::defaultValue()
+    } -> std::convertible_to<typename std::remove_cvref_t<Comp>::DataType>;
+} || requires {
+    {
+        std::remove_cvref_t<Comp>::DEFAULT_VALUE
+    } -> std::convertible_to<typename std::remove_cvref_t<Comp>::DataType>;
+};
+
+/**
+ * @brief Returns the default initial value for a component type satisfying
+ * HasDefaultValue.
+ *
+ * @tparam Comp: The component type.
+ * @return The default value.
+ */
+template<typename Comp>
+constexpr auto defaultValue()
+{
+    using PureComp = std::remove_cvref_t<Comp>;
+    if constexpr (requires {
+                      {
+                          PureComp::defaultValue()
+                      } -> std::convertible_to<typename PureComp::DataType>;
+                  }) {
+        return PureComp::defaultValue();
+    }
+    else if constexpr (requires {
+                           {
+                               PureComp::DEFAULT_VALUE
+                           } -> std::convertible_to<
+                               typename PureComp::DataType>;
+                       }) {
+        return PureComp::DEFAULT_VALUE;
+    }
+}
+
 } // namespace vcl::meshv2::comp
 
 #endif // VCL_MESH_V2_COMPONENTS_BASE_COMPONENT_PREDICATES_H

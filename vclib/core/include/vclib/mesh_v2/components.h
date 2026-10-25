@@ -11,6 +11,7 @@
 #include "components/bit_flags.h"
 #include "components/color.h"
 #include "components/custom_components.h"
+#include "components/material_index.h"
 #include "components/normal.h"
 #include "components/polygon_bit_flags.h"
 #include "components/position.h"

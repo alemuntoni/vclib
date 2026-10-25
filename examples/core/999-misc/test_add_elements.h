@@ -109,6 +109,50 @@ inline void testAddPolygonFaces()
     assert(polyMesh.face(polyF1).vertexIndex(3) == 4);
 }
 
+inline void testDefaultComponentInitialization()
+{
+    // 1. Non-optional MaterialIndex component (default ushort)
+    MaterialMesh mesh;
+    vcl::uint f0 = mesh.addFace();
+    assert(mesh.face(f0).materialIndex() == MaterialMesh::Face::NULL_MATERIAL_INDEX);
+    assert(mesh.face(f0).materialIndex() == vcl::NULL_INDEX<ushort>);
+
+    vcl::uint fBase = mesh.addFaces(3);
+    for (vcl::uint i = 0; i < 3; ++i) {
+        assert(mesh.face(fBase + i).materialIndex() == MaterialMesh::Face::NULL_MATERIAL_INDEX);
+    }
+
+    mesh.resizeFaces(8);
+    for (vcl::uint i = 4; i < 8; ++i) {
+        assert(mesh.face(i).materialIndex() == MaterialMesh::Face::NULL_MATERIAL_INDEX);
+    }
+
+    // Mutate and check
+    mesh.face(0).materialIndex() = 2;
+    assert(mesh.face(0).materialIndex() == 2);
+    assert(mesh.face(1).materialIndex() == MaterialMesh::Face::NULL_MATERIAL_INDEX);
+
+    // 2. Optional MaterialIndex component
+    OptionalMaterialMesh optMesh;
+    assert((!optMesh.isPerElementComponentAvailable<
+            meshv2::ElemId::FACE,
+            meshv2::CompId::MATERIAL_INDEX>()));
+
+    optMesh.resizeFaces(4);
+    optMesh.enableAllOptionalComponents();
+    assert((optMesh.isPerElementComponentAvailable<
+            meshv2::ElemId::FACE,
+            meshv2::CompId::MATERIAL_INDEX>()));
+
+    for (vcl::uint i = 0; i < 4; ++i) {
+        assert(optMesh.face(i).materialIndex() == OptionalMaterialMesh::Face::NULL_MATERIAL_INDEX);
+    }
+
+    vcl::uint optFBase = optMesh.addFaces(2);
+    assert(optMesh.face(optFBase).materialIndex() == OptionalMaterialMesh::Face::NULL_MATERIAL_INDEX);
+    assert(optMesh.face(optFBase + 1).materialIndex() == OptionalMaterialMesh::Face::NULL_MATERIAL_INDEX);
+}
+
 inline void testAddElements()
 {
     std::println("--- Testing addVertex/addVertices & addFace/addFaces ---");
@@ -119,6 +163,7 @@ inline void testAddElements()
     testAddFace(mesh);
     testAddFaces(mesh);
     testAddPolygonFaces();
+    testDefaultComponentInitialization();
 
     std::println("addVertex, addVertices, addFace, addFaces verified successfully!\n");
 }

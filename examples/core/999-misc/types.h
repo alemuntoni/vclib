@@ -141,6 +141,25 @@ using Mesh64 = meshv2::Mesh<
     meshv2::VertexContainer<VertexComponents64, uint64_t>,
     meshv2::FaceContainer<FaceComponents64, uint64_t>>;
 
+using MaterialFaceComponents = meshv2::FaceComponents<
+    meshv2::face::BitFlags,
+    meshv2::face::TriangleVertexReferences<vcl::uint>,
+    meshv2::face::MaterialIndex,
+    meshv2::face::OptionalColor>;
+
+using MaterialMesh = meshv2::Mesh<
+    meshv2::VertexContainer<MyVertexComponents>,
+    meshv2::FaceContainer<MaterialFaceComponents>>;
+
+using OptionalMaterialFaceComponents = meshv2::FaceComponents<
+    meshv2::face::BitFlags,
+    meshv2::face::TriangleVertexReferences<vcl::uint>,
+    meshv2::face::OptionalMaterialIndex>;
+
+using OptionalMaterialMesh = meshv2::Mesh<
+    meshv2::VertexContainer<MyVertexComponents>,
+    meshv2::FaceContainer<OptionalMaterialFaceComponents>>;
+
 // Concept checking templates
 template<typename T>
 concept CanCallBitFlags = requires (T t) { t.bitFlags(); };

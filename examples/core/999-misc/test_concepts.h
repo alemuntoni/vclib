@@ -62,6 +62,28 @@ inline void testComponentConcepts()
     static_assert(std::is_same_v<
                   TransformedMesh::Components,
                   vcl::TypeWrapper<meshv2::mesh::Color, meshv2::mesh::TransformMatrixf>>);
+
+    // MaterialIndex Component Concepts
+    static_assert(meshv2::face::HasMaterialIndex<MaterialFaceComponents>);
+    static_assert(meshv2::face::HasMaterialIndex<MaterialMesh::Face>);
+    static_assert(!meshv2::face::HasMaterialIndex<MyFaceComponents>);
+    static_assert(!meshv2::face::HasOptionalMaterialIndex<MaterialFaceComponents>);
+    static_assert(meshv2::face::HasOptionalMaterialIndex<OptionalMaterialFaceComponents>);
+    static_assert(meshv2::face::HasOptionalMaterialIndex<OptionalMaterialMesh::Face>);
+
+    // MaterialIndex Type and Sentinel Concepts
+    static_assert(std::is_same_v<MaterialMesh::Face::MaterialIndexType, ushort>);
+    static_assert(MaterialMesh::Face::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<ushort>);
+    static_assert(meshv2::comp::MaterialIndex<>::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<ushort>);
+    static_assert(meshv2::face::MaterialIndex::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<ushort>);
+    static_assert(meshv2::face::MaterialIndexu::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<uint>);
+
+    // Default Value Concepts
+    static_assert(meshv2::comp::HasDefaultValue<meshv2::comp::MaterialIndex<>>);
+    static_assert(meshv2::comp::defaultValue<meshv2::comp::MaterialIndex<>>() == vcl::NULL_INDEX<ushort>);
+    static_assert(meshv2::comp::HasDefaultValue<meshv2::face::MaterialIndex>);
+    static_assert(meshv2::comp::defaultValue<meshv2::face::MaterialIndex>() == vcl::NULL_INDEX<ushort>);
+    static_assert(meshv2::comp::defaultValue<meshv2::face::MaterialIndexu>() == vcl::NULL_INDEX<uint>);
 }
 
 inline void testElementConcepts()
