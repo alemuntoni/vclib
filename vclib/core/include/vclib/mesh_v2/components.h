@@ -8,6 +8,9 @@
 #ifndef VCL_MESH_V2_COMPONENTS_H
 #define VCL_MESH_V2_COMPONENTS_H
 
+#include "components/adjacent_edges.h"
+#include "components/adjacent_faces.h"
+#include "components/adjacent_vertices.h"
 #include "components/bit_flags.h"
 #include "components/color.h"
 #include "components/custom_components.h"

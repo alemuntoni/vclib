@@ -64,9 +64,6 @@ protected:
 private:
     /// friend classes declarations
 
-    template<uint, typename, typename>
-    friend class ElementProxy;
-
     template<
         typename,
         typename,

@@ -17,6 +17,7 @@
 #include <concepts>
 #include <limits>
 #include <ranges>
+#include <type_traits>
 #include <vector>
 
 namespace vcl::meshv2 {
@@ -118,22 +119,379 @@ protected:
         }
     }
 
-    // --- High-level Element Proxy Access (via Parent Mesh) ---
+    // --- Generic Static Reference / Adjacency Helpers ---
 
-    decltype(auto) referencedElement(this auto&& self, uint i)
+    /**
+     * @brief Returns the number of referenced elements stored in this component.
+     * @param[in] self: The component / element proxy object.
+     * @return The number of referenced elements.
+     */
+    static uint refCount(const auto& self)
     {
+        return Base::container(self).size();
+    }
+
+    /**
+     * @brief Returns the index of the i-th referenced element.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] i: The position in this container.
+     * @return The index in the target element container.
+     */
+    static IndexType refIndex(const auto& self, uint i)
+    {
+        assert(i < refCount(self));
+        return Base::container(self)[i];
+    }
+
+    /**
+     * @brief Returns a proxy to the i-th referenced element in the parent mesh.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] i: The position in this container.
+     * @return A proxy to the referenced element.
+     */
+    static decltype(auto) refElement(auto&& self, uint i)
+    {
+        assert(i < refCount(self));
         return self.parentContainer()
             .parentMesh()
             .template element<REF_ELEM_ID>(Base::container(self)[i]);
     }
 
-    decltype(auto) referencedElements(this auto&& self)
+    /**
+     * @brief Returns the index of the i-th referenced element using modular arithmetic.
+     * Supports negative indices.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] i: The position in this container modulo refCount().
+     * @return The index in the target element container.
+     */
+    static IndexType refIndexMod(const auto& self, int i)
+    {
+        int n = static_cast<int>(refCount(self));
+        assert(n > 0);
+        return Base::container(self)[((i % n) + n) % n];
+    }
+
+    /**
+     * @brief Returns a proxy to the i-th referenced element using modular arithmetic.
+     * Supports negative indices.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] i: The position in this container modulo refCount().
+     * @return A proxy to the referenced element.
+     */
+    static decltype(auto) refElementMod(auto&& self, int i)
+    {
+        int n = static_cast<int>(refCount(self));
+        assert(n > 0);
+        return refElement(self, ((i % n) + n) % n);
+    }
+
+    /**
+     * @brief Sets the reference at position i to the given element index.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] i: The position in this container.
+     * @param[in] idx: The index of the referenced element.
+     */
+    static void setRef(auto&& self, uint i, IndexType idx)
+    {
+        assert(i < refCount(self));
+        Base::container(self)[i] = idx;
+    }
+
+    /**
+     * @brief Sets the reference at position i to the given element proxy or pointer.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] i: The position in this container.
+     * @param[in] e: The referenced element proxy or pointer.
+     */
+    template<typename Elem>
+    static void setRef(auto&& self, uint i, const Elem& e)
+        requires (!std::unsigned_integral<std::remove_cvref_t<Elem>>)
+    {
+        assert(i < refCount(self));
+        if constexpr (requires { e.index(); }) {
+            Base::container(self)[i] = e.index();
+        }
+        else if constexpr (std::is_pointer_v<std::decay_t<Elem>>) {
+            if (e != nullptr) {
+                Base::container(self)[i] = e->index();
+            }
+            else {
+                Base::container(self)[i] = NULL_INDEX;
+            }
+        }
+        else {
+            Base::container(self)[i] = static_cast<IndexType>(e);
+        }
+    }
+
+    /**
+     * @brief Sets the reference at position i using modular arithmetic.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] i: The position in this container modulo refCount().
+     * @param[in] idx: The index of the referenced element.
+     */
+    static void setRefMod(auto&& self, int i, IndexType idx)
+    {
+        int n = static_cast<int>(refCount(self));
+        assert(n > 0);
+        setRef(self, ((i % n) + n) % n, idx);
+    }
+
+    /**
+     * @brief Sets the reference at position i using modular arithmetic.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] i: The position in this container modulo refCount().
+     * @param[in] e: The referenced element proxy or pointer.
+     */
+    template<typename Elem>
+    static void setRefMod(auto&& self, int i, const Elem& e)
+        requires (!std::unsigned_integral<std::remove_cvref_t<Elem>>)
+    {
+        int n = static_cast<int>(refCount(self));
+        assert(n > 0);
+        setRef(self, ((i % n) + n) % n, e);
+    }
+
+    /**
+     * @brief Sets all stored references from an input range of indices, proxies, or pointers.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] rng: The input range.
+     */
+    template<std::ranges::input_range Rng>
+    static void setRefs(auto&& self, Rng&& rng)
+    {
+        if constexpr (N >= 0) {
+            assert(std::ranges::distance(rng) == N);
+        }
+        else if constexpr (!TTVC) {
+            resizeRefs(self, std::ranges::distance(rng));
+        }
+        uint i = 0;
+        for (auto&& item : rng) {
+            setRef(self, i++, item);
+        }
+    }
+
+    /**
+     * @brief Sets all stored references from a parameter pack of indices, proxies, or pointers.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] args: The references to set.
+     */
+    template<typename... Args>
+    static void setRefs(auto&& self, const Args&... args)
+        requires (sizeof...(Args) > 1 && (sizeof...(Args) == N || N < 0))
+    {
+        if constexpr (N < 0 && !TTVC) {
+            resizeRefs(self, sizeof...(Args));
+        }
+        uint i = 0;
+        (setRef(self, i++, args), ...);
+    }
+
+    /**
+     * @brief Checks if this container contains the given referenced element index.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] idx: The index to check.
+     * @return true if found, false otherwise.
+     */
+    static bool containsRef(const auto& self, IndexType idx)
+    {
+        return Base::container(self).contains(idx);
+    }
+
+    /**
+     * @brief Checks if this container contains the given referenced element proxy or pointer.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] e: The element proxy or pointer to check.
+     * @return true if found, false otherwise.
+     */
+    template<typename Elem>
+    static bool containsRef(const auto& self, const Elem& e)
+        requires (!std::unsigned_integral<std::remove_cvref_t<Elem>>)
+    {
+        if constexpr (requires { e.index(); }) {
+            return containsRef(self, e.index());
+        }
+        else if constexpr (std::is_pointer_v<std::decay_t<Elem>>) {
+            if (e != nullptr) {
+                return containsRef(self, e->index());
+            }
+            return containsRef(self, NULL_INDEX);
+        }
+        else {
+            return containsRef(self, static_cast<IndexType>(e));
+        }
+    }
+
+    /**
+     * @brief Finds the position in this reference container of the given element index.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] idx: The index to search for.
+     * @return The 0-based position in this container, or UINT_NULL if not found.
+     */
+    static uint indexOfRef(const auto& self, IndexType idx)
+    {
+        return Base::container(self).indexOf(idx);
+    }
+
+    /**
+     * @brief Finds the position in this reference container of the given element proxy or pointer.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] e: The element proxy or pointer to search for.
+     * @return The 0-based position in this container, or UINT_NULL if not found.
+     */
+    template<typename Elem>
+    static uint indexOfRef(const auto& self, const Elem& e)
+        requires (!std::unsigned_integral<std::remove_cvref_t<Elem>>)
+    {
+        if constexpr (requires { e.index(); }) {
+            return indexOfRef(self, e.index());
+        }
+        else if constexpr (std::is_pointer_v<std::decay_t<Elem>>) {
+            if (e != nullptr) {
+                return indexOfRef(self, e->index());
+            }
+            return indexOfRef(self, NULL_INDEX);
+        }
+        else {
+            return indexOfRef(self, static_cast<IndexType>(e));
+        }
+    }
+
+    /**
+     * @brief Resizes the references container to size n.
+     * @note Available only for dynamic, non-TTVC containers.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] n: The new size.
+     */
+    static void resizeRefs(auto&& self, uint n) requires (N < 0 && !TTVC)
+    {
+        Base::container(self).resize(n);
+    }
+
+    /**
+     * @brief Appends a referenced element index to the container.
+     * @note Available only for dynamic, non-TTVC containers.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] idx: The index to append.
+     */
+    static void pushRef(auto&& self, IndexType idx) requires (N < 0 && !TTVC)
+    {
+        Base::container(self).pushBack(idx);
+    }
+
+    /**
+     * @brief Appends a referenced element proxy or pointer to the container.
+     * @note Available only for dynamic, non-TTVC containers.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] e: The element proxy or pointer to append.
+     */
+    template<typename Elem>
+    static void pushRef(auto&& self, const Elem& e)
+        requires (N < 0 && !TTVC && !std::unsigned_integral<std::remove_cvref_t<Elem>>)
+    {
+        if constexpr (requires { e.index(); }) {
+            pushRef(self, e.index());
+        }
+        else if constexpr (std::is_pointer_v<std::decay_t<Elem>>) {
+            if (e != nullptr) {
+                pushRef(self, e->index());
+            }
+            else {
+                pushRef(self, NULL_INDEX);
+            }
+        }
+        else {
+            pushRef(self, static_cast<IndexType>(e));
+        }
+    }
+
+    /**
+     * @brief Inserts a referenced element index at position i.
+     * @note Available only for dynamic, non-TTVC containers.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] i: The position to insert at.
+     * @param[in] idx: The index to insert.
+     */
+    static void insertRef(auto&& self, uint i, IndexType idx) requires (N < 0 && !TTVC)
+    {
+        Base::container(self).insert(i, idx);
+    }
+
+    /**
+     * @brief Inserts a referenced element proxy or pointer at position i.
+     * @note Available only for dynamic, non-TTVC containers.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] i: The position to insert at.
+     * @param[in] e: The element proxy or pointer to insert.
+     */
+    template<typename Elem>
+    static void insertRef(auto&& self, uint i, const Elem& e)
+        requires (N < 0 && !TTVC && !std::unsigned_integral<std::remove_cvref_t<Elem>>)
+    {
+        if constexpr (requires { e.index(); }) {
+            insertRef(self, i, e.index());
+        }
+        else if constexpr (std::is_pointer_v<std::decay_t<Elem>>) {
+            if (e != nullptr) {
+                insertRef(self, i, e->index());
+            }
+            else {
+                insertRef(self, i, NULL_INDEX);
+            }
+        }
+        else {
+            insertRef(self, i, static_cast<IndexType>(e));
+        }
+    }
+
+    /**
+     * @brief Erases the reference at position i.
+     * @note Available only for dynamic, non-TTVC containers.
+     * @param[in] self: The component / element proxy object.
+     * @param[in] i: The position to erase.
+     */
+    static void eraseRef(auto&& self, uint i) requires (N < 0 && !TTVC)
+    {
+        Base::container(self).erase(i);
+    }
+
+    /**
+     * @brief Clears all references in the container.
+     * @note Available only for dynamic, non-TTVC containers.
+     * @param[in] self: The component / element proxy object.
+     */
+    static void clearRefs(auto&& self) requires (N < 0 && !TTVC)
+    {
+        Base::container(self).clear();
+    }
+
+    /**
+     * @brief Returns a lightweight view over the indices stored in this container.
+     * @param[in] self: The component / element proxy object.
+     * @return A View object exposing begin() and end() over the indices.
+     */
+    static auto refIndices(auto&& self)
+    {
+        return vcl::View(
+            Base::container(self).begin(),
+            Base::container(self).end());
+    }
+
+    /**
+     * @brief Returns a lazy range of element proxies for all referenced elements.
+     * @param[in] self: The component / element proxy object.
+     * @return A transformed range yielding ElementProxy / ConstElementProxy objects.
+     */
+    static decltype(auto) refElements(auto&& self)
     {
         auto& m = self.parentContainer().parentMesh();
         return Base::container(self) | std::views::transform([&m](auto idx) {
                    return m.template element<REF_ELEM_ID>(idx);
                });
     }
+
+
 };
 
 } // namespace vcl::meshv2

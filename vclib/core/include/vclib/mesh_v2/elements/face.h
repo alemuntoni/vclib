@@ -40,8 +40,8 @@ public:
     using typename Base::IndexType;
     using Base::NULL_INDEX;
 
-    static constexpr int VERTEX_COUNT =
-        comp::ComponentTypeT<CompId::VERTEX_REFERENCES, Components>::VERTEX_COUNT;
+    static constexpr int VERTEX_COUNT = comp::
+        ComponentTypeT<CompId::VERTEX_REFERENCES, Components>::VERTEX_COUNT;
 
     static_assert(
         comp::HasVertexReferences<Components>,
@@ -101,9 +101,6 @@ protected:
 private:
 
     /// friend classes declarations
-
-    template<uint, typename, typename>
-    friend class ElementProxy;
 
     template<
         typename,

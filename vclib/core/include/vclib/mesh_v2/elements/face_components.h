@@ -8,6 +8,8 @@
 #ifndef VCL_MESH_V2_ELEMENTS_FACE_COMPONENTS_H
 #define VCL_MESH_V2_ELEMENTS_FACE_COMPONENTS_H
 
+#include "../components/adjacent_edges.h"
+#include "../components/adjacent_faces.h"
 #include "../components/bit_flags.h"
 #include "../components/color.h"
 #include "../components/custom_components.h"
@@ -19,6 +21,28 @@
 #include "../components/wedges.h"
 
 namespace vcl::meshv2::face {
+
+template<typename T>
+concept HasAdjacentFaces = comp::HasAdjacentFaces<T>;
+template<typename T>
+concept HasOptionalAdjacentFaces = comp::HasOptionalAdjacentFaces<T>;
+template<typename T>
+concept HasStaticAdjacentFaces = comp::HasStaticAdjacentFaces<T>;
+template<typename T>
+concept HasTriangleAdjacentFaces = comp::HasTriangleAdjacentFaces<T>;
+template<typename T>
+concept HasPolygonAdjacentFaces = comp::HasPolygonAdjacentFaces<T>;
+
+template<typename T>
+concept HasAdjacentEdges = comp::HasAdjacentEdges<T>;
+template<typename T>
+concept HasOptionalAdjacentEdges = comp::HasOptionalAdjacentEdges<T>;
+template<typename T>
+concept HasStaticAdjacentEdges = comp::HasStaticAdjacentEdges<T>;
+template<typename T>
+concept HasTriangleAdjacentEdges = comp::HasTriangleAdjacentEdges<T>;
+template<typename T>
+concept HasPolygonAdjacentEdges = comp::HasPolygonAdjacentEdges<T>;
 
 template<typename T>
 concept HasBitFlags = comp::HasBitFlags<T>;
@@ -70,6 +94,46 @@ concept HasWedges = comp::HasWedges<T>;
  */
 template<typename T>
 concept HasFaceBitFlags = comp::HasFaceBitFlags<T>;
+
+/* Port AdjacentEdges classes into face namespace */
+template<
+    int                    N    = 3,
+    std::unsigned_integral Index = uint,
+    bool                   TTVC = false,
+    bool                   OPT  = false>
+using CustomAdjacentEdges = comp::AdjacentEdges<N, Index, TTVC, OPT>;
+
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using CustomTriangleAdjacentEdges = comp::TriangleAdjacentEdges<Index, OPT>;
+
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using CustomPolygonAdjacentEdges = comp::PolygonAdjacentEdges<Index, OPT>;
+
+using AdjacentEdges                 = CustomAdjacentEdges<3, uint, false, false>;
+using TriangleAdjacentEdges         = comp::TriangleAdjacentEdges<uint, false>;
+using OptionalTriangleAdjacentEdges = comp::TriangleAdjacentEdges<uint, true>;
+using PolygonAdjacentEdges          = comp::PolygonAdjacentEdges<uint, false>;
+using OptionalPolygonAdjacentEdges  = comp::PolygonAdjacentEdges<uint, true>;
+
+/* Port AdjacentFaces classes into face namespace */
+template<
+    int                    N    = 3,
+    std::unsigned_integral Index = uint,
+    bool                   TTVC = false,
+    bool                   OPT  = false>
+using CustomAdjacentFaces = comp::AdjacentFaces<N, Index, TTVC, OPT>;
+
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using CustomTriangleAdjacentFaces = comp::TriangleAdjacentFaces<Index, OPT>;
+
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using CustomPolygonAdjacentFaces = comp::PolygonAdjacentFaces<Index, OPT>;
+
+using AdjacentFaces                 = CustomAdjacentFaces<3, uint, false, false>;
+using TriangleAdjacentFaces         = comp::TriangleAdjacentFaces<uint, false>;
+using OptionalTriangleAdjacentFaces = comp::TriangleAdjacentFaces<uint, true>;
+using PolygonAdjacentFaces          = comp::PolygonAdjacentFaces<uint, false>;
+using OptionalPolygonAdjacentFaces  = comp::PolygonAdjacentFaces<uint, true>;
 
 /* Port BitFlags classes into face namespace */
 using BitFlags         = comp::BitFlags;

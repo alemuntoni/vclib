@@ -8,6 +8,9 @@
 #ifndef VCL_MESH_V2_ELEMENTS_VERTEX_COMPONENTS_H
 #define VCL_MESH_V2_ELEMENTS_VERTEX_COMPONENTS_H
 
+#include "../components/adjacent_edges.h"
+#include "../components/adjacent_faces.h"
+#include "../components/adjacent_vertices.h"
 #include "../components/bit_flags.h"
 #include "../components/color.h"
 #include "../components/custom_components.h"
@@ -17,6 +20,21 @@
 #include "../components/tex_coord.h"
 
 namespace vcl::meshv2::vert {
+
+template<typename T>
+concept HasAdjacentFaces = comp::HasAdjacentFaces<T>;
+template<typename T>
+concept HasOptionalAdjacentFaces = comp::HasOptionalAdjacentFaces<T>;
+
+template<typename T>
+concept HasAdjacentEdges = comp::HasAdjacentEdges<T>;
+template<typename T>
+concept HasOptionalAdjacentEdges = comp::HasOptionalAdjacentEdges<T>;
+
+template<typename T>
+concept HasAdjacentVertices = comp::HasAdjacentVertices<T>;
+template<typename T>
+concept HasOptionalAdjacentVertices = comp::HasOptionalAdjacentVertices<T>;
 
 template<typename T>
 concept HasBitFlags = comp::HasBitFlags<T>;
@@ -40,6 +58,36 @@ template<typename T>
 concept HasTexCoord = comp::HasTexCoord<T>;
 template<typename T>
 concept HasOptionalTexCoord = comp::HasOptionalTexCoord<T>;
+
+/* Port AdjacentEdges class into vert namespace */
+template<
+    int                    N    = -1,
+    std::unsigned_integral Index = uint,
+    bool                   OPT  = false>
+using CustomAdjacentEdges = comp::AdjacentEdges<N, Index, false, OPT>;
+
+using AdjacentEdges         = CustomAdjacentEdges<-1, uint, false>;
+using OptionalAdjacentEdges = CustomAdjacentEdges<-1, uint, true>;
+
+/* Port AdjacentFaces class into vert namespace */
+template<
+    int                    N    = -1,
+    std::unsigned_integral Index = uint,
+    bool                   OPT  = false>
+using CustomAdjacentFaces = comp::AdjacentFaces<N, Index, false, OPT>;
+
+using AdjacentFaces         = CustomAdjacentFaces<-1, uint, false>;
+using OptionalAdjacentFaces = CustomAdjacentFaces<-1, uint, true>;
+
+/* Port AdjacentVertices class into vert namespace */
+template<
+    int                    N    = -1,
+    std::unsigned_integral Index = uint,
+    bool                   OPT  = false>
+using CustomAdjacentVertices = comp::AdjacentVertices<N, Index, false, OPT>;
+
+using AdjacentVertices         = CustomAdjacentVertices<-1, uint, false>;
+using OptionalAdjacentVertices = CustomAdjacentVertices<-1, uint, true>;
 
 /* Port BitFlags class into vert namespace */
 using BitFlags = comp::BitFlags;

@@ -22,6 +22,7 @@
 #include "test_views.h"
 #include "test_serialization.h"
 #include "test_wedge.h"
+#include "test_adjacencies.h"
 
 int main()
 {
@@ -40,6 +41,7 @@ int main()
     testViews();
     testSerialization();
     testWedge();
+    testAdjacencies();
 
     std::println("All mesh tests passed successfully!");
     return 0;

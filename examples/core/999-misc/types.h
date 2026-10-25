@@ -165,6 +165,24 @@ using MaterialMeshWithMaterials = meshv2::Mesh<
     meshv2::FaceContainer<MaterialFaceComponents>,
     meshv2::mesh::Materials>;
 
+using AdjVertexComponents = meshv2::VertexComponents<
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3f,
+    meshv2::vert::AdjacentFaces,
+    meshv2::vert::AdjacentVertices,
+    meshv2::vert::OptionalAdjacentEdges>;
+
+using AdjFaceComponents = meshv2::FaceComponents<
+    meshv2::face::BitFlags,
+    meshv2::face::TriangleVertexReferences<vcl::uint>,
+    meshv2::face::TriangleAdjacentFaces,
+    meshv2::face::OptionalTriangleAdjacentEdges,
+    meshv2::face::OptionalColor>;
+
+using AdjMesh = meshv2::Mesh<
+    meshv2::VertexContainer<AdjVertexComponents>,
+    meshv2::FaceContainer<AdjFaceComponents>>;
+
 // Concept checking templates
 template<typename T>
 concept CanCallBitFlags = requires (T t) { t.bitFlags(); };

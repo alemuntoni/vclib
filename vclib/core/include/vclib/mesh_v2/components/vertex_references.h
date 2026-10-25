@@ -115,7 +115,7 @@ public:
     decltype(auto) vertex(this auto&& self, uint i)
     {
         assert(i < self.vertexCount());
-        return self.referencedElement(i);
+        return Base::refElement(self, i);
     }
 
     /**
@@ -493,7 +493,7 @@ public:
     // check this: is the behaviour the same of old mesh?
     decltype(auto) vertices(this auto&& self)
     {
-        return self.referencedElements();
+        return Base::refElements(self);
     }
 
     auto vertexIndices(this auto&& self)

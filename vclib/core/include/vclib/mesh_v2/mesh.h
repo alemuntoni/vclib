@@ -1534,6 +1534,68 @@ template<typename MeshType>
 concept HasMaterials = mesh::HasMaterials<MeshType>;
 
 /**
+ * @brief Concept that checks whether a Mesh has per-element adjacent faces
+ * on container ELEM_ID.
+ */
+template<typename MeshType, uint ELEM_ID>
+concept HasPerElementAdjacentFaces =
+    HasPerElementComponent<MeshType, ELEM_ID, CompId::ADJACENT_FACES>;
+
+template<typename MeshType>
+concept HasPerVertexAdjacentFaces =
+    HasPerElementAdjacentFaces<MeshType, ElemId::VERTEX>;
+
+template<typename MeshType>
+concept HasPerFaceAdjacentFaces =
+    HasPerElementAdjacentFaces<MeshType, ElemId::FACE>;
+
+/**
+ * @brief Concept that checks whether a Mesh has per-element adjacent edges
+ * on container ELEM_ID.
+ */
+template<typename MeshType, uint ELEM_ID>
+concept HasPerElementAdjacentEdges =
+    HasPerElementComponent<MeshType, ELEM_ID, CompId::ADJACENT_EDGES>;
+
+template<typename MeshType>
+concept HasPerVertexAdjacentEdges =
+    HasPerElementAdjacentEdges<MeshType, ElemId::VERTEX>;
+
+template<typename MeshType>
+concept HasPerFaceAdjacentEdges =
+    HasPerElementAdjacentEdges<MeshType, ElemId::FACE>;
+
+/**
+ * @brief Concept that checks whether a Mesh has per-element adjacent vertices
+ * on container ELEM_ID.
+ */
+template<typename MeshType, uint ELEM_ID>
+concept HasPerElementAdjacentVertices =
+    HasPerElementComponent<MeshType, ELEM_ID, CompId::ADJACENT_VERTICES>;
+
+template<typename MeshType>
+concept HasPerVertexAdjacentVertices =
+    HasPerElementAdjacentVertices<MeshType, ElemId::VERTEX>;
+
+/**
+ * @brief Concept that checks whether a type T has the AdjacentFaces component.
+ */
+template<typename T>
+concept HasAdjacentFaces = comp::HasAdjacentFaces<T>;
+
+/**
+ * @brief Concept that checks whether a type T has the AdjacentEdges component.
+ */
+template<typename T>
+concept HasAdjacentEdges = comp::HasAdjacentEdges<T>;
+
+/**
+ * @brief Concept that checks whether a type T has the AdjacentVertices component.
+ */
+template<typename T>
+concept HasAdjacentVertices = comp::HasAdjacentVertices<T>;
+
+/**
  * @brief Concept that checks whether a Mesh has the TransformMatrix component.
  */
 template<typename MeshType>

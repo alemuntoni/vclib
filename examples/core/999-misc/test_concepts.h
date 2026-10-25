@@ -96,6 +96,33 @@ inline void testComponentConcepts()
     static_assert(meshv2::comp::HasDefaultValue<meshv2::face::MaterialIndex>);
     static_assert(meshv2::comp::defaultValue<meshv2::face::MaterialIndex>() == vcl::NULL_INDEX<ushort>);
     static_assert(meshv2::comp::defaultValue<meshv2::face::MaterialIndexu>() == vcl::NULL_INDEX<uint>);
+
+    // Adjacency Component Concepts
+    static_assert(meshv2::HasAdjacentFaces<AdjFaceComponents>);
+    static_assert(meshv2::HasAdjacentFaces<AdjMesh::Face>);
+    static_assert(meshv2::face::HasTriangleAdjacentFaces<AdjFaceComponents>);
+    static_assert(meshv2::face::HasTriangleAdjacentFaces<AdjMesh::Face>);
+    static_assert(!meshv2::face::HasPolygonAdjacentFaces<AdjMesh::Face>);
+    static_assert(!meshv2::face::HasOptionalAdjacentFaces<AdjMesh::Face>);
+
+    static_assert(meshv2::HasAdjacentFaces<AdjVertexComponents>);
+    static_assert(meshv2::HasAdjacentFaces<AdjMesh::Vertex>);
+    static_assert(!meshv2::comp::HasStaticAdjacentFaces<AdjMesh::Vertex>);
+
+    static_assert(meshv2::HasAdjacentVertices<AdjVertexComponents>);
+    static_assert(meshv2::HasAdjacentVertices<AdjMesh::Vertex>);
+
+    static_assert(meshv2::HasAdjacentEdges<AdjMesh::Vertex>);
+    static_assert(meshv2::vert::HasOptionalAdjacentEdges<AdjMesh::Vertex>);
+    static_assert(meshv2::HasAdjacentEdges<AdjMesh::Face>);
+    static_assert(meshv2::face::HasOptionalAdjacentEdges<AdjMesh::Face>);
+
+    static_assert(meshv2::HasPerVertexAdjacentFaces<AdjMesh>);
+    static_assert(meshv2::HasPerFaceAdjacentFaces<AdjMesh>);
+    static_assert(meshv2::HasPerVertexAdjacentVertices<AdjMesh>);
+    static_assert(meshv2::HasPerVertexAdjacentEdges<AdjMesh>);
+    static_assert(meshv2::HasPerFaceAdjacentEdges<AdjMesh>);
+    static_assert(!meshv2::HasPerVertexAdjacentFaces<MyMesh>);
 }
 
 inline void testElementConcepts()
