@@ -70,6 +70,23 @@ inline void testVertexImportFrom()
     assert(ocm.vertex(0).principalCurvature().minDir() == Point3d(0.0, 1.0, 0.0));
     assert(ocm.vertex(0).principalCurvature().maxValue() == 3.5);
     assert(ocm.vertex(0).principalCurvature().minValue() == 1.2);
+
+    // 5. Quality importFrom on Vertex
+    QualityMesh qm1;
+    qm1.addVertices(1);
+    qm1.vertex(0).quality() = 42.5f;
+
+    QualityMesh qm2;
+    qm2.addVertices(1);
+    qm2.vertex(0).importFrom(qm1.vertex(0));
+    assert(qm2.vertex(0).quality() == 42.5f);
+
+    // 6. Quality importFrom with cross-precision cast (float to double) into optional component
+    OptionalQualityMesh oqm;
+    oqm.addVertices(1);
+    oqm.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::QUALITY>();
+    oqm.vertex(0).importFrom(qm1.vertex(0));
+    assert(oqm.vertex(0).quality() == 42.5);
 }
 
 inline void testFaceImportFrom()
@@ -114,6 +131,20 @@ inline void testFaceImportFrom()
     assert(mDestTri.face(0).vertexIndex(0) == 7);
     assert(mDestTri.face(0).vertexIndex(1) == 8);
     assert(mDestTri.face(0).vertexIndex(2) == 9);
+
+    // 4. Quality importFrom on Face
+    QualityMesh fqm1;
+    fqm1.addVertices(3);
+    fqm1.addFace(0, 1, 2);
+    fqm1.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>();
+    fqm1.face(0).quality() = 12.5f;
+
+    QualityMesh fqm2;
+    fqm2.addVertices(3);
+    fqm2.addFace(0, 1, 2);
+    fqm2.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>();
+    fqm2.face(0).importFrom(fqm1.face(0));
+    assert(fqm2.face(0).quality() == 12.5f);
 }
 
 inline void testMeshImportFromTriToTri()

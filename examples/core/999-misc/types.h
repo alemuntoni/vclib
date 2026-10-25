@@ -108,6 +108,29 @@ using OptionalCurvatureMesh = meshv2::Mesh<
     meshv2::FaceContainer<CurvatureFaceComponents>,
     meshv2::mesh::Name>;
 
+using QualityVertexComponents = meshv2::VertexComponents<
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3f,
+    meshv2::vert::Qualityf>;
+
+using OptionalQualityVertexComponents = meshv2::VertexComponents<
+    meshv2::vert::BitFlags,
+    meshv2::vert::Position3f,
+    meshv2::vert::OptionalQualityd>;
+
+using QualityFaceComponents = meshv2::FaceComponents<
+    meshv2::face::BitFlags,
+    meshv2::face::TriangleVertexReferences<vcl::uint>,
+    meshv2::face::OptionalQualityf>;
+
+using QualityMesh = meshv2::Mesh<
+    meshv2::VertexContainer<QualityVertexComponents>,
+    meshv2::FaceContainer<QualityFaceComponents>>;
+
+using OptionalQualityMesh = meshv2::Mesh<
+    meshv2::VertexContainer<OptionalQualityVertexComponents>,
+    meshv2::FaceContainer<QualityFaceComponents>>;
+
 using FullVertexComponents = meshv2::VertexComponents<
     meshv2::vert::BitFlags,
     meshv2::vert::Position3f,

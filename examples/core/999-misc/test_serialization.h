@@ -388,6 +388,24 @@ inline void testMeshSerialization()
         assert(cmRead.vertex(0).principalCurvature().minValue() == 2.0f);
     }
 
+    // 10. QualityMesh serialization test
+    {
+        QualityMesh qm;
+        qm.addVertices(2);
+        qm.vertex(0).quality() = 12.34f;
+        qm.vertex(1).quality() = 56.78f;
+
+        std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        qm.serialize(ss);
+
+        QualityMesh qmRead;
+        qmRead.deserialize(ss);
+
+        assert(qmRead.vertexCount() == 2);
+        assert(qmRead.vertex(0).quality() == 12.34f);
+        assert(qmRead.vertex(1).quality() == 56.78f);
+    }
+
     std::println("Mesh serialization tests passed!");
 }
 

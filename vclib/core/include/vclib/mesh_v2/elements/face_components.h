@@ -17,6 +17,7 @@
 #include "../components/normal.h"
 #include "../components/polygon_bit_flags.h"
 #include "../components/principal_curvature.h"
+#include "../components/quality.h"
 #include "../components/triangle_bit_flags.h"
 #include "../components/vertex_references.h"
 #include "../components/wedges.h"
@@ -69,6 +70,10 @@ template<typename T>
 concept HasPrincipalCurvature = comp::HasPrincipalCurvature<T>;
 template<typename T>
 concept HasOptionalPrincipalCurvature = comp::HasOptionalPrincipalCurvature<T>;
+template<typename T>
+concept HasQuality = comp::HasQuality<T>;
+template<typename T>
+concept HasOptionalQuality = comp::HasOptionalQuality<T>;
 template<typename T>
 concept HasVertexReferences = comp::HasVertexReferences<T>;
 template<typename T>
@@ -186,6 +191,19 @@ using PrincipalCurvaturef         = comp::PrincipalCurvaturef<false>;
 using PrincipalCurvatured         = comp::PrincipalCurvatured<false>;
 using OptionalPrincipalCurvaturef = comp::PrincipalCurvaturef<true>;
 using OptionalPrincipalCurvatured = comp::PrincipalCurvatured<true>;
+
+/* Port Quality classes into face namespace */
+
+template<typename ScalarType, bool OPT = false>
+using Quality = comp::Quality<ScalarType, OPT>;
+
+template<typename ScalarType>
+using OptionalQuality = comp::Quality<ScalarType, true>;
+
+using Qualityf         = comp::Qualityf<false>;
+using Qualityd         = comp::Qualityd<false>;
+using OptionalQualityf = comp::Qualityf<true>;
+using OptionalQualityd = comp::Qualityd<true>;
 
 /* Port VertexReferences class into face namespace */
 template<int N, std::unsigned_integral Index = uint>

@@ -45,6 +45,14 @@ inline void testEnableDisable()
     assert((cmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>()));
     cmesh.disablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>();
     assert((!cmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>()));
+
+    // QualityMesh optional quality
+    QualityMesh qmesh;
+    assert((!qmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>()));
+    qmesh.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>();
+    assert((qmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>()));
+    qmesh.disablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>();
+    assert((!qmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>()));
 }
 
 inline void testEnableSameOptionalComponentsOf()

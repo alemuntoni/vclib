@@ -141,6 +141,14 @@ public:
         return component<CompId::PRINCIPAL_CURVATURE>();
     }
 
+    /**
+     * @brief Returns a ComponentView over the qualities of the elements.
+     */
+    auto qualities() const requires comp::HasQuality<Container>
+    {
+        return component<CompId::QUALITY>();
+    }
+
 private:
     /**
      * @brief Generic access to a ComponentView for a specific COMP_ID.

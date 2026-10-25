@@ -10,11 +10,74 @@
 
 #include "../component.h"
 
-// TODO: When Quality component is ported to mesh_v2:
-// 1. Define QualityRangeConcept
-// 2. Define detail::getQuality lambda
-// 3. Define QualityView : std::ranges::range_adaptor_closure<QualityView>
-// 4. Define inline constexpr detail::QualityView quality;
-// 5. Specialize template<> inline constexpr auto component<CompId::QUALITY> = quality;
+#include <vclib/base.h>
+
+#include <ranges>
+
+namespace vcl::meshv2 {
+
+template<typename T>
+concept HasQualityMember = requires(T&& t) {
+    { t.quality() };
+};
+
+template<typename R>
+concept QualitiesRangeConcept =
+    std::ranges::range<R> &&
+    (requires(R&& r) {
+        { std::forward<R>(r).qualities() } -> std::ranges::range;
+    } || HasQualityMember<std::ranges::range_reference_t<R>>);
+
+template<typename R>
+concept QualityRangeConcept = QualitiesRangeConcept<R>;
+
+namespace views {
+
+namespace detail {
+
+inline constexpr auto getQuality = [](auto&& p) -> decltype(auto) {
+    return p.quality();
+};
+
+struct QualitiesView : std::ranges::range_adaptor_closure<QualitiesView>
+{
+    template<QualitiesRangeConcept R>
+    constexpr auto operator()(R&& r) const
+    {
+        if constexpr (requires {
+                          {
+                              std::forward<R>(r).qualities()
+                          } -> std::ranges::range;
+                      }) {
+            return std::forward<R>(r).qualities();
+        }
+        else {
+            return std::forward<R>(r) | std::views::transform(getQuality);
+        }
+    }
+};
+
+} // namespace detail
+
+/**
+ * @brief View adaptor that transforms a range of elements into a range of their qualities.
+ *
+ * When applied directly to an ElementContainerProxy (e.g. `mesh.vertices() | views::qualities` or
+ * `mesh.faces() | views::qualities`), it directly returns a contiguous ComponentView over the SoA buffer
+ * without proxy overhead.
+ *
+ * When applied to a filtered or transformed range (e.g. `mesh.vertices() | views::selected | views::qualities`),
+ * it transforms each element to its quality reference.
+ *
+ * @ingroup views
+ */
+inline constexpr detail::QualitiesView qualities;
+inline constexpr auto quality = qualities;
+
+template<>
+inline constexpr auto component<CompId::QUALITY> = qualities;
+
+} // namespace views
+} // namespace vcl::meshv2
 
 #endif // VCL_MESH_V2_VIEWS_COMPONENTS_QUALITY_H

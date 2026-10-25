@@ -477,6 +477,38 @@ inline void testComponentViews()
     // Direct proxy member
     assert(cmesh.vertices().principalCurvatures().size() == 3);
     assert(cmesh.vertices().principalCurvatures()[1].maxValue() == 2.0f);
+
+    // --- 8. Qualities View ---
+    QualityMesh qmesh;
+    qmesh.addVertices(3);
+    qmesh.vertex(0).quality() = 10.0f;
+    qmesh.vertex(1).quality() = 20.0f;
+    qmesh.vertex(2).quality() = 30.0f;
+
+    static_assert(meshv2::QualitiesRangeConcept<decltype(qmesh.vertices())>);
+    static_assert(meshv2::QualityRangeConcept<decltype(qmesh.vertices())>);
+    static_assert(std::ranges::range<decltype(qmesh.vertices() | views::qualities)>);
+    static_assert(std::ranges::range<decltype(qmesh.vertices() | views::quality)>);
+
+    std::size_t qCount = 0;
+    float sumQuality = 0.0f;
+    for (float q : qmesh.vertices() | views::qualities) {
+        sumQuality += q;
+        ++qCount;
+    }
+    assert(qCount == 3);
+    assert(sumQuality == 60.0f);
+
+    // Both views::qualities and views::quality work identically
+    float sumQualityAlt = 0.0f;
+    for (float q : qmesh.vertices() | views::quality) {
+        sumQualityAlt += q;
+    }
+    assert(sumQualityAlt == 60.0f);
+
+    // Direct proxy member
+    assert(qmesh.vertices().qualities().size() == 3);
+    assert(qmesh.vertices().qualities()[1] == 20.0f);
 }
 
 inline void testViews()
