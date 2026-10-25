@@ -23,6 +23,7 @@
 #include "test_serialization.h"
 #include "test_wedge.h"
 #include "test_adjacencies.h"
+#include "test_edges.h"
 
 int main()
 {
@@ -42,6 +43,7 @@ int main()
     testSerialization();
     testWedge();
     testAdjacencies();
+    testEdges();
 
     std::println("All mesh tests passed successfully!");
     return 0;

@@ -51,7 +51,7 @@ inline void testVertexImportFrom()
     cm1.vertex(0).principalCurvature().maxDir() = Point3f(1.0f, 0.0f, 0.0f);
     cm1.vertex(0).principalCurvature().minDir() = Point3f(0.0f, 1.0f, 0.0f);
     cm1.vertex(0).principalCurvature().maxValue() = 3.5f;
-    cm1.vertex(0).principalCurvature().minValue() = 1.2f;
+    cm1.vertex(0).principalCurvature().minValue() = 1.25f;
 
     CurvatureMesh cm2;
     cm2.addVertices(1);
@@ -59,7 +59,7 @@ inline void testVertexImportFrom()
     assert(cm2.vertex(0).principalCurvature().maxDir() == Point3f(1.0f, 0.0f, 0.0f));
     assert(cm2.vertex(0).principalCurvature().minDir() == Point3f(0.0f, 1.0f, 0.0f));
     assert(cm2.vertex(0).principalCurvature().maxValue() == 3.5f);
-    assert(cm2.vertex(0).principalCurvature().minValue() == 1.2f);
+    assert(cm2.vertex(0).principalCurvature().minValue() == 1.25f);
 
     // 4. PrincipalCurvature importFrom with cross-precision cast (float to double) into optional component
     OptionalCurvatureMesh ocm;
@@ -69,7 +69,7 @@ inline void testVertexImportFrom()
     assert(ocm.vertex(0).principalCurvature().maxDir() == Point3d(1.0, 0.0, 0.0));
     assert(ocm.vertex(0).principalCurvature().minDir() == Point3d(0.0, 1.0, 0.0));
     assert(ocm.vertex(0).principalCurvature().maxValue() == 3.5);
-    assert(ocm.vertex(0).principalCurvature().minValue() == 1.2);
+    assert(ocm.vertex(0).principalCurvature().minValue() == 1.25);
 
     // 5. Quality importFrom on Vertex
     QualityMesh qm1;

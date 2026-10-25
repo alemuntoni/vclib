@@ -513,6 +513,9 @@ protected:
 
 // Specialization Aliases
 template<std::unsigned_integral Index = uint>
+using EdgeVertexReferences = VertexReferences<2, Index>;
+
+template<std::unsigned_integral Index = uint>
 using TriangleVertexReferences = VertexReferences<3, Index>;
 
 template<std::unsigned_integral Index = uint>
@@ -532,6 +535,11 @@ template<typename T>
 concept HasStaticVertexReferences =
     HasComponent<CompId::VERTEX_REFERENCES, T> &&
     (ComponentTypeT<CompId::VERTEX_REFERENCES, T>::VERTEX_COUNT > 0);
+
+template<typename T>
+concept HasEdgeVertexReferences =
+    HasComponent<CompId::VERTEX_REFERENCES, T> &&
+    (ComponentTypeT<CompId::VERTEX_REFERENCES, T>::VERTEX_COUNT == 2);
 
 template<typename T>
 concept HasTriangleVertexReferences =

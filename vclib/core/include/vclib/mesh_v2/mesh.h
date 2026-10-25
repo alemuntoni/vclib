@@ -1525,6 +1525,13 @@ concept HasPerFaceCustomComponents =
     HasPerElementCustomComponents<MeshType, ElemId::FACE>;
 
 /**
+ * @brief Concept that checks whether a Mesh has per-edge custom components.
+ */
+template<typename MeshType>
+concept HasPerEdgeCustomComponents =
+    HasPerElementCustomComponents<MeshType, ElemId::EDGE>;
+
+/**
  * @brief Concept that checks whether a type T satisfies the Mesh concept.
  */
 template<typename T>
@@ -1568,6 +1575,10 @@ template<typename MeshType>
 concept HasPerFaceAdjacentFaces =
     HasPerElementAdjacentFaces<MeshType, ElemId::FACE>;
 
+template<typename MeshType>
+concept HasPerEdgeAdjacentFaces =
+    HasPerElementAdjacentFaces<MeshType, ElemId::EDGE>;
+
 /**
  * @brief Concept that checks whether a Mesh has per-element adjacent edges
  * on container ELEM_ID.
@@ -1584,6 +1595,10 @@ template<typename MeshType>
 concept HasPerFaceAdjacentEdges =
     HasPerElementAdjacentEdges<MeshType, ElemId::FACE>;
 
+template<typename MeshType>
+concept HasPerEdgeAdjacentEdges =
+    HasPerElementAdjacentEdges<MeshType, ElemId::EDGE>;
+
 /**
  * @brief Concept that checks whether a Mesh has per-element adjacent vertices
  * on container ELEM_ID.
@@ -1595,6 +1610,14 @@ concept HasPerElementAdjacentVertices =
 template<typename MeshType>
 concept HasPerVertexAdjacentVertices =
     HasPerElementAdjacentVertices<MeshType, ElemId::VERTEX>;
+
+template<typename MeshType>
+concept HasPerFaceAdjacentVertices =
+    HasPerElementAdjacentVertices<MeshType, ElemId::FACE>;
+
+template<typename MeshType>
+concept HasPerEdgeAdjacentVertices =
+    HasPerElementAdjacentVertices<MeshType, ElemId::EDGE>;
 
 /**
  * @brief Concept that checks whether a type T has the AdjacentFaces component.

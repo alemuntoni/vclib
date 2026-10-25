@@ -79,30 +79,54 @@ template<
     int                    N    = -1,
     std::unsigned_integral Index = uint,
     bool                   OPT  = false>
-using CustomAdjacentEdges = comp::AdjacentEdges<N, Index, false, OPT>;
+using AdjacentEdges = comp::AdjacentEdges<N, Index, false, OPT>;
 
-using AdjacentEdges         = CustomAdjacentEdges<-1, uint, false>;
-using OptionalAdjacentEdges = CustomAdjacentEdges<-1, uint, true>;
+template<
+    int                    N    = -1,
+    std::unsigned_integral Index = uint>
+using OptionalAdjacentEdges = AdjacentEdges<N, Index, true>;
+
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using VertexAdjacentEdges = comp::VertexAdjacentEdges<Index, OPT>;
+
+template<std::unsigned_integral Index = uint>
+using OptionalVertexAdjacentEdges = comp::OptionalVertexAdjacentEdges<Index>;
 
 /* Port AdjacentFaces class into vert namespace */
 template<
     int                    N    = -1,
     std::unsigned_integral Index = uint,
     bool                   OPT  = false>
-using CustomAdjacentFaces = comp::AdjacentFaces<N, Index, false, OPT>;
+using AdjacentFaces = comp::AdjacentFaces<N, Index, false, OPT>;
 
-using AdjacentFaces         = CustomAdjacentFaces<-1, uint, false>;
-using OptionalAdjacentFaces = CustomAdjacentFaces<-1, uint, true>;
+template<
+    int                    N    = -1,
+    std::unsigned_integral Index = uint>
+using OptionalAdjacentFaces = AdjacentFaces<N, Index, true>;
+
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using VertexAdjacentFaces = comp::VertexAdjacentFaces<Index, OPT>;
+
+template<std::unsigned_integral Index = uint>
+using OptionalVertexAdjacentFaces = comp::OptionalVertexAdjacentFaces<Index>;
 
 /* Port AdjacentVertices class into vert namespace */
 template<
     int                    N    = -1,
     std::unsigned_integral Index = uint,
     bool                   OPT  = false>
-using CustomAdjacentVertices = comp::AdjacentVertices<N, Index, false, OPT>;
+using AdjacentVertices = comp::AdjacentVertices<N, Index, false, OPT>;
 
-using AdjacentVertices         = CustomAdjacentVertices<-1, uint, false>;
-using OptionalAdjacentVertices = CustomAdjacentVertices<-1, uint, true>;
+template<
+    int                    N    = -1,
+    std::unsigned_integral Index = uint>
+using OptionalAdjacentVertices = AdjacentVertices<N, Index, true>;
+
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using VertexAdjacentVertices = comp::VertexAdjacentVertices<Index, OPT>;
+
+template<std::unsigned_integral Index = uint>
+using OptionalVertexAdjacentVertices = comp::OptionalVertexAdjacentVertices<Index>;
 
 /* Port BitFlags class into vert namespace */
 using BitFlags = comp::BitFlags;
@@ -115,9 +139,6 @@ using OptionalColor = comp::OptionalColor;
 using CustomComponents = comp::CustomComponents;
 
 /* Port MaterialIndex class into vert namespace */
-template<std::unsigned_integral Index = ushort, bool OPT = false>
-using CustomMaterialIndex = comp::MaterialIndex<Index, OPT>;
-
 using MaterialIndex           = comp::MaterialIndex<ushort, false>;
 using OptionalMaterialIndex   = comp::OptionalMaterialIndex<ushort>;
 using MaterialIndexus         = comp::MaterialIndexus;

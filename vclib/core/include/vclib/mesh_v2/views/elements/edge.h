@@ -10,10 +10,64 @@
 
 #include "../element.h"
 
-// TODO: When Edge and EdgeContainer are implemented in mesh_v2:
-// 1. Define EdgeConcept / EdgeRangeConcept
-// 2. Define EdgesView : std::ranges::range_adaptor_closure<EdgesView>
-// 3. Define inline constexpr detail::EdgesView edges;
-// 4. Specialize template<> inline constexpr auto elements<ElemId::EDGE> = edges;
+#include <vclib/mesh_v2/elements/edge.h>
+
+#include <ranges>
+
+namespace vcl::meshv2 {
+
+/**
+ * @brief Concept that checks whether Rng is a valid range of edges.
+ *
+ * @ingroup edge_concepts
+ */
+template<typename Rng>
+concept EdgeRangeConcept =
+    std::ranges::range<Rng> &&
+    EdgeConcept<typename std::ranges::iterator_t<Rng>::value_type>;
+
+namespace views {
+
+namespace detail {
+
+struct EdgesView : std::ranges::range_adaptor_closure<EdgesView>
+{
+    constexpr EdgesView() = default;
+
+    template<typename R>
+    requires requires (R&& r) { { r.edges() } -> std::ranges::range; }
+    constexpr auto operator()(R&& r) const
+    {
+        return r.edges();
+    }
+
+    template<typename R>
+    requires (!std::ranges::range<R>) &&
+             requires (R&& r) { { r.edges() } -> std::ranges::range; }
+    friend constexpr auto operator|(R&& r, EdgesView)
+    {
+        return r.edges();
+    }
+};
+
+} // namespace detail
+
+/**
+ * @brief A view adaptor that allows to iterate over the Edge elements of an object.
+ *
+ * Can be applied to Meshes: `mesh | views::edges`
+ *
+ * Supports both pipe syntax (`mesh | views::edges`) and function call syntax
+ * (`views::edges(mesh)`).
+ *
+ * @ingroup views
+ */
+inline constexpr detail::EdgesView edges;
+
+template<>
+inline constexpr auto elements<ElemId::EDGE> = edges;
+
+} // namespace views
+} // namespace vcl::meshv2
 
 #endif // VCL_MESH_V2_VIEWS_ELEMENTS_EDGE_H

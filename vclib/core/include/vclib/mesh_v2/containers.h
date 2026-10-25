@@ -8,6 +8,7 @@
 #ifndef VCL_MESH_V2_CONTAINERS_H
 #define VCL_MESH_V2_CONTAINERS_H
 
+#include "containers/edge_container.h"
 #include "containers/face_container.h"
 #include "containers/vertex_container.h"
 

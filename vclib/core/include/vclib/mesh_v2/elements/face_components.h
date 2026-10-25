@@ -112,43 +112,93 @@ concept HasFaceBitFlags = comp::HasFaceBitFlags<T>;
 
 /* Port AdjacentEdges classes into face namespace */
 template<
-    int                    N    = 3,
+    int                    N    = -1,
     std::unsigned_integral Index = uint,
     bool                   TTVC = false,
     bool                   OPT  = false>
-using CustomAdjacentEdges = comp::AdjacentEdges<N, Index, TTVC, OPT>;
+using AdjacentEdges = comp::AdjacentEdges<N, Index, TTVC, OPT>;
+
+template<
+    int                    N    = -1,
+    std::unsigned_integral Index = uint,
+    bool                   TTVC = false>
+using OptionalAdjacentEdges = comp::AdjacentEdges<N, Index, TTVC, true>;
 
 template<std::unsigned_integral Index = uint, bool OPT = false>
-using CustomTriangleAdjacentEdges = comp::TriangleAdjacentEdges<Index, OPT>;
+using TriangleAdjacentEdges = comp::TriangleAdjacentEdges<Index, OPT>;
+
+template<std::unsigned_integral Index = uint>
+using OptionalTriangleAdjacentEdges = comp::OptionalTriangleAdjacentEdges<Index>;
 
 template<std::unsigned_integral Index = uint, bool OPT = false>
-using CustomPolygonAdjacentEdges = comp::PolygonAdjacentEdges<Index, OPT>;
+using PolygonAdjacentEdges = comp::PolygonAdjacentEdges<Index, OPT>;
 
-using AdjacentEdges                 = CustomAdjacentEdges<3, uint, false, false>;
-using TriangleAdjacentEdges         = comp::TriangleAdjacentEdges<uint, false>;
-using OptionalTriangleAdjacentEdges = comp::TriangleAdjacentEdges<uint, true>;
-using PolygonAdjacentEdges          = comp::PolygonAdjacentEdges<uint, false>;
-using OptionalPolygonAdjacentEdges  = comp::PolygonAdjacentEdges<uint, true>;
+template<std::unsigned_integral Index = uint>
+using OptionalPolygonAdjacentEdges = comp::OptionalPolygonAdjacentEdges<Index>;
+
+// Old mesh v1 compatibility aliases
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using AdjacentTriangleEdges = TriangleAdjacentEdges<Index, OPT>;
+
+template<std::unsigned_integral Index = uint>
+using OptionalAdjacentTriangleEdges = OptionalTriangleAdjacentEdges<Index>;
+
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using AdjacentPolygonEdges = PolygonAdjacentEdges<Index, OPT>;
+
+template<std::unsigned_integral Index = uint>
+using OptionalAdjacentPolygonEdges = OptionalPolygonAdjacentEdges<Index>;
 
 /* Port AdjacentFaces classes into face namespace */
 template<
-    int                    N    = 3,
+    int                    N    = -1,
     std::unsigned_integral Index = uint,
     bool                   TTVC = false,
     bool                   OPT  = false>
-using CustomAdjacentFaces = comp::AdjacentFaces<N, Index, TTVC, OPT>;
+using AdjacentFaces = comp::AdjacentFaces<N, Index, TTVC, OPT>;
+
+template<
+    int                    N    = -1,
+    std::unsigned_integral Index = uint,
+    bool                   TTVC = false>
+using OptionalAdjacentFaces = comp::AdjacentFaces<N, Index, TTVC, true>;
 
 template<std::unsigned_integral Index = uint, bool OPT = false>
-using CustomTriangleAdjacentFaces = comp::TriangleAdjacentFaces<Index, OPT>;
+using TriangleAdjacentFaces = comp::TriangleAdjacentFaces<Index, OPT>;
+
+template<std::unsigned_integral Index = uint>
+using OptionalTriangleAdjacentFaces = comp::OptionalTriangleAdjacentFaces<Index>;
 
 template<std::unsigned_integral Index = uint, bool OPT = false>
-using CustomPolygonAdjacentFaces = comp::PolygonAdjacentFaces<Index, OPT>;
+using PolygonAdjacentFaces = comp::PolygonAdjacentFaces<Index, OPT>;
 
-using AdjacentFaces                 = CustomAdjacentFaces<3, uint, false, false>;
-using TriangleAdjacentFaces         = comp::TriangleAdjacentFaces<uint, false>;
-using OptionalTriangleAdjacentFaces = comp::TriangleAdjacentFaces<uint, true>;
-using PolygonAdjacentFaces          = comp::PolygonAdjacentFaces<uint, false>;
-using OptionalPolygonAdjacentFaces  = comp::PolygonAdjacentFaces<uint, true>;
+template<std::unsigned_integral Index = uint>
+using OptionalPolygonAdjacentFaces = comp::OptionalPolygonAdjacentFaces<Index>;
+
+// Old mesh v1 compatibility aliases
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using AdjacentTriangleFaces = TriangleAdjacentFaces<Index, OPT>;
+
+template<std::unsigned_integral Index = uint>
+using OptionalAdjacentTriangleFaces = OptionalTriangleAdjacentFaces<Index>;
+
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using AdjacentPolygonFaces = PolygonAdjacentFaces<Index, OPT>;
+
+template<std::unsigned_integral Index = uint>
+using OptionalAdjacentPolygonFaces = OptionalPolygonAdjacentFaces<Index>;
+
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using AdjacentTriangles = TriangleAdjacentFaces<Index, OPT>;
+
+template<std::unsigned_integral Index = uint>
+using OptionalAdjacentTriangles = OptionalTriangleAdjacentFaces<Index>;
+
+template<std::unsigned_integral Index = uint, bool OPT = false>
+using AdjacentPolygons = PolygonAdjacentFaces<Index, OPT>;
+
+template<std::unsigned_integral Index = uint>
+using OptionalAdjacentPolygons = OptionalPolygonAdjacentFaces<Index>;
 
 /* Port BitFlags classes into face namespace */
 using BitFlags         = comp::BitFlags;
@@ -163,9 +213,6 @@ using OptionalColor = comp::OptionalColor;
 using CustomComponents = comp::CustomComponents;
 
 /* Port MaterialIndex class into face namespace */
-template<std::unsigned_integral Index = ushort, bool OPT = false>
-using CustomMaterialIndex = comp::MaterialIndex<Index, OPT>;
-
 using MaterialIndex           = comp::MaterialIndex<ushort, false>;
 using OptionalMaterialIndex   = comp::OptionalMaterialIndex<ushort>;
 using MaterialIndexus         = comp::MaterialIndexus;

@@ -10,6 +10,7 @@
 
 #include "elements/base/base.h"
 #include "elements/base/element_proxy.h"
+#include "elements/edge.h"
 #include "elements/face.h"
 #include "elements/vertex.h"
 

@@ -22,8 +22,10 @@
 #include <vclib/mesh_v2/components/normal.h>
 #include <vclib/mesh_v2/components/position.h>
 #include <vclib/mesh_v2/components/vertex_references.h>
+#include <vclib/mesh_v2/containers/edge_container.h>
 #include <vclib/mesh_v2/containers/face_container.h>
 #include <vclib/mesh_v2/containers/vertex_container.h>
+#include <vclib/mesh_v2/elements/edge.h>
 #include <vclib/mesh_v2/mesh.h>
 #include <vclib/mesh_v2/mesh_components.h>
 
@@ -258,20 +260,45 @@ using MaterialMeshWithMaterials = meshv2::Mesh<
 using AdjVertexComponents = meshv2::VertexComponents<
     meshv2::vert::BitFlags,
     meshv2::vert::Position3f,
-    meshv2::vert::AdjacentFaces,
-    meshv2::vert::AdjacentVertices,
-    meshv2::vert::OptionalAdjacentEdges>;
+    meshv2::vert::AdjacentFaces<>,
+    meshv2::vert::AdjacentVertices<>,
+    meshv2::vert::OptionalAdjacentEdges<>>;
 
 using AdjFaceComponents = meshv2::FaceComponents<
     meshv2::face::BitFlags,
     meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::TriangleAdjacentFaces,
-    meshv2::face::OptionalTriangleAdjacentEdges,
+    meshv2::face::TriangleAdjacentFaces<vcl::uint>,
+    meshv2::face::OptionalTriangleAdjacentEdges<vcl::uint>,
     meshv2::face::OptionalColor>;
 
 using AdjMesh = meshv2::Mesh<
     meshv2::VertexContainer<AdjVertexComponents>,
     meshv2::FaceContainer<AdjFaceComponents>>;
+
+using MyEdgeComponents = meshv2::EdgeComponents<
+    meshv2::edge::BitFlags,
+    meshv2::edge::EdgeVertexReferences<vcl::uint>,
+    meshv2::edge::Color,
+    meshv2::edge::OptionalQualityf>;
+
+using EdgeMesh = meshv2::Mesh<
+    meshv2::VertexContainer<MyVertexComponents>,
+    meshv2::EdgeContainer<MyEdgeComponents>>;
+
+using GraphMesh = meshv2::Mesh<
+    meshv2::VertexContainer<MyVertexComponents>,
+    meshv2::FaceContainer<MyFaceComponents>,
+    meshv2::EdgeContainer<MyEdgeComponents>>;
+
+using CCEdgeComponents = meshv2::EdgeComponents<
+    meshv2::edge::BitFlags,
+    meshv2::edge::EdgeVertexReferences<vcl::uint>,
+    meshv2::edge::CustomComponents>;
+
+using EdgeMeshWithCC = meshv2::Mesh<
+    meshv2::VertexContainer<CCMeshVertexComponents>,
+    meshv2::EdgeContainer<CCEdgeComponents>,
+    meshv2::mesh::CustomComponents>;
 
 // Concept checking templates
 template<typename T>
@@ -336,6 +363,39 @@ inline MyMesh createSampleQuadMesh()
 
     return mesh;
 }
+
+/**
+ * @brief Helper to create a standard sample edge mesh with 4 vertices and 4 edges
+ * forming a square loop.
+ *
+ * Vertex 0: (0, 0, 1)
+ * Vertex 1: (1, 0, 0)
+ * Vertex 2: (0, 1, 0)
+ * Vertex 3: (1, 1, 0)
+ *
+ * Edge 0: (0, 1)
+ * Edge 1: (1, 3)
+ * Edge 2: (3, 2)
+ * Edge 3: (2, 0)
+ */
+inline EdgeMesh createSampleEdgeMesh()
+{
+    EdgeMesh mesh;
+    mesh.resizeVertices(4);
+
+    mesh.vertex(0).position() = Point3f(0.0f, 0.0f, 1.0f);
+    mesh.vertex(1).position() = Point3f(1.0f, 0.0f, 0.0f);
+    mesh.vertex(2).position() = Point3f(0.0f, 1.0f, 0.0f);
+    mesh.vertex(3).position() = Point3f(1.0f, 1.0f, 0.0f);
+
+    mesh.addEdge(0, 1);
+    mesh.addEdge(1, 3);
+    mesh.addEdge(3, 2);
+    mesh.addEdge(2, 0);
+
+    return mesh;
+}
+
 
 inline TransformedMesh createSampleTransformedMesh()
 {
