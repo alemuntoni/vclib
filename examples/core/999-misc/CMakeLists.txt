@@ -21,6 +21,13 @@ set(SOURCES
     test_add_elements.h
     test_import_from.h
     test_append.h
+    test_custom_components.h
+    test_views.h
+    test_serialization.h
+    test_wedge.h
+    test_adjacencies.h
+    test_edges.h
+    test_elem_algorithms.h
     main.cpp
 )
 

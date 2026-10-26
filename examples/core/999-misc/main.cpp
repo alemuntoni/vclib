@@ -24,6 +24,7 @@
 #include "test_wedge.h"
 #include "test_adjacencies.h"
 #include "test_edges.h"
+#include "test_elem_algorithms.h"
 
 int main()
 {
@@ -44,6 +45,7 @@ int main()
     testWedge();
     testAdjacencies();
     testEdges();
+    testElemAlgorithms();
 
     std::println("All mesh tests passed successfully!");
     return 0;
