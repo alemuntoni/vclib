@@ -14,91 +14,91 @@ inline void testEnableDisable()
 {
     MyMesh mesh;
     // By default optional components are disabled
-    assert((!mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
-    assert((!mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
-    assert((!mesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+    assert((!mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((!mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+    assert((!mesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
 
     // Enable normal
-    mesh.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    mesh.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
 
     // Disable normal
-    mesh.disablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
-    assert((!mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    mesh.disableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
+    assert((!mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
 
     // Enable all
     mesh.enableAllOptionalComponents();
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
 
     // Disable all
     mesh.disableAllOptionalComponents();
-    assert((!mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
-    assert((!mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
-    assert((!mesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+    assert((!mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((!mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+    assert((!mesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
 
     // CurvatureMesh optional principal curvature
     CurvatureMesh cmesh;
-    assert((!cmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>()));
-    cmesh.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>();
-    assert((cmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>()));
-    cmesh.disablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>();
-    assert((!cmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>()));
+    assert((!cmesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>()));
+    cmesh.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>();
+    assert((cmesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>()));
+    cmesh.disableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>();
+    assert((!cmesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::PRINCIPAL_CURVATURE>()));
 
     // QualityMesh optional quality
     QualityMesh qmesh;
-    assert((!qmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>()));
-    qmesh.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>();
-    assert((qmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>()));
-    qmesh.disablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>();
-    assert((!qmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>()));
+    assert((!qmesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>()));
+    qmesh.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>();
+    assert((qmesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>()));
+    qmesh.disableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>();
+    assert((!qmesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>()));
 
     // TangentMesh optional tangent
     TangentMesh tmesh;
-    assert((!tmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>()));
-    tmesh.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>();
-    assert((tmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>()));
-    tmesh.disablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>();
-    assert((!tmesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>()));
+    assert((!tmesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>()));
+    tmesh.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>();
+    assert((tmesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>()));
+    tmesh.disableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>();
+    assert((!tmesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>()));
 }
 
 inline void testEnableSameOptionalComponentsOf()
 {
     MyMesh meshWithNormals;
-    meshWithNormals.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
-    assert((meshWithNormals.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    meshWithNormals.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
+    assert((meshWithNormals.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
 
     MyMesh meshWithoutNormals;
-    assert((!meshWithoutNormals.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((!meshWithoutNormals.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
 
     // 1. Mesh-level enableSameOptionalComponentsOf
     meshWithoutNormals.enableSameOptionalComponentsOf(meshWithNormals);
-    assert((meshWithoutNormals.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((meshWithoutNormals.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
 
     // 2. Test with a mesh that does not have the component (remains disabled)
     SimpleMesh simpleMesh;
     MyMesh meshTestedAgainstSimple;
-    assert((!meshTestedAgainstSimple.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((!meshTestedAgainstSimple.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
     meshTestedAgainstSimple.enableSameOptionalComponentsOf(simpleMesh);
-    assert((!meshTestedAgainstSimple.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((!meshTestedAgainstSimple.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
 }
 
 inline void testNonOptionalComponents()
 {
     FullMesh mesh;
     // By default, non-optional components are always available
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::POSITION>()));
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::VERTEX_REFERENCES>()));
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::POSITION>()));
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::VERTEX_REFERENCES>()));
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
 
     // disableAllOptionalComponents does not disable non-optional components
     mesh.disableAllOptionalComponents();
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+    assert((mesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
 }
 
 inline void testOptionalComponents()

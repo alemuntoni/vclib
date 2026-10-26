@@ -111,7 +111,7 @@ inline void testMeshSerialization()
     {
         MyMesh m = createSampleQuadMesh();
         m.color() = vcl::Color::Cyan;
-        m.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
+        m.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
         m.vertex(0).color() = vcl::Color::Red;
         m.vertex(1).color() = vcl::Color::Green;
         m.vertex(2).color() = vcl::Color::Blue;
@@ -140,7 +140,7 @@ inline void testMeshSerialization()
         assert(mRead.vertex(3).position() == m.vertex(3).position());
 
         // Verify Optional Components
-        assert((mRead.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+        assert((mRead.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
         assert(mRead.vertex(0).color() == vcl::Color::Red);
         assert(mRead.vertex(2).color() == vcl::Color::Blue);
         assert(mRead.vertex(3).color() == vcl::Color::White);
@@ -216,14 +216,14 @@ inline void testMeshSerialization()
         cm.vertex(2).position() = Point3f(0.0f, 1.0f, 0.0f);
         cm.face(0).setVertices(0, 1, 2);
 
-        // Add custom components: mesh-level, per-vertex, per-face
+        // Add custom components: mesh-level, vertex, face
         cm.addCustomComponent<int>("dataset_id", 42);
-        cm.addPerVertexCustomComponent<double>("weight");
+        cm.addVertexCustomComponent<double>("weight");
         cm.vertex(0).customComponent<double>("weight") = 1.25;
         cm.vertex(1).customComponent<double>("weight") = 2.50;
         cm.vertex(2).customComponent<double>("weight") = 3.75;
 
-        cm.addPerFaceCustomComponent<int>("mat_id");
+        cm.addFaceCustomComponent<int>("mat_id");
         cm.face(0).customComponent<int>("mat_id") = 777;
 
         // 4a. Serialize standard mesh structure
@@ -235,53 +235,53 @@ inline void testMeshSerialization()
         std::stringstream ssMeshCC(std::ios::in | std::ios::out | std::ios::binary);
         cm.serializeCustomComponentsOfType<int>(ssMeshCC);
 
-        // Per-element generic methods on Mesh
+        // Element generic methods on Mesh
         std::stringstream ssVertCC(std::ios::in | std::ios::out | std::ios::binary);
-        cm.serializePerElementCustomComponentsOfType<vcl::meshv2::ElemId::VERTEX, double>(ssVertCC);
+        cm.serializeElementCustomComponentsOfType<vcl::meshv2::ElemId::VERTEX, double>(ssVertCC);
 
-        // Per-face method inherited from FaceContainer
+        // Face method inherited from FaceContainer
         std::stringstream ssFaceCC(std::ios::in | std::ios::out | std::ios::binary);
-        cm.serializePerFaceCustomComponentsOfType<int>(ssFaceCC);
+        cm.serializeFaceCustomComponentsOfType<int>(ssFaceCC);
 
         // Deserialize on new mesh
         CCMesh cmRead;
         cmRead.deserialize(ssMesh);
 
         cmRead.deserializeCustomComponentsOfType<int>(ssMeshCC);
-        // Generic deserializePerElement on Mesh
-        cmRead.deserializePerElementCustomComponentsOfType<vcl::meshv2::ElemId::VERTEX, double>(ssVertCC);
-        // FaceContainer deserializePerFace
-        cmRead.deserializePerFaceCustomComponentsOfType<int>(ssFaceCC);
+        // Generic deserializeElement on Mesh
+        cmRead.deserializeElementCustomComponentsOfType<vcl::meshv2::ElemId::VERTEX, double>(ssVertCC);
+        // FaceContainer deserializeFace
+        cmRead.deserializeFaceCustomComponentsOfType<int>(ssFaceCC);
 
         assert(cmRead.hasCustomComponent("dataset_id"));
         assert(cmRead.customComponent<int>("dataset_id") == 42);
 
-        assert(cmRead.hasPerVertexCustomComponent("weight"));
+        assert(cmRead.hasVertexCustomComponent("weight"));
         assert(cmRead.vertex(0).customComponent<double>("weight") == 1.25);
         assert(cmRead.vertex(1).customComponent<double>("weight") == 2.50);
         assert(cmRead.vertex(2).customComponent<double>("weight") == 3.75);
 
-        assert(cmRead.hasPerFaceCustomComponent("mat_id"));
+        assert(cmRead.hasFaceCustomComponent("mat_id"));
         assert(cmRead.face(0).customComponent<int>("mat_id") == 777);
 
-        // 4c. Container-level serializePerVertex / deserializePerVertex roundtrip test
+        // 4c. Container-level serializeVertex / deserializeVertex roundtrip test
         std::stringstream ssVertCC2(std::ios::in | std::ios::out | std::ios::binary);
-        cm.serializePerVertexCustomComponentsOfType<double>(ssVertCC2);
+        cm.serializeVertexCustomComponentsOfType<double>(ssVertCC2);
         CCMesh cmRead2;
         ssMesh.clear();
         ssMesh.seekg(0);
         cmRead2.deserialize(ssMesh);
-        cmRead2.deserializePerVertexCustomComponentsOfType<double>(ssVertCC2);
+        cmRead2.deserializeVertexCustomComponentsOfType<double>(ssVertCC2);
         assert(cmRead2.vertex(1).customComponent<double>("weight") == 2.50);
 
         // 4d. Mismatch fail-fast test (float vs double)
         std::stringstream ssMismatch(std::ios::in | std::ios::out | std::ios::binary);
-        cm.serializePerVertexCustomComponentsOfType<double>(ssMismatch);
+        cm.serializeVertexCustomComponentsOfType<double>(ssMismatch);
 
         bool caughtMismatch = false;
         try {
             CCMesh cmErr = cmRead;
-            cmErr.deserializePerElementCustomComponentsOfType<vcl::meshv2::ElemId::VERTEX, float>(ssMismatch);
+            cmErr.deserializeElementCustomComponentsOfType<vcl::meshv2::ElemId::VERTEX, float>(ssMismatch);
         }
         catch (const vcl::meshv2::BadCustomComponentTypeException&) {
             caughtMismatch = true;

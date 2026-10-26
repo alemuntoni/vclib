@@ -111,33 +111,6 @@ public:
     }
 
     /**
-     * @brief Alias of isComponentAvailable.
-     */
-    template<uint COMP_ID>
-    bool isAvailable() const
-    {
-        return isComponentAvailable<COMP_ID>();
-    }
-
-    /**
-     * @brief Checks if the component with COMP_ID is enabled in the container.
-     */
-    template<uint COMP_ID>
-    bool isComponentEnabled() const
-    {
-        return isComponentAvailable<COMP_ID>();
-    }
-
-    /**
-     * @brief Alias of isComponentAvailable / isComponentEnabled.
-     */
-    template<uint COMP_ID>
-    bool isEnabled() const
-    {
-        return isComponentAvailable<COMP_ID>();
-    }
-
-    /**
      * @brief Imports the components of the other element into this element.
      *
      * Iterates over all components that compose this element and calls their

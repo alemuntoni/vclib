@@ -81,13 +81,6 @@ public:
         return mContainer && mContainer->template isComponentAvailable<COMP_ID>();
     }
 
-    /**
-     * @brief Checks if the component is enabled in the container.
-     */
-    bool isEnabled() const
-    {
-        return isAvailable();
-    }
 
     Iterator begin() const
     {

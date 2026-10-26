@@ -378,18 +378,6 @@ concept HasPolygonAdjacentEdges =
     (ComponentTypeT<CompId::ADJACENT_EDGES, T>::ADJ_EDGE_COUNT == -1) &&
     (ComponentTypeT<CompId::ADJACENT_EDGES, T>::TIED_TO_VERTEX_COUNT);
 
-/* Detector function */
-
-/**
- * @brief Checks if the given element has the AdjacentEdges component available.
- * @param[in] element: The element to check.
- * @return true if available, false otherwise.
- */
-inline bool isAdjacentEdgesAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::ADJACENT_EDGES>(element);
-}
-
 /* Implementation of member functions */
 
 template<int N, std::unsigned_integral Index, bool TTVC, bool OPT>
@@ -401,7 +389,7 @@ void AdjacentEdges<N, Index, TTVC, OPT>::importFrom(
 {
     if (importRefs) {
         if constexpr (HasAdjacentEdges<OtherElement>) {
-            if (isAdjacentEdgesAvailableOn(other)) {
+            if (other.template isComponentAvailable<CompId::ADJACENT_EDGES>()) {
                 using OtherComp =
                     ComponentTypeT<CompId::ADJACENT_EDGES, OtherElement>;
                 constexpr int OTHER_N = OtherComp::ADJ_EDGE_COUNT;

@@ -82,18 +82,6 @@ concept HasOptionalPosition =
 
 /* Detector function to check if a class has Position available */
 
-/**
- * @brief Checks if the given Element has Position component available.
- *
- * @param[in] element: The element to check.
- * @return `true` if the element has Position component available, `false`
- * otherwise.
- */
-inline bool isPositionAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::POSITION>(element);
-}
-
 /* Implementation of member functions */
 
 template<PointConcept P, bool OPT>
@@ -101,7 +89,7 @@ template<typename OtherElement>
 void Position<P, OPT>::importFrom(this auto&& self, const OtherElement& other, bool)
 {
     if constexpr (HasPosition<OtherElement>) {
-        if (isPositionAvailableOn(other)) {
+        if (other.template isComponentAvailable<CompId::POSITION>()) {
             using ScalarType = PositionType::ScalarType;
             self.position() = other.position().template cast<ScalarType>();
         }

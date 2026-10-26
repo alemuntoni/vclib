@@ -723,6 +723,14 @@ public:
         mElemComponents.template disable<N>();
     }
 
+    /**
+     * @brief Checks if the container is compact (no deleted elements).
+     */
+    bool isCompact() const
+    {
+        return deletedElementCount() == 0;
+    }
+
     // Custom Components
 
     // --- Custom Components ---

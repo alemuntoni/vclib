@@ -362,18 +362,6 @@ concept HasStaticAdjacentVertices =
     HasAdjacentVertices<T> &&
     (ComponentTypeT<CompId::ADJACENT_VERTICES, T>::ADJ_VERTEX_COUNT > 0);
 
-/* Detector function */
-
-/**
- * @brief Checks if the given element has the AdjacentVertices component available.
- * @param[in] element: The element to check.
- * @return true if available, false otherwise.
- */
-inline bool isAdjacentVerticesAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::ADJACENT_VERTICES>(element);
-}
-
 /* Implementation of member functions */
 
 template<int N, std::unsigned_integral Index, bool TTVC, bool OPT>
@@ -385,7 +373,7 @@ void AdjacentVertices<N, Index, TTVC, OPT>::importFrom(
 {
     if (importRefs) {
         if constexpr (HasAdjacentVertices<OtherElement>) {
-            if (isAdjacentVerticesAvailableOn(other)) {
+            if (other.template isComponentAvailable<CompId::ADJACENT_VERTICES>()) {
                 using OtherComp =
                     ComponentTypeT<CompId::ADJACENT_VERTICES, OtherElement>;
                 constexpr int OTHER_N = OtherComp::ADJ_VERTEX_COUNT;

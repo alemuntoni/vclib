@@ -458,7 +458,7 @@ public:
      * @return `true` if the Vertex Element has a custom component with the
      * given name.
      */
-    bool hasPerVertexCustomComponent(const std::string& name) const
+    bool hasVertexCustomComponent(const std::string& name) const
         requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::hasElemCustomComponent(name);
@@ -474,7 +474,7 @@ public:
      * @return A vector of strings representing all the names of the custom
      * components.
      */
-    std::vector<std::string> perVertexCustomComponentNames() const
+    std::vector<std::string> vertexCustomComponentNames() const
         requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::elemCustomComponentNames();
@@ -496,7 +496,7 @@ public:
      * template argument.
      */
     template<typename K>
-    bool isPerVertexCustomComponentOfType(const std::string& name) const
+    bool isVertexCustomComponentOfType(const std::string& name) const
         requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::template isElemCustomComponentOfType<K>(name);
@@ -516,7 +516,7 @@ public:
      * @return The std::type_index of the custom component having the given
      * input name.
      */
-    std::type_index perVertexCustomComponentType(const std::string& name) const
+    std::type_index vertexCustomComponentType(const std::string& name) const
         requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::elemCustomComponentType(name);
@@ -535,7 +535,7 @@ public:
      * components of a given type.
      */
     template<typename K>
-    std::vector<std::string> perVertexCustomComponentNamesOfType() const
+    std::vector<std::string> vertexCustomComponentNamesOfType() const
         requires vert::HasCustomComponents<VertexComponents>
     {
         return Base::template elemCustomComponentNamesOfType<K>();
@@ -552,7 +552,7 @@ public:
      * @param[in] name: The name of the custom component added to the Vertex.
      */
     template<typename K>
-    void addPerVertexCustomComponent(const std::string& name)
+    void addVertexCustomComponent(const std::string& name)
         requires vert::HasCustomComponents<VertexComponents>
     {
         Base::template addElemCustomComponent<K>(name);
@@ -570,7 +570,7 @@ public:
      * @param[in] name: The name of the custom component that will be removed
      * from the Vertex.
      */
-    void deletePerVertexCustomComponent(const std::string& name)
+    void deleteVertexCustomComponent(const std::string& name)
         requires vert::HasCustomComponents<VertexComponents>
     {
         Base::deleteElemCustomComponent(name);
@@ -588,7 +588,7 @@ public:
      * @return A vector handle that allows access to the custom component.
      */
     template<typename K>
-    CustomComponentVectorHandle<K> perVertexCustomComponentVectorHandle(
+    CustomComponentVectorHandle<K> vertexCustomComponentVectorHandle(
         const std::string& name)
         requires vert::HasCustomComponents<VertexComponents>
     {
@@ -608,7 +608,7 @@ public:
      * component.
      */
     template<typename K>
-    ConstCustomComponentVectorHandle<K> perVertexCustomComponentVectorHandle(
+    ConstCustomComponentVectorHandle<K> vertexCustomComponentVectorHandle(
         const std::string& name) const
         requires vert::HasCustomComponents<VertexComponents>
     {
@@ -623,7 +623,7 @@ public:
      * @param os: The output stream to write to.
      */
     template<typename K>
-    void serializePerVertexCustomComponentsOfType(std::ostream& os) const
+    void serializeVertexCustomComponentsOfType(std::ostream& os) const
         requires vert::HasCustomComponents<VertexComponents>
     {
         Base::template serializeElemCustomComponentsOfType<K>(os);
@@ -637,7 +637,7 @@ public:
      * @param is: The input stream to read from.
      */
     template<typename K>
-    void deserializePerVertexCustomComponentsOfType(std::istream& is)
+    void deserializeVertexCustomComponentsOfType(std::istream& is)
         requires vert::HasCustomComponents<VertexComponents>
     {
         Base::template deserializeElemCustomComponentsOfType<K>(is);

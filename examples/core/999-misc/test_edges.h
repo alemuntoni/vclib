@@ -57,8 +57,8 @@ inline void testEdgeConcepts()
 
     static_assert(!meshv2::HasEdges<MyMesh>);
 
-    static_assert(meshv2::HasPerEdgeCustomComponents<EdgeMeshWithCC>);
-    static_assert(!meshv2::HasPerEdgeCustomComponents<EdgeMesh>);
+    static_assert(meshv2::HasEdgeCustomComponents<EdgeMeshWithCC>);
+    static_assert(!meshv2::HasEdgeCustomComponents<EdgeMesh>);
 
     // Sentinels
     static_assert(EdgeMesh::NULL_INDEX == EdgeMesh::Edge::NULL_INDEX);
@@ -105,13 +105,13 @@ inline void testEdgeCreationAndProperties()
     assert(m.edge(0).color() == Color::Red);
 
     // Test optional quality
-    assert((!m.isPerElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>()));
-    m.enablePerElementComponent<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>();
-    assert((m.isPerElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>()));
+    assert((!m.isElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>()));
+    m.enableElementComponent<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>();
+    assert((m.isElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>()));
     m.edge(0).quality() = 42.0f;
     assert(m.edge(0).quality() == 42.0f);
-    m.disablePerElementComponent<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>();
-    assert((!m.isPerElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>()));
+    m.disableElementComponent<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>();
+    assert((!m.isElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>()));
 }
 
 inline void testEdgeContainerMethods()
@@ -274,23 +274,23 @@ inline void testEdgeCustomComponents()
     m.addEdge(0, 1);
     m.addEdge(1, 2);
 
-    assert(!m.hasPerEdgeCustomComponent("weight"));
-    m.addPerEdgeCustomComponent<float>("weight");
-    assert(m.hasPerEdgeCustomComponent("weight"));
-    assert(m.isPerEdgeCustomComponentOfType<float>("weight"));
+    assert(!m.hasEdgeCustomComponent("weight"));
+    m.addEdgeCustomComponent<float>("weight");
+    assert(m.hasEdgeCustomComponent("weight"));
+    assert(m.isEdgeCustomComponentOfType<float>("weight"));
 
-    auto names = m.perEdgeCustomComponentNames();
+    auto names = m.edgeCustomComponentNames();
     assert(names.size() == 1 && names[0] == "weight");
 
-    auto handle = m.perEdgeCustomComponentVectorHandle<float>("weight");
+    auto handle = m.edgeCustomComponentVectorHandle<float>("weight");
     handle[0] = 1.5f;
     handle[1] = 2.5f;
 
     assert(m.edge(0).customComponent<float>("weight") == 1.5f);
     assert(m.edge(1).customComponent<float>("weight") == 2.5f);
 
-    m.deletePerEdgeCustomComponent("weight");
-    assert(!m.hasPerEdgeCustomComponent("weight"));
+    m.deleteEdgeCustomComponent("weight");
+    assert(!m.hasEdgeCustomComponent("weight"));
 }
 
 inline void testEdgeAppend()

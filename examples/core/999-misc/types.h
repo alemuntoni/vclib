@@ -330,7 +330,7 @@ concept CanCallVertexIndices = requires (T t) { t.vertexIndices(); };
 inline MyMesh createSampleQuadMesh()
 {
     MyMesh mesh;
-    mesh.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
+    mesh.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
     mesh.resizeVertices(4);
     mesh.resizeFaces(2);
 
@@ -351,13 +351,13 @@ inline MyMesh createSampleQuadMesh()
 
     mesh.color() = Color::Red;
 
-    mesh.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
+    mesh.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
     mesh.vertex(0).color() = Color::Blue;
     mesh.vertex(1).color() = Color::Green;
     mesh.vertex(2).color() = Color::Yellow;
     mesh.vertex(3).color() = Color::Cyan;
 
-    mesh.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::COLOR>();
+    mesh.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::COLOR>();
     mesh.face(0).color() = Color::DarkRed;
     mesh.face(1).color() = Color::DarkBlue;
 
@@ -400,7 +400,7 @@ inline EdgeMesh createSampleEdgeMesh()
 inline TransformedMesh createSampleTransformedMesh()
 {
     TransformedMesh mesh;
-    mesh.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
+    mesh.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
     mesh.resizeVertices(4);
     mesh.resizeFaces(2);
 
@@ -421,13 +421,13 @@ inline TransformedMesh createSampleTransformedMesh()
 
     mesh.color() = Color::Red;
 
-    mesh.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
+    mesh.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
     mesh.vertex(0).color() = Color::Blue;
     mesh.vertex(1).color() = Color::Green;
     mesh.vertex(2).color() = Color::Yellow;
     mesh.vertex(3).color() = Color::Cyan;
 
-    mesh.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::COLOR>();
+    mesh.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::COLOR>();
     mesh.face(0).color() = Color::DarkRed;
     mesh.face(1).color() = Color::DarkBlue;
 

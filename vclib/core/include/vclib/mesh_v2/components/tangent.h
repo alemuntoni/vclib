@@ -107,7 +107,7 @@ public:
     P bitangent(this auto&& self)
     {
         if constexpr (HasNormal<decltype(self)>) {
-            if (isNormalAvailableOn(self)) {
+            if (self.template isComponentAvailable<CompId::NORMAL>()) {
                 const auto& n = self.normal();
                 if constexpr (std::is_same_v<
                                   typename P::ScalarType,
@@ -160,20 +160,6 @@ template<typename T>
 concept HasOptionalTangent =
     HasTangent<T> && HasOptionalComponent<CompId::TANGENT, T>;
 
-/* Detector function to check if a class has Tangent available */
-
-/**
- * @brief Checks if the given Element has Tangent component available.
- *
- * @param[in] element: The element to check.
- * @return `true` if the element has Tangent component available, `false`
- * otherwise.
- */
-inline bool isTangentAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::TANGENT>(element);
-}
-
 /* importFrom function */
 
 template<PointConcept P, bool OPT>
@@ -185,7 +171,7 @@ void Tangent<P, OPT>::importFrom(
 {
     using ScalarType = typename TangentType::ScalarType;
     if constexpr (HasTangent<OtherElement>) {
-        if (isTangentAvailableOn(e)) {
+        if (e.template isComponentAvailable<CompId::TANGENT>()) {
             self.tangent()            = e.tangent().template cast<ScalarType>();
             self.tangentRightHanded() = e.tangentRightHanded();
         }

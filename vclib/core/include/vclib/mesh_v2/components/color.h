@@ -90,20 +90,6 @@ template<typename T>
 concept HasOptionalColor =
     HasColor<T> && HasOptionalComponent<CompId::COLOR, T>;
 
-/* Detector function to check if a class has Color available */
-
-/**
- * @brief Checks if the given Element has Color component available.
- *
- * @param[in] element: The element to check.
- * @return `true` if the element has Color component available, `false`
- * otherwise.
- */
-inline bool isColorAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::COLOR>(element);
-}
-
 /* Implementation of member functions */
 
 template<bool OPT>
@@ -111,7 +97,7 @@ template<typename OtherElement>
 void Color<OPT>::importFrom(this auto&& self, const OtherElement& other, bool)
 {
     if constexpr (HasColor<OtherElement>) {
-        if (isColorAvailableOn(other)) {
+        if (other.template isComponentAvailable<CompId::COLOR>()) {
             self.color() = other.color();
         }
     }

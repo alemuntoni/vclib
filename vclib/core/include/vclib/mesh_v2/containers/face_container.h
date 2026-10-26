@@ -456,7 +456,7 @@ public:
      * @return `true` if the Face Element has a custom component with the given
      * name.
      */
-    bool hasPerFaceCustomComponent(const std::string& name) const
+    bool hasFaceCustomComponent(const std::string& name) const
         requires face::HasCustomComponents<FaceComponents>
     {
         return Base::hasElemCustomComponent(name);
@@ -472,7 +472,7 @@ public:
      * @return A vector of strings representing all the names of the custom
      * components.
      */
-    std::vector<std::string> perFaceCustomComponentNames() const
+    std::vector<std::string> faceCustomComponentNames() const
         requires face::HasCustomComponents<FaceComponents>
     {
         return Base::elemCustomComponentNames();
@@ -494,7 +494,7 @@ public:
      * template argument.
      */
     template<typename K>
-    bool isPerFaceCustomComponentOfType(const std::string& name) const
+    bool isFaceCustomComponentOfType(const std::string& name) const
         requires face::HasCustomComponents<FaceComponents>
     {
         return Base::template isElemCustomComponentOfType<K>(name);
@@ -514,7 +514,7 @@ public:
      * @return The std::type_index of the custom component having the given
      * input name.
      */
-    std::type_index perFaceCustomComponentType(const std::string& name) const
+    std::type_index faceCustomComponentType(const std::string& name) const
         requires face::HasCustomComponents<FaceComponents>
     {
         return Base::elemCustomComponentType(name);
@@ -533,7 +533,7 @@ public:
      * components of a given type.
      */
     template<typename K>
-    std::vector<std::string> perFaceCustomComponentNamesOfType() const
+    std::vector<std::string> faceCustomComponentNamesOfType() const
         requires face::HasCustomComponents<FaceComponents>
     {
         return Base::template elemCustomComponentNamesOfType<K>();
@@ -550,7 +550,7 @@ public:
      * @param[in] name: The name of the custom component added to the Face.
      */
     template<typename K>
-    void addPerFaceCustomComponent(const std::string& name)
+    void addFaceCustomComponent(const std::string& name)
         requires face::HasCustomComponents<FaceComponents>
     {
         Base::template addElemCustomComponent<K>(name);
@@ -568,7 +568,7 @@ public:
      * @param[in] name: The name of the custom component that will be removed
      * from the Face.
      */
-    void deletePerFaceCustomComponent(const std::string& name)
+    void deleteFaceCustomComponent(const std::string& name)
         requires face::HasCustomComponents<FaceComponents>
     {
         Base::deleteElemCustomComponent(name);
@@ -586,7 +586,7 @@ public:
      * @return A vector handle that allows access to the custom component.
      */
     template<typename K>
-    CustomComponentVectorHandle<K> perFaceCustomComponentVectorHandle(
+    CustomComponentVectorHandle<K> faceCustomComponentVectorHandle(
         const std::string& name)
         requires face::HasCustomComponents<FaceComponents>
     {
@@ -606,7 +606,7 @@ public:
      * component.
      */
     template<typename K>
-    ConstCustomComponentVectorHandle<K> perFaceCustomComponentVectorHandle(
+    ConstCustomComponentVectorHandle<K> faceCustomComponentVectorHandle(
         const std::string& name) const
         requires face::HasCustomComponents<FaceComponents>
     {
@@ -621,7 +621,7 @@ public:
      * @param os: The output stream to write to.
      */
     template<typename K>
-    void serializePerFaceCustomComponentsOfType(std::ostream& os) const
+    void serializeFaceCustomComponentsOfType(std::ostream& os) const
         requires face::HasCustomComponents<FaceComponents>
     {
         Base::template serializeElemCustomComponentsOfType<K>(os);
@@ -635,7 +635,7 @@ public:
      * @param is: The input stream to read from.
      */
     template<typename K>
-    void deserializePerFaceCustomComponentsOfType(std::istream& is)
+    void deserializeFaceCustomComponentsOfType(std::istream& is)
         requires face::HasCustomComponents<FaceComponents>
     {
         Base::template deserializeElemCustomComponentsOfType<K>(is);

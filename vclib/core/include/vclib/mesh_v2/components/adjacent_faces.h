@@ -378,18 +378,6 @@ concept HasPolygonAdjacentFaces =
     (ComponentTypeT<CompId::ADJACENT_FACES, T>::ADJ_FACE_COUNT == -1) &&
     (ComponentTypeT<CompId::ADJACENT_FACES, T>::TIED_TO_VERTEX_COUNT);
 
-/* Detector function */
-
-/**
- * @brief Checks if the given element has the AdjacentFaces component available.
- * @param[in] element: The element to check.
- * @return true if available, false otherwise.
- */
-inline bool isAdjacentFacesAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::ADJACENT_FACES>(element);
-}
-
 /* Implementation of member functions */
 
 template<int N, std::unsigned_integral Index, bool TTVC, bool OPT>
@@ -401,7 +389,7 @@ void AdjacentFaces<N, Index, TTVC, OPT>::importFrom(
 {
     if (importRefs) {
         if constexpr (HasAdjacentFaces<OtherElement>) {
-            if (isAdjacentFacesAvailableOn(other)) {
+            if (other.template isComponentAvailable<CompId::ADJACENT_FACES>()) {
                 using OtherComp =
                     ComponentTypeT<CompId::ADJACENT_FACES, OtherElement>;
                 constexpr int OTHER_N = OtherComp::ADJ_FACE_COUNT;

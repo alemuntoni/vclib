@@ -134,13 +134,13 @@ inline void testDefaultComponentInitialization()
 
     // 2. Optional MaterialIndex component
     OptionalMaterialMesh optMesh;
-    assert((!optMesh.isPerElementComponentAvailable<
+    assert((!optMesh.isElementComponentAvailable<
             meshv2::ElemId::FACE,
             meshv2::CompId::MATERIAL_INDEX>()));
 
     optMesh.resizeFaces(4);
     optMesh.enableAllOptionalComponents();
-    assert((optMesh.isPerElementComponentAvailable<
+    assert((optMesh.isElementComponentAvailable<
             meshv2::ElemId::FACE,
             meshv2::CompId::MATERIAL_INDEX>()));
 

@@ -176,39 +176,6 @@ concept HasOptionalComponent =
     HasComponent<COMP_ID, T> &&
     IsOptionalComponent<ComponentTypeT<COMP_ID, T>>;
 
-/**
- * @brief Checks if the given Element has the component COMPONENT_ID available
- * (present at compile time and enabled at run time).
- *
- * @tparam COMPONENT_ID: The component ID to check.
- * @param[in] element: The element to check.
- * @return true if the element has the component and it is enabled, false otherwise.
- *
- * @ingroup base
- */
-template<uint COMPONENT_ID, typename Element>
-inline bool isComponentAvailableOn(const Element& element)
-{
-    if constexpr (HasComponent<COMPONENT_ID, Element>) {
-        if constexpr (HasOptionalComponent<COMPONENT_ID, Element>) {
-            if constexpr (requires { element.template isComponentAvailable<COMPONENT_ID>(); }) {
-                return element.template isComponentAvailable<COMPONENT_ID>();
-            }
-            else if constexpr (requires { element.template isComponentEnabled<COMPONENT_ID>(); }) {
-                return element.template isComponentEnabled<COMPONENT_ID>();
-            }
-            else {
-                return true;
-            }
-        }
-        else {
-            return true;
-        }
-    }
-    else {
-        return false;
-    }
-}
 
 /**
  * @brief Concept that checks whether a component type provides a default value,

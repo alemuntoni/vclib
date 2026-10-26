@@ -93,18 +93,6 @@ concept HasOptionalQuality =
 
 /* Detector function to check if a class has Quality available */
 
-/**
- * @brief Checks if the given Element has Quality component available.
- *
- * @param[in] element: The element to check.
- * @return `true` if the element has Quality component available,
- * `false` otherwise.
- */
-inline bool isQualityAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::QUALITY>(element);
-}
-
 /* importFrom function */
 
 template<typename Scalar, bool OPT>
@@ -115,7 +103,7 @@ void Quality<Scalar, OPT>::importFrom(
     bool)
 {
     if constexpr (HasQuality<OtherElement>) {
-        if (isQualityAvailableOn(e)) {
+        if (e.template isComponentAvailable<CompId::QUALITY>()) {
             self.quality() = static_cast<Scalar>(e.quality());
         }
     }

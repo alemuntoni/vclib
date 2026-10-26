@@ -121,23 +121,6 @@ template<typename T>
 concept HasWedges =
     HasWedgeColors<T> || HasWedgeTexCoords<T> || HasWedgeNormals<T>;
 
-/* Detector functions */
-
-inline bool isWedgeColorsAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::WEDGE_COLORS>(element);
-}
-
-inline bool isWedgeTexCoordsAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::WEDGE_TEX_COORDS>(element);
-}
-
-inline bool isWedgeNormalsAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::WEDGE_NORMALS>(element);
-}
-
 } // namespace vcl::meshv2::comp
 
 #endif // VCL_MESH_V2_COMPONENTS_WEDGES_WEDGE_TRAITS_H

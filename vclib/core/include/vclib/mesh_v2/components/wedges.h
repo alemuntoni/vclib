@@ -105,7 +105,7 @@ void Wedges<Comp, N, OPT>::importFrom(
     using ValueType = typename Base::ValueType;
 
     if constexpr (HasComponent<COMP_ID, OtherElement>) {
-        if (isComponentAvailableOn<COMP_ID>(other)) {
+        if (other.template isComponentAvailable<COMP_ID>()) {
             auto&& selfContainer = Base::container(self);
             if constexpr (COMP_ID == CompId::WEDGE_COLORS) {
                 if constexpr (N < 0) {

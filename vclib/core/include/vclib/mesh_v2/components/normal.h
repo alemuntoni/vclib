@@ -89,20 +89,6 @@ template<typename T>
 concept HasOptionalNormal =
     HasNormal<T> && HasOptionalComponent<CompId::NORMAL, T>;
 
-/* Detector function to check if a class has Normal available */
-
-/**
- * @brief Checks if the given Element has Normal component available.
- *
- * @param[in] element: The element to check.
- * @return `true` if the element has Normal component available, `false`
- * otherwise.
- */
-inline bool isNormalAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::NORMAL>(element);
-}
-
 /* Implementation of member functions */
 
 template<PointConcept P, bool OPT>
@@ -110,7 +96,7 @@ template<typename OtherElement>
 void Normal<P, OPT>::importFrom(this auto&& self, const OtherElement& other, bool)
 {
     if constexpr (HasNormal<OtherElement>) {
-        if (isNormalAvailableOn(other)) {
+        if (other.template isComponentAvailable<CompId::NORMAL>()) {
             using ScalarType = NormalType::ScalarType;
             self.normal()    = other.normal().template cast<ScalarType>();
         }

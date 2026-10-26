@@ -95,6 +95,43 @@ public:
 
     bool empty() const { return size() == 0; }
 
+    bool isCompact() const
+    {
+        return mContainer && mContainer->isCompact();
+    }
+
+    template<uint COMP_ID>
+    bool isComponentAvailable() const
+    {
+        return mContainer && mContainer->template isComponentAvailable<COMP_ID>();
+    }
+
+    template<uint COMP_ID>
+    void enableOptionalComponent() const requires (!std::is_const_v<Container>)
+    {
+        assert(mContainer != nullptr);
+        mContainer->template enableOptionalComponent<COMP_ID>();
+    }
+
+    template<uint COMP_ID>
+    void disableOptionalComponent() const requires (!std::is_const_v<Container>)
+    {
+        assert(mContainer != nullptr);
+        mContainer->template disableOptionalComponent<COMP_ID>();
+    }
+
+    void enableAllOptionalComponents() const requires (!std::is_const_v<Container>)
+    {
+        assert(mContainer != nullptr);
+        mContainer->enableAllOptionalComponents();
+    }
+
+    void disableAllOptionalComponents() const requires (!std::is_const_v<Container>)
+    {
+        assert(mContainer != nullptr);
+        mContainer->disableAllOptionalComponents();
+    }
+
     /* Component Views */
 
     /**

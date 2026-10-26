@@ -23,7 +23,7 @@ inline void testPositionsComponentView(MyMesh& mesh)
 {
     auto posView = mesh.vertices().positions();
     assert(posView.size() == 4);
-    assert(posView.isEnabled());
+    assert(posView.isAvailable());
     assert(posView[0] == Point3f(0.0f, 0.0f, 1.0f));
     assert(posView.data() != nullptr);
     assert(posView.data()[0] == Point3f(0.0f, 0.0f, 1.0f));

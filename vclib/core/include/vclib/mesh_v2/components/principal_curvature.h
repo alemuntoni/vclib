@@ -107,18 +107,6 @@ concept HasOptionalPrincipalCurvature =
 
 /* Detector function to check if a class has PrincipalCurvature available */
 
-/**
- * @brief Checks if the given Element has PrincipalCurvature component available.
- *
- * @param[in] element: The element to check.
- * @return `true` if the element has PrincipalCurvature component available, `false`
- * otherwise.
- */
-inline bool isPrincipalCurvatureAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::PRINCIPAL_CURVATURE>(element);
-}
-
 /* importFrom function */
 
 template<typename Scalar, bool OPT>
@@ -129,7 +117,7 @@ void PrincipalCurvature<Scalar, OPT>::importFrom(
     bool)
 {
     if constexpr (HasPrincipalCurvature<OtherElement>) {
-        if (isPrincipalCurvatureAvailableOn(e)) {
+        if (e.template isComponentAvailable<CompId::PRINCIPAL_CURVATURE>()) {
             self.principalCurvature() =
                 e.principalCurvature().template cast<Scalar>();
         }

@@ -12,25 +12,27 @@
 
 inline void testMeshCreationAndColors(const MyMesh& mesh)
 {
+    using enum meshv2::ElemId::Enum;
+    using enum meshv2::CompId::Enum;
+
     assert(mesh.vertexCount() == 4);
     assert(mesh.faceCount() == 2);
 
     // Mesh color
     assert(mesh.color() == Color::Red);
-    assert(meshv2::mesh::isColorAvailableOn(mesh));
-    assert(meshv2::comp::isColorAvailableOn(mesh));
+    static_assert(meshv2::mesh::HasColor<decltype(mesh)>);
 
     // Vertex colors
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
-    assert(meshv2::comp::isColorAvailableOn(mesh.vertex(0)));
+    assert((mesh.isElementComponentAvailable<VERTEX, COLOR>()));
+    assert(mesh.vertex(0).isComponentAvailable<COLOR>());
     assert(mesh.vertex(0).color() == Color::Blue);
     assert(mesh.vertex(1).color() == Color::Green);
     assert(mesh.vertex(2).color() == Color::Yellow);
     assert(mesh.vertex(3).color() == Color::Cyan);
 
     // Face colors
-    assert((mesh.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
-    assert(meshv2::comp::isColorAvailableOn(mesh.face(0)));
+    assert((mesh.isElementComponentAvailable<FACE, COLOR>()));
+    assert(mesh.face(0).isComponentAvailable<COLOR>());
     assert(mesh.face(0).color() == Color::DarkRed);
     assert(mesh.face(1).color() == Color::DarkBlue);
 

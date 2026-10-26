@@ -96,23 +96,6 @@ concept HasOptionalTexCoord =
 
 /* Detector function to check if a class has TexCoord available */
 
-/**
- * @brief Checks if the given Element has TexCoord component
- * available.
- *
- * This function returns `true` also if the component is horizontal and always
- * available in the element. The runtime check is performed only when the
- * component is optional.
- *
- * @param[in] element: The element to check.
- * @return `true` if the element has TexCoord component available,
- * `false` otherwise.
- */
-inline bool isTexCoordAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::TEX_COORD>(element);
-}
-
 /* Implementation of member functions */
 
 template<typename Scalar, bool OPT>
@@ -123,7 +106,7 @@ void TexCoord<Scalar, OPT>::importFrom(
     bool)
 {
     if constexpr (HasTexCoord<OtherElement>) {
-        if (isTexCoordAvailableOn(other)) {
+        if (other.template isComponentAvailable<CompId::TEX_COORD>()) {
             self.texCoord() = other.texCoord().template cast<Scalar>();
         }
     }

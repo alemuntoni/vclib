@@ -147,11 +147,11 @@ public:
      * edges):
      *
      * @code{.cpp}
-     * static_assert(vcl::TriMesh::hasPerElementComponent<
+     * static_assert(vcl::TriMesh::hasElementComponent<
      *         vcl::ElemId::VERTEX, vcl::CompId::TEX_COORD>(),
      *         "TriMesh does not have per Vertex TexCoords");
      *
-     * static_assert(!vcl::TriMesh::hasPerElementComponent<
+     * static_assert(!vcl::TriMesh::hasElementComponent<
      *        vcl::ElemId::VERTEX, vcl::CompId::ADJACENT_EDGES>(),
      *        "TriMesh has per Vertex Adjacent Edges");
      * @endcode
@@ -162,7 +162,7 @@ public:
      * and that container has a component having ID COMP_ID, `false` otherwise.
      */
     template<uint ELEM_ID, uint COMP_ID>
-    static constexpr bool hasPerElementComponent()
+    static constexpr bool hasElementComponent()
     {
         if constexpr (hasContainerOf<ELEM_ID>()) {
             return comp::HasComponent<COMP_ID, ContainerType<ELEM_ID>>;
@@ -181,11 +181,11 @@ public:
      * non-optional Normals):
      *
      * @code{.cpp}
-     * static_assert(vcl::TriMesh::hasPerElementOptionalComponent<
+     * static_assert(vcl::TriMesh::hasElementOptionalComponent<
      *         vcl::ElemId::VERTEX, vcl::CompId::TEX_COORD>(),
      *         "TriMesh does not have per Vertex Optional TexCoords");
      *
-     * static_assert(!vcl::TriMesh::hasPerElementOptionalComponent<
+     * static_assert(!vcl::TriMesh::hasElementOptionalComponent<
      *        vcl::ElemId::VERTEX, vcl::CompId::NORMAL>(),
      *        "TriMesh has per Vertex Optional Normals");
      * @endcode
@@ -197,7 +197,7 @@ public:
      * otherwise.
      */
     template<uint ELEM_ID, uint COMP_ID>
-    static constexpr bool hasPerElementOptionalComponent()
+    static constexpr bool hasElementOptionalComponent()
     {
         if constexpr (hasContainerOf<ELEM_ID>()) {
             return comp::HasOptionalComponent<COMP_ID, ContainerType<ELEM_ID>>;
@@ -891,7 +891,7 @@ public:
      * type `ELEM_ID` in the mesh.
      */
     template<uint ELEM_ID, uint COMP_ID>
-    bool isPerElementComponentAvailable() const
+    bool isElementComponentAvailable() const
         requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::template isComponentAvailable<
@@ -910,8 +910,8 @@ public:
      * @tparam COMP_ID: the ID of the component.
      */
     template<uint ELEM_ID, uint COMP_ID>
-    void enablePerElementComponent()
-        requires (hasPerElementOptionalComponent<ELEM_ID, COMP_ID>())
+    void enableElementComponent()
+        requires (hasElementOptionalComponent<ELEM_ID, COMP_ID>())
     {
         ContainerType<ELEM_ID>::template enableOptionalComponent<COMP_ID>();
     }
@@ -928,21 +928,21 @@ public:
      * @tparam COMP_ID: the ID of the component.
      */
     template<uint ELEM_ID, uint COMP_ID>
-    void disablePerElementComponent()
-        requires (hasPerElementOptionalComponent<ELEM_ID, COMP_ID>())
+    void disableElementComponent()
+        requires (hasElementOptionalComponent<ELEM_ID, COMP_ID>())
     {
         ContainerType<ELEM_ID>::template disableOptionalComponent<COMP_ID>();
     }
 
     template<uint ELEM_ID>
-    void enableAllPerElementOptionalComponents()
+    void enableAllElementOptionalComponents()
         requires (hasContainerOf<ELEM_ID>())
     {
         ContainerType<ELEM_ID>::enableAllOptionalComponents();
     }
 
     template<uint ELEM_ID>
-    void disableAllPerElementOptionalComponents()
+    void disableAllElementOptionalComponents()
         requires (hasContainerOf<ELEM_ID>())
     {
         ContainerType<ELEM_ID>::disableAllOptionalComponents();
@@ -965,8 +965,8 @@ public:
      * having the given name.
      */
     template<uint ELEM_ID>
-    bool hasPerElementCustomComponent(const std::string& name) const
-        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    bool hasElementCustomComponent(const std::string& name) const
+        requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         return ContainerType<ELEM_ID>::hasElemCustomComponent(name);
     }
@@ -984,8 +984,8 @@ public:
      * components for the Element having ID `ELEM_ID`.
      */
     template<uint ELEM_ID>
-    std::vector<std::string> perElementCustomComponentNames() const
-        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    std::vector<std::string> elementCustomComponentNames() const
+        requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         return ContainerType<ELEM_ID>::elemCustomComponentNames();
     }
@@ -1005,8 +1005,8 @@ public:
      * of type `K` having the given name.
      */
     template<uint ELEM_ID, typename K>
-    bool isPerElementCustomComponentOfType(const std::string& name) const
-        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    bool isElementCustomComponentOfType(const std::string& name) const
+        requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         return ContainerType<ELEM_ID>::template isElemCustomComponentOfType<K>(
             name);
@@ -1026,8 +1026,8 @@ public:
      * associated to the Element having ID `ELEM_ID`.
      */
     template<uint ELEM_ID>
-    std::type_index perElementCustomComponentType(const std::string& name) const
-        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    std::type_index elementCustomComponentType(const std::string& name) const
+        requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         return ContainerType<ELEM_ID>::elemCustomComponentType(name);
     }
@@ -1046,8 +1046,8 @@ public:
      * components of type `K` for the Element having ID `ELEM_ID`.
      */
     template<uint ELEM_ID, typename K>
-    std::vector<std::string> perElementCustomComponentNamesOfType() const
-        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    std::vector<std::string> elementCustomComponentNamesOfType() const
+        requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         return ContainerType<ELEM_ID>::template elemCustomComponentNamesOfType<
             K>();
@@ -1066,8 +1066,8 @@ public:
      * @param[in] name: the name of the custom component.
      */
     template<uint ELEM_ID, typename K>
-    void addPerElementCustomComponent(const std::string& name)
-        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    void addElementCustomComponent(const std::string& name)
+        requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         ContainerType<ELEM_ID>::template addElemCustomComponent<K>(name);
     }
@@ -1084,8 +1084,8 @@ public:
      * @param[in] name: the name of the custom component.
      */
     template<uint ELEM_ID>
-    void deletePerElementCustomComponent(const std::string& name)
-        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    void deleteElementCustomComponent(const std::string& name)
+        requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         ContainerType<ELEM_ID>::deleteElemCustomComponent(name);
     }
@@ -1109,7 +1109,7 @@ public:
      * "cc" of type int:
      *
      * @code{.cpp}
-     * auto handle = m.perElementCustomComponentVectorHandle<
+     * auto handle = m.elementCustomComponentVectorHandle<
      *      ElemId::VERTEX, int>("cc");
      * for (Vertex& v : m.vertices()) {
      *    handle[m.index(v)] = 5; // v.customComponent<int>("cc") == 5
@@ -1132,10 +1132,10 @@ public:
      * name associated to the Element having ID `ELEM_ID`.
      */
     template<uint ELEM_ID, typename K>
-    decltype(auto) perElementCustomComponentVectorHandle(
+    decltype(auto) elementCustomComponentVectorHandle(
         this auto&&        self,
         const std::string& name)
-        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+        requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         return self
             .ContainerType<ELEM_ID>::template customComponentVectorHandle<K>(
@@ -1157,7 +1157,7 @@ public:
      * MeshType m;
      * std::ofstream os("customComponents.bin");
      * m.template
-     *     serializePerElementCustomComponentsOfType<
+     *     serializeElementCustomComponentsOfType<
      *         ElemId::VERTEX, float>(os);
      * os.close();
      * @endcode
@@ -1168,8 +1168,8 @@ public:
      * components.
      */
     template<uint ELEM_ID, typename CompType>
-    void serializePerElementCustomComponentsOfType(std::ostream& os) const
-        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    void serializeElementCustomComponentsOfType(std::ostream& os) const
+        requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         ContainerType<ELEM_ID>::template serializeElemCustomComponentsOfType<
             CompType>(os);
@@ -1188,8 +1188,8 @@ public:
      * components.
      */
     template<uint ELEM_ID, typename CompType>
-    void deserializePerElementCustomComponentsOfType(std::istream& is)
-        requires (hasPerElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
+    void deserializeElementCustomComponentsOfType(std::istream& is)
+        requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
         ContainerType<ELEM_ID>::template deserializeElemCustomComponentsOfType<
             CompType>(is);
@@ -1485,7 +1485,7 @@ concept HasTriangles = HasFaces<MeshType> && requires {
  * ELEM_ID with the given component COMP_ID.
  */
 template<typename MeshType, uint ELEM_ID, uint COMP_ID>
-concept HasPerElementComponent =
+concept HasElementComponent =
     HasContainerOf<MeshType, ELEM_ID> &&
     comp::HasComponent<
         COMP_ID,
@@ -1496,40 +1496,40 @@ concept HasPerElementComponent =
  * ELEM_ID with the given optional component COMP_ID.
  */
 template<typename MeshType, uint ELEM_ID, uint COMP_ID>
-concept HasPerElementOptionalComponent =
+concept HasElementOptionalComponent =
     HasContainerOf<MeshType, ELEM_ID> &&
     comp::HasOptionalComponent<
         COMP_ID,
         typename MeshType::template ContainerType<ELEM_ID>>;
 
 /**
- * @brief Concept that checks whether a Mesh has per-element custom components
+ * @brief Concept that checks whether a Mesh has element custom components
  * on container ELEM_ID.
  */
 template<typename MeshType, uint ELEM_ID>
-concept HasPerElementCustomComponents =
-    HasPerElementComponent<MeshType, ELEM_ID, CompId::CUSTOM_COMPONENTS>;
+concept HasElementCustomComponents =
+    HasElementComponent<MeshType, ELEM_ID, CompId::CUSTOM_COMPONENTS>;
 
 /**
- * @brief Concept that checks whether a Mesh has per-vertex custom components.
+ * @brief Concept that checks whether a Mesh has vertex custom components.
  */
 template<typename MeshType>
-concept HasPerVertexCustomComponents =
-    HasPerElementCustomComponents<MeshType, ElemId::VERTEX>;
+concept HasVertexCustomComponents =
+    HasElementCustomComponents<MeshType, ElemId::VERTEX>;
 
 /**
- * @brief Concept that checks whether a Mesh has per-face custom components.
+ * @brief Concept that checks whether a Mesh has face custom components.
  */
 template<typename MeshType>
-concept HasPerFaceCustomComponents =
-    HasPerElementCustomComponents<MeshType, ElemId::FACE>;
+concept HasFaceCustomComponents =
+    HasElementCustomComponents<MeshType, ElemId::FACE>;
 
 /**
- * @brief Concept that checks whether a Mesh has per-edge custom components.
+ * @brief Concept that checks whether a Mesh has edge custom components.
  */
 template<typename MeshType>
-concept HasPerEdgeCustomComponents =
-    HasPerElementCustomComponents<MeshType, ElemId::EDGE>;
+concept HasEdgeCustomComponents =
+    HasElementCustomComponents<MeshType, ElemId::EDGE>;
 
 /**
  * @brief Concept that checks whether a type T satisfies the Mesh concept.
@@ -1560,64 +1560,64 @@ template<typename MeshType>
 concept HasMaterials = mesh::HasMaterials<MeshType>;
 
 /**
- * @brief Concept that checks whether a Mesh has per-element adjacent faces
+ * @brief Concept that checks whether a Mesh has element adjacent faces
  * on container ELEM_ID.
  */
 template<typename MeshType, uint ELEM_ID>
-concept HasPerElementAdjacentFaces =
-    HasPerElementComponent<MeshType, ELEM_ID, CompId::ADJACENT_FACES>;
+concept HasElementAdjacentFaces =
+    HasElementComponent<MeshType, ELEM_ID, CompId::ADJACENT_FACES>;
 
 template<typename MeshType>
-concept HasPerVertexAdjacentFaces =
-    HasPerElementAdjacentFaces<MeshType, ElemId::VERTEX>;
+concept HasVertexAdjacentFaces =
+    HasElementAdjacentFaces<MeshType, ElemId::VERTEX>;
 
 template<typename MeshType>
-concept HasPerFaceAdjacentFaces =
-    HasPerElementAdjacentFaces<MeshType, ElemId::FACE>;
+concept HasFaceAdjacentFaces =
+    HasElementAdjacentFaces<MeshType, ElemId::FACE>;
 
 template<typename MeshType>
-concept HasPerEdgeAdjacentFaces =
-    HasPerElementAdjacentFaces<MeshType, ElemId::EDGE>;
+concept HasEdgeAdjacentFaces =
+    HasElementAdjacentFaces<MeshType, ElemId::EDGE>;
 
 /**
- * @brief Concept that checks whether a Mesh has per-element adjacent edges
+ * @brief Concept that checks whether a Mesh has element adjacent edges
  * on container ELEM_ID.
  */
 template<typename MeshType, uint ELEM_ID>
-concept HasPerElementAdjacentEdges =
-    HasPerElementComponent<MeshType, ELEM_ID, CompId::ADJACENT_EDGES>;
+concept HasElementAdjacentEdges =
+    HasElementComponent<MeshType, ELEM_ID, CompId::ADJACENT_EDGES>;
 
 template<typename MeshType>
-concept HasPerVertexAdjacentEdges =
-    HasPerElementAdjacentEdges<MeshType, ElemId::VERTEX>;
+concept HasVertexAdjacentEdges =
+    HasElementAdjacentEdges<MeshType, ElemId::VERTEX>;
 
 template<typename MeshType>
-concept HasPerFaceAdjacentEdges =
-    HasPerElementAdjacentEdges<MeshType, ElemId::FACE>;
+concept HasFaceAdjacentEdges =
+    HasElementAdjacentEdges<MeshType, ElemId::FACE>;
 
 template<typename MeshType>
-concept HasPerEdgeAdjacentEdges =
-    HasPerElementAdjacentEdges<MeshType, ElemId::EDGE>;
+concept HasEdgeAdjacentEdges =
+    HasElementAdjacentEdges<MeshType, ElemId::EDGE>;
 
 /**
- * @brief Concept that checks whether a Mesh has per-element adjacent vertices
+ * @brief Concept that checks whether a Mesh has element adjacent vertices
  * on container ELEM_ID.
  */
 template<typename MeshType, uint ELEM_ID>
-concept HasPerElementAdjacentVertices =
-    HasPerElementComponent<MeshType, ELEM_ID, CompId::ADJACENT_VERTICES>;
+concept HasElementAdjacentVertices =
+    HasElementComponent<MeshType, ELEM_ID, CompId::ADJACENT_VERTICES>;
 
 template<typename MeshType>
-concept HasPerVertexAdjacentVertices =
-    HasPerElementAdjacentVertices<MeshType, ElemId::VERTEX>;
+concept HasVertexAdjacentVertices =
+    HasElementAdjacentVertices<MeshType, ElemId::VERTEX>;
 
 template<typename MeshType>
-concept HasPerFaceAdjacentVertices =
-    HasPerElementAdjacentVertices<MeshType, ElemId::FACE>;
+concept HasFaceAdjacentVertices =
+    HasElementAdjacentVertices<MeshType, ElemId::FACE>;
 
 template<typename MeshType>
-concept HasPerEdgeAdjacentVertices =
-    HasPerElementAdjacentVertices<MeshType, ElemId::EDGE>;
+concept HasEdgeAdjacentVertices =
+    HasElementAdjacentVertices<MeshType, ElemId::EDGE>;
 
 /**
  * @brief Concept that checks whether a type T has the AdjacentFaces component.

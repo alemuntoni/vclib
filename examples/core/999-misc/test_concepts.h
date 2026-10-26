@@ -184,12 +184,12 @@ inline void testComponentConcepts()
     static_assert(meshv2::HasAdjacentEdges<AdjMesh::Face>);
     static_assert(meshv2::face::HasOptionalAdjacentEdges<AdjMesh::Face>);
 
-    static_assert(meshv2::HasPerVertexAdjacentFaces<AdjMesh>);
-    static_assert(meshv2::HasPerFaceAdjacentFaces<AdjMesh>);
-    static_assert(meshv2::HasPerVertexAdjacentVertices<AdjMesh>);
-    static_assert(meshv2::HasPerVertexAdjacentEdges<AdjMesh>);
-    static_assert(meshv2::HasPerFaceAdjacentEdges<AdjMesh>);
-    static_assert(!meshv2::HasPerVertexAdjacentFaces<MyMesh>);
+    static_assert(meshv2::HasVertexAdjacentFaces<AdjMesh>);
+    static_assert(meshv2::HasFaceAdjacentFaces<AdjMesh>);
+    static_assert(meshv2::HasVertexAdjacentVertices<AdjMesh>);
+    static_assert(meshv2::HasVertexAdjacentEdges<AdjMesh>);
+    static_assert(meshv2::HasFaceAdjacentEdges<AdjMesh>);
+    static_assert(!meshv2::HasVertexAdjacentFaces<MyMesh>);
 }
 
 inline void testElementConcepts()

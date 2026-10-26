@@ -86,7 +86,6 @@ protected:
 template<typename T>
 concept HasColor = comp::HasColor<T>;
 
-using comp::isColorAvailableOn;
 
 } // namespace vcl::meshv2::mesh
 

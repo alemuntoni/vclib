@@ -453,7 +453,7 @@ public:
      * @return `true` if the Edge Element has a custom component with the given
      * name.
      */
-    bool hasPerEdgeCustomComponent(const std::string& name) const
+    bool hasEdgeCustomComponent(const std::string& name) const
         requires edge::HasCustomComponents<EdgeComponents>
     {
         return Base::hasElemCustomComponent(name);
@@ -469,7 +469,7 @@ public:
      * @return A vector of strings representing all the names of the custom
      * components.
      */
-    std::vector<std::string> perEdgeCustomComponentNames() const
+    std::vector<std::string> edgeCustomComponentNames() const
         requires edge::HasCustomComponents<EdgeComponents>
     {
         return Base::elemCustomComponentNames();
@@ -491,7 +491,7 @@ public:
      * template argument.
      */
     template<typename K>
-    bool isPerEdgeCustomComponentOfType(const std::string& name) const
+    bool isEdgeCustomComponentOfType(const std::string& name) const
         requires edge::HasCustomComponents<EdgeComponents>
     {
         return Base::template isElemCustomComponentOfType<K>(name);
@@ -511,7 +511,7 @@ public:
      * @return The std::type_index of the custom component having the given
      * input name.
      */
-    std::type_index perEdgeCustomComponentType(const std::string& name) const
+    std::type_index edgeCustomComponentType(const std::string& name) const
         requires edge::HasCustomComponents<EdgeComponents>
     {
         return Base::elemCustomComponentType(name);
@@ -530,7 +530,7 @@ public:
      * components of a given type.
      */
     template<typename K>
-    std::vector<std::string> perEdgeCustomComponentNamesOfType() const
+    std::vector<std::string> edgeCustomComponentNamesOfType() const
         requires edge::HasCustomComponents<EdgeComponents>
     {
         return Base::template elemCustomComponentNamesOfType<K>();
@@ -547,7 +547,7 @@ public:
      * @param[in] name: The name of the custom component added to the Edge.
      */
     template<typename K>
-    void addPerEdgeCustomComponent(const std::string& name)
+    void addEdgeCustomComponent(const std::string& name)
         requires edge::HasCustomComponents<EdgeComponents>
     {
         Base::template addElemCustomComponent<K>(name);
@@ -565,7 +565,7 @@ public:
      * @param[in] name: The name of the custom component that will be removed
      * from the Edge.
      */
-    void deletePerEdgeCustomComponent(const std::string& name)
+    void deleteEdgeCustomComponent(const std::string& name)
         requires edge::HasCustomComponents<EdgeComponents>
     {
         Base::deleteElemCustomComponent(name);
@@ -583,7 +583,7 @@ public:
      * @return A vector handle that allows access to the custom component.
      */
     template<typename K>
-    CustomComponentVectorHandle<K> perEdgeCustomComponentVectorHandle(
+    CustomComponentVectorHandle<K> edgeCustomComponentVectorHandle(
         const std::string& name)
         requires edge::HasCustomComponents<EdgeComponents>
     {
@@ -603,7 +603,7 @@ public:
      * component.
      */
     template<typename K>
-    ConstCustomComponentVectorHandle<K> perEdgeCustomComponentVectorHandle(
+    ConstCustomComponentVectorHandle<K> edgeCustomComponentVectorHandle(
         const std::string& name) const
         requires edge::HasCustomComponents<EdgeComponents>
     {
@@ -618,7 +618,7 @@ public:
      * @param os: The output stream to write to.
      */
     template<typename K>
-    void serializePerEdgeCustomComponentsOfType(std::ostream& os) const
+    void serializeEdgeCustomComponentsOfType(std::ostream& os) const
         requires edge::HasCustomComponents<EdgeComponents>
     {
         Base::template serializeElemCustomComponentsOfType<K>(os);
@@ -632,7 +632,7 @@ public:
      * @param is: The input stream to read from.
      */
     template<typename K>
-    void deserializePerEdgeCustomComponentsOfType(std::istream& is)
+    void deserializeEdgeCustomComponentsOfType(std::istream& is)
         requires edge::HasCustomComponents<EdgeComponents>
     {
         Base::template deserializeElemCustomComponentsOfType<K>(is);

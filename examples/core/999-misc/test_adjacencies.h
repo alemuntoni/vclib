@@ -183,14 +183,14 @@ inline void testAdjacencies()
     assert(vApp2_1.adjVertexIndex(2) == 3 + initVCount);
 
     // 5. Optional component test (AdjacentEdges on Vertex and Face)
-    assert((!m.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::ADJACENT_EDGES>()));
-    assert((!m.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::ADJACENT_EDGES>()));
+    assert((!m.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::ADJACENT_EDGES>()));
+    assert((!m.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::ADJACENT_EDGES>()));
 
-    m.enablePerElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::ADJACENT_EDGES>();
-    m.enablePerElementComponent<meshv2::ElemId::FACE, meshv2::CompId::ADJACENT_EDGES>();
+    m.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::ADJACENT_EDGES>();
+    m.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::ADJACENT_EDGES>();
 
-    assert((m.isPerElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::ADJACENT_EDGES>()));
-    assert((m.isPerElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::ADJACENT_EDGES>()));
+    assert((m.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::ADJACENT_EDGES>()));
+    assert((m.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::ADJACENT_EDGES>()));
 
     m.vertex(0).pushAdjEdge(10);
     assert(m.vertex(0).adjEdgeCount() == 1);

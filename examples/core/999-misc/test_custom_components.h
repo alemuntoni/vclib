@@ -90,10 +90,10 @@ inline void testMeshCustomComponents()
 inline void testElementCustomComponents()
 {
     // Concepts check
-    static_assert(meshv2::HasPerVertexCustomComponents<CCMesh>);
-    static_assert(meshv2::HasPerFaceCustomComponents<CCMesh>);
-    static_assert(!meshv2::HasPerVertexCustomComponents<MyMesh>);
-    static_assert(!meshv2::HasPerFaceCustomComponents<MyMesh>);
+    static_assert(meshv2::HasVertexCustomComponents<CCMesh>);
+    static_assert(meshv2::HasFaceCustomComponents<CCMesh>);
+    static_assert(!meshv2::HasVertexCustomComponents<MyMesh>);
+    static_assert(!meshv2::HasFaceCustomComponents<MyMesh>);
 
     static_assert(meshv2::vert::HasCustomComponents<CCMesh::Vertex>);
     static_assert(meshv2::face::HasCustomComponents<CCMesh::Face>);
@@ -110,25 +110,25 @@ inline void testElementCustomComponents()
     m.face(0).setVertices(0, 1, 2);
     m.face(1).setVertices(1, 3, 2);
 
-    // Add per-vertex and per-face custom components
-    m.addPerVertexCustomComponent<double>("curvature");
-    m.addPerFaceCustomComponent<int>("mat_id");
+    // Add vertex and face custom components
+    m.addVertexCustomComponent<double>("curvature");
+    m.addFaceCustomComponent<int>("mat_id");
 
     // Container / Mesh level queries
-    assert(m.hasPerVertexCustomComponent("curvature"));
-    assert(!m.hasPerVertexCustomComponent("non_existent"));
-    assert(m.hasPerFaceCustomComponent("mat_id"));
-    assert(m.isPerVertexCustomComponentOfType<double>("curvature"));
-    assert(m.perVertexCustomComponentType("curvature") == typeid(double));
-    assert(m.perFaceCustomComponentType("mat_id") == typeid(int));
+    assert(m.hasVertexCustomComponent("curvature"));
+    assert(!m.hasVertexCustomComponent("non_existent"));
+    assert(m.hasFaceCustomComponent("mat_id"));
+    assert(m.isVertexCustomComponentOfType<double>("curvature"));
+    assert(m.vertexCustomComponentType("curvature") == typeid(double));
+    assert(m.faceCustomComponentType("mat_id") == typeid(int));
 
-    // Generic per-element queries
-    assert(m.hasPerElementCustomComponent<meshv2::ElemId::VERTEX>("curvature"));
-    assert(m.hasPerElementCustomComponent<meshv2::ElemId::FACE>("mat_id"));
-    assert((m.isPerElementCustomComponentOfType<meshv2::ElemId::VERTEX, double>(
+    // Generic element queries
+    assert(m.hasElementCustomComponent<meshv2::ElemId::VERTEX>("curvature"));
+    assert(m.hasElementCustomComponent<meshv2::ElemId::FACE>("mat_id"));
+    assert((m.isElementCustomComponentOfType<meshv2::ElemId::VERTEX, double>(
         "curvature")));
     assert(
-        m.perElementCustomComponentType<meshv2::ElemId::VERTEX>("curvature") ==
+        m.elementCustomComponentType<meshv2::ElemId::VERTEX>("curvature") ==
         typeid(double));
 
     // Proxy access: write and read
@@ -158,8 +158,8 @@ inline void testCustomComponentHandles()
     CCMesh m;
     m.resizeVertices(3);
 
-    m.addPerVertexCustomComponent<int>("weight");
-    auto h = m.perVertexCustomComponentVectorHandle<int>("weight");
+    m.addVertexCustomComponent<int>("weight");
+    auto h = m.vertexCustomComponentVectorHandle<int>("weight");
 
     assert(h.size() == 3);
     assert(!h.empty());
@@ -188,7 +188,7 @@ inline void testCustomComponentHandles()
 
     // Const handle
     const CCMesh& cm = m;
-    auto          ch = cm.perVertexCustomComponentVectorHandle<int>("weight");
+    auto          ch = cm.vertexCustomComponentVectorHandle<int>("weight");
     assert(ch.size() == 3);
     assert(ch[1] == 20);
 
@@ -203,7 +203,7 @@ inline void testCustomComponentsLifecycle()
     {
         CCMesh m;
         m.resizeVertices(2);
-        m.addPerVertexCustomComponent<float>("scalar");
+        m.addVertexCustomComponent<float>("scalar");
 
         m.vertex(0).customComponent<float>("scalar") = 4.5f;
         m.vertex(1).customComponent<float>("scalar") = 5.5f;
@@ -220,7 +220,7 @@ inline void testCustomComponentsLifecycle()
     {
         CCMesh m;
         m.resizeVertices(4);
-        m.addPerVertexCustomComponent<int>("id");
+        m.addVertexCustomComponent<int>("id");
         for (uint i = 0; i < 4; ++i) {
             m.vertex(i).customComponent<int>("id") = static_cast<int>(i * 10);
         }
@@ -243,13 +243,13 @@ inline void testCustomComponentsLifecycle()
     {
         CCMesh m1;
         m1.resizeVertices(2);
-        m1.addPerVertexCustomComponent<int>("tag");
+        m1.addVertexCustomComponent<int>("tag");
         m1.vertex(0).customComponent<int>("tag") = 1;
         m1.vertex(1).customComponent<int>("tag") = 2;
 
         CCMesh m2;
         m2.resizeVertices(2);
-        m2.addPerVertexCustomComponent<int>("tag");
+        m2.addVertexCustomComponent<int>("tag");
         m2.vertex(0).customComponent<int>("tag") = 10;
         m2.vertex(1).customComponent<int>("tag") = 20;
 
@@ -267,7 +267,7 @@ inline void testCustomComponentsLifecycle()
         CCMesh src;
         src.resizeVertices(2);
         src.addCustomComponent<std::string>("mesh_tag", "imported");
-        src.addPerVertexCustomComponent<double>("attr");
+        src.addVertexCustomComponent<double>("attr");
         src.vertex(0).customComponent<double>("attr") = 9.9;
         src.vertex(1).customComponent<double>("attr") = 8.8;
 
@@ -277,7 +277,7 @@ inline void testCustomComponentsLifecycle()
         assert(dst.hasCustomComponent("mesh_tag"));
         assert(dst.customComponent<std::string>("mesh_tag") == "imported");
         assert(dst.vertexCount() == 2);
-        assert(dst.hasPerVertexCustomComponent("attr"));
+        assert(dst.hasVertexCustomComponent("attr"));
         assert(dst.vertex(0).customComponent<double>("attr") == 9.9);
         assert(dst.vertex(1).customComponent<double>("attr") == 8.8);
     }

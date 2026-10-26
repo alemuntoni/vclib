@@ -113,18 +113,6 @@ concept HasOptionalMaterialIndex =
 
 /* Detector function to check if a class has MaterialIndex available */
 
-/**
- * @brief Checks if the given Element has MaterialIndex component available.
- *
- * @param[in] element: The element to check.
- * @return `true` if the element has MaterialIndex component available, `false`
- * otherwise.
- */
-inline bool isMaterialIndexAvailableOn(const auto& element)
-{
-    return isComponentAvailableOn<CompId::MATERIAL_INDEX>(element);
-}
-
 /* Implementation of member functions */
 
 template<std::unsigned_integral Index, bool OPT>
@@ -135,7 +123,7 @@ void MaterialIndex<Index, OPT>::importFrom(
     bool)
 {
     if constexpr (HasMaterialIndex<OtherElement>) {
-        if (isMaterialIndexAvailableOn(other)) {
+        if (other.template isComponentAvailable<CompId::MATERIAL_INDEX>()) {
             self.materialIndex() =
                 static_cast<MaterialIndexType>(other.materialIndex());
         }
