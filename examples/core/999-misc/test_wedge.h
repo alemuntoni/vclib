@@ -9,6 +9,7 @@
 #define TEST_WEDGE_H
 
 #include "types.h"
+#include <vclib/mesh_v2/requirements.h>
 
 #include <vclib/mesh_v2/elements/face_components.h>
 
@@ -45,16 +46,33 @@ inline void testWedgeConcepts()
     static_assert(meshv2::face::HasOptionalWedgeNormals<WedgeMesh::Face>);
     static_assert(meshv2::face::HasWedges<WedgeMesh::Face>);
 
+    // Unified element_concepts on Face
+    static_assert(meshv2::HasWedgeColors<WedgeMesh::Face>);
+    static_assert(meshv2::HasWedgeTexCoords<WedgeMesh::Face>);
+    static_assert(meshv2::HasWedgeNormals<WedgeMesh::Face>);
+    static_assert(meshv2::HasWedges<WedgeMesh::Face>);
+
+    // Mesh-level wedge concepts
+    static_assert(meshv2::HasFaceWedgeColors<WedgeMesh>);
+    static_assert(meshv2::HasFaceWedgeTexCoords<WedgeMesh>);
+    static_assert(meshv2::HasFaceWedgeNormals<WedgeMesh>);
+    static_assert(meshv2::HasOptionalFaceWedgeNormals<WedgeMesh>);
+    static_assert(meshv2::HasFaceWedges<WedgeMesh>);
+
     // Negative concepts on mesh without wedges
     static_assert(!meshv2::face::HasWedgeColors<SimpleMesh::Face>);
     static_assert(!meshv2::face::HasWedgeTexCoords<SimpleMesh::Face>);
     static_assert(!meshv2::face::HasWedgeNormals<SimpleMesh::Face>);
     static_assert(!meshv2::face::HasWedges<SimpleMesh::Face>);
+    static_assert(!meshv2::HasWedges<SimpleMesh::Face>);
+    static_assert(!meshv2::HasFaceWedges<SimpleMesh>);
 
     // Polygonal wedge mesh concepts
     static_assert(meshv2::face::HasWedgeColors<PolyWedgeMesh::Face>);
     static_assert(meshv2::face::HasWedgeTexCoords<PolyWedgeMesh::Face>);
     static_assert(!meshv2::face::HasWedgeNormals<PolyWedgeMesh::Face>);
+    static_assert(meshv2::HasFaceWedges<PolyWedgeMesh>);
+    static_assert(!meshv2::HasFaceWedgeNormals<PolyWedgeMesh>);
 
     // ComponentConcept check
     static_assert(meshv2::ComponentConcept<meshv2::face::TriangleWedgeColors>);

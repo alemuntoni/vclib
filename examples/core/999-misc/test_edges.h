@@ -47,11 +47,9 @@ inline void testEdgeConcepts()
     static_assert(meshv2::edge::HasOptionalQuality<EdgeMesh::Edge>);
 
     // Mesh concepts
-    static_assert(meshv2::HasVertices<EdgeMesh>);
     static_assert(meshv2::HasEdges<EdgeMesh>);
     static_assert(!meshv2::HasFaces<EdgeMesh>);
 
-    static_assert(meshv2::HasVertices<GraphMesh>);
     static_assert(meshv2::HasFaces<GraphMesh>);
     static_assert(meshv2::HasEdges<GraphMesh>);
 

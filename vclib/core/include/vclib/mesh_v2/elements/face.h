@@ -155,15 +155,6 @@ concept FaceConcept =
     comp::HasBitFlags<typename std::remove_cvref_t<T>::Components> &&
     comp::HasVertexReferences<typename std::remove_cvref_t<T>::Components>;
 
-/**
- * @brief Concept that checks whether a type T is a triangular Face element.
- *
- * @ingroup face_concepts
- */
-template<typename T>
-concept TriangleFaceConcept = FaceConcept<T> && requires {
-    requires std::remove_cvref_t<T>::VERTEX_COUNT == 3;
-};
 
 /**
  * @brief Concept that checks whether a type T is a valid component list for a

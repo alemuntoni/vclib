@@ -190,6 +190,17 @@ using PolyMesh = meshv2::Mesh<
     meshv2::VertexContainer<SimpleVertexComponents>,
     meshv2::FaceContainer<PolyFaceComponents>>;
 
+using QuadFaceComponents = meshv2::FaceComponents<
+    meshv2::face::BitFlags,
+    meshv2::face::VertexReferences<4>>;
+
+using QuadMesh = meshv2::Mesh<
+    meshv2::VertexContainer<SimpleVertexComponents>,
+    meshv2::FaceContainer<QuadFaceComponents>>;
+
+using PointCloudMesh = meshv2::Mesh<
+    meshv2::VertexContainer<SimpleVertexComponents>>;
+
 using TriBitMesh = vcl::meshv2::Mesh<
     vcl::meshv2::VertexContainer<vcl::TypeWrapper<
         vcl::meshv2::comp::Position3f,
