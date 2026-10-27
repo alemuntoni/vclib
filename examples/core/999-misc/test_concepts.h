@@ -10,6 +10,7 @@
 
 #include "types.h"
 #include <vclib/mesh_v2/requirements.h>
+#include <vclib/mesh_v2/traits.h>
 
 inline void testComponentConcepts()
 {
@@ -621,6 +622,79 @@ inline void testContracts()
     meshv2::requireElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>(optMesh);
 }
 
+template<typename T>
+concept HasNormalType = requires {
+    typename meshv2::NormalType<T>;
+};
+
+template<typename T>
+concept HasTexCoordType = requires {
+    typename meshv2::TexCoordType<T>;
+};
+
+inline void testTraits()
+{
+    // 1. VertexType
+    static_assert(std::is_same_v<meshv2::VertexType<SimpleMesh>, SimpleMesh::Vertex>);
+    static_assert(std::is_same_v<meshv2::VertexType<const SimpleMesh&>, SimpleMesh::Vertex>);
+    static_assert(std::is_same_v<meshv2::VertexType<SimpleMesh::Vertex>, SimpleMesh::Vertex>);
+    static_assert(std::is_same_v<meshv2::VertexType<SimpleMesh::Face>, SimpleMesh::Vertex>);
+    static_assert(std::is_same_v<meshv2::VertexType<const SimpleMesh::Face&>, SimpleMesh::Vertex>);
+    static_assert(std::is_same_v<meshv2::VertexType<EdgeMesh::Edge>, EdgeMesh::Vertex>);
+    static_assert(std::is_same_v<meshv2::VertexType<SimpleMesh::ContainerType<meshv2::ElemId::VERTEX>>, SimpleMesh::Vertex>);
+
+    // 2. FaceType
+    static_assert(std::is_same_v<meshv2::FaceType<SimpleMesh>, SimpleMesh::Face>);
+    static_assert(std::is_same_v<meshv2::FaceType<const SimpleMesh&>, SimpleMesh::Face>);
+    static_assert(std::is_same_v<meshv2::FaceType<SimpleMesh::Face>, SimpleMesh::Face>);
+    static_assert(std::is_same_v<meshv2::FaceType<const SimpleMesh::Face&>, SimpleMesh::Face>);
+    static_assert(std::is_same_v<meshv2::FaceType<SimpleMesh::ContainerType<meshv2::ElemId::FACE>>, SimpleMesh::Face>);
+
+    // 3. EdgeType
+    static_assert(std::is_same_v<meshv2::EdgeType<EdgeMesh>, EdgeMesh::Edge>);
+    static_assert(std::is_same_v<meshv2::EdgeType<const EdgeMesh&>, EdgeMesh::Edge>);
+    static_assert(std::is_same_v<meshv2::EdgeType<EdgeMesh::Edge>, EdgeMesh::Edge>);
+    static_assert(std::is_same_v<meshv2::EdgeType<EdgeMesh::ContainerType<meshv2::ElemId::EDGE>>, EdgeMesh::Edge>);
+
+    // 4. IndexType
+    static_assert(std::is_same_v<meshv2::IndexType<SimpleMesh>, uint>);
+    static_assert(std::is_same_v<meshv2::IndexType<SimpleMesh::Vertex>, uint>);
+    static_assert(std::is_same_v<meshv2::IndexType<SimpleMesh::Face>, uint>);
+    static_assert(std::is_same_v<meshv2::IndexType<EdgeMesh::Edge>, uint>);
+
+    // 5. PositionType
+    static_assert(std::is_same_v<meshv2::PositionType<SimpleMesh>, Point3f>);
+    static_assert(std::is_same_v<meshv2::PositionType<const SimpleMesh&>, Point3f>);
+    static_assert(std::is_same_v<meshv2::PositionType<SimpleMesh::Vertex>, Point3f>);
+    static_assert(std::is_same_v<meshv2::PositionType<FullMesh>, Point3f>);
+    static_assert(std::is_same_v<meshv2::PositionType<FullMesh::Vertex>, Point3f>);
+
+    // 6. ScalarType
+    static_assert(std::is_same_v<meshv2::ScalarType<SimpleMesh>, float>);
+    static_assert(std::is_same_v<meshv2::ScalarType<const SimpleMesh&>, float>);
+    static_assert(std::is_same_v<meshv2::ScalarType<SimpleMesh::Vertex>, float>);
+    static_assert(std::is_same_v<meshv2::ScalarType<Point3f>, float>);
+    static_assert(std::is_same_v<meshv2::ScalarType<Point3d>, double>);
+
+    // 7. NormalType
+    static_assert(std::is_same_v<meshv2::NormalType<MyMesh::Vertex>, Point3f>);
+    static_assert(std::is_same_v<meshv2::NormalType<FullMesh::Vertex>, Point3f>);
+    static_assert(std::is_same_v<meshv2::NormalType<TangentMesh::Face>, Point3f>);
+    // Not available on Vertex without normal
+    static_assert(!HasNormalType<SimpleMesh::Vertex>);
+    // Not available on Face without face normal
+    static_assert(!HasNormalType<SimpleMesh::Face>);
+    static_assert(!HasNormalType<FullMesh::Face>);
+    // Not available on Mesh directly to prevent ambiguity
+    static_assert(!HasNormalType<SimpleMesh>);
+    static_assert(!HasNormalType<FullMesh>);
+
+    // 8. TexCoordType
+    // Not available on Face or Mesh directly to prevent ambiguity
+    static_assert(!HasTexCoordType<SimpleMesh::Face>);
+    static_assert(!HasTexCoordType<SimpleMesh>);
+}
+
 inline void testConcepts()
 {
     std::println("--- Testing Concepts & Strong Typing ---");
@@ -629,6 +703,7 @@ inline void testConcepts()
     testMeshConcepts();
     testIteratorConcepts();
     testContracts();
+    testTraits();
     std::println("Compile-time concepts & runtime contracts verified successfully!\n");
 }
 

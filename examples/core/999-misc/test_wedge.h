@@ -10,6 +10,7 @@
 
 #include "types.h"
 #include <vclib/mesh_v2/requirements.h>
+#include <vclib/mesh_v2/traits.h>
 
 #include <vclib/mesh_v2/elements/face_components.h>
 
@@ -80,6 +81,14 @@ inline void testWedgeConcepts()
     static_assert(meshv2::ComponentConcept<meshv2::face::OptionalTriangleWedgeNormals3f>);
     static_assert(meshv2::comp::IsTiedToVertexCount<meshv2::face::PolygonWedgeColors>);
     static_assert(!meshv2::comp::IsTiedToVertexCount<meshv2::face::TriangleWedgeColors>);
+
+    // Wedge traits
+    static_assert(meshv2::WedgeConcept<meshv2::WedgeType<WedgeMesh::Face>>);
+    static_assert(std::is_same_v<meshv2::WedgeType<WedgeMesh::Face>, meshv2::comp::WedgeProxy<WedgeMesh::Face>>);
+    static_assert(std::is_same_v<meshv2::VertexType<meshv2::WedgeType<WedgeMesh::Face>>, WedgeMesh::Vertex>);
+    static_assert(std::is_same_v<meshv2::FaceType<meshv2::WedgeType<WedgeMesh::Face>>, WedgeMesh::Face>);
+    static_assert(std::is_same_v<meshv2::NormalType<meshv2::WedgeType<WedgeMesh::Face>>, Point3f>);
+    static_assert(std::is_same_v<meshv2::TexCoordType<meshv2::WedgeType<WedgeMesh::Face>>, vcl::TexCoordf>);
 }
 
 inline void testTriangleWedges()

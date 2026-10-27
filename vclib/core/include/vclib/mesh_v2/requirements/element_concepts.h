@@ -23,12 +23,14 @@ namespace vcl::meshv2 {
 /* =========================================================================
  * Base Element Identity Concepts
  *
- * ElementConcept, VertexConcept, FaceConcept, and EdgeConcept are the primary
- * identity concepts defined alongside their respective element definitions:
+ * ElementConcept, VertexConcept, FaceConcept, EdgeConcept, and WedgeConcept
+ * are the primary identity concepts defined alongside their respective
+ * element and proxy definitions:
  * - ElementConcept<T>: defined in <vclib/mesh_v2/elements/base/element_proxy.h>
  * - VertexConcept<T>:  defined in <vclib/mesh_v2/elements/vertex.h>
  * - FaceConcept<T>:    defined in <vclib/mesh_v2/elements/face.h>
  * - EdgeConcept<T>:    defined in <vclib/mesh_v2/elements/edge.h>
+ * - WedgeConcept<T>:   defined in <vclib/mesh_v2/components/wedges/wedge_proxy.h>
  * ========================================================================= */
 
 /* =========================================================================
@@ -86,7 +88,8 @@ concept HasOptionalPosition = comp::HasOptionalPosition<E>;
  * @ingroup element_concepts
  */
 template<typename E>
-concept HasNormal = comp::HasNormal<E>;
+concept HasNormal =
+    comp::HasNormal<E> || (WedgeConcept<E> && requires (E& e) { e.normal(); });
 
 template<typename E>
 concept HasOptionalNormal = comp::HasOptionalNormal<E>;
@@ -97,7 +100,8 @@ concept HasOptionalNormal = comp::HasOptionalNormal<E>;
  * @ingroup element_concepts
  */
 template<typename E>
-concept HasColor = comp::HasColor<E>;
+concept HasColor =
+    comp::HasColor<E> || (WedgeConcept<E> && requires (E& e) { e.color(); });
 
 template<typename E>
 concept HasOptionalColor = comp::HasOptionalColor<E>;
@@ -108,7 +112,8 @@ concept HasOptionalColor = comp::HasOptionalColor<E>;
  * @ingroup element_concepts
  */
 template<typename E>
-concept HasTexCoord = comp::HasTexCoord<E>;
+concept HasTexCoord =
+    comp::HasTexCoord<E> || (WedgeConcept<E> && requires (E& e) { e.texCoord(); });
 
 template<typename E>
 concept HasOptionalTexCoord = comp::HasOptionalTexCoord<E>;

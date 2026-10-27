@@ -1430,6 +1430,27 @@ concept ElementContainerConcept = requires {
     typename std::remove_cvref_t<T>::ConstElementType;
 };
 
+/**
+ * @brief Concept that checks whether a type T is an ElementContainer of Vertices.
+ */
+template<typename T>
+concept VertexContainerConcept =
+    ElementContainerConcept<T> && (std::remove_cvref_t<T>::ELEMENT_ID == ElemId::VERTEX);
+
+/**
+ * @brief Concept that checks whether a type T is an ElementContainer of Faces.
+ */
+template<typename T>
+concept FaceContainerConcept =
+    ElementContainerConcept<T> && (std::remove_cvref_t<T>::ELEMENT_ID == ElemId::FACE);
+
+/**
+ * @brief Concept that checks whether a type T is an ElementContainer of Edges.
+ */
+template<typename T>
+concept EdgeContainerConcept =
+    ElementContainerConcept<T> && (std::remove_cvref_t<T>::ELEMENT_ID == ElemId::EDGE);
+
 } // namespace vcl::meshv2
 
 #endif // VCL_MESH_V2_CONTAINERS_BASE_ELEMENT_CONTAINER_H

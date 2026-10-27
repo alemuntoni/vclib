@@ -12,7 +12,8 @@
 
 #include <cassert>
 
-namespace vcl::meshv2::comp {
+namespace vcl::meshv2 {
+namespace comp {
 
 /**
  * @brief The WedgeProxy class represents a proxy (view) of a single wedge (corner)
@@ -125,6 +126,20 @@ public:
     }
 };
 
-} // namespace vcl::meshv2::comp
+/**
+ * @brief Concept that checks whether a type T is an instance of WedgeProxy.
+ *
+ * @tparam T: The type to check.
+ * @ingroup element_concepts
+ */
+template<typename T>
+concept WedgeConcept =
+    IsSpecializationOfV<std::remove_cvref_t<T>, WedgeProxy>;
+
+} // namespace comp
+
+using comp::WedgeConcept;
+
+} // namespace vcl::meshv2
 
 #endif // VCL_MESH_V2_COMPONENTS_WEDGES_WEDGE_PROXY_H
