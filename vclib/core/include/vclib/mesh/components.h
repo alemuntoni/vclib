@@ -12,13 +12,9 @@
 #include "components/adjacent_faces.h"
 #include "components/adjacent_vertices.h"
 #include "components/bit_flags.h"
-#include "components/bounding_box.h"
 #include "components/color.h"
 #include "components/custom_components.h"
-#include "components/mark.h"
 #include "components/material_index.h"
-#include "components/materials.h"
-#include "components/name.h"
 #include "components/normal.h"
 #include "components/polygon_bit_flags.h"
 #include "components/position.h"
@@ -26,11 +22,18 @@
 #include "components/quality.h"
 #include "components/tangent.h"
 #include "components/tex_coord.h"
-#include "components/transform_matrix.h"
 #include "components/triangle_bit_flags.h"
 #include "components/vertex_references.h"
-#include "components/wedge_colors.h"
-#include "components/wedge_tex_coords.h"
+#include "components/wedges.h"
+
+
+/**
+ * @defgroup components Components
+ * @ingroup mesh
+ *
+ * @brief List of all the Component classes, along with their concepts and
+ * functions.
+ */
 
 /**
  * @defgroup components_concepts Components Concepts

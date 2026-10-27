@@ -122,7 +122,7 @@ inline void testContainerRangeViews()
 
     // Test elements(begin, end) on mesh
     std::size_t count = 0;
-    for (auto v : m.elements<meshv2::ElemId::VERTEX>(1, 3)) {
+    for (auto v : m.elements<ElemId::VERTEX>(1, 3)) {
         assert(v.index() >= 1 && v.index() < 3);
         ++count;
     }

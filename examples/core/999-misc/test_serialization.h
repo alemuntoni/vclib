@@ -111,7 +111,7 @@ inline void testMeshSerialization()
     {
         MyMesh m = createSampleQuadMesh();
         m.color() = vcl::Color::Cyan;
-        m.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
+        m.enableElementComponent<ElemId::VERTEX, CompId::COLOR>();
         m.vertex(0).color() = vcl::Color::Red;
         m.vertex(1).color() = vcl::Color::Green;
         m.vertex(2).color() = vcl::Color::Blue;
@@ -140,7 +140,7 @@ inline void testMeshSerialization()
         assert(mRead.vertex(3).position() == m.vertex(3).position());
 
         // Verify Optional Components
-        assert((mRead.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
+        assert((mRead.isElementComponentAvailable<ElemId::VERTEX, CompId::COLOR>()));
         assert(mRead.vertex(0).color() == vcl::Color::Red);
         assert(mRead.vertex(2).color() == vcl::Color::Blue);
         assert(mRead.vertex(3).color() == vcl::Color::White);
@@ -237,7 +237,7 @@ inline void testMeshSerialization()
 
         // Element generic methods on Mesh
         std::stringstream ssVertCC(std::ios::in | std::ios::out | std::ios::binary);
-        cm.serializeElementCustomComponentsOfType<vcl::meshv2::ElemId::VERTEX, double>(ssVertCC);
+        cm.serializeElementCustomComponentsOfType<vcl::ElemId::VERTEX, double>(ssVertCC);
 
         // Face method inherited from FaceContainer
         std::stringstream ssFaceCC(std::ios::in | std::ios::out | std::ios::binary);
@@ -249,7 +249,7 @@ inline void testMeshSerialization()
 
         cmRead.deserializeCustomComponentsOfType<int>(ssMeshCC);
         // Generic deserializeElement on Mesh
-        cmRead.deserializeElementCustomComponentsOfType<vcl::meshv2::ElemId::VERTEX, double>(ssVertCC);
+        cmRead.deserializeElementCustomComponentsOfType<vcl::ElemId::VERTEX, double>(ssVertCC);
         // FaceContainer deserializeFace
         cmRead.deserializeFaceCustomComponentsOfType<int>(ssFaceCC);
 
@@ -281,9 +281,9 @@ inline void testMeshSerialization()
         bool caughtMismatch = false;
         try {
             CCMesh cmErr = cmRead;
-            cmErr.deserializeElementCustomComponentsOfType<vcl::meshv2::ElemId::VERTEX, float>(ssMismatch);
+            cmErr.deserializeElementCustomComponentsOfType<vcl::ElemId::VERTEX, float>(ssMismatch);
         }
-        catch (const vcl::meshv2::BadCustomComponentTypeException&) {
+        catch (const vcl::BadCustomComponentTypeException&) {
             caughtMismatch = true;
         }
         assert(caughtMismatch);

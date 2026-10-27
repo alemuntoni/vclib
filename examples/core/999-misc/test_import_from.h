@@ -64,7 +64,7 @@ inline void testVertexImportFrom()
     // 4. PrincipalCurvature importFrom with cross-precision cast (float to double) into optional component
     OptionalCurvatureMesh ocm;
     ocm.addVertices(1);
-    ocm.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::PRINCIPAL_CURVATURE>();
+    ocm.enableElementComponent<ElemId::VERTEX, CompId::PRINCIPAL_CURVATURE>();
     ocm.vertex(0).importFrom(cm1.vertex(0));
     assert(ocm.vertex(0).principalCurvature().maxDir() == Point3d(1.0, 0.0, 0.0));
     assert(ocm.vertex(0).principalCurvature().minDir() == Point3d(0.0, 1.0, 0.0));
@@ -84,7 +84,7 @@ inline void testVertexImportFrom()
     // 6. Quality importFrom with cross-precision cast (float to double) into optional component
     OptionalQualityMesh oqm;
     oqm.addVertices(1);
-    oqm.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::QUALITY>();
+    oqm.enableElementComponent<ElemId::VERTEX, CompId::QUALITY>();
     oqm.vertex(0).importFrom(qm1.vertex(0));
     assert(oqm.vertex(0).quality() == 42.5);
 
@@ -103,7 +103,7 @@ inline void testVertexImportFrom()
     // 8. Tangent importFrom with cross-precision cast (float to double) into optional component
     OptionalTangentMesh otm;
     otm.addVertices(1);
-    otm.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::TANGENT>();
+    otm.enableElementComponent<ElemId::VERTEX, CompId::TANGENT>();
     otm.vertex(0).importFrom(tm1.vertex(0));
     assert(otm.vertex(0).tangent() == Point3d(1.0, 0.0, 0.0));
     assert(otm.vertex(0).tangentRightHanded() == false);
@@ -156,13 +156,13 @@ inline void testFaceImportFrom()
     QualityMesh fqm1;
     fqm1.addVertices(3);
     fqm1.addFace(0, 1, 2);
-    fqm1.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>();
+    fqm1.enableElementComponent<ElemId::FACE, CompId::QUALITY>();
     fqm1.face(0).quality() = 12.5f;
 
     QualityMesh fqm2;
     fqm2.addVertices(3);
     fqm2.addFace(0, 1, 2);
-    fqm2.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::QUALITY>();
+    fqm2.enableElementComponent<ElemId::FACE, CompId::QUALITY>();
     fqm2.face(0).importFrom(fqm1.face(0));
     assert(fqm2.face(0).quality() == 12.5f);
 
@@ -170,14 +170,14 @@ inline void testFaceImportFrom()
     TangentMesh ftm1;
     ftm1.addVertices(3);
     ftm1.addFace(0, 1, 2);
-    ftm1.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>();
+    ftm1.enableElementComponent<ElemId::FACE, CompId::TANGENT>();
     ftm1.face(0).tangent() = Point3f(0.0f, 1.0f, 0.0f);
     ftm1.face(0).tangentRightHanded() = false;
 
     TangentMesh ftm2;
     ftm2.addVertices(3);
     ftm2.addFace(0, 1, 2);
-    ftm2.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::TANGENT>();
+    ftm2.enableElementComponent<ElemId::FACE, CompId::TANGENT>();
     ftm2.face(0).importFrom(ftm1.face(0));
     assert(ftm2.face(0).tangent() == Point3f(0.0f, 1.0f, 0.0f));
     assert(ftm2.face(0).tangentRightHanded() == false);

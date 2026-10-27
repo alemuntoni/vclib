@@ -13,11 +13,22 @@
 namespace vcl::views {
 
 namespace detail {
+
 struct UnsupportedComponentView
 {
 };
+
 } // namespace detail
 
+/**
+ * @brief Generic component view adaptor template variable for a given component ID.
+ *
+ * Specializations for supported component types:
+ * - component<CompId::POSITION> = positions
+ * - component<CompId::NORMAL>   = normals
+ * - component<CompId::COLOR>    = colors
+ * - ...
+ */
 template<uint COMP_ID>
 inline constexpr auto component = detail::UnsupportedComponentView {};
 

@@ -8,8 +8,7 @@
 #ifndef VCL_MESH_VIEWS_ELEMENTS_H
 #define VCL_MESH_VIEWS_ELEMENTS_H
 
-#include "elements/element.h"
-
+#include "element.h"
 #include "elements/edge.h"
 #include "elements/face.h"
 #include "elements/vertex.h"

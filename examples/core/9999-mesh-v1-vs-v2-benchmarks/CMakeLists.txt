@@ -8,7 +8,10 @@
 get_filename_component(EXAMPLE_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(vclib-core-example-${EXAMPLE_NAME})
 
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "v1/*.h")
+
 set(SOURCES
+    ${HEADERS}
     types.h
     load_matrices.h
     benchmark.h
@@ -27,3 +30,9 @@ vclib_add_example(
     SOURCES ${SOURCES}
     ${HEADER_ONLY_OPTION}
 )
+
+target_include_directories(
+    ${PROJECT_NAME}
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+)
+

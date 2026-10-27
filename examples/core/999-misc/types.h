@@ -17,17 +17,17 @@
 
 #include <vclib/space/core.h>
 
-#include <vclib/mesh_v2/components/bit_flags.h>
-#include <vclib/mesh_v2/components/custom_components.h>
-#include <vclib/mesh_v2/components/normal.h>
-#include <vclib/mesh_v2/components/position.h>
-#include <vclib/mesh_v2/components/vertex_references.h>
-#include <vclib/mesh_v2/containers/edge_container.h>
-#include <vclib/mesh_v2/containers/face_container.h>
-#include <vclib/mesh_v2/containers/vertex_container.h>
-#include <vclib/mesh_v2/elements/edge.h>
-#include <vclib/mesh_v2/mesh.h>
-#include <vclib/mesh_v2/mesh_components.h>
+#include <vclib/mesh/components/bit_flags.h>
+#include <vclib/mesh/components/custom_components.h>
+#include <vclib/mesh/components/normal.h>
+#include <vclib/mesh/components/position.h>
+#include <vclib/mesh/components/vertex_references.h>
+#include <vclib/mesh/containers/edge_container.h>
+#include <vclib/mesh/containers/face_container.h>
+#include <vclib/mesh/containers/vertex_container.h>
+#include <vclib/mesh/elements/edge.h>
+#include <vclib/mesh/mesh.h>
+#include <vclib/mesh/mesh_components.h>
 
 template<typename CharT>
 struct std::formatter<vcl::Color, CharT> :
@@ -47,269 +47,269 @@ using namespace vcl;
 // Mesh Type Definitions
 // =============================================================================
 
-using MyVertexComponents = meshv2::VertexComponents<
-    meshv2::vert::BitFlags,
-    meshv2::vert::Position3f,
-    meshv2::vert::OptionalNormal3f,
-    meshv2::vert::OptionalColor>;
+using MyVertexComponents = VertexComponents<
+    vert::BitFlags,
+    vert::Position3f,
+    vert::OptionalNormal3f,
+    vert::OptionalColor>;
 
-using MyFaceComponents = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::OptionalColor>;
+using MyFaceComponents = FaceComponents<
+    face::BitFlags,
+    face::TriangleVertexReferences<vcl::uint>,
+    face::OptionalColor>;
 
-using MyMesh = meshv2::Mesh<
-    meshv2::VertexContainer<MyVertexComponents>,
-    meshv2::FaceContainer<MyFaceComponents>,
-    meshv2::mesh::Color>;
+using MyMesh = Mesh<
+    mesh::VertexContainer<MyVertexComponents>,
+    mesh::FaceContainer<MyFaceComponents>,
+    mesh::Color>;
 
-using TransformedMesh = meshv2::Mesh<
-    meshv2::VertexContainer<MyVertexComponents>,
-    meshv2::FaceContainer<MyFaceComponents>,
-    meshv2::mesh::Color,
-    meshv2::mesh::TransformMatrixf>;
+using TransformedMesh = Mesh<
+    mesh::VertexContainer<MyVertexComponents>,
+    mesh::FaceContainer<MyFaceComponents>,
+    mesh::Color,
+    mesh::TransformMatrixf>;
 
-using BoundingBoxMesh = meshv2::Mesh<
-    meshv2::VertexContainer<MyVertexComponents>,
-    meshv2::FaceContainer<MyFaceComponents>,
-    meshv2::mesh::BoundingBox3f>;
+using BoundingBoxMesh = Mesh<
+    mesh::VertexContainer<MyVertexComponents>,
+    mesh::FaceContainer<MyFaceComponents>,
+    mesh::BoundingBox3f>;
 
-using TransformedBoundingBoxMesh = meshv2::Mesh<
-    meshv2::VertexContainer<MyVertexComponents>,
-    meshv2::FaceContainer<MyFaceComponents>,
-    meshv2::mesh::BoundingBox3f,
-    meshv2::mesh::TransformMatrixf>;
+using TransformedBoundingBoxMesh = Mesh<
+    mesh::VertexContainer<MyVertexComponents>,
+    mesh::FaceContainer<MyFaceComponents>,
+    mesh::BoundingBox3f,
+    mesh::TransformMatrixf>;
 
-using NamedMesh = meshv2::Mesh<
-    meshv2::VertexContainer<MyVertexComponents>,
-    meshv2::FaceContainer<MyFaceComponents>,
-    meshv2::mesh::Name>;
+using NamedMesh = Mesh<
+    mesh::VertexContainer<MyVertexComponents>,
+    mesh::FaceContainer<MyFaceComponents>,
+    mesh::Name>;
 
-using CurvatureVertexComponents = meshv2::VertexComponents<
-    meshv2::vert::BitFlags,
-    meshv2::vert::Position3f,
-    meshv2::vert::PrincipalCurvaturef>;
+using CurvatureVertexComponents = VertexComponents<
+    vert::BitFlags,
+    vert::Position3f,
+    vert::PrincipalCurvaturef>;
 
-using OptionalCurvatureVertexComponents = meshv2::VertexComponents<
-    meshv2::vert::BitFlags,
-    meshv2::vert::Position3f,
-    meshv2::vert::OptionalPrincipalCurvatured>;
+using OptionalCurvatureVertexComponents = VertexComponents<
+    vert::BitFlags,
+    vert::Position3f,
+    vert::OptionalPrincipalCurvatured>;
 
-using CurvatureFaceComponents = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::OptionalPrincipalCurvaturef>;
+using CurvatureFaceComponents = FaceComponents<
+    face::BitFlags,
+    face::TriangleVertexReferences<vcl::uint>,
+    face::OptionalPrincipalCurvaturef>;
 
-using CurvatureMesh = meshv2::Mesh<
-    meshv2::VertexContainer<CurvatureVertexComponents>,
-    meshv2::FaceContainer<CurvatureFaceComponents>,
-    meshv2::mesh::Name>;
+using CurvatureMesh = Mesh<
+    mesh::VertexContainer<CurvatureVertexComponents>,
+    mesh::FaceContainer<CurvatureFaceComponents>,
+    mesh::Name>;
 
-using OptionalCurvatureMesh = meshv2::Mesh<
-    meshv2::VertexContainer<OptionalCurvatureVertexComponents>,
-    meshv2::FaceContainer<CurvatureFaceComponents>,
-    meshv2::mesh::Name>;
+using OptionalCurvatureMesh = Mesh<
+    mesh::VertexContainer<OptionalCurvatureVertexComponents>,
+    mesh::FaceContainer<CurvatureFaceComponents>,
+    mesh::Name>;
 
-using QualityVertexComponents = meshv2::VertexComponents<
-    meshv2::vert::BitFlags,
-    meshv2::vert::Position3f,
-    meshv2::vert::Qualityf>;
+using QualityVertexComponents = VertexComponents<
+    vert::BitFlags,
+    vert::Position3f,
+    vert::Qualityf>;
 
-using OptionalQualityVertexComponents = meshv2::VertexComponents<
-    meshv2::vert::BitFlags,
-    meshv2::vert::Position3f,
-    meshv2::vert::OptionalQualityd>;
+using OptionalQualityVertexComponents = VertexComponents<
+    vert::BitFlags,
+    vert::Position3f,
+    vert::OptionalQualityd>;
 
-using QualityFaceComponents = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::OptionalQualityf>;
+using QualityFaceComponents = FaceComponents<
+    face::BitFlags,
+    face::TriangleVertexReferences<vcl::uint>,
+    face::OptionalQualityf>;
 
-using QualityMesh = meshv2::Mesh<
-    meshv2::VertexContainer<QualityVertexComponents>,
-    meshv2::FaceContainer<QualityFaceComponents>>;
+using QualityMesh = Mesh<
+    mesh::VertexContainer<QualityVertexComponents>,
+    mesh::FaceContainer<QualityFaceComponents>>;
 
-using OptionalQualityMesh = meshv2::Mesh<
-    meshv2::VertexContainer<OptionalQualityVertexComponents>,
-    meshv2::FaceContainer<QualityFaceComponents>>;
+using OptionalQualityMesh = Mesh<
+    mesh::VertexContainer<OptionalQualityVertexComponents>,
+    mesh::FaceContainer<QualityFaceComponents>>;
 
-using TangentVertexComponents = meshv2::VertexComponents<
-    meshv2::vert::BitFlags,
-    meshv2::vert::Position3f,
-    meshv2::vert::Normal3f,
-    meshv2::vert::Tangent3f>;
+using TangentVertexComponents = VertexComponents<
+    vert::BitFlags,
+    vert::Position3f,
+    vert::Normal3f,
+    vert::Tangent3f>;
 
-using OptionalTangentVertexComponents = meshv2::VertexComponents<
-    meshv2::vert::BitFlags,
-    meshv2::vert::Position3f,
-    meshv2::vert::Normal3d,
-    meshv2::vert::OptionalTangent3d>;
+using OptionalTangentVertexComponents = VertexComponents<
+    vert::BitFlags,
+    vert::Position3f,
+    vert::Normal3d,
+    vert::OptionalTangent3d>;
 
-using TangentFaceComponents = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::Normal3f,
-    meshv2::face::OptionalTangent3f>;
+using TangentFaceComponents = FaceComponents<
+    face::BitFlags,
+    face::TriangleVertexReferences<vcl::uint>,
+    face::Normal3f,
+    face::OptionalTangent3f>;
 
-using TangentMesh = meshv2::Mesh<
-    meshv2::VertexContainer<TangentVertexComponents>,
-    meshv2::FaceContainer<TangentFaceComponents>>;
+using TangentMesh = Mesh<
+    mesh::VertexContainer<TangentVertexComponents>,
+    mesh::FaceContainer<TangentFaceComponents>>;
 
-using OptionalTangentMesh = meshv2::Mesh<
-    meshv2::VertexContainer<OptionalTangentVertexComponents>,
-    meshv2::FaceContainer<TangentFaceComponents>>;
+using OptionalTangentMesh = Mesh<
+    mesh::VertexContainer<OptionalTangentVertexComponents>,
+    mesh::FaceContainer<TangentFaceComponents>>;
 
-using FullVertexComponents = meshv2::VertexComponents<
-    meshv2::vert::BitFlags,
-    meshv2::vert::Position3f,
-    meshv2::vert::Normal3f,
-    meshv2::vert::Color>;
+using FullVertexComponents = VertexComponents<
+    vert::BitFlags,
+    vert::Position3f,
+    vert::Normal3f,
+    vert::Color>;
 
-using FullFaceComponents = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::Color>;
+using FullFaceComponents = FaceComponents<
+    face::BitFlags,
+    face::TriangleVertexReferences<vcl::uint>,
+    face::Color>;
 
-using FullMesh = meshv2::Mesh<
-    meshv2::VertexContainer<FullVertexComponents>,
-    meshv2::FaceContainer<FullFaceComponents>,
-    meshv2::mesh::Color>;
+using FullMesh = Mesh<
+    mesh::VertexContainer<FullVertexComponents>,
+    mesh::FaceContainer<FullFaceComponents>,
+    mesh::Color>;
 
 using SimpleVertexComponents =
-    meshv2::VertexComponents<meshv2::vert::BitFlags, meshv2::vert::Position3f>;
+    VertexComponents<vert::BitFlags, vert::Position3f>;
 
-using SimpleMesh = meshv2::Mesh<
-    meshv2::VertexContainer<SimpleVertexComponents>,
-    meshv2::FaceContainer<MyFaceComponents>>;
+using SimpleMesh = Mesh<
+    mesh::VertexContainer<SimpleVertexComponents>,
+    mesh::FaceContainer<MyFaceComponents>>;
 
-using PolyFaceComponents = meshv2::FaceComponents<
-    meshv2::face::PolygonBitFlags,
-    meshv2::face::PolygonVertexReferences<vcl::uint>>;
+using PolyFaceComponents = FaceComponents<
+    face::PolygonBitFlags,
+    face::PolygonVertexReferences<vcl::uint>>;
 
-using PolyMesh = meshv2::Mesh<
-    meshv2::VertexContainer<SimpleVertexComponents>,
-    meshv2::FaceContainer<PolyFaceComponents>>;
+using PolyMesh = Mesh<
+    mesh::VertexContainer<SimpleVertexComponents>,
+    mesh::FaceContainer<PolyFaceComponents>>;
 
-using QuadFaceComponents = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::VertexReferences<4>>;
+using QuadFaceComponents = FaceComponents<
+    face::BitFlags,
+    face::VertexReferences<4>>;
 
-using QuadMesh = meshv2::Mesh<
-    meshv2::VertexContainer<SimpleVertexComponents>,
-    meshv2::FaceContainer<QuadFaceComponents>>;
+using QuadMesh = Mesh<
+    mesh::VertexContainer<SimpleVertexComponents>,
+    mesh::FaceContainer<QuadFaceComponents>>;
 
-using PointCloudMesh = meshv2::Mesh<
-    meshv2::VertexContainer<SimpleVertexComponents>>;
+using PointCloudMesh = Mesh<
+    mesh::VertexContainer<SimpleVertexComponents>>;
 
-using TriBitMesh = vcl::meshv2::Mesh<
-    vcl::meshv2::VertexContainer<vcl::TypeWrapper<
-        vcl::meshv2::comp::Position3f,
-        vcl::meshv2::comp::BitFlags>>,
-    vcl::meshv2::FaceContainer<vcl::TypeWrapper<
-        vcl::meshv2::comp::TriangleBitFlags,
-        vcl::meshv2::comp::VertexReferences<3>>>>;
+using TriBitMesh = vcl::Mesh<
+    vcl::mesh::VertexContainer<vcl::TypeWrapper<
+        vcl::comp::Position3f,
+        vcl::comp::BitFlags>>,
+    vcl::mesh::FaceContainer<vcl::TypeWrapper<
+        vcl::comp::TriangleBitFlags,
+        vcl::comp::VertexReferences<3>>>>;
 
-using MeshDouble = vcl::meshv2::Mesh<
-    vcl::meshv2::VertexContainer<vcl::TypeWrapper<
-        vcl::meshv2::comp::Position3d,
-        vcl::meshv2::comp::BitFlags>>,
-    vcl::meshv2::FaceContainer<vcl::TypeWrapper<
-        vcl::meshv2::comp::TriangleBitFlags,
-        vcl::meshv2::comp::VertexReferences<3>>>>;
+using MeshDouble = vcl::Mesh<
+    vcl::mesh::VertexContainer<vcl::TypeWrapper<
+        vcl::comp::Position3d,
+        vcl::comp::BitFlags>>,
+    vcl::mesh::FaceContainer<vcl::TypeWrapper<
+        vcl::comp::TriangleBitFlags,
+        vcl::comp::VertexReferences<3>>>>;
 
-using CCMeshVertexComponents = meshv2::VertexComponents<
-    meshv2::vert::BitFlags,
-    meshv2::vert::Position3f,
-    meshv2::vert::CustomComponents>;
+using CCMeshVertexComponents = VertexComponents<
+    vert::BitFlags,
+    vert::Position3f,
+    vert::CustomComponents>;
 
-using CCMeshFaceComponents = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::CustomComponents>;
+using CCMeshFaceComponents = FaceComponents<
+    face::BitFlags,
+    face::TriangleVertexReferences<vcl::uint>,
+    face::CustomComponents>;
 
-using CCMesh = meshv2::Mesh<
-    meshv2::VertexContainer<CCMeshVertexComponents>,
-    meshv2::FaceContainer<CCMeshFaceComponents>,
-    meshv2::mesh::CustomComponents>;
+using CCMesh = Mesh<
+    mesh::VertexContainer<CCMeshVertexComponents>,
+    mesh::FaceContainer<CCMeshFaceComponents>,
+    mesh::CustomComponents>;
 
-using VertexComponents64 = meshv2::VertexComponents<
-    meshv2::vert::BitFlags,
-    meshv2::vert::Position3d>;
+using VertexComponents64 = VertexComponents<
+    vert::BitFlags,
+    vert::Position3d>;
 
-using FaceComponents64 = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<uint64_t>>;
+using FaceComponents64 = FaceComponents<
+    face::BitFlags,
+    face::TriangleVertexReferences<uint64_t>>;
 
-using Mesh64 = meshv2::Mesh<
-    meshv2::VertexContainer<VertexComponents64, uint64_t>,
-    meshv2::FaceContainer<FaceComponents64, uint64_t>>;
+using Mesh64 = Mesh<
+    mesh::VertexContainer<VertexComponents64, uint64_t>,
+    mesh::FaceContainer<FaceComponents64, uint64_t>>;
 
-using MaterialFaceComponents = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::MaterialIndex,
-    meshv2::face::OptionalColor>;
+using MaterialFaceComponents = FaceComponents<
+    face::BitFlags,
+    face::TriangleVertexReferences<vcl::uint>,
+    face::MaterialIndex,
+    face::OptionalColor>;
 
-using MaterialMesh = meshv2::Mesh<
-    meshv2::VertexContainer<MyVertexComponents>,
-    meshv2::FaceContainer<MaterialFaceComponents>>;
+using MaterialMesh = Mesh<
+    mesh::VertexContainer<MyVertexComponents>,
+    mesh::FaceContainer<MaterialFaceComponents>>;
 
-using OptionalMaterialFaceComponents = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::OptionalMaterialIndex>;
+using OptionalMaterialFaceComponents = FaceComponents<
+    face::BitFlags,
+    face::TriangleVertexReferences<vcl::uint>,
+    face::OptionalMaterialIndex>;
 
-using OptionalMaterialMesh = meshv2::Mesh<
-    meshv2::VertexContainer<MyVertexComponents>,
-    meshv2::FaceContainer<OptionalMaterialFaceComponents>>;
+using OptionalMaterialMesh = Mesh<
+    mesh::VertexContainer<MyVertexComponents>,
+    mesh::FaceContainer<OptionalMaterialFaceComponents>>;
 
-using MaterialMeshWithMaterials = meshv2::Mesh<
-    meshv2::VertexContainer<MyVertexComponents>,
-    meshv2::FaceContainer<MaterialFaceComponents>,
-    meshv2::mesh::Materials>;
+using MaterialMeshWithMaterials = Mesh<
+    mesh::VertexContainer<MyVertexComponents>,
+    mesh::FaceContainer<MaterialFaceComponents>,
+    mesh::Materials>;
 
-using AdjVertexComponents = meshv2::VertexComponents<
-    meshv2::vert::BitFlags,
-    meshv2::vert::Position3f,
-    meshv2::vert::AdjacentFaces<>,
-    meshv2::vert::AdjacentVertices<>,
-    meshv2::vert::OptionalAdjacentEdges<>>;
+using AdjVertexComponents = VertexComponents<
+    vert::BitFlags,
+    vert::Position3f,
+    vert::AdjacentFaces<>,
+    vert::AdjacentVertices<>,
+    vert::OptionalAdjacentEdges<>>;
 
-using AdjFaceComponents = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::TriangleAdjacentFaces<vcl::uint>,
-    meshv2::face::OptionalTriangleAdjacentEdges<vcl::uint>,
-    meshv2::face::OptionalColor>;
+using AdjFaceComponents = FaceComponents<
+    face::BitFlags,
+    face::TriangleVertexReferences<vcl::uint>,
+    face::TriangleAdjacentFaces<vcl::uint>,
+    face::OptionalTriangleAdjacentEdges<vcl::uint>,
+    face::OptionalColor>;
 
-using AdjMesh = meshv2::Mesh<
-    meshv2::VertexContainer<AdjVertexComponents>,
-    meshv2::FaceContainer<AdjFaceComponents>>;
+using AdjMesh = Mesh<
+    mesh::VertexContainer<AdjVertexComponents>,
+    mesh::FaceContainer<AdjFaceComponents>>;
 
-using MyEdgeComponents = meshv2::EdgeComponents<
-    meshv2::edge::BitFlags,
-    meshv2::edge::EdgeVertexReferences<vcl::uint>,
-    meshv2::edge::Color,
-    meshv2::edge::OptionalQualityf>;
+using MyEdgeComponents = EdgeComponents<
+    edge::BitFlags,
+    edge::EdgeVertexReferences<vcl::uint>,
+    edge::Color,
+    edge::OptionalQualityf>;
 
-using EdgeMesh = meshv2::Mesh<
-    meshv2::VertexContainer<MyVertexComponents>,
-    meshv2::EdgeContainer<MyEdgeComponents>>;
+using EdgeMesh = Mesh<
+    mesh::VertexContainer<MyVertexComponents>,
+    mesh::EdgeContainer<MyEdgeComponents>>;
 
-using GraphMesh = meshv2::Mesh<
-    meshv2::VertexContainer<MyVertexComponents>,
-    meshv2::FaceContainer<MyFaceComponents>,
-    meshv2::EdgeContainer<MyEdgeComponents>>;
+using GraphMesh = Mesh<
+    mesh::VertexContainer<MyVertexComponents>,
+    mesh::FaceContainer<MyFaceComponents>,
+    mesh::EdgeContainer<MyEdgeComponents>>;
 
-using CCEdgeComponents = meshv2::EdgeComponents<
-    meshv2::edge::BitFlags,
-    meshv2::edge::EdgeVertexReferences<vcl::uint>,
-    meshv2::edge::CustomComponents>;
+using CCEdgeComponents = EdgeComponents<
+    edge::BitFlags,
+    edge::EdgeVertexReferences<vcl::uint>,
+    edge::CustomComponents>;
 
-using EdgeMeshWithCC = meshv2::Mesh<
-    meshv2::VertexContainer<CCMeshVertexComponents>,
-    meshv2::EdgeContainer<CCEdgeComponents>,
-    meshv2::mesh::CustomComponents>;
+using EdgeMeshWithCC = Mesh<
+    mesh::VertexContainer<CCMeshVertexComponents>,
+    mesh::EdgeContainer<CCEdgeComponents>,
+    mesh::CustomComponents>;
 
 // Concept checking templates
 template<typename T>
@@ -341,7 +341,7 @@ concept CanCallVertexIndices = requires (T t) { t.vertexIndices(); };
 inline MyMesh createSampleQuadMesh()
 {
     MyMesh mesh;
-    mesh.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
+    mesh.enableElementComponent<ElemId::VERTEX, CompId::NORMAL>();
     mesh.resizeVertices(4);
     mesh.resizeFaces(2);
 
@@ -362,13 +362,13 @@ inline MyMesh createSampleQuadMesh()
 
     mesh.color() = Color::Red;
 
-    mesh.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
+    mesh.enableElementComponent<ElemId::VERTEX, CompId::COLOR>();
     mesh.vertex(0).color() = Color::Blue;
     mesh.vertex(1).color() = Color::Green;
     mesh.vertex(2).color() = Color::Yellow;
     mesh.vertex(3).color() = Color::Cyan;
 
-    mesh.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::COLOR>();
+    mesh.enableElementComponent<ElemId::FACE, CompId::COLOR>();
     mesh.face(0).color() = Color::DarkRed;
     mesh.face(1).color() = Color::DarkBlue;
 
@@ -411,7 +411,7 @@ inline EdgeMesh createSampleEdgeMesh()
 inline TransformedMesh createSampleTransformedMesh()
 {
     TransformedMesh mesh;
-    mesh.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>();
+    mesh.enableElementComponent<ElemId::VERTEX, CompId::NORMAL>();
     mesh.resizeVertices(4);
     mesh.resizeFaces(2);
 
@@ -432,13 +432,13 @@ inline TransformedMesh createSampleTransformedMesh()
 
     mesh.color() = Color::Red;
 
-    mesh.enableElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>();
+    mesh.enableElementComponent<ElemId::VERTEX, CompId::COLOR>();
     mesh.vertex(0).color() = Color::Blue;
     mesh.vertex(1).color() = Color::Green;
     mesh.vertex(2).color() = Color::Yellow;
     mesh.vertex(3).color() = Color::Cyan;
 
-    mesh.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::COLOR>();
+    mesh.enableElementComponent<ElemId::FACE, CompId::COLOR>();
     mesh.face(0).color() = Color::DarkRed;
     mesh.face(1).color() = Color::DarkBlue;
 

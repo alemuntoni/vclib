@@ -25,10 +25,12 @@
 #include "test_adjacencies.h"
 #include "test_edges.h"
 #include "test_elem_algorithms.h"
+#include "test_presets.h"
 
 int main()
 {
     testConcepts();
+    testPresets();
     testNavigation();
     testContainerProxy();
     testConstCorrectness();

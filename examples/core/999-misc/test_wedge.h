@@ -9,86 +9,86 @@
 #define TEST_WEDGE_H
 
 #include "types.h"
-#include <vclib/mesh_v2/requirements.h>
-#include <vclib/mesh_v2/traits.h>
+#include <vclib/mesh/requirements.h>
+#include <vclib/mesh/traits.h>
 
-#include <vclib/mesh_v2/elements/face_components.h>
+#include <vclib/mesh/elements/face_components.h>
 
 // Wedge mesh types for tests:
-using WedgeFaceComponents = meshv2::FaceComponents<
-    meshv2::face::BitFlags,
-    meshv2::face::TriangleVertexReferences<vcl::uint>,
-    meshv2::face::TriangleWedgeColors,
-    meshv2::face::TriangleWedgeTexCoordsf,
-    meshv2::face::OptionalTriangleWedgeNormals3f>;
+using WedgeFaceComponents = FaceComponents<
+    face::BitFlags,
+    face::TriangleVertexReferences<vcl::uint>,
+    face::TriangleWedgeColors,
+    face::TriangleWedgeTexCoordsf,
+    face::OptionalTriangleWedgeNormals3f>;
 
-using WedgeMesh = meshv2::Mesh<
-    meshv2::VertexContainer<SimpleVertexComponents>,
-    meshv2::FaceContainer<WedgeFaceComponents>>;
+using WedgeMesh = Mesh<
+    mesh::VertexContainer<SimpleVertexComponents>,
+    mesh::FaceContainer<WedgeFaceComponents>>;
 
-using PolyWedgeFaceComponents = meshv2::FaceComponents<
-    meshv2::face::PolygonBitFlags,
-    meshv2::face::PolygonVertexReferences<vcl::uint>,
-    meshv2::face::PolygonWedgeColors,
-    meshv2::face::PolygonWedgeTexCoordsf>;
+using PolyWedgeFaceComponents = FaceComponents<
+    face::PolygonBitFlags,
+    face::PolygonVertexReferences<vcl::uint>,
+    face::PolygonWedgeColors,
+    face::PolygonWedgeTexCoordsf>;
 
-using PolyWedgeMesh = meshv2::Mesh<
-    meshv2::VertexContainer<SimpleVertexComponents>,
-    meshv2::FaceContainer<PolyWedgeFaceComponents>>;
+using PolyWedgeMesh = Mesh<
+    mesh::VertexContainer<SimpleVertexComponents>,
+    mesh::FaceContainer<PolyWedgeFaceComponents>>;
 
 inline void testWedgeConcepts()
 {
     // Wedge component concepts on Face
-    static_assert(meshv2::face::HasWedgeColors<WedgeMesh::Face>);
-    static_assert(!meshv2::face::HasOptionalWedgeColors<WedgeMesh::Face>);
-    static_assert(meshv2::face::HasWedgeTexCoords<WedgeMesh::Face>);
-    static_assert(!meshv2::face::HasOptionalWedgeTexCoords<WedgeMesh::Face>);
-    static_assert(meshv2::face::HasWedgeNormals<WedgeMesh::Face>);
-    static_assert(meshv2::face::HasOptionalWedgeNormals<WedgeMesh::Face>);
-    static_assert(meshv2::face::HasWedges<WedgeMesh::Face>);
+    static_assert(face::HasWedgeColors<WedgeMesh::Face>);
+    static_assert(!face::HasOptionalWedgeColors<WedgeMesh::Face>);
+    static_assert(face::HasWedgeTexCoords<WedgeMesh::Face>);
+    static_assert(!face::HasOptionalWedgeTexCoords<WedgeMesh::Face>);
+    static_assert(face::HasWedgeNormals<WedgeMesh::Face>);
+    static_assert(face::HasOptionalWedgeNormals<WedgeMesh::Face>);
+    static_assert(face::HasWedges<WedgeMesh::Face>);
 
     // Unified element_concepts on Face
-    static_assert(meshv2::HasWedgeColors<WedgeMesh::Face>);
-    static_assert(meshv2::HasWedgeTexCoords<WedgeMesh::Face>);
-    static_assert(meshv2::HasWedgeNormals<WedgeMesh::Face>);
-    static_assert(meshv2::HasWedges<WedgeMesh::Face>);
+    static_assert(HasWedgeColors<WedgeMesh::Face>);
+    static_assert(HasWedgeTexCoords<WedgeMesh::Face>);
+    static_assert(HasWedgeNormals<WedgeMesh::Face>);
+    static_assert(HasWedges<WedgeMesh::Face>);
 
     // Mesh-level wedge concepts
-    static_assert(meshv2::HasFaceWedgeColors<WedgeMesh>);
-    static_assert(meshv2::HasFaceWedgeTexCoords<WedgeMesh>);
-    static_assert(meshv2::HasFaceWedgeNormals<WedgeMesh>);
-    static_assert(meshv2::HasOptionalFaceWedgeNormals<WedgeMesh>);
-    static_assert(meshv2::HasFaceWedges<WedgeMesh>);
+    static_assert(HasFaceWedgeColors<WedgeMesh>);
+    static_assert(HasFaceWedgeTexCoords<WedgeMesh>);
+    static_assert(HasFaceWedgeNormals<WedgeMesh>);
+    static_assert(HasOptionalFaceWedgeNormals<WedgeMesh>);
+    static_assert(HasFaceWedges<WedgeMesh>);
 
     // Negative concepts on mesh without wedges
-    static_assert(!meshv2::face::HasWedgeColors<SimpleMesh::Face>);
-    static_assert(!meshv2::face::HasWedgeTexCoords<SimpleMesh::Face>);
-    static_assert(!meshv2::face::HasWedgeNormals<SimpleMesh::Face>);
-    static_assert(!meshv2::face::HasWedges<SimpleMesh::Face>);
-    static_assert(!meshv2::HasWedges<SimpleMesh::Face>);
-    static_assert(!meshv2::HasFaceWedges<SimpleMesh>);
+    static_assert(!face::HasWedgeColors<SimpleMesh::Face>);
+    static_assert(!face::HasWedgeTexCoords<SimpleMesh::Face>);
+    static_assert(!face::HasWedgeNormals<SimpleMesh::Face>);
+    static_assert(!face::HasWedges<SimpleMesh::Face>);
+    static_assert(!HasWedges<SimpleMesh::Face>);
+    static_assert(!HasFaceWedges<SimpleMesh>);
 
     // Polygonal wedge mesh concepts
-    static_assert(meshv2::face::HasWedgeColors<PolyWedgeMesh::Face>);
-    static_assert(meshv2::face::HasWedgeTexCoords<PolyWedgeMesh::Face>);
-    static_assert(!meshv2::face::HasWedgeNormals<PolyWedgeMesh::Face>);
-    static_assert(meshv2::HasFaceWedges<PolyWedgeMesh>);
-    static_assert(!meshv2::HasFaceWedgeNormals<PolyWedgeMesh>);
+    static_assert(face::HasWedgeColors<PolyWedgeMesh::Face>);
+    static_assert(face::HasWedgeTexCoords<PolyWedgeMesh::Face>);
+    static_assert(!face::HasWedgeNormals<PolyWedgeMesh::Face>);
+    static_assert(HasFaceWedges<PolyWedgeMesh>);
+    static_assert(!HasFaceWedgeNormals<PolyWedgeMesh>);
 
     // ComponentConcept check
-    static_assert(meshv2::ComponentConcept<meshv2::face::TriangleWedgeColors>);
-    static_assert(meshv2::ComponentConcept<meshv2::face::TriangleWedgeTexCoordsf>);
-    static_assert(meshv2::ComponentConcept<meshv2::face::OptionalTriangleWedgeNormals3f>);
-    static_assert(meshv2::comp::IsTiedToVertexCount<meshv2::face::PolygonWedgeColors>);
-    static_assert(!meshv2::comp::IsTiedToVertexCount<meshv2::face::TriangleWedgeColors>);
+    static_assert(comp::ComponentConcept<face::TriangleWedgeColors>);
+    static_assert(comp::ComponentConcept<face::TriangleWedgeTexCoordsf>);
+    static_assert(comp::ComponentConcept<face::OptionalTriangleWedgeNormals3f>);
+    static_assert(comp::IsTiedToVertexCount<face::PolygonWedgeColors>);
+    static_assert(!comp::IsTiedToVertexCount<face::TriangleWedgeColors>);
 
     // Wedge traits
-    static_assert(meshv2::WedgeConcept<meshv2::WedgeType<WedgeMesh::Face>>);
-    static_assert(std::is_same_v<meshv2::WedgeType<WedgeMesh::Face>, meshv2::comp::WedgeProxy<WedgeMesh::Face>>);
-    static_assert(std::is_same_v<meshv2::VertexType<meshv2::WedgeType<WedgeMesh::Face>>, WedgeMesh::Vertex>);
-    static_assert(std::is_same_v<meshv2::FaceType<meshv2::WedgeType<WedgeMesh::Face>>, WedgeMesh::Face>);
-    static_assert(std::is_same_v<meshv2::NormalType<meshv2::WedgeType<WedgeMesh::Face>>, Point3f>);
-    static_assert(std::is_same_v<meshv2::TexCoordType<meshv2::WedgeType<WedgeMesh::Face>>, vcl::TexCoordf>);
+    static_assert(WedgeConcept<WedgeType<WedgeMesh::Face>>);
+    static_assert(std::is_same_v<WedgeType<WedgeMesh::Face>, comp::WedgeProxy<WedgeMesh::Face>>);
+    static_assert(std::is_same_v<VertexType<WedgeType<WedgeMesh::Face>>, WedgeMesh::Vertex>);
+    static_assert(std::is_same_v<FaceType<WedgeType<WedgeMesh::Face>>, WedgeMesh::Face>);
+    static_assert(std::is_same_v<NormalType<WedgeType<WedgeMesh::Face>>, Point3f>);
+    static_assert(std::is_same_v<TexCoordType<WedgeType<WedgeMesh::Face>>, vcl::TexCoordf>);
 }
 
 inline void testTriangleWedges()
@@ -126,7 +126,7 @@ inline void testTriangleWedges()
     assert(!f.wedge(0).isNormalAvailable());
     assert(!f.wedges().isNormalsAvailable());
 
-    m.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::WEDGE_NORMALS>();
+    m.enableElementComponent<ElemId::FACE, CompId::WEDGE_NORMALS>();
     assert(f.wedge(0).isNormalAvailable());
     assert(f.wedges().isNormalsAvailable());
 
@@ -172,7 +172,7 @@ inline void testTriangleWedges()
 
     // Test importFrom between faces
     WedgeMesh m2;
-    m2.enableElementComponent<meshv2::ElemId::FACE, meshv2::CompId::WEDGE_NORMALS>();
+    m2.enableElementComponent<ElemId::FACE, CompId::WEDGE_NORMALS>();
     m2.addVertices(3);
     vcl::uint fi2 = m2.addFace(0, 1, 2);
     auto f2 = m2.face(fi2);

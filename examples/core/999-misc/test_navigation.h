@@ -12,15 +12,15 @@
 
 inline void testMeshCreationAndColors(const MyMesh& mesh)
 {
-    using enum meshv2::ElemId::Enum;
-    using enum meshv2::CompId::Enum;
+    using enum ElemId::Enum;
+    using enum CompId::Enum;
 
     assert(mesh.vertexCount() == 4);
     assert(mesh.faceCount() == 2);
 
     // Mesh color
     assert(mesh.color() == Color::Red);
-    static_assert(meshv2::mesh::HasColor<decltype(mesh)>);
+    static_assert(mesh::HasColor<decltype(mesh)>);
 
     // Vertex colors
     assert((mesh.isElementComponentAvailable<VERTEX, COLOR>()));

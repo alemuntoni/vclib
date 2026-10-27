@@ -10,7 +10,7 @@
 
 #include "types.h"
 
-#include <vclib/mesh_v2/views.h>
+#include <vclib/mesh/views.h>
 
 #include <cassert>
 #include <print>
@@ -19,18 +19,18 @@
 
 inline void testElementViews()
 {
-    namespace views = meshv2::views;
+    namespace views = views;
 
     MyMesh m = createSampleQuadMesh(); // 4 vertices, 2 faces
 
     // --- 1. Range Concepts ---
-    static_assert(meshv2::VertexRangeConcept<decltype(m.vertices())>);
-    static_assert(meshv2::VertexRangeConcept<decltype(m | views::vertices)>);
-    static_assert(meshv2::VertexRangeConcept<decltype(views::vertices(m))>);
+    static_assert(VertexRangeConcept<decltype(m.vertices())>);
+    static_assert(VertexRangeConcept<decltype(m | views::vertices)>);
+    static_assert(VertexRangeConcept<decltype(views::vertices(m))>);
 
-    static_assert(meshv2::FaceRangeConcept<decltype(m.faces())>);
-    static_assert(meshv2::FaceRangeConcept<decltype(m | views::faces)>);
-    static_assert(meshv2::FaceRangeConcept<decltype(views::faces(m))>);
+    static_assert(FaceRangeConcept<decltype(m.faces())>);
+    static_assert(FaceRangeConcept<decltype(m | views::faces)>);
+    static_assert(FaceRangeConcept<decltype(views::faces(m))>);
 
     // --- 2. Pipe Syntax on Mesh (m | views::vertices / m | views::faces) ---
     std::size_t vCount = 0;
@@ -62,13 +62,13 @@ inline void testElementViews()
 
     // --- 4. Generic elements<ELEM_ID> Adaptor ---
     vCount = 0;
-    for (auto v : m | views::elements<meshv2::ElemId::VERTEX>) {
+    for (auto v : m | views::elements<ElemId::VERTEX>) {
         ++vCount;
     }
     assert(vCount == 4);
 
     fCount = 0;
-    for (auto f : m | views::elements<meshv2::ElemId::FACE>) {
+    for (auto f : m | views::elements<ElemId::FACE>) {
         ++fCount;
     }
     assert(fCount == 2);
@@ -139,17 +139,17 @@ inline void testElementViews()
 
 inline void testSelectionViews()
 {
-    namespace views = meshv2::views;
+    namespace views = views;
 
     MyMesh m = createSampleQuadMesh(); // 4 vertices (0, 1, 2, 3), 2 faces (0, 1)
 
     // --- 1. Concepts ---
-    static_assert(meshv2::SelectableRangeConcept<decltype(m.vertices())>);
-    static_assert(meshv2::SelectableRangeConcept<decltype(m | views::vertices)>);
-    static_assert(meshv2::SelectableRangeConcept<decltype(m.faces())>);
-    static_assert(meshv2::SelectableRangeConcept<decltype(m | views::faces)>);
-    static_assert(meshv2::SelectableRangeConcept<decltype(m.vertices() | views::selected)>);
-    static_assert(meshv2::SelectableRangeConcept<decltype(m.vertices() | views::notSelected)>);
+    static_assert(SelectableRangeConcept<decltype(m.vertices())>);
+    static_assert(SelectableRangeConcept<decltype(m | views::vertices)>);
+    static_assert(SelectableRangeConcept<decltype(m.faces())>);
+    static_assert(SelectableRangeConcept<decltype(m | views::faces)>);
+    static_assert(SelectableRangeConcept<decltype(m.vertices() | views::selected)>);
+    static_assert(SelectableRangeConcept<decltype(m.vertices() | views::notSelected)>);
 
     // --- 2. Initial state: nothing selected ---
     std::size_t selCount = 0;
@@ -272,34 +272,34 @@ inline void testSelectionViews()
 
 inline void testComponentViews()
 {
-    namespace views = meshv2::views;
+    namespace views = views;
 
     MyMesh m = createSampleQuadMesh(); // 4 vertices, 2 faces
 
     // --- 1. Concepts ---
     // Input ranges satisfy PositionRangeConcept
-    static_assert(meshv2::PositionRangeConcept<decltype(m.vertices())>);
-    static_assert(meshv2::PositionRangeConcept<decltype(m | views::vertices)>);
-    static_assert(meshv2::PositionRangeConcept<decltype(m.vertices() | views::selected)>);
+    static_assert(PositionRangeConcept<decltype(m.vertices())>);
+    static_assert(PositionRangeConcept<decltype(m | views::vertices)>);
+    static_assert(PositionRangeConcept<decltype(m.vertices() | views::selected)>);
 
     // Output ranges satisfy std::ranges::range and yield Point3f
     static_assert(std::ranges::range<decltype(m.vertices() | views::positions)>);
     static_assert(std::ranges::range<decltype(m.vertices() | views::selected | views::positions)>);
     static_assert(std::same_as<std::ranges::range_value_t<decltype(m.vertices() | views::positions)>, Point3f>);
 
-    static_assert(meshv2::NormalRangeConcept<decltype(m.vertices())>);
-    static_assert(meshv2::NormalRangeConcept<decltype(m | views::vertices)>);
-    static_assert(meshv2::NormalRangeConcept<decltype(m.vertices() | views::selected)>);
+    static_assert(NormalRangeConcept<decltype(m.vertices())>);
+    static_assert(NormalRangeConcept<decltype(m | views::vertices)>);
+    static_assert(NormalRangeConcept<decltype(m.vertices() | views::selected)>);
     static_assert(std::ranges::range<decltype(m.vertices() | views::normals)>);
 
     // MyFace does not have Normal, so NormalRangeConcept is false for m.faces()
-    static_assert(!meshv2::NormalRangeConcept<decltype(m.faces())>);
-    static_assert(!meshv2::NormalRangeConcept<decltype(m | views::faces)>);
+    static_assert(!NormalRangeConcept<decltype(m.faces())>);
+    static_assert(!NormalRangeConcept<decltype(m | views::faces)>);
 
-    static_assert(meshv2::ColorRangeConcept<decltype(m.vertices())>);
-    static_assert(meshv2::ColorRangeConcept<decltype(m | views::vertices)>);
-    static_assert(meshv2::ColorRangeConcept<decltype(m.faces())>);
-    static_assert(meshv2::ColorRangeConcept<decltype(m | views::faces)>);
+    static_assert(ColorRangeConcept<decltype(m.vertices())>);
+    static_assert(ColorRangeConcept<decltype(m | views::vertices)>);
+    static_assert(ColorRangeConcept<decltype(m.faces())>);
+    static_assert(ColorRangeConcept<decltype(m | views::faces)>);
     static_assert(std::ranges::range<decltype(m.vertices() | views::colors)>);
     static_assert(std::ranges::range<decltype(m.faces() | views::colors)>);
 
@@ -377,14 +377,14 @@ inline void testComponentViews()
     assert((m.vertex(1).normal() == Point3f(0.0f, 0.0f, 1.0f)));
 
     // Face normals on a mesh type with face normals
-    using FaceWithNormals = meshv2::FaceComponents<
-        meshv2::face::BitFlags,
-        meshv2::face::TriangleVertexReferences<vcl::uint>,
-        meshv2::face::Normal3f,
-        meshv2::face::Color>;
-    using MeshWithFaceNormals = meshv2::Mesh<
-        meshv2::VertexContainer<MyVertexComponents>,
-        meshv2::FaceContainer<FaceWithNormals>>;
+    using FaceWithNormals = FaceComponents<
+        face::BitFlags,
+        face::TriangleVertexReferences<vcl::uint>,
+        face::Normal3f,
+        face::Color>;
+    using MeshWithFaceNormals = Mesh<
+        mesh::VertexContainer<MyVertexComponents>,
+        mesh::FaceContainer<FaceWithNormals>>;
 
     MeshWithFaceNormals mfn;
     mfn.addVertex();
@@ -392,8 +392,8 @@ inline void testComponentViews()
     mfn.addVertex();
     mfn.addFace(0, 1, 2);
 
-    static_assert(meshv2::NormalRangeConcept<decltype(mfn.faces())>);
-    static_assert(meshv2::NormalRangeConcept<decltype(mfn | views::faces)>);
+    static_assert(NormalRangeConcept<decltype(mfn.faces())>);
+    static_assert(NormalRangeConcept<decltype(mfn | views::faces)>);
 
     std::ranges::fill(mfn.faces() | views::normals, Point3f(0.0f, 1.0f, 0.0f));
     for (const Point3f& n : mfn.faces() | views::normals) {
@@ -426,21 +426,21 @@ inline void testComponentViews()
 
     // --- 5. Generic views::component<COMP_ID> ---
     std::size_t cPosCount = 0;
-    for (const auto& p : m.vertices() | views::component<meshv2::CompId::POSITION>) {
+    for (const auto& p : m.vertices() | views::component<CompId::POSITION>) {
         (void)p;
         ++cPosCount;
     }
     assert(cPosCount == 4);
 
     std::size_t cNormCount = 0;
-    for (const auto& n : m.vertices() | views::component<meshv2::CompId::NORMAL>) {
+    for (const auto& n : m.vertices() | views::component<CompId::NORMAL>) {
         (void)n;
         ++cNormCount;
     }
     assert(cNormCount == 4);
 
     std::size_t cColCount = 0;
-    for (const auto& c : m.faces() | views::component<meshv2::CompId::COLOR>) {
+    for (const auto& c : m.faces() | views::component<CompId::COLOR>) {
         (void)c;
         ++cColCount;
     }
@@ -462,7 +462,7 @@ inline void testComponentViews()
     cmesh.vertex(1).principalCurvature().maxValue() = 2.0f;
     cmesh.vertex(2).principalCurvature().maxValue() = 3.0f;
 
-    static_assert(meshv2::PrincipalCurvaturesRangeConcept<decltype(cmesh.vertices())>);
+    static_assert(PrincipalCurvaturesRangeConcept<decltype(cmesh.vertices())>);
     static_assert(std::ranges::range<decltype(cmesh.vertices() | views::principalCurvatures)>);
 
     std::size_t curvCount = 0;
@@ -485,8 +485,8 @@ inline void testComponentViews()
     qmesh.vertex(1).quality() = 20.0f;
     qmesh.vertex(2).quality() = 30.0f;
 
-    static_assert(meshv2::QualitiesRangeConcept<decltype(qmesh.vertices())>);
-    static_assert(meshv2::QualityRangeConcept<decltype(qmesh.vertices())>);
+    static_assert(QualitiesRangeConcept<decltype(qmesh.vertices())>);
+    static_assert(QualityRangeConcept<decltype(qmesh.vertices())>);
     static_assert(std::ranges::range<decltype(qmesh.vertices() | views::qualities)>);
     static_assert(std::ranges::range<decltype(qmesh.vertices() | views::quality)>);
 
@@ -518,8 +518,8 @@ inline void testComponentViews()
     tmesh.vertex(2).tangent() = Point3f(0.0f, 0.0f, 3.0f);
     tmesh.vertex(0).normal() = Point3f(0.0f, 0.0f, 1.0f);
 
-    static_assert(meshv2::TangentsRangeConcept<decltype(tmesh.vertices())>);
-    static_assert(meshv2::TangentRangeConcept<decltype(tmesh.vertices())>);
+    static_assert(TangentsRangeConcept<decltype(tmesh.vertices())>);
+    static_assert(TangentRangeConcept<decltype(tmesh.vertices())>);
     static_assert(std::ranges::range<decltype(tmesh.vertices() | views::tangents)>);
     static_assert(std::ranges::range<decltype(tmesh.vertices() | views::tangent)>);
 

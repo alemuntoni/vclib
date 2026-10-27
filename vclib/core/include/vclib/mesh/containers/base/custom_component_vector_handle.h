@@ -86,28 +86,56 @@ public:
     CustomComponentVectorHandle(std::vector<std::any>& cc)
     {
         mVec.reserve(cc.size());
-        for (uint i = 0; i < cc.size(); ++i) {
+        for (std::size_t i = 0; i < cc.size(); ++i) {
             mVec.push_back(std::any_cast<T&>(cc[i]));
         }
     }
 
-    T& at(uint i) { return mVec[i].get(); }
+    CustomComponentVectorHandle(const std::vector<std::any>& cc)
+        requires std::is_const_v<T>
+    {
+        mVec.reserve(cc.size());
+        for (std::size_t i = 0; i < cc.size(); ++i) {
+            mVec.push_back(std::any_cast<const std::remove_const_t<T>&>(cc[i]));
+        }
+    }
 
-    const T& at(uint i) const { return mVec[i].get(); }
+    template<typename OtherT>
+    requires std::is_same_v<const OtherT, T>
+    CustomComponentVectorHandle(
+        const CustomComponentVectorHandle<OtherT>& other)
+    {
+        mVec.reserve(other.size());
+        for (std::size_t i = 0; i < other.size(); ++i) {
+            mVec.push_back(other[i]);
+        }
+    }
 
-    T& front() { return mVec.begin()->get(); }
+    bool empty() const { return mVec.empty(); }
 
-    const T& front() const { return mVec.begin()->get(); }
+    T& at(std::size_t i) { return mVec.at(i).get(); }
 
-    T& back() { return std::prev(mVec.end())->get(); }
+    const T& at(std::size_t i) const
+    {
+        return mVec.at(i).get();
+    }
 
-    const T& back() const { return std::prev(mVec.end())->get(); }
+    T& front() { return mVec.front().get(); }
 
-    uint size() const { return mVec.size(); }
+    const T& front() const { return mVec.front().get(); }
 
-    T& operator[](uint i) { return mVec[i].get(); }
+    T& back() { return mVec.back().get(); }
 
-    const T& operator[](uint i) const { return mVec[i].get(); }
+    const T& back() const { return mVec.back().get(); }
+
+    std::size_t size() const { return mVec.size(); }
+
+    T& operator[](std::size_t i) { return mVec[i].get(); }
+
+    const T& operator[](std::size_t i) const
+    {
+        return mVec[i].get();
+    }
 
     Iterator begin() { return Iterator(mVec.begin()); }
 

@@ -13,50 +13,50 @@
 #include <ranges>
 #include <vector>
 
-#include <vclib/mesh_v2/views/elements/edge.h>
+#include <vclib/mesh/views/elements/edge.h>
 
 #include "types.h"
 
 inline void testEdgeConcepts()
 {
     // Element concepts
-    static_assert(meshv2::ElementConcept<EdgeMesh::Edge>);
-    static_assert(meshv2::ElementConcept<EdgeMesh::ConstEdge>);
-    static_assert(meshv2::ElementConcept<GraphMesh::Edge>);
-    static_assert(meshv2::ElementConcept<GraphMesh::ConstEdge>);
+    static_assert(ElementConcept<EdgeMesh::Edge>);
+    static_assert(ElementConcept<EdgeMesh::ConstEdge>);
+    static_assert(ElementConcept<GraphMesh::Edge>);
+    static_assert(ElementConcept<GraphMesh::ConstEdge>);
 
-    static_assert(meshv2::EdgeConcept<EdgeMesh::Edge>);
-    static_assert(meshv2::EdgeConcept<EdgeMesh::ConstEdge>);
-    static_assert(meshv2::EdgeConcept<GraphMesh::Edge>);
-    static_assert(meshv2::EdgeConcept<GraphMesh::ConstEdge>);
+    static_assert(EdgeConcept<EdgeMesh::Edge>);
+    static_assert(EdgeConcept<EdgeMesh::ConstEdge>);
+    static_assert(EdgeConcept<GraphMesh::Edge>);
+    static_assert(EdgeConcept<GraphMesh::ConstEdge>);
 
     // Strong typing: Edge is not Vertex nor Face
-    static_assert(!meshv2::VertexConcept<EdgeMesh::Edge>);
-    static_assert(!meshv2::FaceConcept<EdgeMesh::Edge>);
-    static_assert(!meshv2::EdgeConcept<EdgeMesh::Vertex>);
-    static_assert(!meshv2::EdgeConcept<GraphMesh::Face>);
+    static_assert(!VertexConcept<EdgeMesh::Edge>);
+    static_assert(!FaceConcept<EdgeMesh::Edge>);
+    static_assert(!EdgeConcept<EdgeMesh::Vertex>);
+    static_assert(!EdgeConcept<GraphMesh::Face>);
 
     // Component concepts
-    static_assert(meshv2::HasRequiredEdgeComponents<MyEdgeComponents>);
-    static_assert(meshv2::HasRequiredEdgeComponents<CCEdgeComponents>);
-    static_assert(meshv2::edge::HasEdgeVertexReferences<MyEdgeComponents>);
-    static_assert(meshv2::edge::HasEdgeVertexReferences<EdgeMesh::Edge>);
-    static_assert(meshv2::edge::HasColor<MyEdgeComponents>);
-    static_assert(meshv2::edge::HasColor<EdgeMesh::Edge>);
-    static_assert(meshv2::edge::HasOptionalQuality<MyEdgeComponents>);
-    static_assert(meshv2::edge::HasOptionalQuality<EdgeMesh::Edge>);
+    static_assert(HasRequiredEdgeComponents<MyEdgeComponents>);
+    static_assert(HasRequiredEdgeComponents<CCEdgeComponents>);
+    static_assert(edge::HasEdgeVertexReferences<MyEdgeComponents>);
+    static_assert(edge::HasEdgeVertexReferences<EdgeMesh::Edge>);
+    static_assert(edge::HasColor<MyEdgeComponents>);
+    static_assert(edge::HasColor<EdgeMesh::Edge>);
+    static_assert(edge::HasOptionalQuality<MyEdgeComponents>);
+    static_assert(edge::HasOptionalQuality<EdgeMesh::Edge>);
 
     // Mesh concepts
-    static_assert(meshv2::HasEdges<EdgeMesh>);
-    static_assert(!meshv2::HasFaces<EdgeMesh>);
+    static_assert(HasEdges<EdgeMesh>);
+    static_assert(!HasFaces<EdgeMesh>);
 
-    static_assert(meshv2::HasFaces<GraphMesh>);
-    static_assert(meshv2::HasEdges<GraphMesh>);
+    static_assert(HasFaces<GraphMesh>);
+    static_assert(HasEdges<GraphMesh>);
 
-    static_assert(!meshv2::HasEdges<MyMesh>);
+    static_assert(!HasEdges<MyMesh>);
 
-    static_assert(meshv2::HasEdgeCustomComponents<EdgeMeshWithCC>);
-    static_assert(!meshv2::HasEdgeCustomComponents<EdgeMesh>);
+    static_assert(HasEdgeCustomComponents<EdgeMeshWithCC>);
+    static_assert(!HasEdgeCustomComponents<EdgeMesh>);
 
     // Sentinels
     static_assert(EdgeMesh::NULL_INDEX == EdgeMesh::Edge::NULL_INDEX);
@@ -66,8 +66,8 @@ inline void testEdgeConcepts()
     // Iterators and Ranges
     static_assert(std::random_access_iterator<EdgeMesh::EdgeContainer::Iterator>);
     static_assert(std::random_access_iterator<EdgeMesh::EdgeContainer::ConstIterator>);
-    static_assert(meshv2::EdgeRangeConcept<decltype(std::declval<EdgeMesh>().edges())>);
-    static_assert(meshv2::EdgeRangeConcept<decltype(std::declval<const EdgeMesh>().edges())>);
+    static_assert(EdgeRangeConcept<decltype(std::declval<EdgeMesh>().edges())>);
+    static_assert(EdgeRangeConcept<decltype(std::declval<const EdgeMesh>().edges())>);
 }
 
 inline void testEdgeCreationAndProperties()
@@ -103,13 +103,13 @@ inline void testEdgeCreationAndProperties()
     assert(m.edge(0).color() == Color::Red);
 
     // Test optional quality
-    assert((!m.isElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>()));
-    m.enableElementComponent<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>();
-    assert((m.isElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>()));
+    assert((!m.isElementComponentAvailable<ElemId::EDGE, CompId::QUALITY>()));
+    m.enableElementComponent<ElemId::EDGE, CompId::QUALITY>();
+    assert((m.isElementComponentAvailable<ElemId::EDGE, CompId::QUALITY>()));
     m.edge(0).quality() = 42.0f;
     assert(m.edge(0).quality() == 42.0f);
-    m.disableElementComponent<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>();
-    assert((!m.isElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>()));
+    m.disableElementComponent<ElemId::EDGE, CompId::QUALITY>();
+    assert((!m.isElementComponentAvailable<ElemId::EDGE, CompId::QUALITY>()));
 }
 
 inline void testEdgeContainerMethods()
@@ -174,7 +174,7 @@ inline void testEdgeViewsAndRanges()
 
     // Views pipe syntax
     count = 0;
-    for (auto e : m | meshv2::views::edges) {
+    for (auto e : m | views::edges) {
         assert(e.index() == count);
         count++;
     }
@@ -182,7 +182,7 @@ inline void testEdgeViewsAndRanges()
 
     // Views function syntax
     count = 0;
-    for (auto e : meshv2::views::edges(m)) {
+    for (auto e : views::edges(m)) {
         assert(e.index() == count);
         count++;
     }
@@ -190,7 +190,7 @@ inline void testEdgeViewsAndRanges()
 
     // Generic elements<ElemId::EDGE>()
     count = 0;
-    for (auto e : m.elements<meshv2::ElemId::EDGE>()) {
+    for (auto e : m.elements<ElemId::EDGE>()) {
         assert(e.index() == count);
         count++;
     }

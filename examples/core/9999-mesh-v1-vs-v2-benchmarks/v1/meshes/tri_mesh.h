@@ -1,0 +1,191 @@
+// VCLib - Visual Computing Library
+// Copyright (C) 2021-2026 Visual Computing Lab, ISTI - CNR.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License,
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at https://mozilla.org/MPL/2.0/.
+
+#ifndef VCL_V1_MESHES_TRI_MESH_H
+#define VCL_V1_MESHES_TRI_MESH_H
+
+#include <v1/mesh.h>
+
+namespace vcl::v1 {
+
+template<typename ScalarType, bool INDEXED>
+class TriMeshT;
+
+} // namespace vcl::v1
+
+namespace vcl::v1::trimesh {
+
+template<typename Scalar, bool INDEXED>
+class Vertex;
+
+template<typename Scalar, bool INDEXED>
+class Face;
+
+/**
+ * @brief The Vertex type used by the TriMeshT class.
+ *
+ * @extends vert::BitFlags
+ * @extends vert::Position3
+ * @extends vert::Normal3
+ * @extends vert::OptionalColor
+ * @extends vert::OptionalQuality
+ * @extends vert::OptionalAdjacentFaces
+ * @extends vert::OptionalAdjacentVertices
+ * @extends vert::OptionalPrincipalCurvature
+ * @extends vert::OptionalTexCoord
+ * @extends vert::OptionalMaterialIndex
+ * @extends vert::OptionalTangent3
+ * @extends vert::OptionalMark
+ * @extends vert::CustomComponents
+ *
+ * @tparam Scalar: The scalar type used for the mesh.
+ * @tparam I: A boolean flag that indicates whether the mesh uses indices or
+ * pointers to store vertices of faces and adjacency information.
+ *
+ * @ingroup meshes
+ */
+template<typename Scalar, bool I>
+class Vertex :
+        public vcl::Vertex<
+            TriMeshT<Scalar, I>,
+            vert::BitFlags,
+            vert::Position3<Scalar>,
+            vert::Normal3<Scalar>,
+            vert::OptionalColor<Vertex<Scalar, I>>,
+            vert::OptionalQuality<Scalar, Vertex<Scalar, I>>,
+            vert::OptionalAdjacentFaces<I, Face<Scalar, I>, Vertex<Scalar, I>>,
+            vert::OptionalAdjacentVertices<I, Vertex<Scalar, I>>,
+            vert::OptionalPrincipalCurvature<Scalar, Vertex<Scalar, I>>,
+            vert::OptionalTexCoord<Scalar, Vertex<Scalar, I>>,
+            vert::OptionalMaterialIndex<Vertex<Scalar, I>>,
+            vert::OptionalTangent3<Scalar, Vertex<Scalar, I>>,
+            vert::OptionalMark<Vertex<Scalar, I>>,
+            vert::CustomComponents<Vertex<Scalar, I>>>
+{
+public:
+    friend void swap(Vertex& a, Vertex& b) { a.swap(b); }
+};
+
+/**
+ * @brief The Face type used by the TriMeshT class.
+ *
+ * @extends face::TriangleBitFlags
+ * @extends face::TriangleVertexRefs
+ * @extends face::Normal3
+ * @extends face::OptionalColor
+ * @extends face::OptionalQuality
+ * @extends face::OptionalAdjacentTriangles
+ * @extends face::OptionalTriangleWedgeTexCoords
+ * @extends face::OptionalMaterialIndex
+ * @extends face::OptionalMark
+ * @extends face::CustomComponents
+ *
+ * @tparam Scalar: The scalar type used for the mesh.
+ * @tparam I: A boolean flag that indicates whether the mesh uses indices or
+ * pointers to store vertices of faces and adjacency information.
+ *
+ * @ingroup meshes
+ */
+template<typename Scalar, bool I>
+class Face :
+        public vcl::Face<
+            TriMeshT<Scalar, I>,
+            face::TriangleBitFlags,
+            face::TriangleVertexRefs<I, Vertex<Scalar, I>, Face<Scalar, I>>,
+            face::Normal3<Scalar>,
+            face::OptionalColor<Face<Scalar, I>>,
+            face::OptionalQuality<Scalar, Face<Scalar, I>>,
+            face::OptionalAdjacentTriangles<I, Face<Scalar, I>>,
+            face::OptionalTriangleWedgeTexCoords<Scalar, Face<Scalar, I>>,
+            face::OptionalMaterialIndex<Face<Scalar, I>>,
+            face::OptionalMark<Face<Scalar, I>>,
+            face::CustomComponents<Face<Scalar, I>>>
+{
+public:
+    friend void swap(Face& a, Face& b) { a.swap(b); }
+};
+
+} // namespace vcl::v1::trimesh
+
+namespace vcl::v1 {
+
+/**
+ * @brief The TriMeshT class is a mesh class that represents a triangle mesh.
+ *
+ * It allows to store trimesh::Vertex and trimesh::Face elements.
+ *
+ * The mesh is templated over the scalar type and a boolean flag that indicates
+ * whether the mesh uses indices to store vertices of faces and adjacency
+ * information.
+ *
+ * @tparam Scalar: The scalar type used for the mesh.
+ * @tparam INDEXED: A boolean flag that indicates whether the mesh uses indices
+ * or pointers to store references.
+ *
+ * @extends mesh::VertexContainer
+ * @extends mesh::FaceContainer
+ * @extends mesh::BoundingBox3
+ * @extends mesh::Color
+ * @extends mesh::Mark
+ * @extends mesh::Materials
+ * @extends mesh::Name
+ * @extends mesh::TransformMatrix
+ * @extends mesh::CustomComponents
+ *
+ * @ingroup meshes
+ */
+template<typename Scalar, bool INDEXED>
+class TriMeshT :
+        public Mesh<
+            mesh::VertexContainer<trimesh::Vertex<Scalar, INDEXED>>,
+            mesh::FaceContainer<trimesh::Face<Scalar, INDEXED>>,
+            mesh::BoundingBox3<Scalar>,
+            mesh::Color,
+            mesh::Mark,
+            mesh::Materials,
+            mesh::Name,
+            mesh::TransformMatrix<Scalar>,
+            mesh::CustomComponents>
+{
+public:
+    /** @brief The scalar used to store all the data of the Mesh. */
+    using ScalarType = Scalar;
+};
+
+/**
+ * @brief The TriMeshf class is a specialization of TriMeshT that uses `float`
+ * as scalar and pointers to store vertices of faces and adjacency information.
+ * @ingroup meshes
+ */
+using TriMeshf = TriMeshT<float, false>;
+
+/**
+ * @brief The TriMesh class is a specialization of TriMeshT that uses `double`
+ * as scalar and pointers to store vertices of faces and adjacency information.
+ * @ingroup meshes
+ */
+using TriMesh = TriMeshT<double, false>;
+
+/**
+ * @brief The TriMeshIndexedf class is a specialization of TriMeshT that uses
+ * `float` as scalar and indices (`unsigned int`) to store vertices of faces
+ * and adjacency information.
+ * @ingroup meshes
+ */
+using TriMeshIndexedf = TriMeshT<float, true>;
+
+/**
+ * @brief The TriMeshIndexed class is a specialization of TriMeshT that uses
+ * `double` as scalar and indices (`unsigned int`) to store vertices of faces
+ * and adjacency information.
+ * @ingroup meshes
+ */
+using TriMeshIndexed = TriMeshT<double, true>;
+
+} // namespace vcl::v1
+
+#endif // VCL_V1_MESHES_TRI_MESH_H

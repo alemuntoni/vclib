@@ -15,8 +15,8 @@
 inline void testMeshCustomComponents()
 {
     // Concepts check
-    static_assert(meshv2::mesh::HasCustomComponents<CCMesh>);
-    static_assert(!meshv2::mesh::HasCustomComponents<MyMesh>);
+    static_assert(mesh::HasCustomComponents<CCMesh>);
+    static_assert(!mesh::HasCustomComponents<MyMesh>);
 
     CCMesh m;
 
@@ -71,7 +71,7 @@ inline void testMeshCustomComponents()
     try {
         (void) m.customComponent<float>("int_val");
     }
-    catch (const vcl::meshv2::BadCustomComponentTypeException&) {
+    catch (const vcl::BadCustomComponentTypeException&) {
         caughtWrongType = true;
     }
     assert(caughtWrongType);
@@ -90,13 +90,13 @@ inline void testMeshCustomComponents()
 inline void testElementCustomComponents()
 {
     // Concepts check
-    static_assert(meshv2::HasVertexCustomComponents<CCMesh>);
-    static_assert(meshv2::HasFaceCustomComponents<CCMesh>);
-    static_assert(!meshv2::HasVertexCustomComponents<MyMesh>);
-    static_assert(!meshv2::HasFaceCustomComponents<MyMesh>);
+    static_assert(HasVertexCustomComponents<CCMesh>);
+    static_assert(HasFaceCustomComponents<CCMesh>);
+    static_assert(!HasVertexCustomComponents<MyMesh>);
+    static_assert(!HasFaceCustomComponents<MyMesh>);
 
-    static_assert(meshv2::vert::HasCustomComponents<CCMesh::Vertex>);
-    static_assert(meshv2::face::HasCustomComponents<CCMesh::Face>);
+    static_assert(vert::HasCustomComponents<CCMesh::Vertex>);
+    static_assert(face::HasCustomComponents<CCMesh::Face>);
 
     CCMesh m;
     m.resizeVertices(4);
@@ -123,12 +123,12 @@ inline void testElementCustomComponents()
     assert(m.faceCustomComponentType("mat_id") == typeid(int));
 
     // Generic element queries
-    assert(m.hasElementCustomComponent<meshv2::ElemId::VERTEX>("curvature"));
-    assert(m.hasElementCustomComponent<meshv2::ElemId::FACE>("mat_id"));
-    assert((m.isElementCustomComponentOfType<meshv2::ElemId::VERTEX, double>(
+    assert(m.hasElementCustomComponent<ElemId::VERTEX>("curvature"));
+    assert(m.hasElementCustomComponent<ElemId::FACE>("mat_id"));
+    assert((m.isElementCustomComponentOfType<ElemId::VERTEX, double>(
         "curvature")));
     assert(
-        m.elementCustomComponentType<meshv2::ElemId::VERTEX>("curvature") ==
+        m.elementCustomComponentType<ElemId::VERTEX>("curvature") ==
         typeid(double));
 
     // Proxy access: write and read
@@ -193,7 +193,7 @@ inline void testCustomComponentHandles()
     assert(ch[1] == 20);
 
     // Converting constructor from handle to const handle
-    meshv2::ConstCustomComponentVectorHandle<int> ch2 = h;
+    ConstCustomComponentVectorHandle<int> ch2 = h;
     assert(ch2[2] == 30);
 }
 

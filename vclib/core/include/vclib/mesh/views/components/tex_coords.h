@@ -8,52 +8,13 @@
 #ifndef VCL_MESH_VIEWS_COMPONENTS_TEX_COORDS_H
 #define VCL_MESH_VIEWS_COMPONENTS_TEX_COORDS_H
 
-#include <vclib/mesh/components/wedge_tex_coords.h>
-#include <vclib/mesh/views/component.h>
+#include "../component.h"
 
-#include <vclib/base.h>
-
-#include <ranges>
-
-namespace vcl::views {
-
-namespace detail {
-
-inline constexpr auto texCoord = [](auto&& p) -> decltype(auto) {
-    if constexpr (IsPointer<decltype(p)>)
-        return p->texCoord();
-    else
-        return p.texCoord();
-};
-
-struct TexCoordsView
-{
-    constexpr TexCoordsView() = default;
-
-    template<std::ranges::range R>
-    friend constexpr auto operator|(R&& r, TexCoordsView)
-    {
-        using ElemType = std::ranges::range_value_t<R>;
-        return std::forward<R>(r) | std::views::transform(texCoord);
-    }
-
-    template<comp::HasWedgeTexCoords R>
-    friend constexpr auto operator|(R&& r, TexCoordsView)
-    {
-        if constexpr (IsPointer<R>)
-            return r->wedgeTexCoords();
-        else
-            return r.wedgeTexCoords();
-    }
-};
-
-} // namespace detail
-
-inline constexpr detail::TexCoordsView texCoords;
-
-template<>
-inline constexpr auto component<CompId::TEX_COORD> = texCoords;
-
-} // namespace vcl::views
+// TODO: When TexCoord component is ported to mesh_v2:
+// 1. Define TexCoordRangeConcept
+// 2. Define detail::getTexCoord lambda
+// 3. Define TexCoordsView : std::ranges::range_adaptor_closure<TexCoordsView>
+// 4. Define inline constexpr detail::TexCoordsView texCoords;
+// 5. Specialize template<> inline constexpr auto component<CompId::TEX_COORD> = texCoords;
 
 #endif // VCL_MESH_VIEWS_COMPONENTS_TEX_COORDS_H

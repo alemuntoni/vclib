@@ -8,6 +8,8 @@
 #ifndef VCL_MESH_ELEMENTS_H
 #define VCL_MESH_ELEMENTS_H
 
+#include "elements/base/base.h"
+#include "elements/base/element_proxy.h"
 #include "elements/edge.h"
 #include "elements/face.h"
 #include "elements/vertex.h"

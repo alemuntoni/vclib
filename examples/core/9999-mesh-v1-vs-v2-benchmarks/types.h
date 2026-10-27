@@ -8,35 +8,28 @@
 #ifndef BENCH_TYPES_H
 #define BENCH_TYPES_H
 
-#include <vclib/meshes.h>
-
-#include <vclib/mesh_v2/components/bit_flags.h>
-#include <vclib/mesh_v2/components/normal.h>
-#include <vclib/mesh_v2/components/position.h>
-#include <vclib/mesh_v2/components/vertex_references.h>
-#include <vclib/mesh_v2/containers/face_container.h>
-#include <vclib/mesh_v2/containers/vertex_container.h>
-#include <vclib/mesh_v2/mesh.h>
+#include <v1/meshes/tri_mesh.h>
+#include <vclib/mesh.h>
 
 namespace bench {
 
-// V1 Mesh: standard vclib TriMesh (double precision)
-using V1Mesh = vcl::TriMesh;
+// V1 Mesh: legacy vclib TriMesh (isolated under v1)
+using V1Mesh = vcl::v1::TriMesh;
 
-// V2 Mesh: vclib mesh_v2 (double precision, equivalent core components)
-using V2VertexComponents = vcl::meshv2::VertexComponents<
-    vcl::meshv2::vert::BitFlags,
-    vcl::meshv2::vert::Position3d,
-    vcl::meshv2::vert::Normal3d>;
+// V2 Mesh: canonical vclib Mesh (double precision, equivalent core components)
+using V2VertexComponents = vcl::vert::VertexComponents<
+    vcl::vert::BitFlags,
+    vcl::vert::Position3d,
+    vcl::vert::Normal3d>;
 
-using V2FaceComponents = vcl::meshv2::FaceComponents<
-    vcl::meshv2::face::BitFlags,
-    vcl::meshv2::face::TriangleVertexReferences<vcl::uint>,
-    vcl::meshv2::face::Normal3d>;
+using V2FaceComponents = vcl::face::FaceComponents<
+    vcl::face::TriangleBitFlags,
+    vcl::face::TriangleVertexReferences<vcl::uint>,
+    vcl::face::Normal3d>;
 
-using V2Mesh = vcl::meshv2::Mesh<
-    vcl::meshv2::VertexContainer<V2VertexComponents>,
-    vcl::meshv2::FaceContainer<V2FaceComponents>>;
+using V2Mesh = vcl::Mesh<
+    vcl::mesh::VertexContainer<V2VertexComponents>,
+    vcl::mesh::FaceContainer<V2FaceComponents>>;
 
 } // namespace bench
 

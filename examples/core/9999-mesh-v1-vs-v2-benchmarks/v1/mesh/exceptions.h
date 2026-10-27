@@ -1,0 +1,200 @@
+// VCLib - Visual Computing Library
+// Copyright (C) 2021-2026 Visual Computing Lab, ISTI - CNR.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License,
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at https://mozilla.org/MPL/2.0/.
+
+#ifndef VCL_V1_MESH_EXCEPTIONS_H
+#define VCL_V1_MESH_EXCEPTIONS_H
+
+#include <stdexcept>
+#include <string>
+
+namespace vcl::v1 {
+
+/**
+ * @brief Exception thrown when the mesh is inconsistent.
+ *
+ * @ingroup exceptions
+ * @ingroup mesh
+ */
+class InconsistentMeshException : public std::runtime_error
+{
+public:
+    InconsistentMeshException(const std::string& err) : std::runtime_error(err)
+    {
+    }
+
+    virtual const char* what() const throw()
+    {
+        static std::string error;
+        error =
+            std::string("Inconsistent Mesh - ") + std::runtime_error::what();
+        return error.c_str();
+    }
+};
+
+/**
+ * @brief Exception thrown when a precondition on an input/output mesh is
+ * missing.
+ *
+ * @ingroup exceptions
+ * @ingroup mesh
+ */
+class MissingPreconditionException : public std::runtime_error
+{
+public:
+    MissingPreconditionException(const std::string& err) :
+            std::runtime_error(err)
+    {
+    }
+
+    virtual const char* what() const throw()
+    {
+        static std::string error;
+        error = std::string("Missing Mesh Precondition - ") +
+                std::runtime_error::what();
+        return error.c_str();
+    }
+};
+
+/**
+ * @brief Exception thrown when the mesh is not compact.
+ *
+ * @ingroup exceptions
+ * @ingroup mesh
+ */
+class MissingCompactnessException : public std::runtime_error
+{
+public:
+    MissingCompactnessException(const std::string& err) :
+            std::runtime_error(err)
+    {
+    }
+
+    virtual const char* what() const throw()
+    {
+        static std::string error;
+        error =
+            std::string("Lack of Compactness - ") + std::runtime_error::what();
+        return error.c_str();
+    }
+};
+
+/**
+ * @brief Exception thrown when a mesh/element component is missing (not
+ * enabled).
+ *
+ * @ingroup exceptions
+ * @ingroup mesh
+ */
+class MissingComponentException : public std::runtime_error
+{
+public:
+    MissingComponentException(const std::string& err) : std::runtime_error(err)
+    {
+    }
+
+    virtual const char* what() const throw()
+    {
+        static std::string error;
+        error =
+            std::string("Missing Component - ") + std::runtime_error::what();
+        return error.c_str();
+    }
+};
+
+/**
+ * @brief Exception thrown when an input/output mesh is not composed of
+ * triangles.
+ *
+ * @ingroup exceptions
+ * @ingroup mesh
+ */
+class MissingTriangularRequirementException : public std::runtime_error
+{
+public:
+    MissingTriangularRequirementException(const std::string& err) :
+            std::runtime_error(err)
+    {
+    }
+
+    virtual const char* what() const throw()
+    {
+        static std::string error;
+        error = std::string("Missing Triangular Mesh Requirement - ") +
+                std::runtime_error::what();
+        return error.c_str();
+    }
+};
+
+/**
+ * @brief Exception thrown when an input/output mesh is not composed of quads.
+ *
+ * @ingroup exceptions
+ * @ingroup mesh
+ */
+class MissingQuadRequirementException : public std::runtime_error
+{
+public:
+    MissingQuadRequirementException(const std::string& err) :
+            std::runtime_error(err)
+    {
+    }
+
+    virtual const char* what() const throw()
+    {
+        static std::string error;
+        error = std::string("Missing Quad Mesh Requirement - ") +
+                std::runtime_error::what();
+        return error.c_str();
+    }
+};
+
+/**
+ * @brief Exception thrown when an index is out of bounds in a vertex container.
+ *
+ * @ingroup exceptions
+ * @ingroup mesh
+ */
+class BadVertexIndexException : public std::runtime_error
+{
+public:
+    BadVertexIndexException(const std::string& err) : std::runtime_error(err) {}
+
+    virtual const char* what() const throw()
+    {
+        static std::string error;
+        error = std::string("Bad Vertex Index - ") + std::runtime_error::what();
+        return error.c_str();
+    }
+};
+
+/**
+ * @brief Exception thrown when the type of a custom component is not the one
+ * expected.
+ *
+ * @ingroup exceptions
+ * @ingroup mesh
+ */
+class BadCustomComponentTypeException : public std::runtime_error
+{
+public:
+    BadCustomComponentTypeException(const std::string& err) :
+            std::runtime_error(err)
+    {
+    }
+
+    virtual const char* what() const throw()
+    {
+        static std::string error;
+        error = std::string("Bad Custom Component Type - ") +
+                std::runtime_error::what();
+        return error.c_str();
+    }
+};
+
+} // namespace vcl::v1
+
+#endif // VCL_V1_MESH_EXCEPTIONS_H

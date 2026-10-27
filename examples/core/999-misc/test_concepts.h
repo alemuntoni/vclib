@@ -9,449 +9,449 @@
 #define TEST_CONCEPTS_H
 
 #include "types.h"
-#include <vclib/mesh_v2/requirements.h>
-#include <vclib/mesh_v2/traits.h>
+#include <vclib/mesh/requirements.h>
+#include <vclib/mesh/traits.h>
 
 inline void testComponentConcepts()
 {
     // Component lists satisfy component concepts
-    static_assert(meshv2::HasRequiredVertexComponents<MyVertexComponents>);
-    static_assert(meshv2::HasRequiredFaceComponents<MyFaceComponents>);
+    static_assert(HasRequiredVertexComponents<MyVertexComponents>);
+    static_assert(HasRequiredFaceComponents<MyFaceComponents>);
 
     // Color Component Concepts
-    static_assert(meshv2::mesh::HasColor<MyMesh>);
-    static_assert(meshv2::mesh::HasColor<meshv2::mesh::Color>);
-    static_assert(!meshv2::mesh::HasColor<SimpleMesh>);
+    static_assert(mesh::HasColor<MyMesh>);
+    static_assert(mesh::HasColor<mesh::Color>);
+    static_assert(!mesh::HasColor<SimpleMesh>);
 
-    static_assert(meshv2::vert::HasColor<MyMesh::Vertex>);
-    static_assert(meshv2::vert::HasColor<MyMesh::ConstVertex>);
-    static_assert(meshv2::vert::HasColor<MyVertexComponents>);
-    static_assert(!meshv2::vert::HasColor<SimpleMesh::Vertex>);
+    static_assert(vert::HasColor<MyMesh::Vertex>);
+    static_assert(vert::HasColor<MyMesh::ConstVertex>);
+    static_assert(vert::HasColor<MyVertexComponents>);
+    static_assert(!vert::HasColor<SimpleMesh::Vertex>);
 
-    static_assert(meshv2::face::HasColor<MyMesh::Face>);
-    static_assert(meshv2::face::HasColor<MyMesh::ConstFace>);
-    static_assert(meshv2::face::HasColor<MyFaceComponents>);
+    static_assert(face::HasColor<MyMesh::Face>);
+    static_assert(face::HasColor<MyMesh::ConstFace>);
+    static_assert(face::HasColor<MyFaceComponents>);
 
     // Optional vs Non-Optional Concepts
-    static_assert(meshv2::vert::HasOptionalColor<MyMesh::Vertex>);
-    static_assert(!meshv2::vert::HasOptionalColor<FullMesh::Vertex>);
-    static_assert(meshv2::vert::HasOptionalNormal<MyMesh::Vertex>);
-    static_assert(!meshv2::vert::HasOptionalNormal<FullMesh::Vertex>);
-    static_assert(meshv2::face::HasOptionalColor<MyMesh::Face>);
-    static_assert(!meshv2::face::HasOptionalColor<FullMesh::Face>);
+    static_assert(vert::HasOptionalColor<MyMesh::Vertex>);
+    static_assert(!vert::HasOptionalColor<FullMesh::Vertex>);
+    static_assert(vert::HasOptionalNormal<MyMesh::Vertex>);
+    static_assert(!vert::HasOptionalNormal<FullMesh::Vertex>);
+    static_assert(face::HasOptionalColor<MyMesh::Face>);
+    static_assert(!face::HasOptionalColor<FullMesh::Face>);
 
     // Container and Component Concepts
-    static_assert(meshv2::ElementContainerConcept<
-                  MyMesh::ContainerType<meshv2::ElemId::VERTEX>>);
-    static_assert(meshv2::ElementContainerConcept<
-                  MyMesh::ContainerType<meshv2::ElemId::FACE>>);
-    static_assert(!meshv2::ElementContainerConcept<meshv2::mesh::Color>);
-    static_assert(meshv2::ComponentConcept<meshv2::mesh::Color>);
-    static_assert(!meshv2::ComponentConcept<
-                  MyMesh::ContainerType<meshv2::ElemId::VERTEX>>);
-    static_assert(!meshv2::ComponentConcept<
-                  MyMesh::ContainerType<meshv2::ElemId::FACE>>);
-    static_assert(std::is_same_v<MyMesh::Components, vcl::TypeWrapper<meshv2::mesh::Color>>);
+    static_assert(mesh::ElementContainerConcept<
+                  MyMesh::ContainerType<ElemId::VERTEX>>);
+    static_assert(mesh::ElementContainerConcept<
+                  MyMesh::ContainerType<ElemId::FACE>>);
+    static_assert(!mesh::ElementContainerConcept<mesh::Color>);
+    static_assert(comp::ComponentConcept<mesh::Color>);
+    static_assert(!comp::ComponentConcept<
+                  MyMesh::ContainerType<ElemId::VERTEX>>);
+    static_assert(!comp::ComponentConcept<
+                  MyMesh::ContainerType<ElemId::FACE>>);
+    static_assert(std::is_same_v<MyMesh::Components, vcl::TypeWrapper<mesh::Color>>);
 
     // TransformMatrix Component Concepts
-    static_assert(meshv2::mesh::HasTransformMatrix<TransformedMesh>);
-    static_assert(meshv2::mesh::HasTransformMatrix<meshv2::mesh::TransformMatrixf>);
-    static_assert(!meshv2::mesh::HasTransformMatrix<MyMesh>);
-    static_assert(meshv2::HasTransformMatrix<TransformedMesh>);
-    static_assert(!meshv2::HasTransformMatrix<MyMesh>);
-    static_assert(!meshv2::ElementContainerConcept<meshv2::mesh::TransformMatrixf>);
-    static_assert(meshv2::ComponentConcept<meshv2::mesh::TransformMatrixf>);
+    static_assert(mesh::HasTransformMatrix<TransformedMesh>);
+    static_assert(mesh::HasTransformMatrix<mesh::TransformMatrixf>);
+    static_assert(!mesh::HasTransformMatrix<MyMesh>);
+    static_assert(HasTransformMatrix<TransformedMesh>);
+    static_assert(!HasTransformMatrix<MyMesh>);
+    static_assert(!mesh::ElementContainerConcept<mesh::TransformMatrixf>);
+    static_assert(comp::ComponentConcept<mesh::TransformMatrixf>);
     static_assert(std::is_same_v<
                   TransformedMesh::Components,
-                  vcl::TypeWrapper<meshv2::mesh::Color, meshv2::mesh::TransformMatrixf>>);
+                  vcl::TypeWrapper<mesh::Color, mesh::TransformMatrixf>>);
 
     // Materials Component Concepts
-    static_assert(meshv2::mesh::HasMaterials<MaterialMeshWithMaterials>);
-    static_assert(meshv2::mesh::HasMaterials<meshv2::mesh::Materials>);
-    static_assert(!meshv2::mesh::HasMaterials<MyMesh>);
-    static_assert(meshv2::HasMaterials<MaterialMeshWithMaterials>);
-    static_assert(!meshv2::HasMaterials<MyMesh>);
-    static_assert(!meshv2::ElementContainerConcept<meshv2::mesh::Materials>);
-    static_assert(meshv2::ComponentConcept<meshv2::mesh::Materials>);
+    static_assert(mesh::HasMaterials<MaterialMeshWithMaterials>);
+    static_assert(mesh::HasMaterials<mesh::Materials>);
+    static_assert(!mesh::HasMaterials<MyMesh>);
+    static_assert(HasMaterials<MaterialMeshWithMaterials>);
+    static_assert(!HasMaterials<MyMesh>);
+    static_assert(!mesh::ElementContainerConcept<mesh::Materials>);
+    static_assert(comp::ComponentConcept<mesh::Materials>);
     static_assert(std::is_same_v<
                   MaterialMeshWithMaterials::Components,
-                  vcl::TypeWrapper<meshv2::mesh::Materials>>);
+                  vcl::TypeWrapper<mesh::Materials>>);
 
     // BoundingBox Component Concepts
-    static_assert(meshv2::mesh::HasBoundingBox<BoundingBoxMesh>);
-    static_assert(meshv2::mesh::HasBoundingBox<meshv2::mesh::BoundingBox3f>);
-    static_assert(!meshv2::mesh::HasBoundingBox<MyMesh>);
-    static_assert(meshv2::HasBoundingBox<BoundingBoxMesh>);
-    static_assert(!meshv2::HasBoundingBox<MyMesh>);
-    static_assert(!meshv2::ElementContainerConcept<meshv2::mesh::BoundingBox3f>);
-    static_assert(meshv2::ComponentConcept<meshv2::mesh::BoundingBox3f>);
+    static_assert(mesh::HasBoundingBox<BoundingBoxMesh>);
+    static_assert(mesh::HasBoundingBox<mesh::BoundingBox3f>);
+    static_assert(!mesh::HasBoundingBox<MyMesh>);
+    static_assert(HasBoundingBox<BoundingBoxMesh>);
+    static_assert(!HasBoundingBox<MyMesh>);
+    static_assert(!mesh::ElementContainerConcept<mesh::BoundingBox3f>);
+    static_assert(comp::ComponentConcept<mesh::BoundingBox3f>);
     static_assert(std::is_same_v<
                   BoundingBoxMesh::Components,
-                  vcl::TypeWrapper<meshv2::mesh::BoundingBox3f>>);
+                  vcl::TypeWrapper<mesh::BoundingBox3f>>);
 
     // Name Component Concepts
-    static_assert(meshv2::mesh::HasName<NamedMesh>);
-    static_assert(meshv2::mesh::HasName<meshv2::mesh::Name>);
-    static_assert(!meshv2::mesh::HasName<MyMesh>);
-    static_assert(meshv2::HasName<NamedMesh>);
-    static_assert(!meshv2::HasName<MyMesh>);
-    static_assert(!meshv2::ElementContainerConcept<meshv2::mesh::Name>);
-    static_assert(meshv2::ComponentConcept<meshv2::mesh::Name>);
+    static_assert(mesh::HasName<NamedMesh>);
+    static_assert(mesh::HasName<mesh::Name>);
+    static_assert(!mesh::HasName<MyMesh>);
+    static_assert(HasName<NamedMesh>);
+    static_assert(!HasName<MyMesh>);
+    static_assert(!mesh::ElementContainerConcept<mesh::Name>);
+    static_assert(comp::ComponentConcept<mesh::Name>);
     static_assert(std::is_same_v<
                   NamedMesh::Components,
-                  vcl::TypeWrapper<meshv2::mesh::Name>>);
+                  vcl::TypeWrapper<mesh::Name>>);
 
     // PrincipalCurvature Component Concepts
-    static_assert(meshv2::vert::HasPrincipalCurvature<CurvatureMesh::Vertex>);
-    static_assert(meshv2::vert::HasPrincipalCurvature<CurvatureMesh::ConstVertex>);
-    static_assert(meshv2::vert::HasPrincipalCurvature<CurvatureVertexComponents>);
-    static_assert(!meshv2::vert::HasPrincipalCurvature<MyMesh::Vertex>);
-    static_assert(!meshv2::vert::HasOptionalPrincipalCurvature<CurvatureVertexComponents>);
-    static_assert(meshv2::vert::HasOptionalPrincipalCurvature<OptionalCurvatureVertexComponents>);
-    static_assert(meshv2::vert::HasOptionalPrincipalCurvature<OptionalCurvatureMesh::Vertex>);
-    static_assert(meshv2::face::HasPrincipalCurvature<CurvatureMesh::Face>);
-    static_assert(meshv2::face::HasOptionalPrincipalCurvature<CurvatureMesh::Face>);
-    static_assert(!meshv2::face::HasPrincipalCurvature<MyMesh::Face>);
+    static_assert(vert::HasPrincipalCurvature<CurvatureMesh::Vertex>);
+    static_assert(vert::HasPrincipalCurvature<CurvatureMesh::ConstVertex>);
+    static_assert(vert::HasPrincipalCurvature<CurvatureVertexComponents>);
+    static_assert(!vert::HasPrincipalCurvature<MyMesh::Vertex>);
+    static_assert(!vert::HasOptionalPrincipalCurvature<CurvatureVertexComponents>);
+    static_assert(vert::HasOptionalPrincipalCurvature<OptionalCurvatureVertexComponents>);
+    static_assert(vert::HasOptionalPrincipalCurvature<OptionalCurvatureMesh::Vertex>);
+    static_assert(face::HasPrincipalCurvature<CurvatureMesh::Face>);
+    static_assert(face::HasOptionalPrincipalCurvature<CurvatureMesh::Face>);
+    static_assert(!face::HasPrincipalCurvature<MyMesh::Face>);
     static_assert(vcl::PrincipalCurvatureConcept<vcl::PrincipalCurvaturef>);
     static_assert(vcl::PrincipalCurvatureConcept<vcl::PrincipalCurvatured>);
 
     // Quality Component Concepts
-    static_assert(meshv2::vert::HasQuality<QualityMesh::Vertex>);
-    static_assert(meshv2::vert::HasQuality<QualityMesh::ConstVertex>);
-    static_assert(meshv2::vert::HasQuality<QualityVertexComponents>);
-    static_assert(!meshv2::vert::HasQuality<MyMesh::Vertex>);
-    static_assert(!meshv2::vert::HasOptionalQuality<QualityVertexComponents>);
-    static_assert(meshv2::vert::HasOptionalQuality<OptionalQualityVertexComponents>);
-    static_assert(meshv2::vert::HasOptionalQuality<OptionalQualityMesh::Vertex>);
-    static_assert(meshv2::face::HasQuality<QualityMesh::Face>);
-    static_assert(meshv2::face::HasOptionalQuality<QualityMesh::Face>);
-    static_assert(!meshv2::face::HasQuality<MyMesh::Face>);
+    static_assert(vert::HasQuality<QualityMesh::Vertex>);
+    static_assert(vert::HasQuality<QualityMesh::ConstVertex>);
+    static_assert(vert::HasQuality<QualityVertexComponents>);
+    static_assert(!vert::HasQuality<MyMesh::Vertex>);
+    static_assert(!vert::HasOptionalQuality<QualityVertexComponents>);
+    static_assert(vert::HasOptionalQuality<OptionalQualityVertexComponents>);
+    static_assert(vert::HasOptionalQuality<OptionalQualityMesh::Vertex>);
+    static_assert(face::HasQuality<QualityMesh::Face>);
+    static_assert(face::HasOptionalQuality<QualityMesh::Face>);
+    static_assert(!face::HasQuality<MyMesh::Face>);
     static_assert(std::is_same_v<QualityMesh::Vertex::QualityType, float>);
     static_assert(std::is_same_v<OptionalQualityMesh::Vertex::QualityType, double>);
 
     // Tangent Component Concepts
-    static_assert(meshv2::vert::HasTangent<TangentMesh::Vertex>);
-    static_assert(meshv2::vert::HasTangent<TangentMesh::ConstVertex>);
-    static_assert(meshv2::vert::HasTangent<TangentVertexComponents>);
-    static_assert(!meshv2::vert::HasTangent<MyMesh::Vertex>);
-    static_assert(!meshv2::vert::HasOptionalTangent<TangentVertexComponents>);
-    static_assert(meshv2::vert::HasOptionalTangent<OptionalTangentVertexComponents>);
-    static_assert(meshv2::vert::HasOptionalTangent<OptionalTangentMesh::Vertex>);
-    static_assert(meshv2::face::HasTangent<TangentMesh::Face>);
-    static_assert(meshv2::face::HasOptionalTangent<TangentMesh::Face>);
-    static_assert(!meshv2::face::HasTangent<MyMesh::Face>);
+    static_assert(vert::HasTangent<TangentMesh::Vertex>);
+    static_assert(vert::HasTangent<TangentMesh::ConstVertex>);
+    static_assert(vert::HasTangent<TangentVertexComponents>);
+    static_assert(!vert::HasTangent<MyMesh::Vertex>);
+    static_assert(!vert::HasOptionalTangent<TangentVertexComponents>);
+    static_assert(vert::HasOptionalTangent<OptionalTangentVertexComponents>);
+    static_assert(vert::HasOptionalTangent<OptionalTangentMesh::Vertex>);
+    static_assert(face::HasTangent<TangentMesh::Face>);
+    static_assert(face::HasOptionalTangent<TangentMesh::Face>);
+    static_assert(!face::HasTangent<MyMesh::Face>);
     static_assert(std::is_same_v<TangentMesh::Vertex::TangentType, Point3f>);
     static_assert(std::is_same_v<OptionalTangentMesh::Vertex::TangentType, Point3d>);
-    static_assert(meshv2::comp::HasDefaultValue<meshv2::vert::Tangent3f>);
+    static_assert(comp::HasDefaultValue<vert::Tangent3f>);
 
     // MaterialIndex Component Concepts
-    static_assert(meshv2::face::HasMaterialIndex<MaterialFaceComponents>);
-    static_assert(meshv2::face::HasMaterialIndex<MaterialMesh::Face>);
-    static_assert(!meshv2::face::HasMaterialIndex<MyFaceComponents>);
-    static_assert(!meshv2::face::HasOptionalMaterialIndex<MaterialFaceComponents>);
-    static_assert(meshv2::face::HasOptionalMaterialIndex<OptionalMaterialFaceComponents>);
-    static_assert(meshv2::face::HasOptionalMaterialIndex<OptionalMaterialMesh::Face>);
+    static_assert(face::HasMaterialIndex<MaterialFaceComponents>);
+    static_assert(face::HasMaterialIndex<MaterialMesh::Face>);
+    static_assert(!face::HasMaterialIndex<MyFaceComponents>);
+    static_assert(!face::HasOptionalMaterialIndex<MaterialFaceComponents>);
+    static_assert(face::HasOptionalMaterialIndex<OptionalMaterialFaceComponents>);
+    static_assert(face::HasOptionalMaterialIndex<OptionalMaterialMesh::Face>);
 
     // MaterialIndex Type and Sentinel Concepts
     static_assert(std::is_same_v<MaterialMesh::Face::MaterialIndexType, ushort>);
     static_assert(MaterialMesh::Face::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<ushort>);
-    static_assert(meshv2::comp::MaterialIndex<>::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<ushort>);
-    static_assert(meshv2::face::MaterialIndex::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<ushort>);
-    static_assert(meshv2::face::MaterialIndexu::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<uint>);
+    static_assert(comp::MaterialIndex<>::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<ushort>);
+    static_assert(face::MaterialIndex::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<ushort>);
+    static_assert(face::MaterialIndexu::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<uint>);
 
     // Default Value Concepts
-    static_assert(meshv2::comp::HasDefaultValue<meshv2::comp::MaterialIndex<>>);
-    static_assert(meshv2::comp::defaultValue<meshv2::comp::MaterialIndex<>>() == vcl::NULL_INDEX<ushort>);
-    static_assert(meshv2::comp::HasDefaultValue<meshv2::face::MaterialIndex>);
-    static_assert(meshv2::comp::defaultValue<meshv2::face::MaterialIndex>() == vcl::NULL_INDEX<ushort>);
-    static_assert(meshv2::comp::defaultValue<meshv2::face::MaterialIndexu>() == vcl::NULL_INDEX<uint>);
+    static_assert(comp::HasDefaultValue<comp::MaterialIndex<>>);
+    static_assert(comp::defaultValue<comp::MaterialIndex<>>() == vcl::NULL_INDEX<ushort>);
+    static_assert(comp::HasDefaultValue<face::MaterialIndex>);
+    static_assert(comp::defaultValue<face::MaterialIndex>() == vcl::NULL_INDEX<ushort>);
+    static_assert(comp::defaultValue<face::MaterialIndexu>() == vcl::NULL_INDEX<uint>);
 
     // Adjacency Component Concepts
-    static_assert(meshv2::HasAdjacentFaces<AdjFaceComponents>);
-    static_assert(meshv2::HasAdjacentFaces<AdjMesh::Face>);
-    static_assert(meshv2::face::HasTriangleAdjacentFaces<AdjFaceComponents>);
-    static_assert(meshv2::face::HasTriangleAdjacentFaces<AdjMesh::Face>);
-    static_assert(!meshv2::face::HasPolygonAdjacentFaces<AdjMesh::Face>);
-    static_assert(!meshv2::face::HasOptionalAdjacentFaces<AdjMesh::Face>);
+    static_assert(HasAdjacentFaces<AdjFaceComponents>);
+    static_assert(HasAdjacentFaces<AdjMesh::Face>);
+    static_assert(face::HasTriangleAdjacentFaces<AdjFaceComponents>);
+    static_assert(face::HasTriangleAdjacentFaces<AdjMesh::Face>);
+    static_assert(!face::HasPolygonAdjacentFaces<AdjMesh::Face>);
+    static_assert(!face::HasOptionalAdjacentFaces<AdjMesh::Face>);
 
-    static_assert(meshv2::HasAdjacentFaces<AdjVertexComponents>);
-    static_assert(meshv2::HasAdjacentFaces<AdjMesh::Vertex>);
-    static_assert(!meshv2::comp::HasStaticAdjacentFaces<AdjMesh::Vertex>);
+    static_assert(HasAdjacentFaces<AdjVertexComponents>);
+    static_assert(HasAdjacentFaces<AdjMesh::Vertex>);
+    static_assert(!comp::HasStaticAdjacentFaces<AdjMesh::Vertex>);
 
-    static_assert(meshv2::HasAdjacentVertices<AdjVertexComponents>);
-    static_assert(meshv2::HasAdjacentVertices<AdjMesh::Vertex>);
+    static_assert(HasAdjacentVertices<AdjVertexComponents>);
+    static_assert(HasAdjacentVertices<AdjMesh::Vertex>);
 
-    static_assert(meshv2::HasAdjacentEdges<AdjMesh::Vertex>);
-    static_assert(meshv2::vert::HasOptionalAdjacentEdges<AdjMesh::Vertex>);
-    static_assert(meshv2::HasAdjacentEdges<AdjMesh::Face>);
-    static_assert(meshv2::face::HasOptionalAdjacentEdges<AdjMesh::Face>);
+    static_assert(HasAdjacentEdges<AdjMesh::Vertex>);
+    static_assert(vert::HasOptionalAdjacentEdges<AdjMesh::Vertex>);
+    static_assert(HasAdjacentEdges<AdjMesh::Face>);
+    static_assert(face::HasOptionalAdjacentEdges<AdjMesh::Face>);
 
-    static_assert(meshv2::HasVertexAdjacentFaces<AdjMesh>);
-    static_assert(meshv2::HasFaceAdjacentFaces<AdjMesh>);
-    static_assert(meshv2::HasVertexAdjacentVertices<AdjMesh>);
-    static_assert(meshv2::HasVertexAdjacentEdges<AdjMesh>);
-    static_assert(meshv2::HasFaceAdjacentEdges<AdjMesh>);
-    static_assert(!meshv2::HasVertexAdjacentFaces<MyMesh>);
+    static_assert(HasVertexAdjacentFaces<AdjMesh>);
+    static_assert(HasFaceAdjacentFaces<AdjMesh>);
+    static_assert(HasVertexAdjacentVertices<AdjMesh>);
+    static_assert(HasVertexAdjacentEdges<AdjMesh>);
+    static_assert(HasFaceAdjacentEdges<AdjMesh>);
+    static_assert(!HasVertexAdjacentFaces<MyMesh>);
 }
 
 inline void testElementConcepts()
 {
     // Base element classes satisfy ElementConcept
-    static_assert(meshv2::ElementConcept<MyMesh::Vertex>);
-    static_assert(meshv2::ElementConcept<MyMesh::ConstVertex>);
-    static_assert(meshv2::ElementConcept<MyMesh::Face>);
-    static_assert(meshv2::ElementConcept<MyMesh::ConstFace>);
-    static_assert(meshv2::ElementConcept<EdgeMesh::Edge>);
-    static_assert(meshv2::ElementConcept<EdgeMesh::ConstEdge>);
+    static_assert(ElementConcept<MyMesh::Vertex>);
+    static_assert(ElementConcept<MyMesh::ConstVertex>);
+    static_assert(ElementConcept<MyMesh::Face>);
+    static_assert(ElementConcept<MyMesh::ConstFace>);
+    static_assert(ElementConcept<EdgeMesh::Edge>);
+    static_assert(ElementConcept<EdgeMesh::ConstEdge>);
 
     // VertexConcept
-    static_assert(meshv2::VertexConcept<MyMesh::Vertex>);
-    static_assert(meshv2::VertexConcept<MyMesh::ConstVertex>);
-    static_assert(!meshv2::VertexConcept<MyMesh::Face>);
-    static_assert(!meshv2::VertexConcept<EdgeMesh::Edge>);
+    static_assert(VertexConcept<MyMesh::Vertex>);
+    static_assert(VertexConcept<MyMesh::ConstVertex>);
+    static_assert(!VertexConcept<MyMesh::Face>);
+    static_assert(!VertexConcept<EdgeMesh::Edge>);
 
     // FaceConcept
-    static_assert(meshv2::FaceConcept<MyMesh::Face>);
-    static_assert(meshv2::FaceConcept<MyMesh::ConstFace>);
-    static_assert(meshv2::FaceConcept<PolyMesh::Face>);
-    static_assert(meshv2::FaceConcept<PolyMesh::ConstFace>);
-    static_assert(meshv2::FaceConcept<QuadMesh::Face>);
-    static_assert(meshv2::FaceConcept<QuadMesh::ConstFace>);
-    static_assert(!meshv2::FaceConcept<MyMesh::Vertex>);
-    static_assert(!meshv2::FaceConcept<EdgeMesh::Edge>);
+    static_assert(FaceConcept<MyMesh::Face>);
+    static_assert(FaceConcept<MyMesh::ConstFace>);
+    static_assert(FaceConcept<PolyMesh::Face>);
+    static_assert(FaceConcept<PolyMesh::ConstFace>);
+    static_assert(FaceConcept<QuadMesh::Face>);
+    static_assert(FaceConcept<QuadMesh::ConstFace>);
+    static_assert(!FaceConcept<MyMesh::Vertex>);
+    static_assert(!FaceConcept<EdgeMesh::Edge>);
 
     // TriangleFaceConcept
-    static_assert(meshv2::TriangleFaceConcept<MyMesh::Face>);
-    static_assert(meshv2::TriangleFaceConcept<MyMesh::ConstFace>);
-    static_assert(!meshv2::TriangleFaceConcept<QuadMesh::Face>);
-    static_assert(!meshv2::TriangleFaceConcept<PolyMesh::Face>);
+    static_assert(TriangleFaceConcept<MyMesh::Face>);
+    static_assert(TriangleFaceConcept<MyMesh::ConstFace>);
+    static_assert(!TriangleFaceConcept<QuadMesh::Face>);
+    static_assert(!TriangleFaceConcept<PolyMesh::Face>);
 
     // QuadFaceConcept
-    static_assert(meshv2::QuadFaceConcept<QuadMesh::Face>);
-    static_assert(meshv2::QuadFaceConcept<QuadMesh::ConstFace>);
-    static_assert(!meshv2::QuadFaceConcept<MyMesh::Face>);
-    static_assert(!meshv2::QuadFaceConcept<PolyMesh::Face>);
+    static_assert(QuadFaceConcept<QuadMesh::Face>);
+    static_assert(QuadFaceConcept<QuadMesh::ConstFace>);
+    static_assert(!QuadFaceConcept<MyMesh::Face>);
+    static_assert(!QuadFaceConcept<PolyMesh::Face>);
 
     // PolygonFaceConcept
-    static_assert(meshv2::PolygonFaceConcept<PolyMesh::Face>);
-    static_assert(meshv2::PolygonFaceConcept<PolyMesh::ConstFace>);
-    static_assert(!meshv2::PolygonFaceConcept<MyMesh::Face>);
-    static_assert(!meshv2::PolygonFaceConcept<QuadMesh::Face>);
+    static_assert(PolygonFaceConcept<PolyMesh::Face>);
+    static_assert(PolygonFaceConcept<PolyMesh::ConstFace>);
+    static_assert(!PolygonFaceConcept<MyMesh::Face>);
+    static_assert(!PolygonFaceConcept<QuadMesh::Face>);
 
     // EdgeConcept
-    static_assert(meshv2::EdgeConcept<EdgeMesh::Edge>);
-    static_assert(meshv2::EdgeConcept<EdgeMesh::ConstEdge>);
-    static_assert(!meshv2::EdgeConcept<MyMesh::Vertex>);
-    static_assert(!meshv2::EdgeConcept<MyMesh::Face>);
+    static_assert(EdgeConcept<EdgeMesh::Edge>);
+    static_assert(EdgeConcept<EdgeMesh::ConstEdge>);
+    static_assert(!EdgeConcept<MyMesh::Vertex>);
+    static_assert(!EdgeConcept<MyMesh::Face>);
 
     // Component presence concepts on elements (HasPosition, HasNormal, HasColor, etc.)
     // HasPosition
-    static_assert(meshv2::HasPosition<MyMesh::Vertex>);
-    static_assert(meshv2::HasPosition<MyMesh::ConstVertex>);
-    static_assert(meshv2::HasPosition<MyVertexComponents>);
-    static_assert(!meshv2::HasPosition<MyMesh::Face>);
+    static_assert(HasPosition<MyMesh::Vertex>);
+    static_assert(HasPosition<MyMesh::ConstVertex>);
+    static_assert(HasPosition<MyVertexComponents>);
+    static_assert(!HasPosition<MyMesh::Face>);
 
     // HasNormal
-    static_assert(meshv2::HasNormal<MyMesh::Vertex>);
-    static_assert(meshv2::HasNormal<MyMesh::ConstVertex>);
-    static_assert(!meshv2::HasNormal<SimpleMesh::Vertex>);
-    static_assert(!meshv2::HasNormal<MyMesh::Face>);
+    static_assert(HasNormal<MyMesh::Vertex>);
+    static_assert(HasNormal<MyMesh::ConstVertex>);
+    static_assert(!HasNormal<SimpleMesh::Vertex>);
+    static_assert(!HasNormal<MyMesh::Face>);
 
     // HasColor
-    static_assert(meshv2::HasColor<MyMesh::Vertex>);
-    static_assert(meshv2::HasColor<MyMesh::Face>);
-    static_assert(!meshv2::HasColor<SimpleMesh::Vertex>);
+    static_assert(HasColor<MyMesh::Vertex>);
+    static_assert(HasColor<MyMesh::Face>);
+    static_assert(!HasColor<SimpleMesh::Vertex>);
 
     // HasAdjacentFaces
-    static_assert(meshv2::HasAdjacentFaces<AdjMesh::Vertex>);
-    static_assert(meshv2::HasAdjacentFaces<AdjMesh::Face>);
-    static_assert(!meshv2::HasAdjacentFaces<MyMesh::Vertex>);
+    static_assert(HasAdjacentFaces<AdjMesh::Vertex>);
+    static_assert(HasAdjacentFaces<AdjMesh::Face>);
+    static_assert(!HasAdjacentFaces<MyMesh::Vertex>);
 
     // HasAdjacentEdges
-    static_assert(meshv2::HasAdjacentEdges<AdjMesh::Vertex>);
-    static_assert(meshv2::HasAdjacentEdges<AdjMesh::Face>);
-    static_assert(!meshv2::HasAdjacentEdges<MyMesh::Vertex>);
+    static_assert(HasAdjacentEdges<AdjMesh::Vertex>);
+    static_assert(HasAdjacentEdges<AdjMesh::Face>);
+    static_assert(!HasAdjacentEdges<MyMesh::Vertex>);
 
     // HasAdjacentVertices
-    static_assert(meshv2::HasAdjacentVertices<AdjMesh::Vertex>);
-    static_assert(!meshv2::HasAdjacentVertices<MyMesh::Vertex>);
+    static_assert(HasAdjacentVertices<AdjMesh::Vertex>);
+    static_assert(!HasAdjacentVertices<MyMesh::Vertex>);
 
     // HasBitFlags
-    static_assert(meshv2::HasBitFlags<MyMesh::Vertex>);
-    static_assert(meshv2::HasBitFlags<MyMesh::Face>);
-    static_assert(meshv2::HasBitFlags<EdgeMesh::Edge>);
+    static_assert(HasBitFlags<MyMesh::Vertex>);
+    static_assert(HasBitFlags<MyMesh::Face>);
+    static_assert(HasBitFlags<EdgeMesh::Edge>);
 
     // HasQuality
-    static_assert(meshv2::HasQuality<QualityMesh::Vertex>);
-    static_assert(meshv2::HasQuality<QualityMesh::Face>);
-    static_assert(!meshv2::HasQuality<MyMesh::Vertex>);
+    static_assert(HasQuality<QualityMesh::Vertex>);
+    static_assert(HasQuality<QualityMesh::Face>);
+    static_assert(!HasQuality<MyMesh::Vertex>);
 
     // HasPrincipalCurvature
-    static_assert(meshv2::HasPrincipalCurvature<CurvatureMesh::Vertex>);
-    static_assert(meshv2::HasPrincipalCurvature<CurvatureMesh::Face>);
-    static_assert(!meshv2::HasPrincipalCurvature<MyMesh::Vertex>);
+    static_assert(HasPrincipalCurvature<CurvatureMesh::Vertex>);
+    static_assert(HasPrincipalCurvature<CurvatureMesh::Face>);
+    static_assert(!HasPrincipalCurvature<MyMesh::Vertex>);
 
     // HasTangent
-    static_assert(meshv2::HasTangent<TangentMesh::Vertex>);
-    static_assert(meshv2::HasTangent<TangentMesh::Face>);
-    static_assert(!meshv2::HasTangent<MyMesh::Vertex>);
+    static_assert(HasTangent<TangentMesh::Vertex>);
+    static_assert(HasTangent<TangentMesh::Face>);
+    static_assert(!HasTangent<MyMesh::Vertex>);
 
     // HasMaterialIndex
-    static_assert(meshv2::HasMaterialIndex<MaterialMesh::Face>);
-    static_assert(!meshv2::HasMaterialIndex<MyMesh::Face>);
+    static_assert(HasMaterialIndex<MaterialMesh::Face>);
+    static_assert(!HasMaterialIndex<MyMesh::Face>);
 
     // HasVertexReferences
-    static_assert(meshv2::HasVertexReferences<MyMesh::Face>);
-    static_assert(meshv2::HasVertexReferences<EdgeMesh::Edge>);
-    static_assert(!meshv2::HasVertexReferences<MyMesh::Vertex>);
+    static_assert(HasVertexReferences<MyMesh::Face>);
+    static_assert(HasVertexReferences<EdgeMesh::Edge>);
+    static_assert(!HasVertexReferences<MyMesh::Vertex>);
 
     // HasCustomComponents
-    static_assert(meshv2::HasCustomComponents<CCMesh::Vertex>);
-    static_assert(meshv2::HasCustomComponents<CCMesh::Face>);
-    static_assert(!meshv2::HasCustomComponents<MyMesh::Vertex>);
+    static_assert(HasCustomComponents<CCMesh::Vertex>);
+    static_assert(HasCustomComponents<CCMesh::Face>);
+    static_assert(!HasCustomComponents<MyMesh::Vertex>);
 }
 
 
 inline void testMeshConcepts()
 {
     // Base Mesh Structure & Container Presence
-    static_assert(meshv2::MeshConcept<MyMesh>);
-    static_assert(meshv2::HasContainerOf<MyMesh, meshv2::ElemId::VERTEX>);
-    static_assert(meshv2::HasContainerOf<MyMesh, meshv2::ElemId::FACE>);
-    static_assert(!meshv2::HasContainerOf<MyMesh, meshv2::ElemId::EDGE>);
-    static_assert(meshv2::HasFaces<MyMesh>);
-    static_assert(!meshv2::HasEdges<MyMesh>);
-    static_assert(meshv2::FaceMeshConcept<MyMesh>);
-    static_assert(!meshv2::EdgeMeshConcept<MyMesh>);
+    static_assert(MeshConcept<MyMesh>);
+    static_assert(HasContainerOf<MyMesh, ElemId::VERTEX>);
+    static_assert(HasContainerOf<MyMesh, ElemId::FACE>);
+    static_assert(!HasContainerOf<MyMesh, ElemId::EDGE>);
+    static_assert(HasFaces<MyMesh>);
+    static_assert(!HasEdges<MyMesh>);
+    static_assert(FaceMeshConcept<MyMesh>);
+    static_assert(!EdgeMeshConcept<MyMesh>);
 
-    static_assert(!meshv2::HasFaces<EdgeMesh>);
-    static_assert(meshv2::HasEdges<EdgeMesh>);
-    static_assert(!meshv2::FaceMeshConcept<EdgeMesh>);
-    static_assert(meshv2::EdgeMeshConcept<EdgeMesh>);
+    static_assert(!HasFaces<EdgeMesh>);
+    static_assert(HasEdges<EdgeMesh>);
+    static_assert(!FaceMeshConcept<EdgeMesh>);
+    static_assert(EdgeMeshConcept<EdgeMesh>);
 
-    static_assert(meshv2::HasFaces<GraphMesh>);
-    static_assert(meshv2::HasEdges<GraphMesh>);
-    static_assert(meshv2::FaceMeshConcept<GraphMesh>);
-    static_assert(meshv2::EdgeMeshConcept<GraphMesh>);
+    static_assert(HasFaces<GraphMesh>);
+    static_assert(HasEdges<GraphMesh>);
+    static_assert(FaceMeshConcept<GraphMesh>);
+    static_assert(EdgeMeshConcept<GraphMesh>);
 
-    static_assert(meshv2::MeshConcept<PointCloudMesh>);
-    static_assert(!meshv2::HasFaces<PointCloudMesh>);
-    static_assert(!meshv2::HasEdges<PointCloudMesh>);
-    static_assert(!meshv2::FaceMeshConcept<PointCloudMesh>);
-    static_assert(!meshv2::EdgeMeshConcept<PointCloudMesh>);
+    static_assert(MeshConcept<PointCloudMesh>);
+    static_assert(!HasFaces<PointCloudMesh>);
+    static_assert(!HasEdges<PointCloudMesh>);
+    static_assert(!FaceMeshConcept<PointCloudMesh>);
+    static_assert(!EdgeMeshConcept<PointCloudMesh>);
 
     // Face Topology Specializations
-    static_assert(meshv2::HasTriangles<MyMesh>);
-    static_assert(!meshv2::HasQuads<MyMesh>);
-    static_assert(!meshv2::HasPolygons<MyMesh>);
-    static_assert(meshv2::TriMeshConcept<MyMesh>);
-    static_assert(!meshv2::QuadMeshConcept<MyMesh>);
-    static_assert(!meshv2::PolyMeshConcept<MyMesh>);
+    static_assert(HasTriangles<MyMesh>);
+    static_assert(!HasQuads<MyMesh>);
+    static_assert(!HasPolygons<MyMesh>);
+    static_assert(TriMeshConcept<MyMesh>);
+    static_assert(!QuadMeshConcept<MyMesh>);
+    static_assert(!PolyMeshConcept<MyMesh>);
 
-    static_assert(!meshv2::HasTriangles<QuadMesh>);
-    static_assert(meshv2::HasQuads<QuadMesh>);
-    static_assert(!meshv2::HasPolygons<QuadMesh>);
-    static_assert(!meshv2::TriMeshConcept<QuadMesh>);
-    static_assert(meshv2::QuadMeshConcept<QuadMesh>);
-    static_assert(!meshv2::PolyMeshConcept<QuadMesh>);
+    static_assert(!HasTriangles<QuadMesh>);
+    static_assert(HasQuads<QuadMesh>);
+    static_assert(!HasPolygons<QuadMesh>);
+    static_assert(!TriMeshConcept<QuadMesh>);
+    static_assert(QuadMeshConcept<QuadMesh>);
+    static_assert(!PolyMeshConcept<QuadMesh>);
 
-    static_assert(!meshv2::HasTriangles<PolyMesh>);
-    static_assert(!meshv2::HasQuads<PolyMesh>);
-    static_assert(meshv2::HasPolygons<PolyMesh>);
-    static_assert(!meshv2::TriMeshConcept<PolyMesh>);
-    static_assert(!meshv2::QuadMeshConcept<PolyMesh>);
-    static_assert(meshv2::PolyMeshConcept<PolyMesh>);
+    static_assert(!HasTriangles<PolyMesh>);
+    static_assert(!HasQuads<PolyMesh>);
+    static_assert(HasPolygons<PolyMesh>);
+    static_assert(!TriMeshConcept<PolyMesh>);
+    static_assert(!QuadMeshConcept<PolyMesh>);
+    static_assert(PolyMeshConcept<PolyMesh>);
 
-    static_assert(!meshv2::TriMeshConcept<PointCloudMesh>);
-    static_assert(!meshv2::TriMeshConcept<EdgeMesh>);
+    static_assert(!TriMeshConcept<PointCloudMesh>);
+    static_assert(!TriMeshConcept<EdgeMesh>);
 
     // Element Components on Mesh
     // Normals
-    static_assert(meshv2::HasVertexNormals<FullMesh>);
-    static_assert(meshv2::HasOptionalVertexNormals<MyMesh>);
-    static_assert(!meshv2::HasVertexNormals<SimpleMesh>);
-    static_assert(!meshv2::HasFaceNormals<MyMesh>);
-    static_assert(meshv2::HasFaceNormals<TangentMesh>);
+    static_assert(HasVertexNormals<FullMesh>);
+    static_assert(HasOptionalVertexNormals<MyMesh>);
+    static_assert(!HasVertexNormals<SimpleMesh>);
+    static_assert(!HasFaceNormals<MyMesh>);
+    static_assert(HasFaceNormals<TangentMesh>);
 
     // Colors
-    static_assert(meshv2::HasVertexColors<MyMesh>);
-    static_assert(meshv2::HasOptionalVertexColors<MyMesh>);
-    static_assert(meshv2::HasFaceColors<MyMesh>);
-    static_assert(meshv2::HasOptionalFaceColors<MyMesh>);
-    static_assert(meshv2::HasVertexColors<FullMesh>);
-    static_assert(!meshv2::HasOptionalVertexColors<FullMesh>);
-    static_assert(meshv2::HasFaceColors<FullMesh>);
-    static_assert(!meshv2::HasOptionalFaceColors<FullMesh>);
-    static_assert(!meshv2::HasVertexColors<SimpleMesh>);
-    static_assert(meshv2::HasFaceColors<SimpleMesh>);
-    static_assert(meshv2::HasOptionalFaceColors<SimpleMesh>);
-    static_assert(!meshv2::HasFaceColors<PolyMesh>);
-    static_assert(!meshv2::HasFaceColors<QuadMesh>);
-    static_assert(!meshv2::HasFaceColors<EdgeMesh>);
-    static_assert(meshv2::HasEdgeColors<EdgeMesh>);
-    static_assert(!meshv2::HasOptionalEdgeColors<EdgeMesh>);
-    static_assert(!meshv2::HasEdgeColors<MyMesh>);
+    static_assert(HasVertexColors<MyMesh>);
+    static_assert(HasOptionalVertexColors<MyMesh>);
+    static_assert(HasFaceColors<MyMesh>);
+    static_assert(HasOptionalFaceColors<MyMesh>);
+    static_assert(HasVertexColors<FullMesh>);
+    static_assert(!HasOptionalVertexColors<FullMesh>);
+    static_assert(HasFaceColors<FullMesh>);
+    static_assert(!HasOptionalFaceColors<FullMesh>);
+    static_assert(!HasVertexColors<SimpleMesh>);
+    static_assert(HasFaceColors<SimpleMesh>);
+    static_assert(HasOptionalFaceColors<SimpleMesh>);
+    static_assert(!HasFaceColors<PolyMesh>);
+    static_assert(!HasFaceColors<QuadMesh>);
+    static_assert(!HasFaceColors<EdgeMesh>);
+    static_assert(HasEdgeColors<EdgeMesh>);
+    static_assert(!HasOptionalEdgeColors<EdgeMesh>);
+    static_assert(!HasEdgeColors<MyMesh>);
 
     // Adjacencies
-    static_assert(meshv2::HasVertexAdjacentFaces<AdjMesh>);
-    static_assert(meshv2::HasFaceAdjacentFaces<AdjMesh>);
-    static_assert(meshv2::HasVertexAdjacentVertices<AdjMesh>);
-    static_assert(meshv2::HasVertexAdjacentEdges<AdjMesh>);
-    static_assert(meshv2::HasFaceAdjacentEdges<AdjMesh>);
-    static_assert(!meshv2::HasVertexAdjacentFaces<MyMesh>);
-    static_assert(!meshv2::HasFaceAdjacentFaces<MyMesh>);
-    static_assert(!meshv2::HasVertexAdjacentEdges<MyMesh>);
+    static_assert(HasVertexAdjacentFaces<AdjMesh>);
+    static_assert(HasFaceAdjacentFaces<AdjMesh>);
+    static_assert(HasVertexAdjacentVertices<AdjMesh>);
+    static_assert(HasVertexAdjacentEdges<AdjMesh>);
+    static_assert(HasFaceAdjacentEdges<AdjMesh>);
+    static_assert(!HasVertexAdjacentFaces<MyMesh>);
+    static_assert(!HasFaceAdjacentFaces<MyMesh>);
+    static_assert(!HasVertexAdjacentEdges<MyMesh>);
 
     // Qualities
-    static_assert(meshv2::HasVertexQualities<QualityMesh>);
-    static_assert(meshv2::HasFaceQualities<QualityMesh>);
-    static_assert(!meshv2::HasOptionalVertexQualities<QualityMesh>);
-    static_assert(meshv2::HasOptionalFaceQualities<QualityMesh>);
-    static_assert(meshv2::HasOptionalVertexQualities<OptionalQualityMesh>);
-    static_assert(!meshv2::HasVertexQualities<MyMesh>);
+    static_assert(HasVertexQualities<QualityMesh>);
+    static_assert(HasFaceQualities<QualityMesh>);
+    static_assert(!HasOptionalVertexQualities<QualityMesh>);
+    static_assert(HasOptionalFaceQualities<QualityMesh>);
+    static_assert(HasOptionalVertexQualities<OptionalQualityMesh>);
+    static_assert(!HasVertexQualities<MyMesh>);
 
     // Curvatures
-    static_assert(meshv2::HasVertexPrincipalCurvatures<CurvatureMesh>);
-    static_assert(meshv2::HasFacePrincipalCurvatures<CurvatureMesh>);
-    static_assert(!meshv2::HasOptionalVertexPrincipalCurvatures<CurvatureMesh>);
-    static_assert(meshv2::HasOptionalFacePrincipalCurvatures<CurvatureMesh>);
-    static_assert(meshv2::HasOptionalVertexPrincipalCurvatures<OptionalCurvatureMesh>);
-    static_assert(!meshv2::HasVertexPrincipalCurvatures<MyMesh>);
+    static_assert(HasVertexPrincipalCurvatures<CurvatureMesh>);
+    static_assert(HasFacePrincipalCurvatures<CurvatureMesh>);
+    static_assert(!HasOptionalVertexPrincipalCurvatures<CurvatureMesh>);
+    static_assert(HasOptionalFacePrincipalCurvatures<CurvatureMesh>);
+    static_assert(HasOptionalVertexPrincipalCurvatures<OptionalCurvatureMesh>);
+    static_assert(!HasVertexPrincipalCurvatures<MyMesh>);
 
     // Tangents
-    static_assert(meshv2::HasVertexTangents<TangentMesh>);
-    static_assert(meshv2::HasFaceTangents<TangentMesh>);
-    static_assert(!meshv2::HasOptionalVertexTangents<TangentMesh>);
-    static_assert(meshv2::HasOptionalFaceTangents<TangentMesh>);
-    static_assert(meshv2::HasOptionalVertexTangents<OptionalTangentMesh>);
-    static_assert(!meshv2::HasVertexTangents<MyMesh>);
+    static_assert(HasVertexTangents<TangentMesh>);
+    static_assert(HasFaceTangents<TangentMesh>);
+    static_assert(!HasOptionalVertexTangents<TangentMesh>);
+    static_assert(HasOptionalFaceTangents<TangentMesh>);
+    static_assert(HasOptionalVertexTangents<OptionalTangentMesh>);
+    static_assert(!HasVertexTangents<MyMesh>);
 
     // Material Index
-    static_assert(meshv2::HasFaceMaterialIndices<MaterialMesh>);
-    static_assert(!meshv2::HasFaceMaterialIndices<MyMesh>);
-    static_assert(meshv2::HasOptionalFaceMaterialIndices<OptionalMaterialMesh>);
+    static_assert(HasFaceMaterialIndices<MaterialMesh>);
+    static_assert(!HasFaceMaterialIndices<MyMesh>);
+    static_assert(HasOptionalFaceMaterialIndices<OptionalMaterialMesh>);
 
     // Custom Components
-    static_assert(meshv2::HasVertexCustomComponents<CCMesh>);
-    static_assert(meshv2::HasFaceCustomComponents<CCMesh>);
-    static_assert(meshv2::HasEdgeCustomComponents<EdgeMeshWithCC>);
-    static_assert(!meshv2::HasVertexCustomComponents<MyMesh>);
-    static_assert(!meshv2::HasEdgeCustomComponents<MyMesh>);
-    static_assert(!meshv2::HasFaceCustomComponents<MyMesh>);
+    static_assert(HasVertexCustomComponents<CCMesh>);
+    static_assert(HasFaceCustomComponents<CCMesh>);
+    static_assert(HasEdgeCustomComponents<EdgeMeshWithCC>);
+    static_assert(!HasVertexCustomComponents<MyMesh>);
+    static_assert(!HasEdgeCustomComponents<MyMesh>);
+    static_assert(!HasFaceCustomComponents<MyMesh>);
 
     // Mesh-Level Components
-    static_assert(meshv2::HasTransformMatrix<TransformedMesh>);
-    static_assert(!meshv2::HasTransformMatrix<MyMesh>);
-    static_assert(meshv2::HasBoundingBox<BoundingBoxMesh>);
-    static_assert(!meshv2::HasBoundingBox<MyMesh>);
-    static_assert(meshv2::HasMaterials<MaterialMeshWithMaterials>);
-    static_assert(!meshv2::HasMaterials<MyMesh>);
-    static_assert(meshv2::HasName<NamedMesh>);
-    static_assert(!meshv2::HasName<MyMesh>);
-    static_assert(meshv2::HasMeshColor<MyMesh>);
-    static_assert(!meshv2::HasMeshColor<SimpleMesh>);
-    static_assert(meshv2::HasMeshCustomComponents<CCMesh>);
-    static_assert(!meshv2::HasMeshCustomComponents<MyMesh>);
+    static_assert(HasTransformMatrix<TransformedMesh>);
+    static_assert(!HasTransformMatrix<MyMesh>);
+    static_assert(HasBoundingBox<BoundingBoxMesh>);
+    static_assert(!HasBoundingBox<MyMesh>);
+    static_assert(HasMaterials<MaterialMeshWithMaterials>);
+    static_assert(!HasMaterials<MyMesh>);
+    static_assert(HasName<NamedMesh>);
+    static_assert(!HasName<MyMesh>);
+    static_assert(HasMeshColor<MyMesh>);
+    static_assert(!HasMeshColor<SimpleMesh>);
+    static_assert(HasMeshCustomComponents<CCMesh>);
+    static_assert(!HasMeshCustomComponents<MyMesh>);
 
     // NULL_INDEX exposure and consistency across all levels
     static_assert(MyMesh::NULL_INDEX == vcl::NULL_INDEX<MyMesh::IndexType>);
@@ -459,7 +459,7 @@ inline void testMeshConcepts()
     static_assert(MyMesh::NULL_INDEX == MyMesh::Face::NULL_INDEX);
     static_assert(MyMesh::NULL_INDEX == MyMesh::VertexContainer::NULL_INDEX);
     static_assert(MyMesh::NULL_INDEX == MyMesh::FaceContainer::NULL_INDEX);
-    static_assert(vcl::meshv2::comp::VertexReferences<3>::NULL_INDEX == vcl::NULL_INDEX<uint>);
+    static_assert(vcl::comp::VertexReferences<3>::NULL_INDEX == vcl::NULL_INDEX<uint>);
 
     // 64-bit Mesh NULL_INDEX verification
     static_assert(std::is_same_v<Mesh64::IndexType, uint64_t>);
@@ -482,13 +482,13 @@ inline void testIteratorConcepts()
 
     // Component iterators
     static_assert(std::random_access_iterator<
-        vcl::meshv2::ComponentIterator<vcl::meshv2::CompId::POSITION, MyMesh::VertexContainer>>);
+        vcl::mesh::ComponentIterator<vcl::CompId::POSITION, MyMesh::VertexContainer>>);
     static_assert(std::random_access_iterator<
-        vcl::meshv2::ComponentIterator<vcl::meshv2::CompId::NORMAL, MyMesh::VertexContainer>>);
+        vcl::mesh::ComponentIterator<vcl::CompId::NORMAL, MyMesh::VertexContainer>>);
     static_assert(std::random_access_iterator<
-        vcl::meshv2::ComponentIterator<vcl::meshv2::CompId::QUALITY, QualityMesh::VertexContainer>>);
+        vcl::mesh::ComponentIterator<vcl::CompId::QUALITY, QualityMesh::VertexContainer>>);
     static_assert(std::random_access_iterator<
-        vcl::meshv2::ComponentIterator<vcl::meshv2::CompId::TANGENT, TangentMesh::VertexContainer>>);
+        vcl::mesh::ComponentIterator<vcl::CompId::TANGENT, TangentMesh::VertexContainer>>);
 
     // Random access ranges
     static_assert(std::ranges::random_access_range<decltype(std::declval<MyMesh>().vertices())>);
@@ -499,15 +499,15 @@ inline void testIteratorConcepts()
 
     // Views over elements and components
     static_assert(std::ranges::random_access_range<
-        decltype(std::declval<MyMesh>().elements<vcl::meshv2::ElemId::VERTEX>(0u))>);
+        decltype(std::declval<MyMesh>().elements<vcl::ElemId::VERTEX>(0u))>);
     static_assert(std::ranges::random_access_range<
-        decltype(std::declval<MyMesh>().elements<vcl::meshv2::ElemId::VERTEX>(0u) | vcl::meshv2::views::positions)>);
+        decltype(std::declval<MyMesh>().elements<vcl::ElemId::VERTEX>(0u) | vcl::views::positions)>);
     static_assert(std::ranges::random_access_range<
-        decltype(std::declval<MyMesh>().elements<vcl::meshv2::ElemId::VERTEX>(0u) | vcl::meshv2::views::normals)>);
+        decltype(std::declval<MyMesh>().elements<vcl::ElemId::VERTEX>(0u) | vcl::views::normals)>);
     static_assert(std::ranges::random_access_range<
-        decltype(std::declval<QualityMesh>().elements<vcl::meshv2::ElemId::VERTEX>(0u) | vcl::meshv2::views::qualities)>);
+        decltype(std::declval<QualityMesh>().elements<vcl::ElemId::VERTEX>(0u) | vcl::views::qualities)>);
     static_assert(std::ranges::random_access_range<
-        decltype(std::declval<TangentMesh>().elements<vcl::meshv2::ElemId::VERTEX>(0u) | vcl::meshv2::views::tangents)>);
+        decltype(std::declval<TangentMesh>().elements<vcl::ElemId::VERTEX>(0u) | vcl::views::tangents)>);
 }
 
 inline void testContracts()
@@ -515,30 +515,30 @@ inline void testContracts()
     // 1. Compactness tests
     MyMesh m = createSampleQuadMesh();
     assert(m.isCompact());
-    assert(m.deletedCount<meshv2::ElemId::VERTEX>() == 0);
-    assert(m.deletedCount<meshv2::ElemId::FACE>() == 0);
-    meshv2::requireCompactness(m);
-    meshv2::requireVertexCompactness(m);
-    meshv2::requireFaceCompactness(m);
+    assert(m.deletedCount<ElemId::VERTEX>() == 0);
+    assert(m.deletedCount<ElemId::FACE>() == 0);
+    requireCompactness(m);
+    requireVertexCompactness(m);
+    requireFaceCompactness(m);
 
     // Mark a face as deleted
     m.deleteFace(0);
     assert(!m.isCompact());
-    assert(m.deletedCount<meshv2::ElemId::FACE>() != 0);
-    assert(m.deletedCount<meshv2::ElemId::VERTEX>() == 0); // vertices are still compact
+    assert(m.deletedCount<ElemId::FACE>() != 0);
+    assert(m.deletedCount<ElemId::VERTEX>() == 0); // vertices are still compact
 
     bool caught = false;
     try {
-        meshv2::requireFaceCompactness(m);
-    } catch (const meshv2::MissingCompactnessException&) {
+        requireFaceCompactness(m);
+    } catch (const MissingCompactnessException&) {
         caught = true;
     }
     assert(caught);
 
     caught = false;
     try {
-        meshv2::requireCompactness(m);
-    } catch (const meshv2::MissingCompactnessException&) {
+        requireCompactness(m);
+    } catch (const MissingCompactnessException&) {
         caught = true;
     }
     assert(caught);
@@ -546,22 +546,22 @@ inline void testContracts()
     // Compact the mesh
     m.compact();
     assert(m.isCompact());
-    meshv2::requireCompactness(m);
+    requireCompactness(m);
 
     // 2. Topology tests
-    assert(meshv2::isTriangleMesh(m));
-    assert(!meshv2::isQuadMesh(m));
-    meshv2::requireTriangleMesh(m);
+    assert(isTriangleMesh(m));
+    assert(!isQuadMesh(m));
+    requireTriangleMesh(m);
 
     QuadMesh qm;
-    assert(meshv2::isQuadMesh(qm));
-    assert(!meshv2::isTriangleMesh(qm));
-    meshv2::requireQuadMesh(qm);
+    assert(isQuadMesh(qm));
+    assert(!isTriangleMesh(qm));
+    requireQuadMesh(qm);
 
     caught = false;
     try {
-        meshv2::requireQuadMesh(m);
-    } catch (const meshv2::MissingQuadRequirementException&) {
+        requireQuadMesh(m);
+    } catch (const MissingQuadRequirementException&) {
         caught = true;
     }
     assert(caught);
@@ -572,114 +572,114 @@ inline void testContracts()
     optMesh.addFace(0, 1, 2);
 
     // Optional vertex normals start disabled
-    assert((!optMesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
+    assert((!optMesh.isElementComponentAvailable<ElemId::VERTEX, CompId::NORMAL>()));
     caught = false;
     try {
-        meshv2::requireVertexNormals(optMesh);
-    } catch (const meshv2::MissingComponentException&) {
+        requireVertexNormals(optMesh);
+    } catch (const MissingComponentException&) {
         caught = true;
     }
     assert(caught);
 
     // Enable optional vertex normals
-    bool enabled = meshv2::enableIfVertexNormalsOptional(optMesh);
+    bool enabled = enableIfVertexNormalsOptional(optMesh);
     assert(enabled);
-    assert((optMesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
-    meshv2::requireVertexNormals(optMesh); // succeeds without throwing
+    assert((optMesh.isElementComponentAvailable<ElemId::VERTEX, CompId::NORMAL>()));
+    requireVertexNormals(optMesh); // succeeds without throwing
 
     // Optional face color starts disabled
-    assert((!optMesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
+    assert((!optMesh.isElementComponentAvailable<ElemId::FACE, CompId::COLOR>()));
     caught = false;
     try {
-        meshv2::requireFaceColors(optMesh);
-    } catch (const meshv2::MissingComponentException&) {
+        requireFaceColors(optMesh);
+    } catch (const MissingComponentException&) {
         caught = true;
     }
     assert(caught);
 
-    meshv2::enableIfFaceColorsOptional(optMesh);
-    assert((optMesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
-    meshv2::requireFaceColors(optMesh);
+    enableIfFaceColorsOptional(optMesh);
+    assert((optMesh.isElementComponentAvailable<ElemId::FACE, CompId::COLOR>()));
+    requireFaceColors(optMesh);
 
     // Non-optional components on FullMesh are always available
     FullMesh fullMesh;
-    assert((fullMesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>()));
-    assert((fullMesh.isElementComponentAvailable<meshv2::ElemId::VERTEX, meshv2::CompId::COLOR>()));
-    assert((fullMesh.isElementComponentAvailable<meshv2::ElemId::FACE, meshv2::CompId::COLOR>()));
-    meshv2::requireVertexNormals(fullMesh);
-    meshv2::requireVertexColors(fullMesh);
-    meshv2::requireFaceColors(fullMesh);
+    assert((fullMesh.isElementComponentAvailable<ElemId::VERTEX, CompId::NORMAL>()));
+    assert((fullMesh.isElementComponentAvailable<ElemId::VERTEX, CompId::COLOR>()));
+    assert((fullMesh.isElementComponentAvailable<ElemId::FACE, CompId::COLOR>()));
+    requireVertexNormals(fullMesh);
+    requireVertexColors(fullMesh);
+    requireFaceColors(fullMesh);
 
     // EdgeMesh
     EdgeMesh edgeMesh = createSampleEdgeMesh();
-    assert((edgeMesh.isElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::COLOR>()));
-    assert((!edgeMesh.isElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>())); // optional quality not enabled
-    meshv2::enableIfEdgeQualitiesOptional(edgeMesh);
-    assert((edgeMesh.isElementComponentAvailable<meshv2::ElemId::EDGE, meshv2::CompId::QUALITY>()));
-    meshv2::requireEdgeQualities(edgeMesh);
+    assert((edgeMesh.isElementComponentAvailable<ElemId::EDGE, CompId::COLOR>()));
+    assert((!edgeMesh.isElementComponentAvailable<ElemId::EDGE, CompId::QUALITY>())); // optional quality not enabled
+    enableIfEdgeQualitiesOptional(edgeMesh);
+    assert((edgeMesh.isElementComponentAvailable<ElemId::EDGE, CompId::QUALITY>()));
+    requireEdgeQualities(edgeMesh);
 
     // Generic requireElementComponent
-    meshv2::requireElementComponent<meshv2::ElemId::VERTEX, meshv2::CompId::NORMAL>(optMesh);
+    requireElementComponent<ElemId::VERTEX, CompId::NORMAL>(optMesh);
 }
 
 template<typename T>
 concept HasNormalType = requires {
-    typename meshv2::NormalType<T>;
+    typename NormalType<T>;
 };
 
 template<typename T>
 concept HasTexCoordType = requires {
-    typename meshv2::TexCoordType<T>;
+    typename TexCoordType<T>;
 };
 
 inline void testTraits()
 {
     // 1. VertexType
-    static_assert(std::is_same_v<meshv2::VertexType<SimpleMesh>, SimpleMesh::Vertex>);
-    static_assert(std::is_same_v<meshv2::VertexType<const SimpleMesh&>, SimpleMesh::Vertex>);
-    static_assert(std::is_same_v<meshv2::VertexType<SimpleMesh::Vertex>, SimpleMesh::Vertex>);
-    static_assert(std::is_same_v<meshv2::VertexType<SimpleMesh::Face>, SimpleMesh::Vertex>);
-    static_assert(std::is_same_v<meshv2::VertexType<const SimpleMesh::Face&>, SimpleMesh::Vertex>);
-    static_assert(std::is_same_v<meshv2::VertexType<EdgeMesh::Edge>, EdgeMesh::Vertex>);
-    static_assert(std::is_same_v<meshv2::VertexType<SimpleMesh::ContainerType<meshv2::ElemId::VERTEX>>, SimpleMesh::Vertex>);
+    static_assert(std::is_same_v<VertexType<SimpleMesh>, SimpleMesh::Vertex>);
+    static_assert(std::is_same_v<VertexType<const SimpleMesh&>, SimpleMesh::Vertex>);
+    static_assert(std::is_same_v<VertexType<SimpleMesh::Vertex>, SimpleMesh::Vertex>);
+    static_assert(std::is_same_v<VertexType<SimpleMesh::Face>, SimpleMesh::Vertex>);
+    static_assert(std::is_same_v<VertexType<const SimpleMesh::Face&>, SimpleMesh::Vertex>);
+    static_assert(std::is_same_v<VertexType<EdgeMesh::Edge>, EdgeMesh::Vertex>);
+    static_assert(std::is_same_v<VertexType<SimpleMesh::ContainerType<ElemId::VERTEX>>, SimpleMesh::Vertex>);
 
     // 2. FaceType
-    static_assert(std::is_same_v<meshv2::FaceType<SimpleMesh>, SimpleMesh::Face>);
-    static_assert(std::is_same_v<meshv2::FaceType<const SimpleMesh&>, SimpleMesh::Face>);
-    static_assert(std::is_same_v<meshv2::FaceType<SimpleMesh::Face>, SimpleMesh::Face>);
-    static_assert(std::is_same_v<meshv2::FaceType<const SimpleMesh::Face&>, SimpleMesh::Face>);
-    static_assert(std::is_same_v<meshv2::FaceType<SimpleMesh::ContainerType<meshv2::ElemId::FACE>>, SimpleMesh::Face>);
+    static_assert(std::is_same_v<FaceType<SimpleMesh>, SimpleMesh::Face>);
+    static_assert(std::is_same_v<FaceType<const SimpleMesh&>, SimpleMesh::Face>);
+    static_assert(std::is_same_v<FaceType<SimpleMesh::Face>, SimpleMesh::Face>);
+    static_assert(std::is_same_v<FaceType<const SimpleMesh::Face&>, SimpleMesh::Face>);
+    static_assert(std::is_same_v<FaceType<SimpleMesh::ContainerType<ElemId::FACE>>, SimpleMesh::Face>);
 
     // 3. EdgeType
-    static_assert(std::is_same_v<meshv2::EdgeType<EdgeMesh>, EdgeMesh::Edge>);
-    static_assert(std::is_same_v<meshv2::EdgeType<const EdgeMesh&>, EdgeMesh::Edge>);
-    static_assert(std::is_same_v<meshv2::EdgeType<EdgeMesh::Edge>, EdgeMesh::Edge>);
-    static_assert(std::is_same_v<meshv2::EdgeType<EdgeMesh::ContainerType<meshv2::ElemId::EDGE>>, EdgeMesh::Edge>);
+    static_assert(std::is_same_v<EdgeType<EdgeMesh>, EdgeMesh::Edge>);
+    static_assert(std::is_same_v<EdgeType<const EdgeMesh&>, EdgeMesh::Edge>);
+    static_assert(std::is_same_v<EdgeType<EdgeMesh::Edge>, EdgeMesh::Edge>);
+    static_assert(std::is_same_v<EdgeType<EdgeMesh::ContainerType<ElemId::EDGE>>, EdgeMesh::Edge>);
 
     // 4. IndexType
-    static_assert(std::is_same_v<meshv2::IndexType<SimpleMesh>, uint>);
-    static_assert(std::is_same_v<meshv2::IndexType<SimpleMesh::Vertex>, uint>);
-    static_assert(std::is_same_v<meshv2::IndexType<SimpleMesh::Face>, uint>);
-    static_assert(std::is_same_v<meshv2::IndexType<EdgeMesh::Edge>, uint>);
+    static_assert(std::is_same_v<IndexType<SimpleMesh>, uint>);
+    static_assert(std::is_same_v<IndexType<SimpleMesh::Vertex>, uint>);
+    static_assert(std::is_same_v<IndexType<SimpleMesh::Face>, uint>);
+    static_assert(std::is_same_v<IndexType<EdgeMesh::Edge>, uint>);
 
     // 5. PositionType
-    static_assert(std::is_same_v<meshv2::PositionType<SimpleMesh>, Point3f>);
-    static_assert(std::is_same_v<meshv2::PositionType<const SimpleMesh&>, Point3f>);
-    static_assert(std::is_same_v<meshv2::PositionType<SimpleMesh::Vertex>, Point3f>);
-    static_assert(std::is_same_v<meshv2::PositionType<FullMesh>, Point3f>);
-    static_assert(std::is_same_v<meshv2::PositionType<FullMesh::Vertex>, Point3f>);
+    static_assert(std::is_same_v<PositionType<SimpleMesh>, Point3f>);
+    static_assert(std::is_same_v<PositionType<const SimpleMesh&>, Point3f>);
+    static_assert(std::is_same_v<PositionType<SimpleMesh::Vertex>, Point3f>);
+    static_assert(std::is_same_v<PositionType<FullMesh>, Point3f>);
+    static_assert(std::is_same_v<PositionType<FullMesh::Vertex>, Point3f>);
 
     // 6. ScalarType
-    static_assert(std::is_same_v<meshv2::ScalarType<SimpleMesh>, float>);
-    static_assert(std::is_same_v<meshv2::ScalarType<const SimpleMesh&>, float>);
-    static_assert(std::is_same_v<meshv2::ScalarType<SimpleMesh::Vertex>, float>);
-    static_assert(std::is_same_v<meshv2::ScalarType<Point3f>, float>);
-    static_assert(std::is_same_v<meshv2::ScalarType<Point3d>, double>);
+    static_assert(std::is_same_v<ScalarType<SimpleMesh>, float>);
+    static_assert(std::is_same_v<ScalarType<const SimpleMesh&>, float>);
+    static_assert(std::is_same_v<ScalarType<SimpleMesh::Vertex>, float>);
+    static_assert(std::is_same_v<ScalarType<Point3f>, float>);
+    static_assert(std::is_same_v<ScalarType<Point3d>, double>);
 
     // 7. NormalType
-    static_assert(std::is_same_v<meshv2::NormalType<MyMesh::Vertex>, Point3f>);
-    static_assert(std::is_same_v<meshv2::NormalType<FullMesh::Vertex>, Point3f>);
-    static_assert(std::is_same_v<meshv2::NormalType<TangentMesh::Face>, Point3f>);
+    static_assert(std::is_same_v<NormalType<MyMesh::Vertex>, Point3f>);
+    static_assert(std::is_same_v<NormalType<FullMesh::Vertex>, Point3f>);
+    static_assert(std::is_same_v<NormalType<TangentMesh::Face>, Point3f>);
     // Not available on Vertex without normal
     static_assert(!HasNormalType<SimpleMesh::Vertex>);
     // Not available on Face without face normal
