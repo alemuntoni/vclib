@@ -8,6 +8,8 @@
 #ifndef VCL_MESH_V2_ELEM_ALGORITHMS_H
 #define VCL_MESH_V2_ELEM_ALGORITHMS_H
 
+#include "elem_algorithms/bounding_box.h"
+#include "elem_algorithms/distance.h"
 #include "elem_algorithms/polygon.h"
 
 #endif // VCL_MESH_V2_ELEM_ALGORITHMS_H

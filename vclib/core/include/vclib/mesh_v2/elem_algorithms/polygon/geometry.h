@@ -1,0 +1,176 @@
+// VCLib - Visual Computing Library
+// Copyright (C) 2021-2026 Visual Computing Lab, ISTI - CNR.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License,
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at https://mozilla.org/MPL/2.0/.
+
+#ifndef VCL_MESH_V2_ELEM_ALGORITHMS_POLYGON_GEOMETRY_H
+#define VCL_MESH_V2_ELEM_ALGORITHMS_POLYGON_GEOMETRY_H
+
+#include <vclib/mesh_v2/elements.h>
+#include <vclib/mesh_v2/traits.h>
+#include <vclib/mesh_v2/views/components.h>
+
+#include <vclib/space/core.h>
+
+namespace vcl::meshv2 {
+
+/**
+ * @brief Computes the normal of a face, without modifying the face. Works both
+ * for triangle and polygonal faces, and it is optimized in case of triangle
+ * faces.
+ *
+ * @tparam FaceType: the type of the face that satisfies the FaceConcept.
+ *
+ * @param[in] f: the input face.
+ * @return the normal of the face.
+ *
+ * @ingroup core_polygon
+ */
+template<FaceConcept FaceType>
+auto faceNormal(const FaceType& f)
+{
+    using PositionType = PositionType<VertexType<FaceType>>;
+    if constexpr (TriangleFaceConcept<FaceType>) {
+        return Triangle<PositionType>::normal(
+            f.vertex(0).position(),
+            f.vertex(1).position(),
+            f.vertex(2).position());
+    }
+    else {
+        if (f.vertexCount() == 3) {
+            return Triangle<PositionType>::normal(
+                f.vertex(0).position(),
+                f.vertex(1).position(),
+                f.vertex(2).position());
+        }
+        else {
+            return Polygon<PositionType>::normal(
+                f.vertices() | views::positions);
+        }
+    }
+}
+
+/**
+ * @brief Computes the barycenter of a face. Works both for triangle and
+ * polygonal faces, and it is optimized in case of triangle faces.
+ *
+ * @tparam FaceType: the type of the face that satisfies the FaceConcept.
+ *
+ * @param[in] f: the input face.
+ * @return the barycenter of the face.
+ *
+ * @ingroup core_polygon
+ */
+template<FaceConcept FaceType>
+auto faceBarycenter(const FaceType& f)
+{
+    using PositionType = PositionType<VertexType<FaceType>>;
+    if constexpr (TriangleFaceConcept<FaceType>) {
+        return Triangle<PositionType>::barycenter(
+            f.vertex(0).position(),
+            f.vertex(1).position(),
+            f.vertex(2).position());
+    }
+    else {
+        return Polygon<PositionType>::barycenter(
+            f.vertices() | views::positions);
+    }
+}
+
+/**
+ * @brief Computes the area of a face. Works both for triangle and polygonal
+ * faces, and it is optimized in case of triangle faces.
+ *
+ * @tparam FaceType: the type of the face that satisfies the FaceConcept.
+ *
+ * @param[in] f: the input face.
+ * @return the area of the face.
+ *
+ * @ingroup core_polygon
+ */
+template<FaceConcept FaceType>
+auto faceArea(const FaceType& f)
+{
+    using PositionType = PositionType<VertexType<FaceType>>;
+    if constexpr (TriangleFaceConcept<FaceType>) {
+        return Triangle<PositionType>::area(
+            f.vertex(0).position(),
+            f.vertex(1).position(),
+            f.vertex(2).position());
+    }
+    else {
+        if (f.vertexCount() == 3) {
+            return Triangle<PositionType>::area(
+                f.vertex(0).position(),
+                f.vertex(1).position(),
+                f.vertex(2).position());
+        }
+        else {
+            return Polygon<PositionType>::area(f.vertices() | views::positions);
+        }
+    }
+}
+
+/**
+ * @brief Computes the perimeter of a face. Works both for triangle and
+ * polygonal faces, and it is optimized in case of triangle faces.
+ *
+ * @tparam FaceType: the type of the face that satisfies the FaceConcept.
+ *
+ * @param[in] f: the input face.
+ * @return the perimeter of the face.
+ *
+ * @ingroup core_polygon
+ */
+template<FaceConcept FaceType>
+auto facePerimeter(const FaceType& f)
+{
+    using PositionType = PositionType<VertexType<FaceType>>;
+    if constexpr (TriangleFaceConcept<FaceType>) {
+        return Triangle<PositionType>::perimeter(
+            f.vertex(0).position(),
+            f.vertex(1).position(),
+            f.vertex(2).position());
+    }
+    else {
+        if (f.vertexCount() == 3) {
+            return Triangle<PositionType>::perimeter(
+                f.vertex(0).position(),
+                f.vertex(1).position(),
+                f.vertex(2).position());
+        }
+        else {
+            return Polygon<PositionType>::perimeter(
+                f.vertices() | views::positions);
+        }
+    }
+}
+
+/**
+ * @brief Returns the internal angle (in radians) of the vi-th vertex of the
+ * face.
+ *
+ * @tparam FaceType: the type of the face that satisfies the FaceConcept.
+ *
+ * @param[in] f: the input face.
+ * @param[in] vi: the index of the vertex in the face on which calculate the
+ * angle
+ * @return the angle in radians at the vi-th vertex.
+ *
+ * @ingroup core_polygon
+ */
+template<FaceConcept FaceType>
+auto faceAngleOnVertexRad(const FaceType& f, uint vi)
+{
+    using PositionType = PositionType<VertexType<FaceType>>;
+    const auto&  p0 = f.vertex(vi).position();
+    PositionType v1 = f.vertexMod((int) vi + 1).position() - p0;
+    PositionType v2 = f.vertexMod((int) vi - 1).position() - p0;
+    return v2.angle(v1);
+}
+
+} // namespace vcl::meshv2
+
+#endif // VCL_MESH_V2_ELEM_ALGORITHMS_POLYGON_GEOMETRY_H

@@ -9,6 +9,7 @@
 #define VCL_MESH_V2_ELEM_ALGORITHMS_POLYGON_H
 
 #include "polygon/ear_cut.h"
+#include "polygon/geometry.h"
 
 #endif // VCL_MESH_V2_ELEM_ALGORITHMS_POLYGON_H
 
