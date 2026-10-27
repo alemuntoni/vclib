@@ -15,9 +15,9 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 # and ensure all required targets are available before adding the subdirectory.
 # Temporarily restricted to active examples during mesh migration
 set(CORE_EXAMPLE_DIRS
-    "997-mesh-benchmarks"
     "998-misc-no-lib"
     "999-misc"
+    "9999-mesh-v1-vs-v2-benchmarks"
 )
 # file(
 #     GLOB CORE_EXAMPLE_DIRS
