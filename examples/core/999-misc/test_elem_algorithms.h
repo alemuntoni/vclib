@@ -474,6 +474,236 @@ inline void testDistanceVertexFace()
     assert(vcl::epsilonEquals(distance(f, v), 2.5f));
 }
 
+inline void testIntersectionFaceBox()
+{
+    // 1. Triangle Face
+    TriBitMesh triMesh;
+    triMesh.addVertices(3);
+    triMesh.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    triMesh.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
+    triMesh.vertex(2).position() = Point3f(0.0f, 2.0f, 0.0f);
+    triMesh.addFace(0, 1, 2);
+
+    Box3f boxHit(Point3f(-0.5f, -0.5f, -0.5f), Point3f(1.5f, 1.5f, 0.5f));
+    Box3f boxMiss(Point3f(10.0f, 10.0f, 10.0f), Point3f(12.0f, 12.0f, 12.0f));
+
+    assert(meshv2::intersect(triMesh.face(0), boxHit));
+    assert(meshv2::intersect(boxHit, triMesh.face(0))); // symmetry
+
+    assert(!meshv2::intersect(triMesh.face(0), boxMiss));
+    assert(!meshv2::intersect(boxMiss, triMesh.face(0)));
+
+    // 2. Polygonal Quad Face
+    PolyMesh poly;
+    poly.addVertices(4);
+    poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
+    poly.vertex(2).position() = Point3f(2.0f, 2.0f, 0.0f);
+    poly.vertex(3).position() = Point3f(0.0f, 2.0f, 0.0f);
+    poly.addFace(0, 1, 2, 3);
+
+    Box3f quadBoxHit(Point3f(1.0f, 1.0f, -1.0f), Point3f(3.0f, 3.0f, 1.0f));
+    Box3f quadBoxMiss(Point3f(5.0f, 5.0f, 0.0f), Point3f(6.0f, 6.0f, 1.0f));
+
+    assert(meshv2::intersect(poly.face(0), quadBoxHit));
+    assert(meshv2::intersect(quadBoxHit, poly.face(0)));
+
+    assert(!meshv2::intersect(poly.face(0), quadBoxMiss));
+    assert(!meshv2::intersect(quadBoxMiss, poly.face(0)));
+
+    // 3. 3-vertex polygon face
+    PolyMesh poly3;
+    poly3.addVertices(3);
+    poly3.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    poly3.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
+    poly3.vertex(2).position() = Point3f(0.0f, 2.0f, 0.0f);
+    poly3.addFace(0, 1, 2);
+
+    assert(meshv2::intersect(poly3.face(0), boxHit));
+    assert(!meshv2::intersect(poly3.face(0), boxMiss));
+
+    // 4. Const proxy and ADL
+    const auto cf = poly.face(0);
+    assert(intersect(cf, quadBoxHit));
+    assert(intersect(quadBoxHit, cf));
+}
+
+inline void testIntersectionFaceSphere()
+{
+    // 1. Triangle Face
+    TriBitMesh triMesh;
+    triMesh.addVertices(3);
+    triMesh.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    triMesh.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
+    triMesh.vertex(2).position() = Point3f(0.0f, 2.0f, 0.0f);
+    triMesh.addFace(0, 1, 2);
+
+    Sphere<float> sphereHit(Point3f(0.5f, 0.5f, 0.5f), 1.0f);
+    Sphere<float> sphereMiss(Point3f(0.5f, 0.5f, 5.0f), 1.0f);
+
+    assert(meshv2::intersect(triMesh.face(0), sphereHit));
+    assert(meshv2::intersect(sphereHit, triMesh.face(0)));
+
+    assert(!meshv2::intersect(triMesh.face(0), sphereMiss));
+    assert(!meshv2::intersect(sphereMiss, triMesh.face(0)));
+
+    // Witness and res
+    Point3f witness;
+    std::pair<float, float> res;
+    assert(meshv2::intersect(triMesh.face(0), sphereHit, witness, res));
+    assert(vcl::epsilonEquals(witness, Point3f(0.5f, 0.5f, 0.0f)));
+
+    Point3f witnessSym;
+    std::pair<float, float> resSym;
+    assert(meshv2::intersect(sphereHit, triMesh.face(0), witnessSym, resSym));
+    assert(vcl::epsilonEquals(witnessSym, Point3f(0.5f, 0.5f, 0.0f)));
+
+    // 2. Polygonal Quad Face
+    PolyMesh poly;
+    poly.addVertices(4);
+    poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
+    poly.vertex(2).position() = Point3f(2.0f, 2.0f, 0.0f);
+    poly.vertex(3).position() = Point3f(0.0f, 2.0f, 0.0f);
+    poly.addFace(0, 1, 2, 3);
+
+    Sphere<float> quadSphereHit(Point3f(1.0f, 1.0f, 0.5f), 1.0f);
+    assert(meshv2::intersect(poly.face(0), quadSphereHit));
+    assert(meshv2::intersect(quadSphereHit, poly.face(0)));
+
+    assert(!meshv2::intersect(poly.face(0), sphereMiss));
+
+    // 3. Const proxy and ADL
+    const auto cf = poly.face(0);
+    assert(intersect(cf, quadSphereHit));
+    assert(intersect(quadSphereHit, cf));
+}
+
+inline void testIntersectionFaceRay()
+{
+    // 1. Triangle Face
+    TriBitMesh triMesh;
+    triMesh.addVertices(3);
+    triMesh.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    triMesh.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
+    triMesh.vertex(2).position() = Point3f(0.0f, 2.0f, 0.0f);
+    triMesh.addFace(0, 1, 2);
+
+    Ray3f rayHit(Point3f(0.5f, 0.5f, 5.0f), Point3f(0.0f, 0.0f, -1.0f));
+    Ray3f rayAway(Point3f(0.5f, 0.5f, 5.0f), Point3f(0.0f, 0.0f, 1.0f));
+    Ray3f rayMiss(Point3f(5.0f, 5.0f, 5.0f), Point3f(0.0f, 0.0f, -1.0f));
+
+    float t = 0.0f;
+    auto pt = meshv2::intersection(rayHit, triMesh.face(0), std::ref(t));
+    assert(pt.has_value());
+    assert(vcl::epsilonEquals(*pt, Point3f(0.5f, 0.5f, 0.0f)));
+    assert(vcl::epsilonEquals(t, 5.0f));
+
+    // Symmetrical call
+    float tSym = 0.0f;
+    auto ptSym = meshv2::intersection(triMesh.face(0), rayHit, std::ref(tSym));
+    assert(ptSym.has_value());
+    assert(vcl::epsilonEquals(*ptSym, Point3f(0.5f, 0.5f, 0.0f)));
+    assert(vcl::epsilonEquals(tSym, 5.0f));
+
+    assert(meshv2::intersect(rayHit, triMesh.face(0)));
+    assert(meshv2::intersect(triMesh.face(0), rayHit));
+
+    assert(!meshv2::intersection(rayAway, triMesh.face(0)).has_value());
+    assert(!meshv2::intersect(rayAway, triMesh.face(0)));
+
+    assert(!meshv2::intersection(rayMiss, triMesh.face(0)).has_value());
+    assert(!meshv2::intersect(rayMiss, triMesh.face(0)));
+
+    // 2. Polygonal Quad Face
+    PolyMesh poly;
+    poly.addVertices(4);
+    poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
+    poly.vertex(2).position() = Point3f(2.0f, 2.0f, 0.0f);
+    poly.vertex(3).position() = Point3f(0.0f, 2.0f, 0.0f);
+    poly.addFace(0, 1, 2, 3);
+
+    Ray3f rayQuad(Point3f(1.0f, 1.5f, 3.0f), Point3f(0.0f, 0.0f, -1.0f));
+    float tQuad = 0.0f;
+    auto ptQuad = meshv2::intersection(rayQuad, poly.face(0), std::ref(tQuad));
+    assert(ptQuad.has_value());
+    assert(vcl::epsilonEquals(*ptQuad, Point3f(1.0f, 1.5f, 0.0f)));
+    assert(vcl::epsilonEquals(tQuad, 3.0f));
+
+    assert(meshv2::intersect(rayQuad, poly.face(0)));
+    assert(meshv2::intersect(poly.face(0), rayQuad));
+
+    assert(!meshv2::intersect(rayMiss, poly.face(0)));
+
+    // 3. Const proxy and ADL
+    const auto cf = poly.face(0);
+    assert(intersection(rayQuad, cf).has_value());
+    assert(intersection(cf, rayQuad).has_value());
+    assert(intersect(rayQuad, cf));
+    assert(intersect(cf, rayQuad));
+}
+
+inline void testVisibility()
+{
+    // 1. Triangle Face
+    TriBitMesh triMesh;
+    triMesh.addVertices(3);
+    triMesh.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    triMesh.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
+    triMesh.vertex(2).position() = Point3f(0.0f, 2.0f, 0.0f);
+    triMesh.addFace(0, 1, 2);
+
+    Point3f pAbove(0.5f, 0.5f, 2.0f);
+    Point3f pBelow(0.5f, 0.5f, -2.0f);
+    Point3f pOnPlane(0.5f, 0.5f, 0.0f);
+
+    assert(meshv2::halfSpaceDeterminant(triMesh.face(0), pAbove) > 0.0f);
+    assert(meshv2::halfSpaceDeterminant(triMesh.face(0), pBelow) < 0.0f);
+    assert(vcl::epsilonEquals(meshv2::halfSpaceDeterminant(triMesh.face(0), pOnPlane), 0.0f));
+
+    assert(meshv2::facePointVisibility(triMesh.face(0), pAbove));
+    assert(!meshv2::facePointVisibility(triMesh.face(0), pBelow));
+    assert(!meshv2::facePointVisibility(triMesh.face(0), pOnPlane));
+
+    // Symmetrical facePointVisibility
+    assert(meshv2::facePointVisibility(pAbove, triMesh.face(0)));
+    assert(!meshv2::facePointVisibility(pBelow, triMesh.face(0)));
+
+    // 2. 3-vertex polygon face
+    PolyMesh poly3;
+    poly3.addVertices(3);
+    poly3.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    poly3.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
+    poly3.vertex(2).position() = Point3f(0.0f, 2.0f, 0.0f);
+    poly3.addFace(0, 1, 2);
+
+    assert(meshv2::halfSpaceDeterminant(poly3.face(0), pAbove) > 0.0f);
+    assert(meshv2::halfSpaceDeterminant(poly3.face(0), pBelow) < 0.0f);
+    assert(meshv2::facePointVisibility(poly3.face(0), pAbove));
+    assert(!meshv2::facePointVisibility(poly3.face(0), pBelow));
+
+    // 3. Polygonal Quad Face
+    PolyMesh poly;
+    poly.addVertices(4);
+    poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
+    poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
+    poly.vertex(2).position() = Point3f(2.0f, 2.0f, 0.0f);
+    poly.vertex(3).position() = Point3f(0.0f, 2.0f, 0.0f);
+    poly.addFace(0, 1, 2, 3);
+
+    assert(meshv2::halfSpaceDeterminant(poly.face(0), pAbove) > 0.0f);
+    assert(meshv2::halfSpaceDeterminant(poly.face(0), pBelow) < 0.0f);
+    assert(meshv2::facePointVisibility(poly.face(0), pAbove));
+    assert(!meshv2::facePointVisibility(poly.face(0), pBelow));
+
+    // 4. Const proxy and ADL
+    const auto cf = poly.face(0);
+    assert(halfSpaceDeterminant(cf, pAbove) > 0.0f);
+    assert(facePointVisibility(cf, pAbove));
+    assert(facePointVisibility(pAbove, cf));
+}
+
 inline void testElemAlgorithms()
 {
     std::println("--- Testing Elem Algorithms ---");
@@ -496,6 +726,12 @@ inline void testElemAlgorithms()
     testDistanceTriangleFace();
     testDistancePolygonFace();
     testDistanceVertexFace();
+
+    testIntersectionFaceBox();
+    testIntersectionFaceSphere();
+    testIntersectionFaceRay();
+
+    testVisibility();
 
     std::println("Elem Algorithms verified successfully!");
 }

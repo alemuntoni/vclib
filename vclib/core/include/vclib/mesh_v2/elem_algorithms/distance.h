@@ -11,6 +11,7 @@
 #include "polygon/ear_cut.h"
 
 #include <vclib/mesh_v2/elements.h>
+#include <vclib/mesh_v2/requirements.h>
 
 #include <vclib/algorithms/core.h>
 #include <vclib/space/core.h>
