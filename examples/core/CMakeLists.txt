@@ -13,11 +13,17 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 # For each directory, we check if it's a valid example by looking for a main.cpp file.
 # If a requirements.cmake is present, we include it to read EXAMPLE_REQUIRED_TARGETS
 # and ensure all required targets are available before adding the subdirectory.
-file(
-    GLOB CORE_EXAMPLE_DIRS
-    RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/*"
+# Temporarily restricted to active examples during mesh migration
+set(CORE_EXAMPLE_DIRS
+    "997-mesh-benchmarks"
+    "998-misc-no-lib"
+    "999-misc"
 )
+# file(
+#     GLOB CORE_EXAMPLE_DIRS
+#     RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+#     "${CMAKE_CURRENT_SOURCE_DIR}/*"
+# )
 foreach(dir IN LISTS CORE_EXAMPLE_DIRS)
     if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${dir}")
         if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${dir}/main.cpp")

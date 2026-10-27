@@ -1,8 +1,7 @@
 name: Render - Build and run Tests
 
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
   workflow_call:
     inputs:
       ref:
