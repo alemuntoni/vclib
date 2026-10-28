@@ -12,6 +12,8 @@
 
 #include <benchmark_runner.h>
 
+// TODO: re-enable once algorithms/mesh/stat/bounding_box.h is ported to Mesh V2
+#if 0
 #include <vclib/algorithms.h>
 
 namespace bench {
@@ -31,5 +33,6 @@ inline void benchmarkBoundingBox(
 }
 
 } // namespace bench
+#endif
 
 #endif // TEST_BOUNDING_BOX_H

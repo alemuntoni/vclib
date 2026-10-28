@@ -12,6 +12,8 @@
 
 #include <benchmark_runner.h>
 
+// TODO: re-enable once surfaceArea and barycenter are ported to Mesh V2
+#if 0
 #include <vclib/algorithms.h>
 
 namespace bench {
@@ -39,5 +41,6 @@ inline void benchmarkTraversal(
 }
 
 } // namespace bench
+#endif
 
 #endif // TEST_TRAVERSAL_H

@@ -8,9 +8,7 @@
 #ifndef LOAD_MATRICES_H
 #define LOAD_MATRICES_H
 
-#include <vclib/algorithms.h>
-#include <vclib/io.h>
-#include <vclib/meshes.h>
+#include <vclib/base.h>
 
 #include <Eigen/Core>
 
@@ -27,6 +25,8 @@ struct MeshMatrices
     FMatrix faces;
 };
 
+// TODO: re-enable once io/mesh is ported to Mesh V2
+#if 0
 /**
  * @brief Loads a mesh from the given file path and returns its vertex positions
  * and face vertex indices as Eigen matrices.
@@ -46,6 +46,7 @@ inline MeshMatrices<VMatrix, FMatrix> loadMeshMatrices(const std::string& path)
     matrices.faces    = vcl::faceVertexIndicesMatrix<FMatrix>(mesh);
     return matrices;
 }
+#endif
 
 /**
  * @brief Generates a regular triangulated grid as Eigen matrices.

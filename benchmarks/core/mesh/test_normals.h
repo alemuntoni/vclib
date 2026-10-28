@@ -12,6 +12,8 @@
 
 #include <benchmark_runner.h>
 
+// TODO: re-enable once normal update algorithms are ported to Mesh V2
+#if 0
 #include <vclib/algorithms.h>
 
 namespace bench {
@@ -38,5 +40,6 @@ inline void benchmarkNormals(
 }
 
 } // namespace bench
+#endif
 
 #endif // TEST_NORMALS_H

@@ -12,6 +12,8 @@
 
 #include <benchmark_runner.h>
 
+// TODO: re-enable once transform algorithms are ported to Mesh V2
+#if 0
 #include <vclib/algorithms.h>
 #include <vclib/space/core.h>
 
@@ -63,5 +65,6 @@ inline void benchmarkTransform(
 }
 
 } // namespace bench
+#endif
 
 #endif // TEST_TRANSFORM_H
