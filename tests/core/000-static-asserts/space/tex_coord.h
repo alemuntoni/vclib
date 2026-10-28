@@ -8,7 +8,7 @@
 #ifndef TEX_COORD_H
 #define TEX_COORD_H
 
-#include <vclib/space.h>
+#include <vclib/space/core.h>
 
 void texCoordStaticAsserts()
 {

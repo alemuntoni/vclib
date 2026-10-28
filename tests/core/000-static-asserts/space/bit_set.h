@@ -8,7 +8,7 @@
 #ifndef BIT_SET_H
 #define BIT_SET_H
 
-#include <vclib/space.h>
+#include <vclib/space/core.h>
 
 void bitSetStaticAsserts()
 {

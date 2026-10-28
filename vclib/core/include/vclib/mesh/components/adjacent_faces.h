@@ -433,7 +433,7 @@ void AdjacentFaces<N, Index, TTVC, OPT>::importFrom(
 /* Specialization Aliases */
 
 template<std::unsigned_integral Index = uint, bool OPT = false>
-using TriangleAdjacentFaces = AdjacentFaces<3, Index, false, OPT>;
+using TriangleAdjacentFaces = AdjacentFaces<3, Index, true, OPT>;
 
 template<std::unsigned_integral Index = uint, bool OPT = false>
 using PolygonAdjacentFaces = AdjacentFaces<-1, Index, true, OPT>;

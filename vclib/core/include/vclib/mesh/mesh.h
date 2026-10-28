@@ -1447,13 +1447,18 @@ private:
 
 /**
  * @brief Concept that checks whether a type T satisfies the Mesh concept.
+ *
+ * The concept is satisfied when `T` is a class that instantiates or derives
+ * from a Mesh class.
+ *
+ * @tparam T: The type to be tested for conformity to the MeshConcept.
+ *
+ * @ingroup mesh
+ * @ingroup mesh_concepts
  */
 template<typename T>
-concept MeshConcept = requires (T& m) {
-    { m.isCompact() } -> std::same_as<bool>;
-    { m.empty() } -> std::same_as<bool>;
-    m.clear();
-};
+concept MeshConcept =
+    IsDerivedFromSpecializationOfV<T, Mesh>;
 
 } // namespace vcl
 

@@ -14,8 +14,7 @@ void elementStaticAsserts()
 {
     using namespace vcl;
 
-    using TMVertex  = trimesh::Vertex<float, false>;
-    using TMVertexI = trimesh::Vertex<float, true>;
+    using TMVertex  = VertexType<TriMesh>;
 
     static_assert(
         ElementConcept<TMVertex>,
@@ -32,22 +31,6 @@ void elementStaticAsserts()
     static_assert(
         ElementConcept<TMVertex&&>,
         "TMVertex&& does not satisfy the ElementConcept");
-
-    static_assert(
-        ElementConcept<TMVertexI>,
-        "TMVertexI does not satisfy the ElementConcept");
-    static_assert(
-        ElementConcept<const TMVertexI>,
-        "const TMVertexI does not satisfy the ElementConcept");
-    static_assert(
-        ElementConcept<TMVertexI&>,
-        "TMVertexI& does not satisfy the ElementConcept");
-    static_assert(
-        ElementConcept<const TMVertexI&>,
-        "const TMVertexI& does not satisfy the ElementConcept");
-    static_assert(
-        ElementConcept<TMVertexI&&>,
-        "TMVertexI&& does not satisfy the ElementConcept");
 }
 
 #endif // ELEM_ELEMENT_H

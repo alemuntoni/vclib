@@ -16,15 +16,18 @@ namespace vcl::comp {
 
 namespace detail {
 
+template<typename Comp>
+concept IsOptionalComponent =
+    requires { requires std::remove_cvref_t<Comp>::IS_OPTIONAL; };
+
 template<uint COMP_ID, typename T>
-inline constexpr bool HasComponentImpl = requires {
-    requires std::remove_cvref_t<T>::COMPONENT_ID == COMP_ID;
-};
+inline constexpr bool HasComponentImpl =
+    requires { requires std::remove_cvref_t<T>::COMPONENT_ID == COMP_ID; };
 
 template<uint COMP_ID, typename... Components>
 inline constexpr bool
     HasComponentImpl<COMP_ID, vcl::TypeWrapper<Components...>> =
-    (HasComponentImpl<COMP_ID, Components> || ...);
+        (HasComponentImpl<COMP_ID, Components> || ...);
 
 // Helper details for finding the index of a Component by COMP_ID in a list of
 // Components. It recursively checks each component's COMPONENT_ID against the
@@ -63,19 +66,46 @@ private:
     {
         using RawT = std::remove_cvref_t<T>;
         if constexpr (requires { typename RawT::Components; }) {
-            return typename RawT::Components{};
+            return typename RawT::Components {};
         }
-        else if constexpr (requires { extractTypeWrapper(std::declval<RawT>()); }) {
-            return decltype(extractTypeWrapper(std::declval<RawT>())){};
+        else if constexpr (requires {
+                               extractTypeWrapper(std::declval<RawT>());
+                           }) {
+            return decltype(extractTypeWrapper(std::declval<RawT>())) {};
         }
         else {
-            return RawT{};
+            return RawT {};
         }
     }
 
 public:
     using type = decltype(helper());
 };
+
+template<uint TARGET_ELEM_ID, typename T>
+struct HasReferencesToImpl : std::false_type {};
+
+template<uint TARGET_ELEM_ID, typename Comp>
+requires requires {
+    requires std::remove_cvref_t<Comp>::template referencesElement<TARGET_ELEM_ID>();
+}
+struct HasReferencesToImpl<TARGET_ELEM_ID, Comp> :
+    std::bool_constant<std::remove_cvref_t<Comp>::template referencesElement<TARGET_ELEM_ID>()> {};
+
+template<uint TARGET_ELEM_ID, typename... Comps>
+struct HasReferencesToImpl<TARGET_ELEM_ID, vcl::TypeWrapper<Comps...>> :
+    std::bool_constant<(HasReferencesToImpl<TARGET_ELEM_ID, Comps>::value || ...)> {};
+
+template<uint TARGET_ELEM_ID, typename T>
+struct HasOptionalReferencesToImpl : std::false_type {};
+
+template<uint TARGET_ELEM_ID, typename Comp>
+requires (HasReferencesToImpl<TARGET_ELEM_ID, Comp>::value && IsOptionalComponent<Comp>)
+struct HasOptionalReferencesToImpl<TARGET_ELEM_ID, Comp> : std::true_type {};
+
+template<uint TARGET_ELEM_ID, typename... Comps>
+struct HasOptionalReferencesToImpl<TARGET_ELEM_ID, vcl::TypeWrapper<Comps...>> :
+    std::bool_constant<(HasOptionalReferencesToImpl<TARGET_ELEM_ID, Comps>::value || ...)> {};
 
 } // namespace detail
 
@@ -89,16 +119,31 @@ concept HasComponent = detail::
     HasComponentImpl<COMP_ID, typename detail::ComponentListHelper<T>::type>;
 
 /**
- * @brief Concept that checks whether a component Comp stores references to
- * elements of type TARGET_ELEM_ID (e.g. ElemId::VERTEX).
- *
- * A component declares this by defining:
- *   template<uint TARGET_ELEM_ID> static constexpr bool referencesElement()
+ * @brief Concept that checks whether a component type is optional
+ * (has static constexpr bool IS_OPTIONAL = true).
  */
-template<typename Comp, uint TARGET_ELEM_ID>
-concept ComponentReferencesElement = requires {
-    requires Comp::template referencesElement<TARGET_ELEM_ID>();
-};
+template<typename Comp>
+concept IsOptionalComponent = detail::IsOptionalComponent<Comp>;
+
+/**
+ * @brief Concept that checks whether a type T (which can be a TypeWrapper of
+ * components, an ElementProxy, an ElementContainer, or a Mesh) stores
+ * references to elements with TARGET_ELEM_ID (e.g. ElemId::VERTEX).
+ */
+template<uint TARGET_ELEM_ID, typename T>
+concept HasReferencesTo = detail::HasReferencesToImpl<
+    TARGET_ELEM_ID,
+    typename detail::ComponentListHelper<T>::type>::value;
+
+/**
+ * @brief Concept that checks whether a type T (which can be a TypeWrapper of
+ * components, an ElementProxy, an ElementContainer, or a Mesh) stores
+ * optional references to elements with TARGET_ELEM_ID (e.g. ElemId::VERTEX).
+ */
+template<uint TARGET_ELEM_ID, typename T>
+concept HasOptionalReferencesTo = detail::HasOptionalReferencesToImpl<
+    TARGET_ELEM_ID,
+    typename detail::ComponentListHelper<T>::type>::value;
 
 /**
  * @brief Concept that checks whether a component Comp is tied to the vertex
@@ -106,7 +151,9 @@ concept ComponentReferencesElement = requires {
  */
 template<typename Comp>
 concept IsTiedToVertexCount = requires {
-    { std::remove_cvref_t<Comp>::TIED_TO_VERTEX_COUNT } -> std::convertible_to<bool>;
+    {
+        std::remove_cvref_t<Comp>::TIED_TO_VERTEX_COUNT
+    } -> std::convertible_to<bool>;
 } && std::remove_cvref_t<Comp>::TIED_TO_VERTEX_COUNT;
 
 /**
@@ -158,15 +205,6 @@ using ComponentTypeT = typename ComponentType<
     typename detail::ComponentListHelper<T>::type>::type;
 
 /**
- * @brief Concept that checks whether a component type is optional
- * (has static constexpr bool IS_OPTIONAL = true).
- */
-template<typename Comp>
-concept IsOptionalComponent = requires {
-    requires std::remove_cvref_t<Comp>::IS_OPTIONAL;
-};
-
-/**
  * @brief Concept that checks whether a type T (which can be a TypeWrapper of
  * components, an ElementProxy, an ElementContainer, or a Mesh) contains an
  * optional component with the given COMP_ID.
@@ -174,8 +212,7 @@ concept IsOptionalComponent = requires {
 template<uint COMP_ID, typename T>
 concept HasOptionalComponent =
     HasComponent<COMP_ID, T> &&
-    IsOptionalComponent<ComponentTypeT<COMP_ID, T>>;
-
+    detail::IsOptionalComponent<ComponentTypeT<COMP_ID, T>>;
 
 /**
  * @brief Concept that checks whether a component type provides a default value,
@@ -218,8 +255,8 @@ constexpr auto defaultValue()
     else if constexpr (requires {
                            {
                                PureComp::DEFAULT_VALUE
-                           } -> std::convertible_to<
-                               typename PureComp::DataType>;
+                           }
+                           -> std::convertible_to<typename PureComp::DataType>;
                        }) {
         return PureComp::DEFAULT_VALUE;
     }

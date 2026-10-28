@@ -8,7 +8,7 @@
 #ifndef TEXTURE_DESCRIPTOR_H
 #define TEXTURE_DESCRIPTOR_H
 
-#include <vclib/space.h>
+#include <vclib/space/core.h>
 
 void textureDescriptorStaticAsserts()
 {

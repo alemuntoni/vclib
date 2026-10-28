@@ -10,7 +10,7 @@ project(vclib-core-tests)
 set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 
 # Temporarily disabled during mesh migration
-# add_subdirectory(000-static-asserts)
+add_subdirectory(000-static-asserts)
 # add_subdirectory(001-trimesh-base)
 # add_subdirectory(002-mesh-topology)
 # add_subdirectory(003-mesh-conversions)

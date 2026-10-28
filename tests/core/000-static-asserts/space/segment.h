@@ -8,7 +8,7 @@
 #ifndef SEGMENT_H
 #define SEGMENT_H
 
-#include <vclib/space.h>
+#include <vclib/space/core.h>
 
 void segmentStaticAsserts()
 {

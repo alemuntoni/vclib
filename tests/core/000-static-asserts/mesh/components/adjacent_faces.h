@@ -14,12 +14,12 @@ void adjacentFacesComponentStaticAsserts()
 {
     using namespace vcl;
 
-    using TriMeshVertex = trimesh::Vertex<float, false>;
-    using TriMeshFace   = trimesh::Face<float, false>;
-    using PolyMeshFaceI = polymesh::Face<float, true>;
+    using TriMeshVertex = VertexType<TriMesh>;
+    using TriMeshFace   = FaceType<TriMesh>;
+    using PolyMeshFace  = FaceType<PolyMesh>;
 
-    using ATPComponent = face::AdjacentTriangles<false, TriMeshFace>;
-    using APIComponent = face::AdjacentPolygons<true, PolyMeshFaceI>;
+    using ATPComponent = face::AdjacentTriangles<>;
+    using APIComponent = face::AdjacentPolygons<>;
 
     // test only the adjacent faces indices/pointers component
     static_assert(
@@ -95,19 +95,19 @@ void adjacentFacesComponentStaticAsserts()
         "TriMesh Face&& does not satisfy the HasAdjacentFaces concept");
 
     static_assert(
-        comp::HasAdjacentFaces<PolyMeshFaceI>,
+        comp::HasAdjacentFaces<PolyMeshFace>,
         "PolyMesh Face does not satisfy the HasAdjacentFaces concept");
     static_assert(
-        comp::HasAdjacentFaces<const PolyMeshFaceI>,
+        comp::HasAdjacentFaces<const PolyMeshFace>,
         "const PolyMesh Face does not satisfy the HasAdjacentFaces concept");
     static_assert(
-        comp::HasAdjacentFaces<PolyMeshFaceI&>,
+        comp::HasAdjacentFaces<PolyMeshFace&>,
         "PolyMesh Face& does not satisfy the HasAdjacentFaces concept");
     static_assert(
-        comp::HasAdjacentFaces<const PolyMeshFaceI&>,
+        comp::HasAdjacentFaces<const PolyMeshFace&>,
         "const PolyMesh Face& does not satisfy the HasAdjacentFaces concept");
     static_assert(
-        comp::HasAdjacentFaces<PolyMeshFaceI&&>,
+        comp::HasAdjacentFaces<PolyMeshFace&&>,
         "PolyMesh Face&& does not satisfy the HasAdjacentFaces concept");
 
     static_assert(
@@ -149,21 +149,21 @@ void adjacentFacesComponentStaticAsserts()
         "TriMesh Face&& does not satisfy the HasOptionalAdjacentFaces concept");
 
     static_assert(
-        comp::HasOptionalAdjacentFaces<PolyMeshFaceI>,
+        comp::HasOptionalAdjacentFaces<PolyMeshFace>,
         "PolyMesh Face does not satisfy the HasOptionalAdjacentFaces concept");
     static_assert(
-        comp::HasOptionalAdjacentFaces<const PolyMeshFaceI>,
+        comp::HasOptionalAdjacentFaces<const PolyMeshFace>,
         "const PolyMesh Face does not satisfy the HasOptionalAdjacentFaces "
         "concept");
     static_assert(
-        comp::HasOptionalAdjacentFaces<PolyMeshFaceI&>,
+        comp::HasOptionalAdjacentFaces<PolyMeshFace&>,
         "PolyMesh Face& does not satisfy the HasOptionalAdjacentFaces concept");
     static_assert(
-        comp::HasOptionalAdjacentFaces<const PolyMeshFaceI&>,
+        comp::HasOptionalAdjacentFaces<const PolyMeshFace&>,
         "const PolyMesh Face& does not satisfy the HasOptionalAdjacentFaces "
         "concept");
     static_assert(
-        comp::HasOptionalAdjacentFaces<PolyMeshFaceI&&>,
+        comp::HasOptionalAdjacentFaces<PolyMeshFace&&>,
         "PolyMesh Face&& does not satisfy the HasOptionalAdjacentFaces "
         "concept");
 }

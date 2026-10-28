@@ -8,7 +8,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include <vclib/space.h>
+#include <vclib/space/core.h>
 
 void matrixStaticAsserts()
 {

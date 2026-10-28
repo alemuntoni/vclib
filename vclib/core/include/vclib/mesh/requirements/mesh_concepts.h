@@ -35,8 +35,9 @@ namespace vcl {
  * @ingroup mesh_concepts
  */
 template<typename MeshType, uint ELEM_ID>
-concept HasContainerOf =
-    requires { requires MeshType::template hasContainerOf<ELEM_ID>(); };
+concept HasContainerOf = requires {
+    requires std::remove_cvref_t<MeshType>::template hasContainerOf<ELEM_ID>();
+};
 
 /**
  * @brief Concept that checks whether a Mesh has a FaceContainer.
@@ -105,7 +106,7 @@ concept HasPolygons = HasFaces<MeshType> && requires {
  * @ingroup mesh_concepts
  */
 template<typename M>
-concept TriMeshConcept = FaceMeshConcept<M> && HasTriangles<M>;
+concept TriangleMeshConcept = FaceMeshConcept<M> && HasTriangles<M>;
 
 /**
  * @brief Concept that checks whether a type is a quadrilateral Mesh.
@@ -119,7 +120,7 @@ concept QuadMeshConcept = FaceMeshConcept<M> && HasQuads<M>;
  * @ingroup mesh_concepts
  */
 template<typename M>
-concept PolyMeshConcept = FaceMeshConcept<M> && HasPolygons<M>;
+concept PolygonMeshConcept = FaceMeshConcept<M> && HasPolygons<M>;
 
 /* =========================================================================
  * Element Component Presence on Mesh
@@ -135,7 +136,8 @@ concept HasElementComponent =
     HasContainerOf<MeshType, ELEM_ID> &&
     comp::HasComponent<
         COMP_ID,
-        typename MeshType::template ContainerType<ELEM_ID>>;
+        typename std::remove_cvref_t<MeshType>::template ContainerType<
+            ELEM_ID>>;
 
 /**
  * @brief Concept that checks whether a Mesh has a container for the given
@@ -147,7 +149,8 @@ concept HasElementOptionalComponent =
     HasContainerOf<MeshType, ELEM_ID> &&
     comp::HasOptionalComponent<
         COMP_ID,
-        typename MeshType::template ContainerType<ELEM_ID>>;
+        typename std::remove_cvref_t<MeshType>::template ContainerType<
+            ELEM_ID>>;
 
 /* Normals */
 template<typename M>

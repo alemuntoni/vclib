@@ -344,26 +344,26 @@ inline void testMeshConcepts()
     static_assert(HasTriangles<MyMesh>);
     static_assert(!HasQuads<MyMesh>);
     static_assert(!HasPolygons<MyMesh>);
-    static_assert(TriMeshConcept<MyMesh>);
+    static_assert(TriangleMeshConcept<MyMesh>);
     static_assert(!QuadMeshConcept<MyMesh>);
-    static_assert(!PolyMeshConcept<MyMesh>);
+    static_assert(!PolygonMeshConcept<MyMesh>);
 
     static_assert(!HasTriangles<QuadMesh>);
     static_assert(HasQuads<QuadMesh>);
     static_assert(!HasPolygons<QuadMesh>);
-    static_assert(!TriMeshConcept<QuadMesh>);
+    static_assert(!TriangleMeshConcept<QuadMesh>);
     static_assert(QuadMeshConcept<QuadMesh>);
-    static_assert(!PolyMeshConcept<QuadMesh>);
+    static_assert(!PolygonMeshConcept<QuadMesh>);
 
     static_assert(!HasTriangles<PolyMesh>);
     static_assert(!HasQuads<PolyMesh>);
     static_assert(HasPolygons<PolyMesh>);
-    static_assert(!TriMeshConcept<PolyMesh>);
+    static_assert(!TriangleMeshConcept<PolyMesh>);
     static_assert(!QuadMeshConcept<PolyMesh>);
-    static_assert(PolyMeshConcept<PolyMesh>);
+    static_assert(PolygonMeshConcept<PolyMesh>);
 
-    static_assert(!TriMeshConcept<PointCloudMesh>);
-    static_assert(!TriMeshConcept<EdgeMesh>);
+    static_assert(!TriangleMeshConcept<PointCloudMesh>);
+    static_assert(!TriangleMeshConcept<EdgeMesh>);
 
     // Element Components on Mesh
     // Normals

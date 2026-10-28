@@ -433,7 +433,7 @@ void AdjacentEdges<N, Index, TTVC, OPT>::importFrom(
 /* Specialization Aliases */
 
 template<std::unsigned_integral Index = uint, bool OPT = false>
-using TriangleAdjacentEdges = AdjacentEdges<3, Index, false, OPT>;
+using TriangleAdjacentEdges = AdjacentEdges<3, Index, true, OPT>;
 
 template<std::unsigned_integral Index = uint, bool OPT = false>
 using PolygonAdjacentEdges = AdjacentEdges<-1, Index, true, OPT>;

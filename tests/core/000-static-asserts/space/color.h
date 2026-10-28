@@ -8,7 +8,7 @@
 #ifndef COLOR_H
 #define COLOR_H
 
-#include <vclib/space.h>
+#include <vclib/space/core.h>
 
 void colorStaticAsserts()
 {

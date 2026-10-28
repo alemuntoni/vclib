@@ -8,7 +8,7 @@
 #ifndef PLANE_H
 #define PLANE_H
 
-#include <vclib/space.h>
+#include <vclib/space/core.h>
 
 void planeStaticAsserts()
 {

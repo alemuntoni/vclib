@@ -8,7 +8,7 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include <vclib/space.h>
+#include <vclib/space/core.h>
 
 void imageStaticAsserts()
 {

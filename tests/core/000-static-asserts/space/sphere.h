@@ -8,7 +8,7 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include <vclib/space.h>
+#include <vclib/space/core.h>
 
 void sphereStaticAsserts()
 {

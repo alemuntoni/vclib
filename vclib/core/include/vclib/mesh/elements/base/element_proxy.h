@@ -76,6 +76,12 @@ private:
 public:
     static constexpr uint ELEMENT_ID = ELEM_ID;
 
+    template<uint TARGET_ELEM_ID>
+    static constexpr bool referencesElement()
+    {
+        return (comp::HasReferencesTo<TARGET_ELEM_ID, Comps> || ...);
+    }
+
     // Methods accessed by the components ("deducing this"
     // self.parentContainer()).
     // TODO: When C++26 variadic friends are fully supported on MSVC, move
@@ -174,7 +180,7 @@ protected:
     {
         auto updateIfMatching = [&]<typename Comp>() {
             if constexpr (
-                comp::ComponentReferencesElement<Comp, TARGET_ELEM_ID>) {
+                comp::HasReferencesTo<TARGET_ELEM_ID, Comp>) {
                 if constexpr (requires { Comp::COMPONENT_ID; }) {
                     if (this->template isComponentAvailable<
                             Comp::COMPONENT_ID>()) {
@@ -197,7 +203,7 @@ protected:
     {
         auto shiftIfMatching = [&]<typename Comp>() {
             if constexpr (
-                comp::ComponentReferencesElement<Comp, TARGET_ELEM_ID>) {
+                comp::HasReferencesTo<TARGET_ELEM_ID, Comp>) {
                 if constexpr (requires { Comp::COMPONENT_ID; }) {
                     if (this->template isComponentAvailable<
                             Comp::COMPONENT_ID>()) {
@@ -213,12 +219,6 @@ protected:
         };
 
         (shiftIfMatching.template operator()<Comps>(), ...);
-    }
-
-    template<uint TARGET_ELEM_ID>
-    static constexpr bool referencesElement()
-    {
-        return (comp::ComponentReferencesElement<Comps, TARGET_ELEM_ID> || ...);
     }
 
 private:

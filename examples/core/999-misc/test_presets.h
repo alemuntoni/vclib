@@ -43,7 +43,7 @@ inline void testPresets()
     // 2. TriMesh
     {
         using TM = vcl::TriMesh;
-        static_assert(vcl::TriMeshConcept<TM>);
+        static_assert(vcl::TriangleMeshConcept<TM>);
         static_assert(vcl::HasFaces<TM>);
         static_assert(!vcl::HasEdges<TM>);
         static_assert(vcl::mesh::HasColor<TM>);
@@ -66,7 +66,7 @@ inline void testPresets()
     // 3. PolyMesh
     {
         using PM = vcl::PolyMesh;
-        static_assert(vcl::PolyMeshConcept<PM>);
+        static_assert(vcl::PolygonMeshConcept<PM>);
         static_assert(vcl::HasFaces<PM>);
         static_assert(!vcl::HasEdges<PM>);
         static_assert(vcl::mesh::HasColor<PM>);
@@ -111,7 +111,7 @@ inline void testPresets()
     // 5. TriEdgeMesh
     {
         using TEM = vcl::TriEdgeMesh;
-        static_assert(vcl::TriMeshConcept<TEM>);
+        static_assert(vcl::TriangleMeshConcept<TEM>);
         static_assert(vcl::EdgeMeshConcept<TEM>);
         static_assert(vcl::HasFaces<TEM>);
         static_assert(vcl::HasEdges<TEM>);
@@ -139,7 +139,7 @@ inline void testPresets()
     // 6. PolyEdgeMesh
     {
         using PEM = vcl::PolyEdgeMesh;
-        static_assert(vcl::PolyMeshConcept<PEM>);
+        static_assert(vcl::PolygonMeshConcept<PEM>);
         static_assert(vcl::EdgeMeshConcept<PEM>);
         static_assert(vcl::HasFaces<PEM>);
         static_assert(vcl::HasEdges<PEM>);
