@@ -68,14 +68,6 @@ void perMeshStaticAsserts()
     static_assert(
         HasMaterials<TriMesh&&>, "TriMesh&& does not satisfy the HasMaterials");
 
-    static_assert(HasMark<TriMesh>, "TriMesh does not satisfy the HasMark");
-    static_assert(
-        HasMark<const TriMesh>, "const TriMesh does not satisfy the HasMark");
-    static_assert(HasMark<TriMesh&>, "TriMesh& does not satisfy the HasMark");
-    static_assert(
-        HasMark<const TriMesh&>, "const TriMesh& does not satisfy the HasMark");
-    static_assert(HasMark<TriMesh&&>, "TriMesh&& does not satisfy the HasMark");
-
     static_assert(HasName<TriMesh>, "TriMesh does not satisfy the HasName");
     static_assert(
         HasName<const TriMesh>, "const TriMesh does not satisfy the HasName");

@@ -15,164 +15,148 @@ void perVertexStaticAsserts()
     using namespace vcl;
 
     static_assert(
-        HasPerVertexAdjacentEdges<TriEdgeMesh>,
-        "TriEdgeMesh does not satisfy the HasPerVertexAdjacentEdges");
+        HasVertexAdjacentEdges<TriEdgeMesh>,
+        "TriEdgeMesh does not satisfy the HasVertexAdjacentEdges");
     static_assert(
-        HasPerVertexAdjacentEdges<const TriEdgeMesh>,
-        "const TriEdgeMesh does not satisfy the HasPerVertexAdjacentEdges");
+        HasVertexAdjacentEdges<const TriEdgeMesh>,
+        "const TriEdgeMesh does not satisfy the HasVertexAdjacentEdges");
     static_assert(
-        HasPerVertexAdjacentEdges<TriEdgeMesh&>,
-        "TriEdgeMesh& does not satisfy the HasPerVertexAdjacentEdges");
+        HasVertexAdjacentEdges<TriEdgeMesh&>,
+        "TriEdgeMesh& does not satisfy the HasVertexAdjacentEdges");
     static_assert(
-        HasPerVertexAdjacentEdges<const TriEdgeMesh&>,
-        "const TriEdgeMesh& does not satisfy the HasPerVertexAdjacentEdges");
+        HasVertexAdjacentEdges<const TriEdgeMesh&>,
+        "const TriEdgeMesh& does not satisfy the HasVertexAdjacentEdges");
     static_assert(
-        HasPerVertexAdjacentEdges<TriEdgeMesh&&>,
-        "TriEdgeMesh&& does not satisfy the HasPerVertexAdjacentEdges");
+        HasVertexAdjacentEdges<TriEdgeMesh&&>,
+        "TriEdgeMesh&& does not satisfy the HasVertexAdjacentEdges");
 
     static_assert(
-        HasPerVertexAdjacentFaces<TriMesh>,
-        "TriMesh does not satisfy the HasPerVertexAdjacentFaces");
+        HasVertexAdjacentFaces<TriMesh>,
+        "TriMesh does not satisfy the HasVertexAdjacentFaces");
     static_assert(
-        HasPerVertexAdjacentFaces<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerVertexAdjacentFaces");
+        HasVertexAdjacentFaces<const TriMesh>,
+        "const TriMesh does not satisfy the HasVertexAdjacentFaces");
     static_assert(
-        HasPerVertexAdjacentFaces<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerVertexAdjacentFaces");
+        HasVertexAdjacentFaces<TriMesh&>,
+        "TriMesh& does not satisfy the HasVertexAdjacentFaces");
     static_assert(
-        HasPerVertexAdjacentFaces<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerVertexAdjacentFaces");
+        HasVertexAdjacentFaces<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasVertexAdjacentFaces");
     static_assert(
-        HasPerVertexAdjacentFaces<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerVertexAdjacentFaces");
+        HasVertexAdjacentFaces<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasVertexAdjacentFaces");
 
     static_assert(
-        HasPerVertexAdjacentVertices<TriMesh>,
-        "TriMesh does not satisfy the HasPerVertexAdjacentVertices");
+        HasVertexAdjacentVertices<TriMesh>,
+        "TriMesh does not satisfy the HasVertexAdjacentVertices");
     static_assert(
-        HasPerVertexAdjacentVertices<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerVertexAdjacentVertices");
+        HasVertexAdjacentVertices<const TriMesh>,
+        "const TriMesh does not satisfy the HasVertexAdjacentVertices");
     static_assert(
-        HasPerVertexAdjacentVertices<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerVertexAdjacentVertices");
+        HasVertexAdjacentVertices<TriMesh&>,
+        "TriMesh& does not satisfy the HasVertexAdjacentVertices");
     static_assert(
-        HasPerVertexAdjacentVertices<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerVertexAdjacentVertices");
+        HasVertexAdjacentVertices<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasVertexAdjacentVertices");
     static_assert(
-        HasPerVertexAdjacentVertices<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerVertexAdjacentVertices");
+        HasVertexAdjacentVertices<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasVertexAdjacentVertices");
 
     static_assert(
-        HasPerVertexColor<TriMesh>,
-        "TriMesh does not satisfy the HasPerVertexColor");
+        HasVertexColors<TriMesh>,
+        "TriMesh does not satisfy the HasVertexColors");
     static_assert(
-        HasPerVertexColor<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerVertexColor");
+        HasVertexColors<const TriMesh>,
+        "const TriMesh does not satisfy the HasVertexColors");
     static_assert(
-        HasPerVertexColor<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerVertexColor");
+        HasVertexColors<TriMesh&>,
+        "TriMesh& does not satisfy the HasVertexColors");
     static_assert(
-        HasPerVertexColor<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerVertexColor");
+        HasVertexColors<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasVertexColors");
     static_assert(
-        HasPerVertexColor<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerVertexColor");
+        HasVertexColors<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasVertexColors");
 
     static_assert(
-        HasPerVertexMark<TriMesh>,
-        "TriMesh does not satisfy the HasPerVertexMark");
+        HasVertexNormals<TriMesh>,
+        "TriMesh does not satisfy the HasVertexNormals");
     static_assert(
-        HasPerVertexMark<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerVertexMark");
+        HasVertexNormals<const TriMesh>,
+        "const TriMesh does not satisfy the HasVertexNormals");
     static_assert(
-        HasPerVertexMark<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerVertexMark");
+        HasVertexNormals<TriMesh&>,
+        "TriMesh& does not satisfy the HasVertexNormals");
     static_assert(
-        HasPerVertexMark<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerVertexMark");
+        HasVertexNormals<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasVertexNormals");
     static_assert(
-        HasPerVertexMark<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerVertexMark");
+        HasVertexNormals<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasVertexNormals");
 
     static_assert(
-        HasPerVertexNormal<TriMesh>,
-        "TriMesh does not satisfy the HasPerVertexNormal");
+        HasVertexPrincipalCurvatures<TriMesh>,
+        "TriMesh does not satisfy the HasVertexPrincipalCurvatures");
     static_assert(
-        HasPerVertexNormal<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerVertexNormal");
+        HasVertexPrincipalCurvatures<const TriMesh>,
+        "const TriMesh does not satisfy the HasVertexPrincipalCurvatures");
     static_assert(
-        HasPerVertexNormal<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerVertexNormal");
+        HasVertexPrincipalCurvatures<TriMesh&>,
+        "TriMesh& does not satisfy the HasVertexPrincipalCurvatures");
     static_assert(
-        HasPerVertexNormal<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerVertexNormal");
+        HasVertexPrincipalCurvatures<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasVertexPrincipalCurvatures");
     static_assert(
-        HasPerVertexNormal<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerVertexNormal");
+        HasVertexPrincipalCurvatures<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasVertexPrincipalCurvatures");
 
     static_assert(
-        HasPerVertexPrincipalCurvature<TriMesh>,
-        "TriMesh does not satisfy the HasPerVertexPrincipalCurvature");
+        HasVertexQualities<TriMesh>,
+        "TriMesh does not satisfy the HasVertexQualities");
     static_assert(
-        HasPerVertexPrincipalCurvature<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerVertexPrincipalCurvature");
+        HasVertexQualities<const TriMesh>,
+        "const TriMesh does not satisfy the HasVertexQualities");
     static_assert(
-        HasPerVertexPrincipalCurvature<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerVertexPrincipalCurvature");
+        HasVertexQualities<TriMesh&>,
+        "TriMesh& does not satisfy the HasVertexQualities");
     static_assert(
-        HasPerVertexPrincipalCurvature<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerVertexPrincipalCurvature");
+        HasVertexQualities<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasVertexQualities");
     static_assert(
-        HasPerVertexPrincipalCurvature<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerVertexPrincipalCurvature");
+        HasVertexQualities<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasVertexQualities");
 
     static_assert(
-        HasPerVertexQuality<TriMesh>,
-        "TriMesh does not satisfy the HasPerVertexQuality");
+        HasVertexTexCoords<TriMesh>,
+        "TriMesh does not satisfy the HasVertexTexCoords");
     static_assert(
-        HasPerVertexQuality<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerVertexQuality");
+        HasVertexTexCoords<const TriMesh>,
+        "const TriMesh does not satisfy the HasVertexTexCoords");
     static_assert(
-        HasPerVertexQuality<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerVertexQuality");
+        HasVertexTexCoords<TriMesh&>,
+        "TriMesh& does not satisfy the HasVertexTexCoords");
     static_assert(
-        HasPerVertexQuality<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerVertexQuality");
+        HasVertexTexCoords<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasVertexTexCoords");
     static_assert(
-        HasPerVertexQuality<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerVertexQuality");
+        HasVertexTexCoords<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasVertexTexCoords");
 
     static_assert(
-        HasPerVertexTexCoord<TriMesh>,
-        "TriMesh does not satisfy the HasPerVertexTexCoord");
+        HasVertexCustomComponents<TriMesh>,
+        "TriMesh does not satisfy the HasVertexCustomComponents");
     static_assert(
-        HasPerVertexTexCoord<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerVertexTexCoord");
+        HasVertexCustomComponents<const TriMesh>,
+        "const TriMesh does not satisfy the HasVertexCustomComponents");
     static_assert(
-        HasPerVertexTexCoord<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerVertexTexCoord");
+        HasVertexCustomComponents<TriMesh&>,
+        "TriMesh& does not satisfy the HasVertexCustomComponents");
     static_assert(
-        HasPerVertexTexCoord<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerVertexTexCoord");
+        HasVertexCustomComponents<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasVertexCustomComponents");
     static_assert(
-        HasPerVertexTexCoord<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerVertexTexCoord");
-
-    static_assert(
-        HasPerVertexCustomComponents<TriMesh>,
-        "TriMesh does not satisfy the HasPerVertexCustomComponents");
-    static_assert(
-        HasPerVertexCustomComponents<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerVertexCustomComponents");
-    static_assert(
-        HasPerVertexCustomComponents<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerVertexCustomComponents");
-    static_assert(
-        HasPerVertexCustomComponents<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerVertexCustomComponents");
-    static_assert(
-        HasPerVertexCustomComponents<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerVertexCustomComponents");
+        HasVertexCustomComponents<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasVertexCustomComponents");
 }
 
 #endif // PER_VERTEX_H

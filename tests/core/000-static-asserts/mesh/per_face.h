@@ -44,228 +44,148 @@ void perFaceStaticAsserts()
         HasPolygons<PolyMesh&&>, "PolyMesh&& does not satisfy the HasPolygons");
 
     static_assert(
-        HasPerFaceAdjacentEdges<TriEdgeMesh>,
-        "TriEdgeMesh does not satisfy the HasPerFaceAdjacentEdges");
+        HasFaceAdjacentEdges<TriEdgeMesh>,
+        "TriEdgeMesh does not satisfy the HasFaceAdjacentEdges");
     static_assert(
-        HasPerFaceAdjacentEdges<const TriEdgeMesh>,
-        "const TriEdgeMesh does not satisfy the HasPerFaceAdjacentEdges");
+        HasFaceAdjacentEdges<const TriEdgeMesh>,
+        "const TriEdgeMesh does not satisfy the HasFaceAdjacentEdges");
     static_assert(
-        HasPerFaceAdjacentEdges<TriEdgeMesh&>,
-        "TriEdgeMesh& does not satisfy the HasPerFaceAdjacentEdges");
+        HasFaceAdjacentEdges<TriEdgeMesh&>,
+        "TriEdgeMesh& does not satisfy the HasFaceAdjacentEdges");
     static_assert(
-        HasPerFaceAdjacentEdges<const TriEdgeMesh&>,
-        "const TriEdgeMesh& does not satisfy the HasPerFaceAdjacentEdges");
+        HasFaceAdjacentEdges<const TriEdgeMesh&>,
+        "const TriEdgeMesh& does not satisfy the HasFaceAdjacentEdges");
     static_assert(
-        HasPerFaceAdjacentEdges<TriEdgeMesh&&>,
-        "TriEdgeMesh&& does not satisfy the HasPerFaceAdjacentEdges");
+        HasFaceAdjacentEdges<TriEdgeMesh&&>,
+        "TriEdgeMesh&& does not satisfy the HasFaceAdjacentEdges");
 
     static_assert(
-        HasPerFaceAdjacentFaces<TriMesh>,
-        "TriMesh does not satisfy the HasPerFaceAdjacentFaces");
+        HasFaceAdjacentFaces<TriMesh>,
+        "TriMesh does not satisfy the HasFaceAdjacentFaces");
     static_assert(
-        HasPerFaceAdjacentFaces<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerFaceAdjacentFaces");
+        HasFaceAdjacentFaces<const TriMesh>,
+        "const TriMesh does not satisfy the HasFaceAdjacentFaces");
     static_assert(
-        HasPerFaceAdjacentFaces<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerFaceAdjacentFaces");
+        HasFaceAdjacentFaces<TriMesh&>,
+        "TriMesh& does not satisfy the HasFaceAdjacentFaces");
     static_assert(
-        HasPerFaceAdjacentFaces<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerFaceAdjacentFaces");
+        HasFaceAdjacentFaces<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasFaceAdjacentFaces");
     static_assert(
-        HasPerFaceAdjacentFaces<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerFaceAdjacentFaces");
+        HasFaceAdjacentFaces<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasFaceAdjacentFaces");
 
     static_assert(
-        HasPerFaceBitFlags<TriMesh>,
-        "TriMesh does not satisfy the HasPerFaceBitFlags");
+        HasFaceColors<TriMesh>,
+        "TriMesh does not satisfy the HasFaceColors");
     static_assert(
-        HasPerFaceBitFlags<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerFaceBitFlags");
+        HasFaceColors<const TriMesh>,
+        "const TriMesh does not satisfy the HasFaceColors");
     static_assert(
-        HasPerFaceBitFlags<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerFaceBitFlags");
+        HasFaceColors<TriMesh&>,
+        "TriMesh& does not satisfy the HasFaceColors");
     static_assert(
-        HasPerFaceBitFlags<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerFaceBitFlags");
+        HasFaceColors<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasFaceColors");
     static_assert(
-        HasPerFaceBitFlags<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerFaceBitFlags");
+        HasFaceColors<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasFaceColors");
 
     static_assert(
-        HasPerFaceColor<TriMesh>,
-        "TriMesh does not satisfy the HasPerFaceColor");
+        HasFaceCustomComponents<TriMesh>,
+        "TriMesh does not satisfy the HasFaceCustomComponents");
     static_assert(
-        HasPerFaceColor<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerFaceColor");
+        HasFaceCustomComponents<const TriMesh>,
+        "const TriMesh does not satisfy the HasFaceCustomComponents");
     static_assert(
-        HasPerFaceColor<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerFaceColor");
+        HasFaceCustomComponents<TriMesh&>,
+        "TriMesh& does not satisfy the HasFaceCustomComponents");
     static_assert(
-        HasPerFaceColor<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerFaceColor");
+        HasFaceCustomComponents<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasFaceCustomComponents");
     static_assert(
-        HasPerFaceColor<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerFaceColor");
+        HasFaceCustomComponents<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasFaceCustomComponents");
 
     static_assert(
-        HasPerFaceCustomComponents<TriMesh>,
-        "TriMesh does not satisfy the HasPerFaceCustomComponents");
+        HasFaceNormals<PolyMesh>,
+        "PolyMesh does not satisfy the HasFaceNormals");
     static_assert(
-        HasPerFaceCustomComponents<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerFaceCustomComponents");
+        HasFaceNormals<const PolyMesh>,
+        "const PolyMesh does not satisfy the HasFaceNormals");
     static_assert(
-        HasPerFaceCustomComponents<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerFaceCustomComponents");
+        HasFaceNormals<PolyMesh&>,
+        "PolyMesh& does not satisfy the HasFaceNormals");
     static_assert(
-        HasPerFaceCustomComponents<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerFaceCustomComponents");
+        HasFaceNormals<const PolyMesh&>,
+        "const PolyMesh& does not satisfy the HasFaceNormals");
     static_assert(
-        HasPerFaceCustomComponents<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerFaceCustomComponents");
-
-    static_assert(
-        HasPerFaceMark<PolyMesh>,
-        "PolyMesh does not satisfy the HasPerFaceMark");
-    static_assert(
-        HasPerFaceMark<const PolyMesh>,
-        "const PolyMesh does not satisfy the HasPerFaceMark");
-    static_assert(
-        HasPerFaceMark<PolyMesh&>,
-        "PolyMesh& does not satisfy the HasPerFaceMark");
-    static_assert(
-        HasPerFaceMark<const PolyMesh&>,
-        "const PolyMesh& does not satisfy the HasPerFaceMark");
-    static_assert(
-        HasPerFaceMark<PolyMesh&&>,
-        "PolyMesh&& does not satisfy the HasPerFaceMark");
-
-    static_assert(
-        HasPerFaceNormal<PolyMesh>,
-        "PolyMesh does not satisfy the HasPerFaceNormal");
-    static_assert(
-        HasPerFaceNormal<const PolyMesh>,
-        "const PolyMesh does not satisfy the HasPerFaceNormal");
-    static_assert(
-        HasPerFaceNormal<PolyMesh&>,
-        "PolyMesh& does not satisfy the HasPerFaceNormal");
-    static_assert(
-        HasPerFaceNormal<const PolyMesh&>,
-        "const PolyMesh& does not satisfy the HasPerFaceNormal");
-    static_assert(
-        HasPerFaceNormal<PolyMesh&&>,
-        "PolyMesh&& does not satisfy the HasPerFaceNormal");
-
-    static_assert(
-        HasPerFacePolygonBitFlags<PolyMesh>,
-        "PolyMesh does not satisfy the HasPerFacePolygonBitFlags");
-    static_assert(
-        HasPerFacePolygonBitFlags<const PolyMesh>,
-        "const PolyMesh does not satisfy the HasPerFacePolygonBitFlags");
-    static_assert(
-        HasPerFacePolygonBitFlags<PolyMesh&>,
-        "PolyMesh& does not satisfy the HasPerFacePolygonBitFlags");
-    static_assert(
-        HasPerFacePolygonBitFlags<const PolyMesh&>,
-        "const PolyMesh& does not satisfy the HasPerFacePolygonBitFlags");
-    static_assert(
-        HasPerFacePolygonBitFlags<PolyMesh&&>,
-        "PolyMesh&& does not satisfy the HasPerFacePolygonBitFlags");
+        HasFaceNormals<PolyMesh&&>,
+        "PolyMesh&& does not satisfy the HasFaceNormals");
 
     // static_assert(
-    //     HasPerFacePrincipalCurvature<TriMesh>,
-    //     "TriMesh does not satisfy the HasPerFacePrincipalCurvature");
+    //     HasFacePrincipalCurvatures<TriMesh>,
+    //     "TriMesh does not satisfy the HasFacePrincipalCurvatures");
     // static_assert(
-    //     HasPerFacePrincipalCurvature<const TriMesh>,
-    //     "const TriMesh does not satisfy the HasPerFacePrincipalCurvature");
+    //     HasFacePrincipalCurvatures<const TriMesh>,
+    //     "const TriMesh does not satisfy the HasFacePrincipalCurvatures");
     // static_assert(
-    //     HasPerFacePrincipalCurvature<TriMesh&>,
-    //     "TriMesh& does not satisfy the HasPerFacePrincipalCurvature");
+    //     HasFacePrincipalCurvatures<TriMesh&>,
+    //     "TriMesh& does not satisfy the HasFacePrincipalCurvatures");
     // static_assert(
-    //     HasPerFacePrincipalCurvature<const TriMesh&>,
-    //     "const TriMesh& does not satisfy the HasPerFacePrincipalCurvature");
+    //     HasFacePrincipalCurvatures<const TriMesh&>,
+    //     "const TriMesh& does not satisfy the HasFacePrincipalCurvatures");
     // static_assert(
-    //     HasPerFacePrincipalCurvature<TriMesh&&>,
-    //     "TriMesh&& does not satisfy the HasPerFacePrincipalCurvature");
+    //     HasFacePrincipalCurvatures<TriMesh&&>,
+    //     "TriMesh&& does not satisfy the HasFacePrincipalCurvatures");
 
     static_assert(
-        HasPerFaceQuality<TriMesh>,
-        "TriMesh does not satisfy the HasPerFaceQuality");
+        HasFaceQualities<TriMesh>,
+        "TriMesh does not satisfy the HasFaceQualities");
     static_assert(
-        HasPerFaceQuality<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerFaceQuality");
+        HasFaceQualities<const TriMesh>,
+        "const TriMesh does not satisfy the HasFaceQualities");
     static_assert(
-        HasPerFaceQuality<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerFaceQuality");
+        HasFaceQualities<TriMesh&>,
+        "TriMesh& does not satisfy the HasFaceQualities");
     static_assert(
-        HasPerFaceQuality<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerFaceQuality");
+        HasFaceQualities<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasFaceQualities");
     static_assert(
-        HasPerFaceQuality<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerFaceQuality");
-
-    static_assert(
-        HasPerFaceTriangleBitFlags<TriMesh>,
-        "TriMesh does not satisfy the HasPerFaceTriangleBitFlags");
-    static_assert(
-        HasPerFaceTriangleBitFlags<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerFaceTriangleBitFlags");
-    static_assert(
-        HasPerFaceTriangleBitFlags<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerFaceTriangleBitFlags");
-    static_assert(
-        HasPerFaceTriangleBitFlags<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerFaceTriangleBitFlags");
-    static_assert(
-        HasPerFaceTriangleBitFlags<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerFaceTriangleBitFlags");
-
-    static_assert(
-        HasPerFaceVertexReferences<TriMesh>,
-        "TriMesh does not satisfy the HasPerFaceVertexReferences");
-    static_assert(
-        HasPerFaceVertexReferences<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerFaceVertexReferences");
-    static_assert(
-        HasPerFaceVertexReferences<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerFaceVertexReferences");
-    static_assert(
-        HasPerFaceVertexReferences<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerFaceVertexReferences");
-    static_assert(
-        HasPerFaceVertexReferences<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerFaceVertexReferences");
+        HasFaceQualities<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasFaceQualities");
 
     // static_assert(
-    //     HasPerFaceWedgeColors<TriMesh>,
-    //     "TriMesh does not satisfy the HasPerFaceWedgeColors");
+    //     HasFaceWedgeColors<TriMesh>,
+    //     "TriMesh does not satisfy the HasFaceWedgeColors");
     // static_assert(
-    //     HasPerFaceWedgeColors<const TriMesh>,
-    //     "const TriMesh does not satisfy the HasPerFaceWedgeColors");
+    //     HasFaceWedgeColors<const TriMesh>,
+    //     "const TriMesh does not satisfy the HasFaceWedgeColors");
     // static_assert(
-    //     HasPerFaceWedgeColors<TriMesh&>,
-    //     "TriMesh& does not satisfy the HasPerFaceWedgeColors");
+    //     HasFaceWedgeColors<TriMesh&>,
+    //     "TriMesh& does not satisfy the HasFaceWedgeColors");
     // static_assert(
-    //     HasPerFaceWedgeColors<const TriMesh&>,
-    //     "const TriMesh& does not satisfy the HasPerFaceWedgeColors");
+    //     HasFaceWedgeColors<const TriMesh&>,
+    //     "const TriMesh& does not satisfy the HasFaceWedgeColors");
     // static_assert(
-    //     HasPerFaceWedgeColors<TriMesh&&>,
-    //     "TriMesh&& does not satisfy the HasPerFaceWedgeColors");
+    //     HasFaceWedgeColors<TriMesh&&>,
+    //     "TriMesh&& does not satisfy the HasFaceWedgeColors");
 
     static_assert(
-        HasPerFaceWedgeTexCoords<TriMesh>,
-        "TriMesh does not satisfy the HasPerFaceWedgeTexCoords");
+        HasFaceWedgeTexCoords<TriMesh>,
+        "TriMesh does not satisfy the HasFaceWedgeTexCoords");
     static_assert(
-        HasPerFaceWedgeTexCoords<const TriMesh>,
-        "const TriMesh does not satisfy the HasPerFaceWedgeTexCoords");
+        HasFaceWedgeTexCoords<const TriMesh>,
+        "const TriMesh does not satisfy the HasFaceWedgeTexCoords");
     static_assert(
-        HasPerFaceWedgeTexCoords<TriMesh&>,
-        "TriMesh& does not satisfy the HasPerFaceWedgeTexCoords");
+        HasFaceWedgeTexCoords<TriMesh&>,
+        "TriMesh& does not satisfy the HasFaceWedgeTexCoords");
     static_assert(
-        HasPerFaceWedgeTexCoords<const TriMesh&>,
-        "const TriMesh& does not satisfy the HasPerFaceWedgeTexCoords");
+        HasFaceWedgeTexCoords<const TriMesh&>,
+        "const TriMesh& does not satisfy the HasFaceWedgeTexCoords");
     static_assert(
-        HasPerFaceWedgeTexCoords<TriMesh&&>,
-        "TriMesh&& does not satisfy the HasPerFaceWedgeTexCoords");
+        HasFaceWedgeTexCoords<TriMesh&&>,
+        "TriMesh&& does not satisfy the HasFaceWedgeTexCoords");
 }
 
 #endif // PER_FACE_H

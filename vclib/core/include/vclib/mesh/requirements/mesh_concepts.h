@@ -77,8 +77,8 @@ concept EdgeMeshConcept = MeshConcept<M> && HasEdges<M>;
  */
 template<typename MeshType>
 concept HasTriangles = HasFaces<MeshType> && requires {
-    typename MeshType::Face;
-    requires TriangleFaceConcept<typename MeshType::Face>;
+    typename std::remove_cvref_t<MeshType>::Face;
+    requires TriangleFaceConcept<typename std::remove_cvref_t<MeshType>::Face>;
 };
 
 /**
@@ -87,8 +87,8 @@ concept HasTriangles = HasFaces<MeshType> && requires {
  */
 template<typename MeshType>
 concept HasQuads = HasFaces<MeshType> && requires {
-    typename MeshType::Face;
-    requires QuadFaceConcept<typename MeshType::Face>;
+    typename std::remove_cvref_t<MeshType>::Face;
+    requires QuadFaceConcept<typename std::remove_cvref_t<MeshType>::Face>;
 };
 
 /**
@@ -97,8 +97,8 @@ concept HasQuads = HasFaces<MeshType> && requires {
  */
 template<typename MeshType>
 concept HasPolygons = HasFaces<MeshType> && requires {
-    typename MeshType::Face;
-    requires PolygonFaceConcept<typename MeshType::Face>;
+    typename std::remove_cvref_t<MeshType>::Face;
+    requires PolygonFaceConcept<typename std::remove_cvref_t<MeshType>::Face>;
 };
 
 /**
