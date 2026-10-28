@@ -10,6 +10,7 @@
 
 #include <vclib/mesh/components/base/component_predicates.h>
 #include <vclib/mesh/containers/base/element_container.h>
+#include <vclib/mesh/containers/base/macros.h>
 #include <vclib/mesh/elements/edge.h>
 #include <vclib/mesh/elements/edge_components.h>
 
@@ -437,6 +438,87 @@ public:
     {
         return Base::elements(begin, end);
     }
+
+    // --- Components ---
+
+    /**
+     * @brief Checks if the edge component with the given COMP_ID is
+     * available (present at compile time and enabled at run time).
+     *
+     * Non-optional components are always available (true).
+     * Optional components return true if currently enabled, false otherwise.
+     *
+     * @tparam COMP_ID: The ID of the component to check.
+     * @return `true` if currently available, `false` otherwise.
+     */
+    template<uint COMP_ID>
+    bool isEdgeComponentAvailable() const
+    {
+        return Base::template isComponentAvailable<COMP_ID>();
+    }
+
+    /**
+     * @brief Enables the optional edge component with the given COMP_ID.
+     *
+     * @tparam COMP_ID: The ID of the component to enable.
+     */
+    template<uint COMP_ID>
+    void enableEdgeComponent()
+        requires comp::HasOptionalComponent<COMP_ID, EdgeComponents>
+    {
+        Base::template enableOptionalComponent<COMP_ID>();
+    }
+
+    /**
+     * @brief Disables the optional edge component with the given COMP_ID.
+     * Note: Non-optional components cannot be disabled.
+     *
+     * @tparam COMP_ID: The ID of the component to disable.
+     */
+    template<uint COMP_ID>
+    void disableEdgeComponent()
+        requires comp::HasOptionalComponent<COMP_ID, EdgeComponents>
+    {
+        Base::template disableOptionalComponent<COMP_ID>();
+    }
+
+    /**
+     * @brief Enables all optional edge components in the container.
+     */
+    void enableAllEdgeOptionalComponents()
+    {
+        Base::enableAllOptionalComponents();
+    }
+
+    /**
+     * @brief Disables all optional edge components in the container.
+     */
+    void disableAllEdgeOptionalComponents()
+    {
+        Base::disableAllOptionalComponents();
+    }
+
+    /**
+     * @brief Enables all optional edge components in the container.
+     * Alias for enableAllEdgeOptionalComponents().
+     */
+    void enableAllEdgeComponents()
+    {
+        Base::enableAllOptionalComponents();
+    }
+
+    /**
+     * @brief Disables all optional edge components in the container.
+     * Alias for disableAllEdgeOptionalComponents().
+     */
+    void disableAllEdgeComponents()
+    {
+        Base::disableAllOptionalComponents();
+    }
+
+    VCL_COMMON_CONTAINER_COMPONENT_METHODS(Edge)
+    VCL_CONTAINER_COMPONENT_METHODS(Edge, AdjacentEdges, ADJACENT_EDGES)
+    VCL_CONTAINER_COMPONENT_METHODS(Edge, AdjacentFaces, ADJACENT_FACES)
 
     // --- Custom Components ---
 

@@ -10,6 +10,7 @@
 
 #include <vclib/mesh/components/base/component_predicates.h>
 #include <vclib/mesh/containers/base/element_container.h>
+#include <vclib/mesh/containers/base/macros.h>
 #include <vclib/mesh/elements/vertex.h>
 #include <vclib/mesh/elements/vertex_components.h>
 
@@ -442,6 +443,95 @@ public:
     {
         return Base::elements(begin, end);
     }
+
+    // --- Components ---
+
+    /**
+     * @brief Checks if the vertex component with the given COMP_ID is
+     * available (present at compile time and enabled at run time).
+     *
+     * Non-optional components are always available (true).
+     * Optional components return true if currently enabled, false otherwise.
+     *
+     * @tparam COMP_ID: The ID of the component to check.
+     * @return `true` if currently available, `false` otherwise.
+     */
+    template<uint COMP_ID>
+    bool isVertexComponentAvailable() const
+    {
+        return Base::template isComponentAvailable<COMP_ID>();
+    }
+
+    /**
+     * @brief Enables the optional vertex component with the given COMP_ID.
+     *
+     * @tparam COMP_ID: The ID of the component to enable.
+     */
+    template<uint COMP_ID>
+    void enableVertexComponent()
+        requires comp::HasOptionalComponent<COMP_ID, VertexComponents>
+    {
+        Base::template enableOptionalComponent<COMP_ID>();
+    }
+
+    /**
+     * @brief Disables the optional vertex component with the given COMP_ID.
+     * Note: Non-optional components cannot be disabled.
+     *
+     * @tparam COMP_ID: The ID of the component to disable.
+     */
+    template<uint COMP_ID>
+    void disableVertexComponent()
+        requires comp::HasOptionalComponent<COMP_ID, VertexComponents>
+    {
+        Base::template disableOptionalComponent<COMP_ID>();
+    }
+
+    /**
+     * @brief Enables all optional vertex components in the container.
+     */
+    void enableAllVertexOptionalComponents()
+    {
+        Base::enableAllOptionalComponents();
+    }
+
+    /**
+     * @brief Disables all optional vertex components in the container.
+     */
+    void disableAllVertexOptionalComponents()
+    {
+        Base::disableAllOptionalComponents();
+    }
+
+    /**
+     * @brief Enables all optional vertex components in the container.
+     * Alias for enableAllVertexOptionalComponents().
+     */
+    void enableAllVertexComponents()
+    {
+        Base::enableAllOptionalComponents();
+    }
+
+    /**
+     * @brief Disables all optional vertex components in the container.
+     * Alias for disableAllVertexOptionalComponents().
+     */
+    void disableAllVertexComponents()
+    {
+        Base::disableAllOptionalComponents();
+    }
+
+    VCL_COMMON_CONTAINER_COMPONENT_METHODS(Vertex)
+    VCL_CONTAINER_COMPONENT_METHODS(Vertex, AdjacentEdges, ADJACENT_EDGES)
+    VCL_CONTAINER_COMPONENT_METHODS(Vertex, AdjacentFaces, ADJACENT_FACES)
+    VCL_CONTAINER_COMPONENT_METHODS(Vertex, AdjacentVertices, ADJACENT_VERTICES)
+    VCL_CONTAINER_COMPONENT_METHODS(Vertex, MaterialIndex, MATERIAL_INDEX)
+    VCL_CONTAINER_COMPONENT_METHODS(
+        Vertex,
+        PrincipalCurvature,
+        PRINCIPAL_CURVATURE)
+    VCL_CONTAINER_COMPONENT_METHODS(Vertex, Tangent, TANGENT)
+    VCL_CONTAINER_COMPONENT_METHODS(Vertex, TexCoord, TEX_COORD)
 
     // --- Custom Components ---
 

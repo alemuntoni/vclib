@@ -397,6 +397,24 @@ public:
     void deleteElement(const ElementType& e) { deleteElement(e.index()); }
 
     /**
+     * @brief Swaps the data of the elements at indices `i` and `j`.
+     *
+     * @param[in] i: the index of the first element.
+     * @param[in] j: the index of the second element.
+     */
+    void swapElements(IndexType i, IndexType j)
+    {
+        assert(i < elementContainerSize() && j < elementContainerSize());
+        if (i == j) {
+            return;
+        }
+        mElemComponents.swapElements(i, j);
+        if constexpr (comp::HasCustomComponents<Components>) {
+            mCustomComponents.swapCustomComponents(i, j);
+        }
+    }
+
+    /**
      * @brief Returns whether the container is compact, i.e. there are no
      * deleted elements.
      *

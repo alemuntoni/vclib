@@ -112,6 +112,46 @@ public:
     explicit operator bool() const { return isValid(); }
 
     /**
+     * @brief Checks if two element proxies refer to the same element.
+     * Two invalid proxies are considered equal (representing null/missing
+     * element).
+     */
+    template<typename OtherContainer>
+        requires std::same_as<
+            std::remove_const_t<ContainerType>,
+            std::remove_const_t<OtherContainer>>
+    bool operator==(
+        const ElementProxy<ELEM_ID, OtherContainer, vcl::TypeWrapper<Comps...>>&
+            other) const
+    {
+        if (!isValid() && !other.isValid()) {
+            return true;
+        }
+        return mContainer == other.mContainer && mIndex == other.mIndex;
+    }
+
+    /**
+     * @brief Compares an element proxy with nullptr.
+     * Returns true if the proxy is invalid.
+     */
+    bool operator==(std::nullptr_t) const { return !isValid(); }
+
+    /**
+     * @brief Swaps the data of the two elements referenced by the proxies.
+     * Both proxies must refer to the same container.
+     */
+    friend void swap(ElementProxy a, ElementProxy b)
+        requires (!std::is_const_v<ContainerType>)
+    {
+        assert(
+            a.mContainer == b.mContainer &&
+            "Cannot swap elements of different containers");
+        if (a.mContainer) {
+            a.mContainer->swapElements(a.mIndex, b.mIndex);
+        }
+    }
+
+    /**
      * @brief Checks if the component with COMP_ID is available (present and enabled).
      */
     template<uint COMP_ID>

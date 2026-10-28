@@ -10,6 +10,7 @@
 
 #include <vclib/mesh/components/base/component_predicates.h>
 #include <vclib/mesh/containers/base/element_container.h>
+#include <vclib/mesh/containers/base/macros.h>
 #include <vclib/mesh/elements/face.h>
 #include <vclib/mesh/elements/face_components.h>
 
@@ -440,6 +441,95 @@ public:
     {
         return Base::elements(begin, end);
     }
+
+    // --- Components ---
+
+    /**
+     * @brief Checks if the face component with the given COMP_ID is
+     * available (present at compile time and enabled at run time).
+     *
+     * Non-optional components are always available (true).
+     * Optional components return true if currently enabled, false otherwise.
+     *
+     * @tparam COMP_ID: The ID of the component to check.
+     * @return `true` if currently available, `false` otherwise.
+     */
+    template<uint COMP_ID>
+    bool isFaceComponentAvailable() const
+    {
+        return Base::template isComponentAvailable<COMP_ID>();
+    }
+
+    /**
+     * @brief Enables the optional face component with the given COMP_ID.
+     *
+     * @tparam COMP_ID: The ID of the component to enable.
+     */
+    template<uint COMP_ID>
+    void enableFaceComponent()
+        requires comp::HasOptionalComponent<COMP_ID, FaceComponents>
+    {
+        Base::template enableOptionalComponent<COMP_ID>();
+    }
+
+    /**
+     * @brief Disables the optional face component with the given COMP_ID.
+     * Note: Non-optional components cannot be disabled.
+     *
+     * @tparam COMP_ID: The ID of the component to disable.
+     */
+    template<uint COMP_ID>
+    void disableFaceComponent()
+        requires comp::HasOptionalComponent<COMP_ID, FaceComponents>
+    {
+        Base::template disableOptionalComponent<COMP_ID>();
+    }
+
+    /**
+     * @brief Enables all optional face components in the container.
+     */
+    void enableAllFaceOptionalComponents()
+    {
+        Base::enableAllOptionalComponents();
+    }
+
+    /**
+     * @brief Disables all optional face components in the container.
+     */
+    void disableAllFaceOptionalComponents()
+    {
+        Base::disableAllOptionalComponents();
+    }
+
+    /**
+     * @brief Enables all optional face components in the container.
+     * Alias for enableAllFaceOptionalComponents().
+     */
+    void enableAllFaceComponents()
+    {
+        Base::enableAllOptionalComponents();
+    }
+
+    /**
+     * @brief Disables all optional face components in the container.
+     * Alias for disableAllFaceOptionalComponents().
+     */
+    void disableAllFaceComponents()
+    {
+        Base::disableAllOptionalComponents();
+    }
+
+    VCL_COMMON_CONTAINER_COMPONENT_METHODS(Face)
+    VCL_CONTAINER_COMPONENT_METHODS(Face, AdjacentEdges, ADJACENT_EDGES)
+    VCL_CONTAINER_COMPONENT_METHODS(Face, AdjacentFaces, ADJACENT_FACES)
+    VCL_CONTAINER_COMPONENT_METHODS(Face, MaterialIndex, MATERIAL_INDEX)
+    VCL_CONTAINER_COMPONENT_METHODS(
+        Face,
+        PrincipalCurvature,
+        PRINCIPAL_CURVATURE)
+    VCL_CONTAINER_COMPONENT_METHODS(Face, WedgeColors, WEDGE_COLORS)
+    VCL_CONTAINER_COMPONENT_METHODS(Face, WedgeNormals, WEDGE_NORMALS)
+    VCL_CONTAINER_COMPONENT_METHODS(Face, WedgeTexCoords, WEDGE_TEX_COORDS)
 
     // --- Custom Components ---
 
