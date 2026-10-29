@@ -164,6 +164,35 @@ inline void testPresets()
         assert(pem.vertexCount() == 0 && pem.faceCount() == 0 && pem.edgeCount() == 0);
     }
 
+    // 7. TMPSimpleTriMesh and TMPSimplePolyMesh
+    {
+        using TTM = vcl::detail::TMPSimpleTriMesh;
+        static_assert(vcl::TriangleMeshConcept<TTM>);
+        static_assert(vcl::HasFaces<TTM>);
+        static_assert(!vcl::HasEdges<TTM>);
+        static_assert(vcl::vert::HasPosition<TTM::Vertex>);
+        static_assert(vcl::vert::HasBitFlags<TTM::Vertex>);
+        static_assert(vcl::face::HasTriangleVertexReferences<TTM::Face>);
+        static_assert(vcl::face::HasTriangleBitFlags<TTM::Face>);
+        static_assert(vcl::face::HasBitFlags<TTM::Face>);
+
+        TTM ttm;
+        assert(ttm.vertexCount() == 0 && ttm.faceCount() == 0);
+
+        using TPM = vcl::detail::TMPSimplePolyMesh;
+        static_assert(vcl::PolygonMeshConcept<TPM>);
+        static_assert(vcl::HasFaces<TPM>);
+        static_assert(!vcl::HasEdges<TPM>);
+        static_assert(vcl::vert::HasPosition<TPM::Vertex>);
+        static_assert(vcl::vert::HasBitFlags<TPM::Vertex>);
+        static_assert(vcl::face::HasPolygonVertexReferences<TPM::Face>);
+        static_assert(vcl::face::HasPolygonBitFlags<TPM::Face>);
+        static_assert(vcl::face::HasBitFlags<TPM::Face>);
+
+        TPM tpm;
+        assert(tpm.vertexCount() == 0 && tpm.faceCount() == 0);
+    }
+
     std::println("All mesh presets verified successfully!\n");
 }
 

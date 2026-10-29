@@ -16,6 +16,7 @@
 #include "mesh/mesh.h"
 #include "mesh/mesh_components.h"
 #include "mesh/requirements.h"
+#include "mesh/tmp_meshes.h"
 #include "mesh/traits.h"
 #include "mesh/views.h"
 

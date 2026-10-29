@@ -11,7 +11,7 @@
 //#include "mesh/check_pointers.h"
 //#include "mesh/clean.h"
 //#include "mesh/convex_hull.h"
-//#include "mesh/create.h"
+#include "mesh/create.h"
 //#include "mesh/delete.h"
 //#include "mesh/distance.h"
 #include "mesh/face_topology.h"
