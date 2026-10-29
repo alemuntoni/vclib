@@ -410,40 +410,40 @@ void clearPerFaceAdjacentEdges(MeshType& mesh)
  *
  * @param[in/out] mesh: the mesh on which update the per face adjacent edges.
  */
-// template<FaceMeshConcept MeshType>
-// void updatePerFaceAdjacentEdges(MeshType& mesh)
-//     requires EdgeMeshConcept<MeshType>
-// {
-//     using FaceType = MeshType::FaceType;
+template<FaceMeshConcept MeshType>
+void updatePerFaceAdjacentEdges(MeshType& mesh)
+    requires EdgeMeshConcept<MeshType>
+{
+    using FaceType = FaceType<MeshType>;
 
-//     using AdjacentEdgesType = comp::ComponentTypeFromID<
-//         CompId::ADJACENT_EDGES,
-//         typename FaceType::Components>;
+    using AdjacentEdgesType = comp::ComponentType<
+        CompId::ADJACENT_EDGES,
+        typename FaceType::Components>;
 
-//     clearPerFaceAdjacentEdges(mesh);
+    clearPerFaceAdjacentEdges(mesh);
 
-//     // vector that contains edges sorted trough unordered vertex pointers
-//     std::vector<MeshEdgeUtil<MeshType>> vec =
-//         fillAndSortMeshEdgeUtilVector(mesh);
+    // vector that contains edges sorted trough unordered vertex pointers
+    std::vector<MeshEdgeUtil<MeshType>> vec =
+        fillAndSortMeshEdgeUtilVector(mesh);
 
-//     for (auto& e : mesh.edges()) {
-//         MeshEdgeUtil<MeshType> meu(e.vertex(0), e.vertex(1));
+    for (auto e : mesh.edges()) {
+        MeshEdgeUtil<MeshType> meu(e.vertexIndex(0), e.vertexIndex(1));
 
-//         // binary search for the edge in the sorted vector
-//         auto it = std::lower_bound(vec.begin(), vec.end(), meu);
+        // binary search for the edge in the sorted vector
+        auto it = std::lower_bound(vec.begin(), vec.end(), meu);
 
-//         while (it != vec.end() && *it == meu) {
-//             auto* f = it->f; // the face adjacent to the edge e
-//             if constexpr (comp::IsTiedToVertexCount<AdjacentEdgesType>) {
-//                 f->setAdjEdges(it->e, &e);
-//             }
-//             else {
-//                 f->pushAdjEdge(&e);
-//             }
-//             ++it;
-//         }
-//     }
-// }
+        while (it != vec.end() && *it == meu) {
+            auto f = it->f; // the face adjacent to the edge e
+            if constexpr (comp::IsTiedToVertexCount<AdjacentEdgesType>) {
+                mesh.face(f).setAdjEdge(it->e, e);
+            }
+            else {
+                mesh.face(f).pushAdjEdge(e);
+            }
+            ++it;
+        }
+    }
+}
 
 /**
  * @brief Clears the adjacent faces of each edge of the mesh.

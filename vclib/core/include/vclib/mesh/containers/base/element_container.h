@@ -712,6 +712,13 @@ public:
                     comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
                 mElemComponents.template enable<N>();
                 using Comp = comp::ComponentTypeT<COMP_ID, Components>;
+                if constexpr (comp::IsTiedToVertexCount<Comp>) {
+                    if constexpr (ElementType::VERTEX_COUNT < 0) {
+                        for (auto e : elements()) {
+                            e.Comp::resize(e.vertexCount());
+                        }
+                    }
+                }
                 if constexpr (comp::HasDefaultValue<Comp>) {
                     auto& vec = this->template vector<COMP_ID>();
                     std::fill(
