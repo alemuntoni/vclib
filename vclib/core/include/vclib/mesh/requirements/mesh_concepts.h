@@ -362,6 +362,14 @@ concept HasOptionalFaceTangents =
 
 /* MaterialIndex */
 template<typename M>
+concept HasVertexMaterialIndices =
+    HasElementComponent<M, ElemId::VERTEX, CompId::MATERIAL_INDEX>;
+
+template<typename M>
+concept HasOptionalVertexMaterialIndices =
+    HasElementOptionalComponent<M, ElemId::VERTEX, CompId::MATERIAL_INDEX>;
+
+template<typename M>
 concept HasFaceMaterialIndices =
     HasElementComponent<M, ElemId::FACE, CompId::MATERIAL_INDEX>;
 

@@ -119,7 +119,7 @@ inline void testFaceImportFrom()
     mSourceTri.face(0).edgeSelected(2) = true;
     mSourceTri.face(0).edgeFaux(0) = true;
 
-    PolyMesh polyMesh;
+    SimplePolyMesh polyMesh;
     polyMesh.addVertices(3);
     polyMesh.addFace(0, 1, 2);
 
@@ -212,7 +212,7 @@ inline void testMeshImportFromTriToTri()
 inline void testMeshImportFromPolyToTri()
 {
     // 1. Pentagon (5 vertices) -> should produce 3 triangles
-    PolyMesh polySource;
+    SimplePolyMesh polySource;
     polySource.addVertices(5);
     polySource.vertex(0).position() = Point3f(0, 0, 0);
     polySource.vertex(1).position() = Point3f(2, 0, 0);
@@ -237,7 +237,7 @@ inline void testMeshImportFromPolyToTri()
     }
 
     // 2. Mix: 1 triangle and 1 quad (4 vertices) -> 1 + 2 = 3 triangles
-    PolyMesh polyMixed;
+    SimplePolyMesh polyMixed;
     polyMixed.addVertices(7);
     polyMixed.vertex(0).position() = Point3f(0, 0, 0);
     polyMixed.vertex(1).position() = Point3f(1, 0, 0);

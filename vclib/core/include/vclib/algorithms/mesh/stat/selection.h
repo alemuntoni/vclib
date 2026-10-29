@@ -8,8 +8,7 @@
 #ifndef VCL_ALGORITHMS_MESH_STAT_SELECTION_H
 #define VCL_ALGORITHMS_MESH_STAT_SELECTION_H
 
-#include <vclib/mesh/requirements/mesh_requirements.h>
-#include <vclib/mesh/views/components/selection.h>
+#include <vclib/mesh.h>
 
 namespace vcl {
 

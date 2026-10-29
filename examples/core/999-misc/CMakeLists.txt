@@ -28,6 +28,8 @@ set(SOURCES
     test_adjacencies.h
     test_edges.h
     test_elem_algorithms.h
+    test_presets.h
+    test_mesh_info.h
     main.cpp
 )
 

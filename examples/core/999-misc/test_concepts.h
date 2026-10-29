@@ -201,46 +201,46 @@ inline void testElementConcepts()
     static_assert(ElementConcept<MyMesh::ConstVertex>);
     static_assert(ElementConcept<MyMesh::Face>);
     static_assert(ElementConcept<MyMesh::ConstFace>);
-    static_assert(ElementConcept<EdgeMesh::Edge>);
-    static_assert(ElementConcept<EdgeMesh::ConstEdge>);
+    static_assert(ElementConcept<MyEdgeMesh::Edge>);
+    static_assert(ElementConcept<MyEdgeMesh::ConstEdge>);
 
     // VertexConcept
     static_assert(VertexConcept<MyMesh::Vertex>);
     static_assert(VertexConcept<MyMesh::ConstVertex>);
     static_assert(!VertexConcept<MyMesh::Face>);
-    static_assert(!VertexConcept<EdgeMesh::Edge>);
+    static_assert(!VertexConcept<MyEdgeMesh::Edge>);
 
     // FaceConcept
     static_assert(FaceConcept<MyMesh::Face>);
     static_assert(FaceConcept<MyMesh::ConstFace>);
-    static_assert(FaceConcept<PolyMesh::Face>);
-    static_assert(FaceConcept<PolyMesh::ConstFace>);
-    static_assert(FaceConcept<QuadMesh::Face>);
-    static_assert(FaceConcept<QuadMesh::ConstFace>);
+    static_assert(FaceConcept<SimplePolyMesh::Face>);
+    static_assert(FaceConcept<SimplePolyMesh::ConstFace>);
+    static_assert(FaceConcept<SimpleQuadMesh::Face>);
+    static_assert(FaceConcept<SimpleQuadMesh::ConstFace>);
     static_assert(!FaceConcept<MyMesh::Vertex>);
-    static_assert(!FaceConcept<EdgeMesh::Edge>);
+    static_assert(!FaceConcept<MyEdgeMesh::Edge>);
 
     // TriangleFaceConcept
     static_assert(TriangleFaceConcept<MyMesh::Face>);
     static_assert(TriangleFaceConcept<MyMesh::ConstFace>);
-    static_assert(!TriangleFaceConcept<QuadMesh::Face>);
-    static_assert(!TriangleFaceConcept<PolyMesh::Face>);
+    static_assert(!TriangleFaceConcept<SimpleQuadMesh::Face>);
+    static_assert(!TriangleFaceConcept<SimplePolyMesh::Face>);
 
     // QuadFaceConcept
-    static_assert(QuadFaceConcept<QuadMesh::Face>);
-    static_assert(QuadFaceConcept<QuadMesh::ConstFace>);
+    static_assert(QuadFaceConcept<SimpleQuadMesh::Face>);
+    static_assert(QuadFaceConcept<SimpleQuadMesh::ConstFace>);
     static_assert(!QuadFaceConcept<MyMesh::Face>);
-    static_assert(!QuadFaceConcept<PolyMesh::Face>);
+    static_assert(!QuadFaceConcept<SimplePolyMesh::Face>);
 
     // PolygonFaceConcept
-    static_assert(PolygonFaceConcept<PolyMesh::Face>);
-    static_assert(PolygonFaceConcept<PolyMesh::ConstFace>);
+    static_assert(PolygonFaceConcept<SimplePolyMesh::Face>);
+    static_assert(PolygonFaceConcept<SimplePolyMesh::ConstFace>);
     static_assert(!PolygonFaceConcept<MyMesh::Face>);
-    static_assert(!PolygonFaceConcept<QuadMesh::Face>);
+    static_assert(!PolygonFaceConcept<SimpleQuadMesh::Face>);
 
     // EdgeConcept
-    static_assert(EdgeConcept<EdgeMesh::Edge>);
-    static_assert(EdgeConcept<EdgeMesh::ConstEdge>);
+    static_assert(EdgeConcept<MyEdgeMesh::Edge>);
+    static_assert(EdgeConcept<MyEdgeMesh::ConstEdge>);
     static_assert(!EdgeConcept<MyMesh::Vertex>);
     static_assert(!EdgeConcept<MyMesh::Face>);
 
@@ -279,7 +279,7 @@ inline void testElementConcepts()
     // HasBitFlags
     static_assert(HasBitFlags<MyMesh::Vertex>);
     static_assert(HasBitFlags<MyMesh::Face>);
-    static_assert(HasBitFlags<EdgeMesh::Edge>);
+    static_assert(HasBitFlags<MyEdgeMesh::Edge>);
 
     // HasQuality
     static_assert(HasQuality<QualityMesh::Vertex>);
@@ -302,7 +302,7 @@ inline void testElementConcepts()
 
     // HasVertexReferences
     static_assert(HasVertexReferences<MyMesh::Face>);
-    static_assert(HasVertexReferences<EdgeMesh::Edge>);
+    static_assert(HasVertexReferences<MyEdgeMesh::Edge>);
     static_assert(!HasVertexReferences<MyMesh::Vertex>);
 
     // HasCustomComponents
@@ -324,10 +324,10 @@ inline void testMeshConcepts()
     static_assert(FaceMeshConcept<MyMesh>);
     static_assert(!EdgeMeshConcept<MyMesh>);
 
-    static_assert(!HasFaces<EdgeMesh>);
-    static_assert(HasEdges<EdgeMesh>);
-    static_assert(!FaceMeshConcept<EdgeMesh>);
-    static_assert(EdgeMeshConcept<EdgeMesh>);
+    static_assert(!HasFaces<MyEdgeMesh>);
+    static_assert(HasEdges<MyEdgeMesh>);
+    static_assert(!FaceMeshConcept<MyEdgeMesh>);
+    static_assert(EdgeMeshConcept<MyEdgeMesh>);
 
     static_assert(HasFaces<GraphMesh>);
     static_assert(HasEdges<GraphMesh>);
@@ -348,22 +348,22 @@ inline void testMeshConcepts()
     static_assert(!QuadMeshConcept<MyMesh>);
     static_assert(!PolygonMeshConcept<MyMesh>);
 
-    static_assert(!HasTriangles<QuadMesh>);
-    static_assert(HasQuads<QuadMesh>);
-    static_assert(!HasPolygons<QuadMesh>);
-    static_assert(!TriangleMeshConcept<QuadMesh>);
-    static_assert(QuadMeshConcept<QuadMesh>);
-    static_assert(!PolygonMeshConcept<QuadMesh>);
+    static_assert(!HasTriangles<SimpleQuadMesh>);
+    static_assert(HasQuads<SimpleQuadMesh>);
+    static_assert(!HasPolygons<SimpleQuadMesh>);
+    static_assert(!TriangleMeshConcept<SimpleQuadMesh>);
+    static_assert(QuadMeshConcept<SimpleQuadMesh>);
+    static_assert(!PolygonMeshConcept<SimpleQuadMesh>);
 
-    static_assert(!HasTriangles<PolyMesh>);
-    static_assert(!HasQuads<PolyMesh>);
-    static_assert(HasPolygons<PolyMesh>);
-    static_assert(!TriangleMeshConcept<PolyMesh>);
-    static_assert(!QuadMeshConcept<PolyMesh>);
-    static_assert(PolygonMeshConcept<PolyMesh>);
+    static_assert(!HasTriangles<SimplePolyMesh>);
+    static_assert(!HasQuads<SimplePolyMesh>);
+    static_assert(HasPolygons<SimplePolyMesh>);
+    static_assert(!TriangleMeshConcept<SimplePolyMesh>);
+    static_assert(!QuadMeshConcept<SimplePolyMesh>);
+    static_assert(PolygonMeshConcept<SimplePolyMesh>);
 
     static_assert(!TriangleMeshConcept<PointCloudMesh>);
-    static_assert(!TriangleMeshConcept<EdgeMesh>);
+    static_assert(!TriangleMeshConcept<MyEdgeMesh>);
 
     // Element Components on Mesh
     // Normals
@@ -385,11 +385,11 @@ inline void testMeshConcepts()
     static_assert(!HasVertexColors<SimpleMesh>);
     static_assert(HasFaceColors<SimpleMesh>);
     static_assert(HasOptionalFaceColors<SimpleMesh>);
-    static_assert(!HasFaceColors<PolyMesh>);
-    static_assert(!HasFaceColors<QuadMesh>);
-    static_assert(!HasFaceColors<EdgeMesh>);
-    static_assert(HasEdgeColors<EdgeMesh>);
-    static_assert(!HasOptionalEdgeColors<EdgeMesh>);
+    static_assert(!HasFaceColors<SimplePolyMesh>);
+    static_assert(!HasFaceColors<SimpleQuadMesh>);
+    static_assert(!HasFaceColors<MyEdgeMesh>);
+    static_assert(HasEdgeColors<MyEdgeMesh>);
+    static_assert(!HasOptionalEdgeColors<MyEdgeMesh>);
     static_assert(!HasEdgeColors<MyMesh>);
 
     // Adjacencies
@@ -553,7 +553,7 @@ inline void testContracts()
     assert(!isQuadMesh(m));
     requireTriangleMesh(m);
 
-    QuadMesh qm;
+    SimpleQuadMesh qm;
     assert(isQuadMesh(qm));
     assert(!isTriangleMesh(qm));
     requireQuadMesh(qm);
@@ -610,8 +610,8 @@ inline void testContracts()
     requireVertexColors(fullMesh);
     requireFaceColors(fullMesh);
 
-    // EdgeMesh
-    EdgeMesh edgeMesh = createSampleEdgeMesh();
+    // MyEdgeMesh
+    MyEdgeMesh edgeMesh = createSampleEdgeMesh();
     assert((edgeMesh.isElementComponentAvailable<ElemId::EDGE, CompId::COLOR>()));
     assert((!edgeMesh.isElementComponentAvailable<ElemId::EDGE, CompId::QUALITY>())); // optional quality not enabled
     enableIfEdgeQualitiesOptional(edgeMesh);
@@ -640,7 +640,7 @@ inline void testTraits()
     static_assert(std::is_same_v<VertexType<SimpleMesh::Vertex>, SimpleMesh::Vertex>);
     static_assert(std::is_same_v<VertexType<SimpleMesh::Face>, SimpleMesh::Vertex>);
     static_assert(std::is_same_v<VertexType<const SimpleMesh::Face&>, SimpleMesh::Vertex>);
-    static_assert(std::is_same_v<VertexType<EdgeMesh::Edge>, EdgeMesh::Vertex>);
+    static_assert(std::is_same_v<VertexType<MyEdgeMesh::Edge>, MyEdgeMesh::Vertex>);
     static_assert(std::is_same_v<VertexType<SimpleMesh::ContainerType<ElemId::VERTEX>>, SimpleMesh::Vertex>);
 
     // 2. FaceType
@@ -651,16 +651,16 @@ inline void testTraits()
     static_assert(std::is_same_v<FaceType<SimpleMesh::ContainerType<ElemId::FACE>>, SimpleMesh::Face>);
 
     // 3. EdgeType
-    static_assert(std::is_same_v<EdgeType<EdgeMesh>, EdgeMesh::Edge>);
-    static_assert(std::is_same_v<EdgeType<const EdgeMesh&>, EdgeMesh::Edge>);
-    static_assert(std::is_same_v<EdgeType<EdgeMesh::Edge>, EdgeMesh::Edge>);
-    static_assert(std::is_same_v<EdgeType<EdgeMesh::ContainerType<ElemId::EDGE>>, EdgeMesh::Edge>);
+    static_assert(std::is_same_v<EdgeType<MyEdgeMesh>, MyEdgeMesh::Edge>);
+    static_assert(std::is_same_v<EdgeType<const MyEdgeMesh&>, MyEdgeMesh::Edge>);
+    static_assert(std::is_same_v<EdgeType<MyEdgeMesh::Edge>, MyEdgeMesh::Edge>);
+    static_assert(std::is_same_v<EdgeType<MyEdgeMesh::ContainerType<ElemId::EDGE>>, MyEdgeMesh::Edge>);
 
     // 4. IndexType
     static_assert(std::is_same_v<IndexType<SimpleMesh>, uint>);
     static_assert(std::is_same_v<IndexType<SimpleMesh::Vertex>, uint>);
     static_assert(std::is_same_v<IndexType<SimpleMesh::Face>, uint>);
-    static_assert(std::is_same_v<IndexType<EdgeMesh::Edge>, uint>);
+    static_assert(std::is_same_v<IndexType<MyEdgeMesh::Edge>, uint>);
 
     // 5. PositionType
     static_assert(std::is_same_v<PositionType<SimpleMesh>, Point3f>);

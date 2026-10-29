@@ -76,7 +76,7 @@ inline void testProxyConcepts()
     static_assert(CanCallPositions<decltype(mesh.vertices())>);
     static_assert(CanCallNormals<decltype(mesh.vertices())>);
     static_assert(CanCallVertexIndices<decltype(mesh.faces())>);
-    static_assert(!CanCallVertexIndices<decltype(PolyMesh{}.faces())>);
+    static_assert(!CanCallVertexIndices<decltype(SimplePolyMesh{}.faces())>);
 }
 
 inline void testContainerProxy()

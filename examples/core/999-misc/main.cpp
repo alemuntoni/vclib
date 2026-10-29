@@ -26,6 +26,7 @@
 #include "test_edges.h"
 #include "test_elem_algorithms.h"
 #include "test_presets.h"
+#include "test_mesh_info.h"
 
 int main()
 {
@@ -48,6 +49,7 @@ int main()
     testAdjacencies();
     testEdges();
     testElemAlgorithms();
+    testMeshInfo();
 
     std::println("All mesh tests passed successfully!");
     return 0;

@@ -55,7 +55,7 @@ inline void testTriangleReferences(MyMesh& mesh)
 
 inline void testPolygonReferences()
 {
-    PolyMesh polyMesh;
+    SimplePolyMesh polyMesh;
     polyMesh.addVertices(5);
 
     vcl::uint fi = polyMesh.addFace(0, 1, 2, 3);

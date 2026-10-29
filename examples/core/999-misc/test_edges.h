@@ -20,35 +20,35 @@
 inline void testEdgeConcepts()
 {
     // Element concepts
-    static_assert(ElementConcept<EdgeMesh::Edge>);
-    static_assert(ElementConcept<EdgeMesh::ConstEdge>);
+    static_assert(ElementConcept<MyEdgeMesh::Edge>);
+    static_assert(ElementConcept<MyEdgeMesh::ConstEdge>);
     static_assert(ElementConcept<GraphMesh::Edge>);
     static_assert(ElementConcept<GraphMesh::ConstEdge>);
 
-    static_assert(EdgeConcept<EdgeMesh::Edge>);
-    static_assert(EdgeConcept<EdgeMesh::ConstEdge>);
+    static_assert(EdgeConcept<MyEdgeMesh::Edge>);
+    static_assert(EdgeConcept<MyEdgeMesh::ConstEdge>);
     static_assert(EdgeConcept<GraphMesh::Edge>);
     static_assert(EdgeConcept<GraphMesh::ConstEdge>);
 
     // Strong typing: Edge is not Vertex nor Face
-    static_assert(!VertexConcept<EdgeMesh::Edge>);
-    static_assert(!FaceConcept<EdgeMesh::Edge>);
-    static_assert(!EdgeConcept<EdgeMesh::Vertex>);
+    static_assert(!VertexConcept<MyEdgeMesh::Edge>);
+    static_assert(!FaceConcept<MyEdgeMesh::Edge>);
+    static_assert(!EdgeConcept<MyEdgeMesh::Vertex>);
     static_assert(!EdgeConcept<GraphMesh::Face>);
 
     // Component concepts
     static_assert(HasRequiredEdgeComponents<MyEdgeComponents>);
     static_assert(HasRequiredEdgeComponents<CCEdgeComponents>);
     static_assert(edge::HasEdgeVertexReferences<MyEdgeComponents>);
-    static_assert(edge::HasEdgeVertexReferences<EdgeMesh::Edge>);
+    static_assert(edge::HasEdgeVertexReferences<MyEdgeMesh::Edge>);
     static_assert(edge::HasColor<MyEdgeComponents>);
-    static_assert(edge::HasColor<EdgeMesh::Edge>);
+    static_assert(edge::HasColor<MyEdgeMesh::Edge>);
     static_assert(edge::HasOptionalQuality<MyEdgeComponents>);
-    static_assert(edge::HasOptionalQuality<EdgeMesh::Edge>);
+    static_assert(edge::HasOptionalQuality<MyEdgeMesh::Edge>);
 
     // Mesh concepts
-    static_assert(HasEdges<EdgeMesh>);
-    static_assert(!HasFaces<EdgeMesh>);
+    static_assert(HasEdges<MyEdgeMesh>);
+    static_assert(!HasFaces<MyEdgeMesh>);
 
     static_assert(HasFaces<GraphMesh>);
     static_assert(HasEdges<GraphMesh>);
@@ -56,23 +56,23 @@ inline void testEdgeConcepts()
     static_assert(!HasEdges<MyMesh>);
 
     static_assert(HasEdgeCustomComponents<EdgeMeshWithCC>);
-    static_assert(!HasEdgeCustomComponents<EdgeMesh>);
+    static_assert(!HasEdgeCustomComponents<MyEdgeMesh>);
 
     // Sentinels
-    static_assert(EdgeMesh::NULL_INDEX == EdgeMesh::Edge::NULL_INDEX);
-    static_assert(EdgeMesh::NULL_INDEX == EdgeMesh::EdgeContainer::NULL_INDEX);
+    static_assert(MyEdgeMesh::NULL_INDEX == MyEdgeMesh::Edge::NULL_INDEX);
+    static_assert(MyEdgeMesh::NULL_INDEX == MyEdgeMesh::EdgeContainer::NULL_INDEX);
     static_assert(GraphMesh::NULL_INDEX == GraphMesh::Edge::NULL_INDEX);
 
     // Iterators and Ranges
-    static_assert(std::random_access_iterator<EdgeMesh::EdgeContainer::Iterator>);
-    static_assert(std::random_access_iterator<EdgeMesh::EdgeContainer::ConstIterator>);
-    static_assert(EdgeRangeConcept<decltype(std::declval<EdgeMesh>().edges())>);
-    static_assert(EdgeRangeConcept<decltype(std::declval<const EdgeMesh>().edges())>);
+    static_assert(std::random_access_iterator<MyEdgeMesh::EdgeContainer::Iterator>);
+    static_assert(std::random_access_iterator<MyEdgeMesh::EdgeContainer::ConstIterator>);
+    static_assert(EdgeRangeConcept<decltype(std::declval<MyEdgeMesh>().edges())>);
+    static_assert(EdgeRangeConcept<decltype(std::declval<const MyEdgeMesh>().edges())>);
 }
 
 inline void testEdgeCreationAndProperties()
 {
-    EdgeMesh m = createSampleEdgeMesh();
+    MyEdgeMesh m = createSampleEdgeMesh();
 
     assert(m.vertexCount() == 4);
     assert(m.edgeCount() == 4);
@@ -114,7 +114,7 @@ inline void testEdgeCreationAndProperties()
 
 inline void testEdgeContainerMethods()
 {
-    EdgeMesh m;
+    MyEdgeMesh m;
     m.addVertices(4);
 
     // addEdge()
@@ -162,7 +162,7 @@ inline void testEdgeContainerMethods()
 
 inline void testEdgeViewsAndRanges()
 {
-    EdgeMesh m = createSampleEdgeMesh();
+    MyEdgeMesh m = createSampleEdgeMesh();
 
     // Loop with m.edges()
     uint count = 0;
@@ -217,7 +217,7 @@ inline void testEdgeViewsAndRanges()
 
 inline void testEdgeDeletionAndCompaction()
 {
-    EdgeMesh m = createSampleEdgeMesh();
+    MyEdgeMesh m = createSampleEdgeMesh();
 
     assert(m.edgeCount() == 4);
     assert(m.isCompact());
@@ -256,7 +256,7 @@ inline void testEdgeDeletionAndCompaction()
     assert(m.deletedEdgeCount() == 0);
 
     assert(newIndices[0] == 0);
-    assert(newIndices[1] == EdgeMesh::NULL_INDEX);
+    assert(newIndices[1] == MyEdgeMesh::NULL_INDEX);
     assert(newIndices[2] == 1);
     assert(newIndices[3] == 2);
 
@@ -293,11 +293,11 @@ inline void testEdgeCustomComponents()
 
 inline void testEdgeAppend()
 {
-    EdgeMesh m1;
+    MyEdgeMesh m1;
     m1.addVertices(2);
     m1.addEdge(0, 1);
 
-    EdgeMesh m2;
+    MyEdgeMesh m2;
     m2.addVertices(3);
     m2.addEdge(0, 1);
     m2.addEdge(1, 2);

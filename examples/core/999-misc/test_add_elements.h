@@ -90,7 +90,7 @@ inline void testAddFaces(MyMesh& mesh)
 
 inline void testAddPolygonFaces()
 {
-    PolyMesh polyMesh;
+    SimplePolyMesh polyMesh;
     polyMesh.addVertices(Point3f(0.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f),
                          Point3f(1.0f, 1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f),
                          Point3f(0.5f, 1.5f, 0.0f));

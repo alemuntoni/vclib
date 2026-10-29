@@ -186,7 +186,7 @@ using PolyFaceComponents = FaceComponents<
     face::PolygonBitFlags,
     face::PolygonVertexReferences<vcl::uint>>;
 
-using PolyMesh = Mesh<
+using SimplePolyMesh = Mesh<
     mesh::VertexContainer<SimpleVertexComponents>,
     mesh::FaceContainer<PolyFaceComponents>>;
 
@@ -194,7 +194,7 @@ using QuadFaceComponents = FaceComponents<
     face::BitFlags,
     face::VertexReferences<4>>;
 
-using QuadMesh = Mesh<
+using SimpleQuadMesh = Mesh<
     mesh::VertexContainer<SimpleVertexComponents>,
     mesh::FaceContainer<QuadFaceComponents>>;
 
@@ -292,7 +292,7 @@ using MyEdgeComponents = EdgeComponents<
     edge::Color,
     edge::OptionalQualityf>;
 
-using EdgeMesh = Mesh<
+using MyEdgeMesh = Mesh<
     mesh::VertexContainer<MyVertexComponents>,
     mesh::EdgeContainer<MyEdgeComponents>>;
 
@@ -389,9 +389,9 @@ inline MyMesh createSampleQuadMesh()
  * Edge 2: (3, 2)
  * Edge 3: (2, 0)
  */
-inline EdgeMesh createSampleEdgeMesh()
+inline MyEdgeMesh createSampleEdgeMesh()
 {
-    EdgeMesh mesh;
+    MyEdgeMesh mesh;
     mesh.resizeVertices(4);
 
     mesh.vertex(0).position() = Point3f(0.0f, 0.0f, 1.0f);

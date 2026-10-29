@@ -630,6 +630,19 @@ void requireFaceTangents(const MeshType& m)
 /* --- Material Index --- */
 
 template<MeshConcept MeshType>
+bool enableIfVertexMaterialIndicesOptional(MeshType& m)
+{
+    return enableIfElementComponentOptional<ElemId::VERTEX, CompId::MATERIAL_INDEX>(m);
+}
+
+template<MeshConcept MeshType>
+requires (HasFaceMaterialIndices<MeshType>)
+void requireVertexMaterialIndices(const MeshType& m)
+{
+    requireElementComponent<ElemId::VERTEX, CompId::MATERIAL_INDEX>(m);
+}
+
+template<MeshConcept MeshType>
 bool enableIfFaceMaterialIndicesOptional(MeshType& m)
 {
     return enableIfElementComponentOptional<ElemId::FACE, CompId::MATERIAL_INDEX>(m);

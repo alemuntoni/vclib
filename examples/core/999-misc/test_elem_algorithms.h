@@ -20,27 +20,27 @@
 inline void testEarCutConcepts()
 {
     // FaceConcept checks on various proxy types and value categories
-    static_assert(FaceConcept<PolyMesh::Face>);
-    static_assert(FaceConcept<PolyMesh::Face&>);
-    static_assert(FaceConcept<const PolyMesh::Face&>);
-    static_assert(FaceConcept<PolyMesh::Face&&>);
+    static_assert(FaceConcept<SimplePolyMesh::Face>);
+    static_assert(FaceConcept<SimplePolyMesh::Face&>);
+    static_assert(FaceConcept<const SimplePolyMesh::Face&>);
+    static_assert(FaceConcept<SimplePolyMesh::Face&&>);
 
-    static_assert(FaceConcept<PolyMesh::ConstFace>);
-    static_assert(FaceConcept<PolyMesh::ConstFace&>);
-    static_assert(FaceConcept<const PolyMesh::ConstFace&>);
-    static_assert(FaceConcept<PolyMesh::ConstFace&&>);
+    static_assert(FaceConcept<SimplePolyMesh::ConstFace>);
+    static_assert(FaceConcept<SimplePolyMesh::ConstFace&>);
+    static_assert(FaceConcept<const SimplePolyMesh::ConstFace&>);
+    static_assert(FaceConcept<SimplePolyMesh::ConstFace&&>);
 
     static_assert(FaceConcept<TriBitMesh::Face>);
     static_assert(FaceConcept<TriBitMesh::ConstFace>);
 
     // Negative concept test: Vertex and Edge are not Faces
-    static_assert(!FaceConcept<PolyMesh::Vertex>);
-    static_assert(!FaceConcept<PolyMesh::ConstVertex>);
+    static_assert(!FaceConcept<SimplePolyMesh::Vertex>);
+    static_assert(!FaceConcept<SimplePolyMesh::ConstVertex>);
 }
 
 inline void testEarCutQuad()
 {
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(4);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(1.0f, 0.0f, 0.0f);
@@ -79,7 +79,7 @@ inline void testEarCutQuad()
 
 inline void testEarCutPentagon()
 {
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(5);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
@@ -99,7 +99,7 @@ inline void testEarCutPentagon()
 inline void testEarCutConcave()
 {
     // L-shaped concave polygon with 6 vertices
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(6);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
@@ -134,7 +134,7 @@ inline void testEarCutTriangle()
 inline void testEarCut3DPlane()
 {
     // Planar quad situated on the YZ plane (x = 5.0)
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(4);
     poly.vertex(0).position() = Point3f(5.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(5.0f, 2.0f, 0.0f);
@@ -187,8 +187,8 @@ inline void testPolygonGeometryTriangle()
 
 inline void testPolygonGeometryPoly3()
 {
-    // Same triangle geometry as above, but on a dynamic-vertex-count PolyMesh (vertexCount() == 3)
-    PolyMesh poly;
+    // Same triangle geometry as above, but on a dynamic-vertex-count SimplePolyMesh (vertexCount() == 3)
+    SimplePolyMesh poly;
     poly.addVertices(3);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(1.0f, 0.0f, 0.0f);
@@ -220,7 +220,7 @@ inline void testPolygonGeometryPoly3()
 inline void testPolygonGeometryQuad()
 {
     // Square of side 3 on XY plane (normal = +Z)
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(4);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(3.0f, 0.0f, 0.0f);
@@ -249,7 +249,7 @@ inline void testPolygonGeometryQuad()
 
 inline void testPolygonGeometryConstAndADL()
 {
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(4);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
@@ -279,7 +279,7 @@ inline void testPolygonGeometryConstAndADL()
 
 inline void testBoundingBox()
 {
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(4);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
@@ -298,7 +298,7 @@ inline void testBoundingBox()
     assert(fBox.max() == Point3f(2.0f, 3.0f, 0.0f));
 
     // 3. Edge bounding box
-    EdgeMesh edgeMesh;
+    MyEdgeMesh edgeMesh;
     edgeMesh.addVertices(2);
     edgeMesh.vertex(0).position() = Point3f(-1.0f, 5.0f, 2.0f);
     edgeMesh.vertex(1).position() = Point3f(4.0f, -2.0f, 1.0f);
@@ -321,7 +321,7 @@ inline void testBoundingBox()
 
 inline void testDistanceVertexPoint()
 {
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertex(Point3f(1.0f, 2.0f, 3.0f));
     Point3f p(4.0f, 6.0f, 3.0f); // dx=3, dy=4 -> dist=5
 
@@ -345,7 +345,7 @@ inline void testDistanceVertexPoint()
 
 inline void testDistanceVertexVertex()
 {
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(2);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(3.0f, 4.0f, 0.0f);
@@ -413,7 +413,7 @@ inline void testDistanceTriangleFace()
 
 inline void testDistancePolygonFace()
 {
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(4);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
@@ -447,7 +447,7 @@ inline void testDistancePolygonFace()
 
 inline void testDistanceVertexFace()
 {
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(4);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
@@ -455,7 +455,7 @@ inline void testDistanceVertexFace()
     poly.vertex(3).position() = Point3f(0.0f, 2.0f, 0.0f);
     poly.addFace(0, 1, 2, 3);
 
-    PolyMesh queryMesh;
+    SimplePolyMesh queryMesh;
     queryMesh.addVertex(Point3f(1.0f, 1.0f, 2.5f));
 
     auto v = queryMesh.vertex(0);
@@ -494,7 +494,7 @@ inline void testIntersectionFaceBox()
     assert(!intersect(boxMiss, triMesh.face(0)));
 
     // 2. Polygonal Quad Face
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(4);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
@@ -512,7 +512,7 @@ inline void testIntersectionFaceBox()
     assert(!intersect(quadBoxMiss, poly.face(0)));
 
     // 3. 3-vertex polygon face
-    PolyMesh poly3;
+    SimplePolyMesh poly3;
     poly3.addVertices(3);
     poly3.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly3.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
@@ -559,7 +559,7 @@ inline void testIntersectionFaceSphere()
     assert(vcl::epsilonEquals(witnessSym, Point3f(0.5f, 0.5f, 0.0f)));
 
     // 2. Polygonal Quad Face
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(4);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
@@ -616,7 +616,7 @@ inline void testIntersectionFaceRay()
     assert(!intersect(rayMiss, triMesh.face(0)));
 
     // 2. Polygonal Quad Face
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(4);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
@@ -671,7 +671,7 @@ inline void testVisibility()
     assert(!facePointVisibility(pBelow, triMesh.face(0)));
 
     // 2. 3-vertex polygon face
-    PolyMesh poly3;
+    SimplePolyMesh poly3;
     poly3.addVertices(3);
     poly3.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly3.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
@@ -684,7 +684,7 @@ inline void testVisibility()
     assert(!facePointVisibility(poly3.face(0), pBelow));
 
     // 3. Polygonal Quad Face
-    PolyMesh poly;
+    SimplePolyMesh poly;
     poly.addVertices(4);
     poly.vertex(0).position() = Point3f(0.0f, 0.0f, 0.0f);
     poly.vertex(1).position() = Point3f(2.0f, 0.0f, 0.0f);
