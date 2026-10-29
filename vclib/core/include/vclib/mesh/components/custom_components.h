@@ -95,7 +95,7 @@ public:
         this const auto&   self,
         const std::string& compName)
     {
-        return self.parentContainer().elemComponentType(compName);
+        return self.parentContainer().elemCustomComponentType(compName);
     }
 
     /**

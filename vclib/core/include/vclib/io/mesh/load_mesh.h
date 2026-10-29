@@ -10,7 +10,7 @@
 
 #include "obj/load.h"
 //#include "off/load.h"
-//#include "ply/load.h"
+#include "ply/load.h"
 //#include "stl/load.h"
 
 #ifdef VCLIB_WITH_TINYGLTF
@@ -95,7 +95,7 @@ void loadMesh(
         //loadOff(m, filename, loadedInfo, settings, log);
     }
     else if (ff == plyFileFormat()) {
-        //loadPly(m, filename, loadedInfo, settings, log);
+        loadPly(m, filename, loadedInfo, settings, log);
     }
     else if (ff == stlFileFormat()) {
         //loadStl(m, filename, loadedInfo, settings, log);

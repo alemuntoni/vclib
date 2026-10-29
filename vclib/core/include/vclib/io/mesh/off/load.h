@@ -440,7 +440,7 @@ void readOffFaces(
             // read face color
             if (token != tokens.end()) { // there are colors to read
                 if constexpr (HasFaceColors<MeshType>) {
-                    if (isPerFaceColorAvailable(mesh) ||
+                    if (mesh.isFaceColorAvailable() ||
                         (settings.enableOptionalComponents &&
                          enableIfPerFaceColorOptional(mesh))) {
                         loadedInfo.setPerFaceColor();

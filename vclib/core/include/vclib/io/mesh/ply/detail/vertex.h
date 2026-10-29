@@ -71,7 +71,7 @@ void readPlyVertexProperty(
     else if (p.name == ply::quality) {
         if constexpr (HasVertexQualities<MeshType>) {
             using QualityType = VertexType::QualityType;
-            if (isPerVertexQualityAvailable(mesh)) {
+            if (mesh.isVertexQualityAvailable()) {
                 v.quality() =
                     io::readPrimitiveType<QualityType>(file, p.type, end);
                 hasBeenRead = true;
@@ -100,7 +100,7 @@ void readPlyVertexProperty(
     }
     else if (p.name == ply::unknown) {
         if constexpr (HasVertexCustomComponents<MeshType>) {
-            if (mesh.hasPerVertexCustomComponent(p.unknownPropertyName)) {
+            if (mesh.hasVertexCustomComponent(p.unknownPropertyName)) {
                 io::readCustomComponent(
                     file, v, p.unknownPropertyName, p.type, end);
                 hasBeenRead = true;
@@ -245,7 +245,7 @@ void readPlyVertices(
     log.startProgress("Reading vertices", header.vertexCount());
 
     for (uint vid = 0; vid < header.vertexCount(); ++vid) {
-        auto& v = m.vertex(vid);
+        auto v = m.vertex(vid);
         if (header.format() == ply::ASCII) {
             detail::readPlyVertexTxt(
                 file, v, m, header.vertexProperties(), header.isVcgGenerated());

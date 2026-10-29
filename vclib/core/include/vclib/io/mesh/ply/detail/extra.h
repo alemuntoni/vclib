@@ -95,7 +95,7 @@ void readPlyMaterialIndexPostProcessing(
                         loadedInfo.setPerVertexMaterialIndex();
                     }
                     if (loadedInfo.hasPerVertexMaterialIndex()) {
-                        for (auto& v : mesh.vertices()) {
+                        for (auto v : mesh.vertices()) {
                             v.materialIndex() = 0;
                         }
                     }
@@ -109,7 +109,7 @@ void readPlyMaterialIndexPostProcessing(
                         loadedInfo.setPerFaceMaterialIndex();
                     }
                     if (loadedInfo.hasPerFaceMaterialIndex()) {
-                        for (auto& f : mesh.faces()) {
+                        for (auto f : mesh.faces()) {
                             f.materialIndex() = 0;
                         }
                     }

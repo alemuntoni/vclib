@@ -31,8 +31,8 @@ void facesFromPlyTriStrip(MeshType& m, const std::vector<int>& tristrip)
                 firstOddPos = true;
         }
         else {
-            uint      fid = m.addFace();
-            FaceType& f   = m.face(fid);
+            uint     fid = m.addFace();
+            FaceType f   = m.face(fid);
             if constexpr (FaceType::VERTEX_COUNT < 0) {
                 f.resizeVertices(3);
             }
@@ -41,7 +41,7 @@ void facesFromPlyTriStrip(MeshType& m, const std::vector<int>& tristrip)
             }
 
             if (k % 2 == 0 != firstOddPos) {
-                auto* tmp = f.vertex(0);
+                auto tmp = f.vertex(0);
                 f.setVertex(0U, f.vertex(1));
                 f.setVertex(1U, tmp);
             }

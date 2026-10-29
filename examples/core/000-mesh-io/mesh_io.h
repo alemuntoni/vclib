@@ -47,13 +47,13 @@ auto loadMeshes()
     std::println("Mesh has per face color: {}", info.hasPerFaceColor());
 
     // You can control settings for loading a mesh using the LoadSettings object
-    // It allows to choose whether to enable optional components (see example
-    // TODO) and whether to load texture images or not.
+    // It allows to choose whether to enable optional components and whether to
+    // load texture images or not.
 
-    // vcl::LoadSettings loadSettings;
-    // loadSettings.loadTextureImages = true;
-    // vcl::loadMesh(
-    //     mesh1, VCLIB_EXAMPLE_MESHES_PATH "/bunny_textured.ply", loadSettings);
+    vcl::LoadSettings loadSettings;
+    loadSettings.loadTextureImages = true;
+    vcl::loadMesh(
+        mesh1, VCLIB_EXAMPLE_MESHES_PATH "/bunny_textured.ply", loadSettings);
 
     return std::make_tuple(mesh0, mesh1);
 }

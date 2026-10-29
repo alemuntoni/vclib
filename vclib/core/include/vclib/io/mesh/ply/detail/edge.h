@@ -68,8 +68,8 @@ void readPlyEdgeProperty(
     }
     // loading one of the color components
     else if (p.name >= ply::red && p.name <= ply::alpha) {
-        if constexpr (HasFaceColors<MeshType>) {
-            if (isPerFaceColorAvailable(mesh)) {
+        if constexpr (HasEdgeColors<MeshType>) {
+            if (mesh.isEdgeColorAvailable()) {
                 int           a = p.name - ply::red;
                 unsigned char c =
                     io::readPrimitiveType<unsigned char>(file, p.type, end);
@@ -78,9 +78,9 @@ void readPlyEdgeProperty(
         }
     }
     else if (p.name == ply::quality) { // loading the quality component
-        if constexpr (HasFaceQualities<MeshType>) {
+        if constexpr (HasEdgeQualities<MeshType>) {
             using QualityType = EdgeType::QualityType;
-            if (isPerFaceQualityAvailable(mesh)) {
+            if (isPerEdgeQualityAvailable(mesh)) {
                 QualityType s =
                     io::readPrimitiveType<QualityType>(file, p.type, end);
                 hasBeenRead = true;
@@ -88,8 +88,8 @@ void readPlyEdgeProperty(
         }
     }
     else if (p.name == ply::unknown) {
-        if constexpr (HasFaceCustomComponents<MeshType>) {
-            if (mesh.hasPerFaceCustomComponent(p.unknownPropertyName)) {
+        if constexpr (HasEdgeCustomComponents<MeshType>) {
+            if (mesh.hasPerEdgeCustomComponent(p.unknownPropertyName)) {
                 io::readCustomComponent(
                     file, e, p.unknownPropertyName, p.type, end);
                 hasBeenRead = true;
