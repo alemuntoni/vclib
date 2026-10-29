@@ -10,7 +10,7 @@
 
 #include "obj/save.h"
 //#include "off/save.h"
-//#include "ply/save.h"
+#include "ply/save.h"
 //#include "stl/save.h"
 
 #ifdef VCLIB_WITH_TINYGLTF
@@ -88,7 +88,7 @@ void saveMesh(
         //saveOff(m, filename, settings, log);
     }
     else if (ff == plyFileFormat()) {
-        //savePly(m, filename, settings, log);
+        savePly(m, filename, settings, log);
     }
     else if (ff == stlFileFormat()) {
         //saveStl(m, filename, settings, log);

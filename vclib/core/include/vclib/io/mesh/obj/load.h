@@ -425,11 +425,9 @@ void readObjEdge(
     const ObjMaterial&  currentMaterial,
     const LoadSettings& settings)
 {
-    using EdgeType = MeshType::EdgeType;
-
     // add the edge
-    uint      eid = m.addEdge();
-    EdgeType& e   = m.edge(eid);
+    uint eid = m.addEdge();
+    auto e   = m.edge(eid);
 
     // actual read - load vertex indices
     Tokenizer::iterator token = tokens.begin();

@@ -28,12 +28,10 @@ void writePlyFaceIndices(
     const FaceType&          f,
     FileType                 format)
 {
-    using VertexType = MeshType::VertexType;
-
     uint fsize = f.vertexCount();
     io::writeProperty(file, fsize, p.listSizeType, format);
-    for (const VertexType* v : f.vertices()) {
-        io::writeProperty(file, vIndices[m.index(v)], p.type, format);
+    for (auto vi : f.vertexIndices()) {
+        io::writeProperty(file, vIndices[vi], p.type, format);
     }
 }
 
@@ -287,8 +285,6 @@ void writePlyFaces(
     const PlyHeader& header,
     const MeshType&  mesh)
 {
-    using FaceType = FaceType<MeshType>;
-
     FileType format;
     if (header.format() == ply::ASCII) {
         format.isBinary = false;
@@ -300,7 +296,7 @@ void writePlyFaces(
     // indices of vertices that do not consider deleted vertices
     std::vector<uint> vIndices = mesh.vertexCompactIndices();
 
-    for (const FaceType& f : mesh.faces()) {
+    for (const auto& f : mesh.faces()) {
         for (const PlyProperty& p : header.faceProperties()) {
             bool hasBeenWritten = false;
             if (p.name == ply::vertex_indices) {
@@ -335,7 +331,7 @@ void writePlyFaces(
                 if constexpr (HasFaceWedgeTexCoords<MeshType>) {
                     io::writeProperty(
                         file, f.vertexCount() * 2, p.listSizeType, format);
-                    for (const auto& tc : f.wedgeTexCoords()) {
+                    for (const auto& tc : f.wedges().texCoords()) {
                         io::writeProperty(file, tc.u(), p.type, format);
                         io::writeProperty(file, tc.v(), p.type, format);
                     }

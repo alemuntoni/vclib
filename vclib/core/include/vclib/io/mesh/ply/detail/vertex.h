@@ -157,8 +157,6 @@ void writePlyVertices(
     const PlyHeader& header,
     const MeshType&  mesh)
 {
-    using VertexType = MeshType::VertexType;
-
     FileType format;
     if (header.format() == ply::ASCII) {
         format.isBinary = false;
@@ -167,7 +165,7 @@ void writePlyVertices(
         format.endian = std::endian::big;
     }
 
-    for (const VertexType& v : mesh.vertices()) {
+    for (const auto& v : mesh.vertices()) {
         for (const PlyProperty& p : header.vertexProperties()) {
             bool hasBeenWritten = false;
             if (p.name >= ply::x && p.name <= ply::z) {
@@ -214,8 +212,7 @@ void writePlyVertices(
             }
             else if (p.name == ply::unknown) {
                 if constexpr (HasVertexCustomComponents<MeshType>) {
-                    if (mesh.hasPerVertexCustomComponent(
-                            p.unknownPropertyName)) {
+                    if (mesh.hasVertexCustomComponent(p.unknownPropertyName)) {
                         io::writeCustomComponent(
                             file, v, p.unknownPropertyName, p.type, format);
                         hasBeenWritten = true;

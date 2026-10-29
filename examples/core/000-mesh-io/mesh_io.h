@@ -85,8 +85,8 @@ void saveMeshes(const vcl::TriMesh& mesh0, const vcl::TriMesh& mesh1)
     saveSettings.info   = saveInfo;
     saveSettings.binary = false; // save in ASCII format
 
-    // vcl::saveMesh(
-    //     mesh0, resultsPath + "/000_mesh-io_bunny-ascii.ply", saveSettings);
+    vcl::saveMesh(
+        mesh0, resultsPath + "/000_mesh-io_bunny-ascii.ply", saveSettings);
 }
 
 #endif // MESH_IO_H

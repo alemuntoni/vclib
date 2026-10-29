@@ -78,9 +78,9 @@ std::istringstream objTriCube()
 using Meshes  = std::tuple<vcl::TriMesh, vcl::PolyMesh, vcl::EdgeMesh>;
 using Meshesf = std::tuple<vcl::TriMeshf, vcl::PolyMeshf, vcl::EdgeMeshf>;
 using MeshesIndexed =
-    std::tuple<vcl::TriMeshIndexed, vcl::PolyMeshIndexed, vcl::EdgeMeshIndexed>;
-using MeshesIndexedf = std::
-    tuple<vcl::TriMeshIndexedf, vcl::PolyMeshIndexedf, vcl::EdgeMeshIndexedf>;
+    std::tuple<vcl::TriMesh64, vcl::PolyMesh64, vcl::EdgeMesh64>;
+using MeshesIndexedf =
+    std::tuple<vcl::TriMesh64f, vcl::PolyMesh64f, vcl::EdgeMesh64f>;
 
 // Test to load obj from a istringstream
 TEMPLATE_TEST_CASE(
@@ -141,8 +141,8 @@ TEMPLATE_TEST_CASE(
         REQUIRE(tm.vertexCount() == 8);
         REQUIRE(tm.faceCount() == 4);
         REQUIRE(tm.materialCount() == 2);
-        REQUIRE(tm.isPerFaceMaterialIndexEnabled());
-        REQUIRE(tm.isPerFaceWedgeTexCoordsEnabled());
+        REQUIRE(tm.isFaceMaterialIndexAvailable());
+        REQUIRE(tm.isFaceWedgeTexCoordsAvailable());
         for (const auto& f : tm.faces()) {
             // first two faces have material index 0, the other two have index 1
             REQUIRE(f.materialIndex() == f.index() % 2);
