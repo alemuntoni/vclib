@@ -9,7 +9,7 @@
 #define VCL_IO_MESH_SAVE_MESHES_H
 
 #ifdef VCLIB_WITH_TINYGLTF
-#include "gltf/save.h"
+//#include "gltf/save.h"
 #endif
 
 #include "capability.h"
@@ -68,7 +68,7 @@ void saveMeshes(
 
 #ifdef VCLIB_WITH_TINYGLTF
     if (ff == gltfFileFormat()) {
-        saveGltf(meshes, filename, settings, log);
+        //saveGltf(meshes, filename, settings, log);
     }
     else
 #endif

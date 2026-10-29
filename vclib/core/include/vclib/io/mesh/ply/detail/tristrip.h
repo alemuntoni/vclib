@@ -19,7 +19,7 @@ namespace vcl::detail {
 template<FaceMeshConcept MeshType>
 void facesFromPlyTriStrip(MeshType& m, const std::vector<int>& tristrip)
 {
-    using FaceType = MeshType::FaceType;
+    using FaceType = FaceType<MeshType>;
 
     bool firstOddPos = false;
     for (uint k = 0; k < tristrip.size() - 2; ++k) {

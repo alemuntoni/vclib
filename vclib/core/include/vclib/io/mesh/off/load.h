@@ -319,8 +319,8 @@ void readOffVertices(
             v.position()[j] = io::readDouble<double>(token);
         }
 
-        if constexpr (HasPerVertexNormal<MeshType>) {
-            if (isPerVertexNormalAvailable(mesh) &&
+        if constexpr (HasVertexNormals<MeshType>) {
+            if (mesh.isVertexNormalAvailable() &&
                 fileInfo.hasPerVertexNormal()) {
                 // Read 3 normal coordinates
                 for (unsigned int j = 0; j < 3; j++) {
@@ -339,8 +339,8 @@ void readOffVertices(
         const int  nColorComponents =
             (int) tokens.size() - nReadComponents - nTexCoords;
 
-        if constexpr (HasPerVertexColor<MeshType>) {
-            if (isPerVertexColorAvailable(mesh) &&
+        if constexpr (HasVertexColors<MeshType>) {
+            if (mesh.isVertexColorAvailable() &&
                 fileInfo.hasPerVertexColor()) {
                 if (nColorComponents != 1 && nColorComponents != 3 &&
                     nColorComponents != 4)
@@ -358,8 +358,8 @@ void readOffVertices(
             readOffColor(token, nColorComponents);
         }
 
-        if constexpr (HasPerVertexTexCoord<MeshType>) {
-            if (isPerVertexTexCoordAvailable(mesh) &&
+        if constexpr (HasVertexTexCoords<MeshType>) {
+            if (mesh.isVertexTexCoordAvailable() &&
                 fileInfo.hasPerVertexTexCoord()) {
                 // Read 2 tex coordinates
                 for (unsigned int j = 0; j < 2; j++) {
@@ -389,7 +389,7 @@ void readOffFaces(
     LogType&            log)
 {
     if constexpr (HasFaces<MeshType>) {
-        using FaceType = MeshType::FaceType;
+        using FaceType = FaceType<MeshType>;
 
         mesh.reserveFaces(nf);
         log.startProgress("Reading faces", nf);
@@ -439,7 +439,7 @@ void readOffFaces(
 
             // read face color
             if (token != tokens.end()) { // there are colors to read
-                if constexpr (HasPerFaceColor<MeshType>) {
+                if constexpr (HasFaceColors<MeshType>) {
                     if (isPerFaceColorAvailable(mesh) ||
                         (settings.enableOptionalComponents &&
                          enableIfPerFaceColorOptional(mesh))) {

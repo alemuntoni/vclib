@@ -104,7 +104,7 @@ void saveStl(
     detail::writeStlHeader(fp, settings);
 
     if constexpr (HasFaces<MeshType>) {
-        using FaceType = MeshType::FaceType;
+        using FaceType = FaceType<MeshType>;
 
         if (settings.binary) {
             io::writeInt(fp, m.faceCount());
@@ -119,7 +119,7 @@ void saveStl(
 
             unsigned short attributes = 0;
 
-            if constexpr (HasPerFaceColor<MeshType>) {
+            if constexpr (HasFaceColors<MeshType>) {
                 if (meshInfo.hasPerFaceColor()) {
                     if (settings.magicsMode)
                         attributes = 32768 | f.color().bgr5();

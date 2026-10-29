@@ -14,7 +14,7 @@
 //#include "mesh/create.h"
 //#include "mesh/delete.h"
 //#include "mesh/distance.h"
-//#include "mesh/face_topology.h"
+#include "mesh/face_topology.h"
 //#include "mesh/filter.h"
 //#include "mesh/import_export.h"
 //#include "mesh/point_sampling.h"

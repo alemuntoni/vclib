@@ -95,7 +95,7 @@ void readStlBin(
         enableOptionalComponentsFromInfo(loadedInfo, m);
     }
     else if (colored) {
-        if constexpr (HasPerFaceColor<MeshType>) {
+        if constexpr (HasFaceColors<MeshType>) {
             if (isPerFaceColorAvailable(m))
                 loadedInfo.setPerFaceColor();
         }
@@ -133,7 +133,7 @@ void readStlBin(
             io::readShort<unsigned short>(fp, std::endian::little);
 
         if constexpr (HasFaces<MeshType>) {
-            using FaceType = MeshType::FaceType;
+            using FaceType = FaceType<MeshType>;
 
             uint      fi = m.addFace();
             FaceType& f  = m.face(fi);
@@ -144,13 +144,13 @@ void readStlBin(
             }
             for (uint j = 0; j < 3; ++j)
                 f.setVertex(j, vi + j);
-            if (HasPerFaceNormal<MeshType>) {
+            if (HasFaceNormals<MeshType>) {
                 using ST = FaceType::NormalType::ScalarType;
                 if (isPerFaceNormalAvailable(m)) {
                     f.normal() = norm.cast<ST>();
                 }
             }
-            if (HasPerFaceColor<MeshType>) {
+            if (HasFaceColors<MeshType>) {
                 if (isPerFaceColorAvailable(m) && colored) {
                     Color c;
                     if (magicsMode)
@@ -226,7 +226,7 @@ void readStlAscii(
                 readAndTokenizeNextNonEmptyLine(fp); // endfacet
 
                 if constexpr (HasFaces<MeshType>) {
-                    using FaceType = MeshType::FaceType;
+                    using FaceType = FaceType<MeshType>;
                     uint fi        = m.addFace();
 
                     FaceType& f = m.face(fi);
@@ -237,7 +237,7 @@ void readStlAscii(
                     }
                     for (uint j = 0; j < 3; ++j)
                         f.setVertex(j, vi + j);
-                    if (HasPerFaceNormal<MeshType>) {
+                    if (HasFaceNormals<MeshType>) {
                         using ST = FaceType::NormalType::ScalarType;
                         if (isPerFaceNormalAvailable(m)) {
                             f.normal() = normal.cast<ST>();

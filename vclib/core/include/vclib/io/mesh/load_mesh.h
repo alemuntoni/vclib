@@ -9,12 +9,12 @@
 #define VCL_IO_MESH_LOAD_MESH_H
 
 #include "obj/load.h"
-#include "off/load.h"
-#include "ply/load.h"
-#include "stl/load.h"
+//#include "off/load.h"
+//#include "ply/load.h"
+//#include "stl/load.h"
 
 #ifdef VCLIB_WITH_TINYGLTF
-#include "gltf/load.h"
+//#include "gltf/load.h"
 #endif
 
 #include "capability.h"
@@ -92,17 +92,17 @@ void loadMesh(
         loadObj(m, filename, loadedInfo, settings, log);
     }
     else if (ff == offFileFormat()) {
-        loadOff(m, filename, loadedInfo, settings, log);
+        //loadOff(m, filename, loadedInfo, settings, log);
     }
     else if (ff == plyFileFormat()) {
-        loadPly(m, filename, loadedInfo, settings, log);
+        //loadPly(m, filename, loadedInfo, settings, log);
     }
     else if (ff == stlFileFormat()) {
-        loadStl(m, filename, loadedInfo, settings, log);
+        //loadStl(m, filename, loadedInfo, settings, log);
     }
 #ifdef VCLIB_WITH_TINYGLTF
     else if (ff == gltfFileFormat()) {
-        loadGltf(m, filename, loadedInfo, settings, log);
+        //loadGltf(m, filename, loadedInfo, settings, log);
     }
 #endif
     else {

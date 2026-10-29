@@ -9,10 +9,12 @@
 #define VCL_IO_MESH_LOAD_MESHES_H
 
 #ifdef VCLIB_WITH_TINYGLTF
-#include "gltf/load.h"
+//#include "gltf/load.h"
 #endif
 
+#include "../file_info.h"
 #include "capability.h"
+#include "settings.h"
 
 namespace vcl {
 
@@ -74,7 +76,7 @@ void loadMeshes(
 
 #ifdef VCLIB_WITH_TINYGLTF
     if (ff == gltfFileFormat()) {
-        loadGltf(meshes, filename, loadedInfo, settings, log);
+        //loadGltf(meshes, filename, loadedInfo, settings, log);
     }
     else {
         throw UnknownFileFormatException(ff.extensions().front());

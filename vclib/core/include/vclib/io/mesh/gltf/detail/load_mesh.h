@@ -321,13 +321,13 @@ bool populateGltfVNormals(
     unsigned int  stride,
     unsigned int  vertCount)
 {
-    if constexpr (HasPerVertexNormal<MeshType>) {
+    if constexpr (HasVertexNormals<MeshType>) {
         using NormalType = typename MeshType::VertexType::NormalType;
 
         if (enableOptionalComponents)
-            enableIfPerVertexNormalOptional(m);
+            enableIfVertexNormalsOptional(m);
 
-        if (isPerVertexNormalAvailable(m)) {
+        if (m.isVertexNormalAvailable()) {
             for (unsigned int i = 0; i < vertCount; i++) {
                 const Scalar* normBase = reinterpret_cast<const Scalar*>(
                     reinterpret_cast<const char*>(normArray) + i * stride);
@@ -354,7 +354,7 @@ bool populateGltfVTangents(
     unsigned int  stride,
     unsigned int  vertCount)
 {
-    if constexpr (HasPerVertexTangent<MeshType>) {
+    if constexpr (HasVertexTangents<MeshType>) {
         using TangentType = typename MeshType::VertexType::TangentType;
 
         if (enableOptionalComponents)
@@ -391,11 +391,11 @@ bool populateGltfVColors(
     bool          colorWithAlpha)
 {
     unsigned int nElemns = colorWithAlpha ? 4 : 3;
-    if constexpr (HasPerVertexColor<MeshType>) {
+    if constexpr (HasVertexColors<MeshType>) {
         if (enableOptionalComponents)
-            enableIfPerVertexColorOptional(m);
+            enableIfVertexColorsOptional(m);
 
-        if (isPerVertexColorAvailable(m)) {
+        if (m.isVertexColorAvailable()) {
             for (unsigned int i = 0; i < vertCount * nElemns; i += nElemns) {
                 const Scalar* colorBase = reinterpret_cast<const Scalar*>(
                     reinterpret_cast<const char*>(colorArray) +
@@ -437,13 +437,13 @@ bool populateGltfVTextCoords(
     unsigned int  stride,
     unsigned int  vertCount)
 {
-    if constexpr (HasPerVertexTexCoord<MeshType>) {
+    if constexpr (HasVertexTexCoords<MeshType>) {
         using TexCoordType = typename MeshType::VertexType::TexCoordType;
 
         if (enableOptionalComponents)
-            enableIfPerVertexTexCoordOptional(m);
+            enableIfVertexTexCoordsOptional(m);
 
-        if (isPerVertexTexCoordAvailable(m)) {
+        if (m.isVertexTexCoordAvailable()) {
             for (unsigned int i = 0; i < vertCount; i++) {
                 const Scalar* textCoordBase = reinterpret_cast<const Scalar*>(
                     reinterpret_cast<const char*>(textCoordArray) + i * stride);
@@ -835,11 +835,11 @@ void loadGltfMeshPrimitive(
         info.setPerVertexTangent();
     }
 
-    if constexpr (HasPerVertexMaterialIndex<MeshType>) {
+    if constexpr (HasVertexMaterialIndices<MeshType>) {
         if (settings.enableOptionalComponents) {
-            enableIfPerVertexMaterialIndexOptional(m);
+            enableIfVertexMaterialIndicesOptional(m);
         }
-        if (isPerVertexMaterialIndexAvailable(m)) {
+        if (m.isVertexMaterialIndexAvailable()) {
             uint vnum = m.vertexCount();
             for (uint v = firstVertex; v < vnum; ++v) {
                 m.vertex(v).materialIndex() = materialId;

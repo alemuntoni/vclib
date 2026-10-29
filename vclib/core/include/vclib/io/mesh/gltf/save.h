@@ -418,14 +418,14 @@ void addMeshToTinygltfModel(
     GltfAccessors accessors;
 
     bool exportWedgeTexCoord = false;
-    if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
+    if constexpr (HasFaceWedgeTexCoords<MeshType>) {
         if (meshInfo.hasPerFaceWedgeTexCoords()) {
             exportWedgeTexCoord = true;
         }
     }
 
     bool exportVertexTexCoord = false;
-    if constexpr (HasPerVertexTexCoord<MeshType>) {
+    if constexpr (HasVertexTexCoords<MeshType>) {
         if (meshInfo.hasPerVertexTexCoord() && !exportWedgeTexCoord) {
             exportVertexTexCoord = true;
         }
@@ -436,7 +436,7 @@ void addMeshToTinygltfModel(
     std::list<std::list<std::pair<uint, uint>>> facesToReassign;
     uint                                        nV = 0;
 
-    if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
+    if constexpr (HasFaceWedgeTexCoords<MeshType>) {
         if (exportWedgeTexCoord) {
             nV = verticesToDuplicateByWedgeTexCoordsCount(
                 m, vertWedgeMap, vertsToDuplicate, facesToReassign);
@@ -483,7 +483,7 @@ void addMeshToTinygltfModel(
 
     accessors.pos = posAccessor.first;
 
-    if constexpr (HasPerVertexColor<MeshType>) {
+    if constexpr (HasVertexColors<MeshType>) {
         if (meshInfo.hasPerVertexColor()) {
             auto  colAlloc = allocateInGltfBuffer(tModel, 4 * totalVertices);
             uint* ud       = reinterpret_cast<uint*>(
@@ -507,7 +507,7 @@ void addMeshToTinygltfModel(
             accessors.col = colAccessor.first;
         }
     }
-    if constexpr (HasPerVertexNormal<MeshType>) {
+    if constexpr (HasVertexNormals<MeshType>) {
         if (meshInfo.hasPerVertexNormal()) {
             auto normAlloc =
                 allocateInGltfBuffer(tModel, 3 * totalVertices * sizeof(float));
@@ -541,7 +541,7 @@ void addMeshToTinygltfModel(
             texCoordAlloc.second);
 
         if (exportWedgeTexCoord) {
-            if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
+            if constexpr (HasFaceWedgeTexCoords<MeshType>) {
                 wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
                     m, vertWedgeMap, facesToReassign, fd);
             }
@@ -567,7 +567,7 @@ void addMeshToTinygltfModel(
 
         accessors.texCoord = texCoordAccessor.first;
     }
-    if constexpr (HasPerVertexTangent<MeshType>) {
+    if constexpr (HasVertexTangents<MeshType>) {
         if (meshInfo.hasPerVertexTangent()) {
             auto tangentAlloc =
                 allocateInGltfBuffer(tModel, 4 * totalVertices * sizeof(float));
@@ -606,14 +606,14 @@ void addMeshToTinygltfModel(
             bool usePerFaceMaterial   = false;
             bool usePerVertexMaterial = false;
 
-            if constexpr (HasPerFaceMaterialIndex<MeshType>) {
+            if constexpr (HasFaceMaterialIndices<MeshType>) {
                 if (meshInfo.hasPerFaceMaterialIndex()) {
                     exportMaterials    = true;
                     usePerFaceMaterial = true;
                 }
             }
 
-            if constexpr (HasPerVertexMaterialIndex<MeshType>) {
+            if constexpr (HasVertexMaterialIndices<MeshType>) {
                 if (meshInfo.hasPerVertexMaterialIndex() &&
                     !usePerFaceMaterial) {
                     exportMaterials      = true;
@@ -627,14 +627,14 @@ void addMeshToTinygltfModel(
                 // created with relative accessor and buffer view into the
                 // index buffer materials are saved into the model
 
-                using FaceType = MeshType::FaceType;
+                using FaceType = FaceType<MeshType>;
 
                 // comparator of faces
                 // ordering by material index (if available)
                 auto faceComp = [&](const FaceType& f1, const FaceType& f2) {
                     if (usePerFaceMaterial) {
-                        if constexpr (HasPerFaceMaterialIndex<MeshType>) {
-                            if (isPerFaceMaterialIndexAvailable(m)) {
+                        if constexpr (HasFaceMaterialIndices<MeshType>) {
+                            if (m.isFaceMaterialIndexAvailable()) {
                                 uint id1 = f1.materialIndex();
                                 uint id2 = f2.materialIndex();
                                 if (id1 != id2) { // do not return true if equal
@@ -644,8 +644,8 @@ void addMeshToTinygltfModel(
                         }
                     }
                     else if (usePerVertexMaterial) {
-                        if constexpr (HasPerVertexMaterialIndex<MeshType>) {
-                            if (isPerVertexMaterialIndexAvailable(m)) {
+                        if constexpr (HasVertexMaterialIndices<MeshType>) {
+                            if (m.isVertexMaterialIndexAvailable()) {
                                 uint id1 = f1.vertex(0)->materialIndex();
                                 uint id2 = f2.vertex(0)->materialIndex();
                                 if (id1 != id2) { // do not return true if equal
@@ -727,12 +727,12 @@ void addMeshToTinygltfModel(
 
                     uint materialIndex = 0;
                     if (usePerFaceMaterial) {
-                        if constexpr (HasPerFaceMaterialIndex<MeshType>) {
+                        if constexpr (HasFaceMaterialIndices<MeshType>) {
                             materialIndex = face.materialIndex();
                         }
                     }
                     else if (usePerVertexMaterial) {
-                        if constexpr (HasPerVertexMaterialIndex<MeshType>) {
+                        if constexpr (HasVertexMaterialIndices<MeshType>) {
                             materialIndex = face.vertex(0)->materialIndex();
                         }
                     }

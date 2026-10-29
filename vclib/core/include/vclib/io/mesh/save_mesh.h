@@ -9,12 +9,12 @@
 #define VCL_IO_MESH_SAVE_MESH_H
 
 #include "obj/save.h"
-#include "off/save.h"
-#include "ply/save.h"
-#include "stl/save.h"
+//#include "off/save.h"
+//#include "ply/save.h"
+//#include "stl/save.h"
 
 #ifdef VCLIB_WITH_TINYGLTF
-#include "gltf/save.h"
+//#include "gltf/save.h"
 #endif
 
 #include "capability.h"
@@ -85,17 +85,17 @@ void saveMesh(
         saveObj(m, filename, settings, log);
     }
     else if (ff == offFileFormat()) {
-        saveOff(m, filename, settings, log);
+        //saveOff(m, filename, settings, log);
     }
     else if (ff == plyFileFormat()) {
-        savePly(m, filename, settings, log);
+        //savePly(m, filename, settings, log);
     }
     else if (ff == stlFileFormat()) {
-        saveStl(m, filename, settings, log);
+        //saveStl(m, filename, settings, log);
     }
 #ifdef VCLIB_WITH_TINYGLTF
     else if (ff == gltfFileFormat()) {
-        saveGltf(m, filename, settings, log);
+        //saveGltf(m, filename, settings, log);
     }
 #endif
     else {
