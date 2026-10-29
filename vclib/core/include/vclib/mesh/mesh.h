@@ -113,6 +113,13 @@ public:
     using ContainerType =
         typename mesh::detail::FindContainer<ELEM_ID, Rebound<Args>...>::type;
 
+    /**
+     * @brief Type alias for the element type of the container of the given
+     * ELEM_ID.
+     */
+    template<uint ELEM_ID>
+    using ElementType = typename ContainerType<ELEM_ID>::ElementType;
+
     /* Constexpr static member functions */
 
     /**
