@@ -183,12 +183,19 @@ inline void testAdjacencies()
     assert(vApp2_1.adjVertexIndex(2) == 3 + initVCount);
 
     // 5. Optional component test (AdjacentEdges on Vertex and Face)
+    assert(f0.isAdjacentFacesAvailable());
+    assert(m.vertex(0).isAdjacentFacesAvailable());
+    assert(m.vertex(0).isAdjacentVerticesAvailable());
+    assert(!m.vertex(0).isAdjacentEdgesAvailable());
+    assert(!m.face(0).isAdjacentEdgesAvailable());
     assert((!m.isElementComponentAvailable<ElemId::VERTEX, CompId::ADJACENT_EDGES>()));
     assert((!m.isElementComponentAvailable<ElemId::FACE, CompId::ADJACENT_EDGES>()));
 
     m.enableElementComponent<ElemId::VERTEX, CompId::ADJACENT_EDGES>();
     m.enableElementComponent<ElemId::FACE, CompId::ADJACENT_EDGES>();
 
+    assert(m.vertex(0).isAdjacentEdgesAvailable());
+    assert(m.face(0).isAdjacentEdgesAvailable());
     assert((m.isElementComponentAvailable<ElemId::VERTEX, CompId::ADJACENT_EDGES>()));
     assert((m.isElementComponentAvailable<ElemId::FACE, CompId::ADJACENT_EDGES>()));
 

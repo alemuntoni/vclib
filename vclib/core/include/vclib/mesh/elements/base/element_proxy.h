@@ -11,6 +11,7 @@
 #include <vclib/mesh/components/base/component.h>
 #include <vclib/mesh/components/base/component_predicates.h>
 #include <vclib/mesh/components/bit_flags.h>
+#include <vclib/mesh/elements/base/macros.h>
 
 #include <vclib/base.h>
 
@@ -159,6 +160,8 @@ public:
     {
         return mContainer && mContainer->template isComponentAvailable<COMP_ID>();
     }
+
+    VCL_ALL_ELEMENT_COMPONENT_METHODS
 
     /**
      * @brief Imports the components of the other element into this element.
