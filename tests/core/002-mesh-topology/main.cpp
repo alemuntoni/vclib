@@ -853,39 +853,39 @@ TEMPLATE_TEST_CASE(
 
     THEN("Test Per Edge Adjacent Faces")
     {
-        // tm.enableEdgeAdjacentFaces();
-        // vcl::updatePerEdgeAdjacentFaces(tm);
+        tm.enableEdgeAdjacentFaces();
+        vcl::updatePerEdgeAdjacentFaces(tm);
 
-        // REQUIRE(tm.edge(0).adjFaceCount() == 2);
-        // REQUIRE(tm.edge(0).containsAdjFace(&tm.face(6)));
-        // REQUIRE(tm.edge(0).containsAdjFace(&tm.face(8)));
-        // REQUIRE(tm.edge(1).adjFaceCount() == 2);
-        // REQUIRE(tm.edge(1).containsAdjFace(&tm.face(6)));
-        // REQUIRE(tm.edge(1).containsAdjFace(&tm.face(10)));
-        // REQUIRE(tm.edge(2).adjFaceCount() == 2);
-        // REQUIRE(tm.edge(2).containsAdjFace(&tm.face(5)));
-        // REQUIRE(tm.edge(2).containsAdjFace(&tm.face(7)));
-        // REQUIRE(tm.edge(3).adjFaceCount() == 2);
-        // REQUIRE(tm.edge(3).containsAdjFace(&tm.face(3)));
-        // REQUIRE(tm.edge(3).containsAdjFace(&tm.face(7)));
+        REQUIRE(tm.edge(0).adjFaceCount() == 2);
+        REQUIRE(tm.edge(0).containsAdjFace(tm.face(6)));
+        REQUIRE(tm.edge(0).containsAdjFace(tm.face(8)));
+        REQUIRE(tm.edge(1).adjFaceCount() == 2);
+        REQUIRE(tm.edge(1).containsAdjFace(tm.face(6)));
+        REQUIRE(tm.edge(1).containsAdjFace(tm.face(10)));
+        REQUIRE(tm.edge(2).adjFaceCount() == 2);
+        REQUIRE(tm.edge(2).containsAdjFace(tm.face(5)));
+        REQUIRE(tm.edge(2).containsAdjFace(tm.face(7)));
+        REQUIRE(tm.edge(3).adjFaceCount() == 2);
+        REQUIRE(tm.edge(3).containsAdjFace(tm.face(3)));
+        REQUIRE(tm.edge(3).containsAdjFace(tm.face(7)));
     }
 
     THEN("Test Per Edge Adjacent Edges")
     {
-        // tm.enablePerEdgeAdjacentEdges();
-        // vcl::updatePerEdgeAdjacentEdges(tm);
+        tm.enableEdgeAdjacentEdges();
+        vcl::updatePerEdgeAdjacentEdges(tm);
 
-        // REQUIRE(tm.edge(0).adjEdgeCount() == 2);
-        // REQUIRE(tm.edge(0).containsAdjEdge(&tm.edge(3)));
-        // REQUIRE(tm.edge(0).containsAdjEdge(&tm.edge(1)));
-        // REQUIRE(tm.edge(1).adjEdgeCount() == 2);
-        // REQUIRE(tm.edge(1).containsAdjEdge(&tm.edge(2)));
-        // REQUIRE(tm.edge(1).containsAdjEdge(&tm.edge(0)));
-        // REQUIRE(tm.edge(2).adjEdgeCount() == 2);
-        // REQUIRE(tm.edge(2).containsAdjEdge(&tm.edge(1)));
-        // REQUIRE(tm.edge(2).containsAdjEdge(&tm.edge(3)));
-        // REQUIRE(tm.edge(3).adjEdgeCount() == 2);
-        // REQUIRE(tm.edge(3).containsAdjEdge(&tm.edge(0)));
-        // REQUIRE(tm.edge(3).containsAdjEdge(&tm.edge(2)));
+        REQUIRE(tm.edge(0).adjEdgeCount() == 2);
+        REQUIRE(tm.edge(0).containsAdjEdge(tm.edge(3)));
+        REQUIRE(tm.edge(0).containsAdjEdge(tm.edge(1)));
+        REQUIRE(tm.edge(1).adjEdgeCount() == 2);
+        REQUIRE(tm.edge(1).containsAdjEdge(tm.edge(2)));
+        REQUIRE(tm.edge(1).containsAdjEdge(tm.edge(0)));
+        REQUIRE(tm.edge(2).adjEdgeCount() == 2);
+        REQUIRE(tm.edge(2).containsAdjEdge(tm.edge(1)));
+        REQUIRE(tm.edge(2).containsAdjEdge(tm.edge(3)));
+        REQUIRE(tm.edge(3).adjEdgeCount() == 2);
+        REQUIRE(tm.edge(3).containsAdjEdge(tm.edge(0)));
+        REQUIRE(tm.edge(3).containsAdjEdge(tm.edge(2)));
     }
 }

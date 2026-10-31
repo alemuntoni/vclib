@@ -456,12 +456,12 @@ void updatePerFaceAdjacentEdges(MeshType& mesh)
  *
  * @param[in/out] mesh: the mesh on which clear the per edge adjacent faces.
  */
-// template<EdgeMeshConcept MeshType>
-// void clearPerEdgeAdjacentFaces(MeshType& mesh)
-//     requires FaceMeshConcept<MeshType>
-// {
-//     clearPerElementAdjacentFaces<ElemId::EDGE>(mesh);
-// }
+template<EdgeMeshConcept MeshType>
+void clearPerEdgeAdjacentFaces(MeshType& mesh)
+    requires FaceMeshConcept<MeshType>
+{
+    clearPerElementAdjacentFaces<ElemId::EDGE>(mesh);
+}
 
 /**
  * @brief Updates the per edge adjacent faces component.
@@ -474,29 +474,29 @@ void updatePerFaceAdjacentEdges(MeshType& mesh)
  *
  * @param[in/out] mesh: the mesh on which update the per edge adjacent faces.
  */
-// template<EdgeMeshConcept MeshType>
-// void updatePerEdgeAdjacentFaces(MeshType& mesh)
-//     requires FaceMeshConcept<MeshType>
-// {
-//     clearPerEdgeAdjacentFaces(mesh);
+template<EdgeMeshConcept MeshType>
+void updatePerEdgeAdjacentFaces(MeshType& mesh)
+    requires FaceMeshConcept<MeshType>
+{
+    clearPerEdgeAdjacentFaces(mesh);
 
-//     // vector that contains edges sorted trough unordered vertex pointers
-//     std::vector<MeshEdgeUtil<MeshType>> vec =
-//         fillAndSortMeshEdgeUtilVector(mesh);
+    // vector that contains edges sorted trough unordered vertex pointers
+    std::vector<MeshEdgeUtil<MeshType>> vec =
+        fillAndSortMeshEdgeUtilVector(mesh);
 
-//     for (auto& e : mesh.edges()) {
-//         MeshEdgeUtil<MeshType> meu(e.vertex(0), e.vertex(1));
+    for (auto e : mesh.edges()) {
+        MeshEdgeUtil<MeshType> meu(e.vertexIndex(0), e.vertexIndex(1));
 
-//         // binary search for the edge in the sorted vector
-//         auto it = std::lower_bound(vec.begin(), vec.end(), meu);
+        // binary search for the edge in the sorted vector
+        auto it = std::lower_bound(vec.begin(), vec.end(), meu);
 
-//         while (it != vec.end() && *it == meu) {
-//             auto* f = it->f; // the face adjacent to the edge e
-//             e.pushAdjFace(f);
-//             ++it;
-//         }
-//     }
-// }
+        while (it != vec.end() && *it == meu) {
+            auto f = it->f; // the face adjacent to the edge e
+            e.pushAdjFace(f);
+            ++it;
+        }
+    }
+}
 
 /**
  * @brief Clears the adjacent edges of each edge of the mesh.
@@ -509,11 +509,11 @@ void updatePerFaceAdjacentEdges(MeshType& mesh)
  *
  * @param[in/out] mesh: the mesh on which clear the per edge adjacent edges.
  */
-// template<EdgeMeshConcept MeshType>
-// void clearPerEdgeAdjacentEdges(MeshType& mesh)
-// {
-//     clearPerElementAdjacentEdges<ElemId::EDGE>(mesh);
-// }
+template<EdgeMeshConcept MeshType>
+void clearPerEdgeAdjacentEdges(MeshType& mesh)
+{
+    clearPerElementAdjacentEdges<ElemId::EDGE>(mesh);
+}
 
 /**
  * @brief Updates the per edge adjacent edges component.
@@ -522,31 +522,31 @@ void updatePerFaceAdjacentEdges(MeshType& mesh)
  *
  * @param[in/out] mesh: the mesh on which update the per edge adjacent faces.
  */
-// template<EdgeMeshConcept MeshType>
-// void updatePerEdgeAdjacentEdges(MeshType& mesh)
-// {
-//     using EdgeType = MeshType::EdgeType;
+template<EdgeMeshConcept MeshType>
+void updatePerEdgeAdjacentEdges(MeshType& mesh)
+{
+    using EdgeType = EdgeType<MeshType>;
 
-//     // for each vertex, save the edges incident in it
-//     std::vector<std::list<EdgeType*>> edgeMap(mesh.vertexContainerSize());
+    // for each vertex, save the edges incident in it
+    std::vector<std::list<EdgeType>> edgeMap(mesh.vertexContainerSize());
 
-//     clearPerEdgeAdjacentEdges(mesh);
+    clearPerEdgeAdjacentEdges(mesh);
 
-//     for (EdgeType& e : mesh.edges()) {
-//         edgeMap[e.vertex(0)->index()].push_back(&e);
-//         edgeMap[e.vertex(1)->index()].push_back(&e);
-//     }
+    for (EdgeType e : mesh.edges()) {
+        edgeMap[e.vertexIndex(0)].push_back(e);
+        edgeMap[e.vertexIndex(1)].push_back(e);
+    }
 
-//     for (const std::list<EdgeType*>& edges : edgeMap) {
-//         // all the edges in edges are adjacent to each other
-//         for (auto it1 = edges.begin(); it1 != edges.end(); ++it1) {
-//             for (auto it2 = std::next(it1); it2 != edges.end(); ++it2) {
-//                 (*it1)->pushAdjEdge(*it2);
-//                 (*it2)->pushAdjEdge(*it1);
-//             }
-//         }
-//     }
-// }
+    for (std::list<EdgeType>& edges : edgeMap) {
+        // all the edges in edges are adjacent to each other
+        for (auto it1 = edges.begin(); it1 != edges.end(); ++it1) {
+            for (auto it2 = std::next(it1); it2 != edges.end(); ++it2) {
+                it1->pushAdjEdge(it2->index());
+                it2->pushAdjEdge(it1->index());
+            }
+        }
+    }
+}
 
 } // namespace vcl
 
