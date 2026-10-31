@@ -8,19 +8,26 @@
 get_filename_component(BENCHMARK_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(vclib-core-benchmark-${BENCHMARK_NAME})
 
+# The sources commented here depend on algorithms that are not ported to Mesh V2
+# yet: uncomment them when the relative algorithms are ported.
 set(SOURCES
+    benchmark.h
+    compat.h
+    grid.h
     types.h
-    load_matrices.h
-    test_load.h
-    test_building.h
-    test_bounding_box.h
-    test_normals.h
-    test_traversal.h
-    test_topology.h
-    test_transform.h
-    test_copy.h
-    test_compact.h
+    io/load_mesh.cpp
+    mesh/copy.cpp
+    mesh/delete_and_compact.cpp
+    update/topology.cpp
     main.cpp
+    # import_export/export_matrix.cpp
+    # import_export/import_matrix.cpp
+    # stat/barycenter.cpp
+    # stat/bounding_box.cpp
+    # stat/geometry.cpp
+    # stat/topology.cpp
+    # update/normal.cpp
+    # update/transform.cpp
 )
 
 vclib_add_benchmark(
