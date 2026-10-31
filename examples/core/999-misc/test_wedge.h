@@ -244,12 +244,69 @@ inline void testPolygonWedges()
     assert(pf.wedges().texCoords().empty());
 }
 
+inline void testPolyToTriWedges()
+{
+    using PolyWedgeNormalsFaceComponents = FaceComponents<
+        face::PolygonBitFlags,
+        face::PolygonVertexReferences<vcl::uint>,
+        face::PolygonWedgeColors,
+        face::PolygonWedgeTexCoordsd,
+        face::PolygonWedgeNormals3d>;
+
+    using PolyWedgeNormalsMesh = Mesh<
+        mesh::VertexContainer<SimpleVertexComponents>,
+        mesh::FaceContainer<PolyWedgeNormalsFaceComponents>>;
+
+    PolyWedgeNormalsMesh pm;
+    pm.addVertices(4);
+    pm.vertex(0).position() = Point3f(0, 0, 0);
+    pm.vertex(1).position() = Point3f(1, 0, 0);
+    pm.vertex(2).position() = Point3f(1, 1, 0);
+    pm.vertex(3).position() = Point3f(0, 1, 0);
+
+    pm.addFace(0, 1, 2, 3);
+    auto pf = pm.face(0);
+    pf.wedge(0).color() = Color::Red;
+    pf.wedge(1).color() = Color::Green;
+    pf.wedge(2).color() = Color::Blue;
+    pf.wedge(3).color() = Color::Yellow;
+
+    pf.wedge(0).texCoord() = TexCoordd(0.0, 0.0);
+    pf.wedge(1).texCoord() = TexCoordd(1.0, 0.0);
+    pf.wedge(2).texCoord() = TexCoordd(1.0, 1.0);
+    pf.wedge(3).texCoord() = TexCoordd(0.0, 1.0);
+
+    pf.wedge(0).normal() = Point3d(0, 0, 1);
+    pf.wedge(1).normal() = Point3d(0, 0, 1);
+    pf.wedge(2).normal() = Point3d(0, 0, 1);
+    pf.wedge(3).normal() = Point3d(0, 0, 1);
+
+    WedgeMesh tm;
+    tm.enableElementComponent<ElemId::FACE, CompId::WEDGE_NORMALS>();
+    tm.importFrom(pm);
+
+    assert(tm.vertexCount() == 4);
+    assert(tm.faceCount() == 2);
+
+    for (uint fi = 0; fi < 2; ++fi) {
+        auto tf = tm.face(fi);
+        for (uint j = 0; j < 3; ++j) {
+            uint origCorner = tf.vertexIndex(j);
+            assert(tf.wedge(j).color() == pf.wedge(origCorner).color());
+            assert(tf.wedge(j).texCoord().u() == static_cast<float>(pf.wedge(origCorner).texCoord().u()));
+            assert(tf.wedge(j).texCoord().v() == static_cast<float>(pf.wedge(origCorner).texCoord().v()));
+            assert(tf.wedge(j).normal() == pf.wedge(origCorner).normal().cast<float>());
+        }
+    }
+}
+
 inline void testWedge()
 {
     std::println("--- Testing Wedges Component & Proxies (Phase 2 & 3) ---");
     testWedgeConcepts();
     testTriangleWedges();
     testPolygonWedges();
+    testPolyToTriWedges();
     std::println("Wedges Component & Proxies verified successfully!");
 }
 

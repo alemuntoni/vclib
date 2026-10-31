@@ -13,6 +13,7 @@
 #include <vclib/mesh/containers/base/macros.h>
 #include <vclib/mesh/elements/face.h>
 #include <vclib/mesh/elements/face_components.h>
+#include <vclib/mesh/views/components/positions.h>
 
 #include <vclib/algorithms/core.h>
 #include <vclib/base.h>
@@ -793,15 +794,8 @@ protected:
                         // other triangles will be added at the end of the
                         // container
 
-                        // TODO: use vcl::views for mesh v2 when will be
-                        // implemented
-                        auto polyPositions =
-                            mf.vertexIndices() |
-                            std::views::transform([&m](auto vi) {
-                                return m.vertex(vi).position();
-                            });
-
-                        std::vector<uint> tris = vcl::earCut(polyPositions);
+                        std::vector<uint> tris =
+                            vcl::earCut(mf.vertices() | vcl::views::positions);
 
                         if (tris.size() >= 3) {
                             Face f = face(mf.index());
@@ -834,10 +828,46 @@ private:
     {
         for (uint j = 0; j < 3; ++j) {
             f.setVertex(j, mf.vertexIndex(tris[basetri + j]));
-            // TODO: Handle wedge components (e.g. WedgeColors, WedgeTexCoords)
-            // once implemented in mesh_v2:
-            // f.wedgeColor(j) = mf.wedgeColor(tris[basetri + j]);
-            // f.wedgeTexCoord(j) = mf.wedgeTexCoord(tris[basetri + j]);
+        }
+
+        // Wedge Colors
+        if constexpr (
+            comp::HasWedgeColors<Face> && comp::HasWedgeColors<OtherFace>) {
+            if (f.template isComponentAvailable<CompId::WEDGE_COLORS>() &&
+                mf.template isComponentAvailable<CompId::WEDGE_COLORS>()) {
+                for (uint j = 0; j < 3; ++j) {
+                    f.wedge(j).color() = mf.wedge(tris[basetri + j]).color();
+                }
+            }
+        }
+
+        // Wedge TexCoords
+        if constexpr (
+            comp::HasWedgeTexCoords<Face> &&
+            comp::HasWedgeTexCoords<OtherFace>) {
+            if (f.template isComponentAvailable<CompId::WEDGE_TEX_COORDS>() &&
+                mf.template isComponentAvailable<CompId::WEDGE_TEX_COORDS>()) {
+                using S = typename std::remove_cvref_t<
+                    decltype(f.wedge(0).texCoord())>::ScalarType;
+                for (uint j = 0; j < 3; ++j) {
+                    f.wedge(j).texCoord() =
+                        mf.wedge(tris[basetri + j]).texCoord().template cast<S>();
+                }
+            }
+        }
+
+        // Wedge Normals
+        if constexpr (
+            comp::HasWedgeNormals<Face> && comp::HasWedgeNormals<OtherFace>) {
+            if (f.template isComponentAvailable<CompId::WEDGE_NORMALS>() &&
+                mf.template isComponentAvailable<CompId::WEDGE_NORMALS>()) {
+                using S = typename std::remove_cvref_t<
+                    decltype(f.wedge(0).normal())>::ScalarType;
+                for (uint j = 0; j < 3; ++j) {
+                    f.wedge(j).normal() =
+                        mf.wedge(tris[basetri + j]).normal().template cast<S>();
+                }
+            }
         }
     }
 };

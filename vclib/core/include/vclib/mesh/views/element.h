@@ -52,7 +52,7 @@ struct IndicesView : std::ranges::range_adaptor_closure<IndicesView>
  * Specializations for supported element types:
  * - elements<ElemId::VERTEX> = vertices
  * - elements<ElemId::FACE>   = faces
- * - elements<ElemId::EDGE>   = edges (TODO)
+ * - elements<ElemId::EDGE>   = edges
  */
 template<uint ELEM_ID>
 inline constexpr auto elements = detail::UnsupportedElementView {};
