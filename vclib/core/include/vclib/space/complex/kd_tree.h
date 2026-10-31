@@ -103,18 +103,16 @@ public:
         uint            maxDepth      = 64,
         bool            balanced      = false)
         requires (std::is_same_v<
-                     typename MeshType::VertexType::PositionType,
+                     typename MeshType::Vertex::PositionType,
                      PointType>)
             :
             mPoints(m.vertexCount()), mIndices(m.vertexCount()),
             mPointsPerCell(pointsPerCell), mMaxDepth(maxDepth)
     {
-        using VertexType = MeshType::VertexType;
-
         uint i = 0;
-        for (const VertexType& v : m.vertices()) {
+        for (auto v : m.vertices()) {
             mPoints[i]  = v.position();
-            mIndices[i] = m.index(v);
+            mIndices[i] = v.index();
             i++;
         }
         mNodes.resize(1);
@@ -545,19 +543,19 @@ private:
 
 template<MeshConcept MeshType>
 KDTree(const MeshType& m)
-    -> KDTree<typename MeshType::VertexType::PositionType>;
+    -> KDTree<typename MeshType::Vertex::PositionType>;
 
 template<MeshConcept MeshType>
 KDTree(const MeshType& m, uint pointsPerCell)
-    -> KDTree<typename MeshType::VertexType::PositionType>;
+    -> KDTree<typename MeshType::Vertex::PositionType>;
 
 template<MeshConcept MeshType>
 KDTree(const MeshType& m, uint pointsPerCell, uint maxDepth)
-    -> KDTree<typename MeshType::VertexType::PositionType>;
+    -> KDTree<typename MeshType::Vertex::PositionType>;
 
 template<MeshConcept MeshType>
 KDTree(const MeshType& m, uint pointsPerCell, uint maxDepth, bool balanced)
-    -> KDTree<typename MeshType::VertexType::PositionType>;
+    -> KDTree<typename MeshType::Vertex::PositionType>;
 
 } // namespace vcl
 
