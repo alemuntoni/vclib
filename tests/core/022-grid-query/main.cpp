@@ -33,7 +33,7 @@ TEMPLATE_TEST_CASE(
 
     SECTION("TriMesh")
     {
-        using PointType = TriMesh::VertexType::PositionType;
+        using PointType = TriMesh::Vertex::PositionType;
 
         std::size_t seed = std::random_device()();
 

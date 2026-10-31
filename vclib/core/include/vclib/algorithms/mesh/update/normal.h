@@ -17,7 +17,7 @@ namespace vcl {
 namespace detail {
 
 template<uint ELEM_ID, LoggerConcept LogType = NullLogger>
-void normalizeNoThrow(auto& elem, LogType& log = nullLogger)
+void normalizeNoThrow(auto elem, LogType& log = nullLogger)
 {
     try {
         elem.normal().normalize();
@@ -51,12 +51,12 @@ void normalizeNoThrow(auto& elem, LogType& log = nullLogger)
 template<uint ELEM_ID, LoggerConcept LogType = NullLogger>
 void clearPerElementNormals(MeshConcept auto& mesh, LogType& log = nullLogger)
 {
-    requirePerElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
+    requireElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
 
     log.log(0, "Clearing per-{} normals...", elementEnumString<ELEM_ID>());
 
-    parallelFor(mesh.template elements<ELEM_ID>(), [](auto& e) {
-        e.normal().setZero();
+    parallelFor(mesh.template elements<ELEM_ID>().normals(), [](auto& n) {
+        n.setZero();
     });
 
     log.log(100, "Per-{} normals cleared.", elementEnumString<ELEM_ID>());
@@ -80,12 +80,12 @@ void normalizePerElementNormals(
     MeshConcept auto& mesh,
     LogType&          log = nullLogger)
 {
-    requirePerElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
+    requireElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
 
     log.log(0, "Normalizing per-{} normals...", elementEnumString<ELEM_ID>());
 
     // define a lambda that, for each element, normalizes the normal
-    auto normalize = [&](auto& elem) {
+    auto normalize = [&](auto elem) {
         detail::normalizeNoThrow<ELEM_ID>(elem, log);
     };
 
@@ -119,7 +119,7 @@ void multiplyPerElementNormalsByMatrix(
     bool              removeScalingFromMatrix = true,
     LogType&          log                     = nullLogger)
 {
-    requirePerElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
+    requireElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
 
     log.log(
         0,
@@ -160,7 +160,7 @@ void multiplyPerElementNormalsByMatrix(
     bool                     removeScalingFromMatrix = true,
     LogType&                 log                     = nullLogger)
 {
-    requirePerElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
+    requireElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
 
     Matrix33<MScalar> m33 = mat.block(0, 0, 3, 3);
     multiplyPerElementNormalsByMatrix<ELEM_ID>(
@@ -198,17 +198,17 @@ void clearPerVertexNormals(MeshConcept auto& mesh, LogType& log = nullLogger)
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void clearPerReferencedVertexNormals(MeshType& mesh, LogType& log = nullLogger)
 {
-    requirePerVertexNormal(mesh);
+    requireVertexNormals(mesh);
 
     // function that is called for each container Cont of the mesh
     auto f = [&]<mesh::ElementContainerConcept Cont>() {
-        using Elem = typename Cont::ElementType; // the Element type of Cont
+        using Elem = Cont::ElementType; // the Element type of Cont
         if constexpr (comp::HasVertexReferences<Elem>) { // if Elem has vertices
-            for (auto& e : mesh.template elements<Elem::ELEMENT_ID>()) {
-                for (auto* v : e.vertices()) {
+            for (auto e : mesh.template elements<Elem::ELEMENT_ID>()) {
+                for (auto v : e.vertices()) {
                     // normal().setZero() does not compile on gcc (Release) with
                     // Eigen 5.0.1
-                    v->normal() = {0., 0., 0.};
+                    v.normal() = {0., 0., 0.};
                 }
             }
         }
@@ -217,7 +217,7 @@ void clearPerReferencedVertexNormals(MeshType& mesh, LogType& log = nullLogger)
     log.log(0, "Clearing per-Vertex normals...");
 
     // apply the function f to all the containers of the mesh
-    ForEachType<typename MeshType::Containers>::apply(f);
+    ForEachType<typename MeshType::ElementContainers>::apply(f);
 
     log.log(100, "Per-Vertex normals cleared.");
 }
@@ -267,15 +267,15 @@ void normalizePerReferencedVertexNormals(
     MeshType& mesh,
     LogType&  log = nullLogger)
 {
-    requirePerVertexNormal(mesh);
+    requireVertexNormals(mesh);
 
     // function that is called for each container Cont
     auto f = [&]<mesh::ElementContainerConcept Cont>() {
-        using Elem = typename Cont::ElementType; // the Element type of Cont
+        using Elem = Cont::ElementType; // the Element type of Cont
         if constexpr (comp::HasVertexReferences<Elem>) { // if Elem has vertices
-            for (auto& e : mesh.template elements<Elem::ELEMENT_ID>()) {
-                for (auto* v : e.vertices()) {
-                    detail::normalizeNoThrow<ElemId::VERTEX>(*v, log);
+            for (auto e : mesh.template elements<Elem::ELEMENT_ID>()) {
+                for (auto v : e.vertices()) {
+                    detail::normalizeNoThrow<ElemId::VERTEX>(v, log);
                 }
             }
         }
@@ -284,7 +284,7 @@ void normalizePerReferencedVertexNormals(
     log.log(0, "Normalizing per-Vertex normals...");
 
     // apply the function f to all the containers of the mesh
-    ForEachType<typename MeshType::Containers>::apply(f);
+    ForEachType<typename MeshType::ElementContainers>::apply(f);
 
     log.log(100, "Per-Vertex normals normalized.");
 }
@@ -360,14 +360,14 @@ void updatePerFaceNormals(
     bool                  normalize = true,
     LogType&              log       = nullLogger)
 {
-    requirePerFaceNormal(mesh);
+    requireFaceNormals(mesh);
 
-    using FaceType   = RemoveRef<decltype(mesh)>::FaceType;
-    using ScalarType = FaceType::NormalType::ScalarType;
+    using FaceType   = FaceType<decltype(mesh)>;
+    using ScalarType = NormalType<FaceType>::ScalarType;
 
     log.log(0, "Updating per-Face normals...");
 
-    parallelFor(mesh.faces(), [](auto& f) {
+    parallelFor(mesh.faces(), [](auto f) {
         f.normal() = faceNormal(f).template cast<ScalarType>();
     });
 
@@ -403,8 +403,8 @@ void updatePerVertexNormals(
     bool                  normalize = true,
     LogType&              log       = nullLogger)
 {
-    using VertexType = RemoveRef<decltype(mesh)>::VertexType;
-    using NScalar    = VertexType::NormalType::ScalarType;
+    using VertexType = VertexType<decltype(mesh)>;
+    using NScalar    = NormalType<VertexType>::ScalarType;
 
     log.log(0, "Updating per-Vertex normals...");
 
@@ -414,9 +414,9 @@ void updatePerVertexNormals(
 
     log.log(20, "Updating per-Vertex normals...");
 
-    for (auto& f : mesh.faces()) {
-        for (auto* v : f.vertices()) {
-            v->normal() += faceNormal(f).template cast<NScalar>();
+    for (auto f : mesh.faces()) {
+        for (auto v : f.vertices()) {
+            v.normal() += faceNormal(f).template cast<NScalar>();
         }
     }
 
@@ -452,10 +452,10 @@ void updatePerVertexNormalsFromFaceNormals(
     bool                  normalize = true,
     LogType&              log       = nullLogger)
 {
-    requirePerFaceNormal(mesh);
+    requireFaceNormals(mesh);
 
-    using VertexType = RemoveRef<decltype(mesh)>::VertexType;
-    using ScalarType = VertexType::NormalType::ScalarType;
+    using VertexType = VertexType<decltype(mesh)>;
+    using ScalarType = NormalType<VertexType>::ScalarType;
 
     log.log(0, "Updating per-Vertex normals...");
 
@@ -465,9 +465,9 @@ void updatePerVertexNormalsFromFaceNormals(
 
     log.log(20, "Updating per-Vertex normals...");
 
-    for (auto& f : mesh.faces()) {
-        for (auto* v : f.vertices()) {
-            v->normal() += f.normal().template cast<ScalarType>();
+    for (auto f : mesh.faces()) {
+        for (auto v : f.vertices()) {
+            v.normal() += f.normal().template cast<ScalarType>();
         }
     }
 
@@ -558,8 +558,8 @@ void updatePerVertexNormalsAngleWeighted(
     bool                  normalize = true,
     LogType&              log       = nullLogger)
 {
-    using VertexType  = RemoveRef<decltype(mesh)>::VertexType;
-    using NormalType  = VertexType::NormalType;
+    using VertexType  = VertexType<decltype(mesh)>;
+    using NormalType  = NormalType<VertexType>;
     using NScalarType = NormalType::ScalarType;
 
     log.log(0, "Updating per-Vertex normals...");
@@ -570,20 +570,20 @@ void updatePerVertexNormalsAngleWeighted(
 
     log.log(5, "Updating per-Vertex normals...");
 
-    for (auto& f : mesh.faces()) {
+    for (auto f : mesh.faces()) {
         auto n = faceNormal(f).template cast<NScalarType>();
 
         for (uint i = 0; i < f.vertexCount(); ++i) {
             NormalType vec1 =
-                (f.vertexMod(i - 1)->position() - f.vertexMod(i)->position())
+                (f.vertexMod(i - 1).position() - f.vertexMod(i).position())
                     .normalized()
                     .template cast<NScalarType>();
             NormalType vec2 =
-                (f.vertexMod(i + 1)->position() - f.vertexMod(i)->position())
+                (f.vertexMod(i + 1).position() - f.vertexMod(i).position())
                     .normalized()
                     .template cast<NScalarType>();
 
-            f.vertex(i)->normal() += n * vec1.angle(vec2);
+            f.vertex(i).normal() += n * vec1.angle(vec2);
         }
     }
 
@@ -632,8 +632,8 @@ void updatePerVertexNormalsNelsonMaxWeighted(
     bool                  normalize = true,
     LogType&              log       = nullLogger)
 {
-    using VertexType  = RemoveRef<decltype(mesh)>::VertexType;
-    using NScalarType = VertexType::NormalType::ScalarType;
+    using VertexType  = VertexType<decltype(mesh)>;
+    using NScalarType = NormalType<VertexType>::ScalarType;
 
     log.log(0, "Updating per-Vertex normals...");
 
@@ -643,18 +643,18 @@ void updatePerVertexNormalsNelsonMaxWeighted(
 
     log.log(5, "Updating per-Vertex normals...");
 
-    for (auto& f : mesh.faces()) {
+    for (auto f : mesh.faces()) {
         auto n = faceNormal(f).template cast<NScalarType>();
 
         for (uint i = 0; i < f.vertexCount(); ++i) {
             NScalarType e1 =
-                (f.vertexMod(i - 1)->position() - f.vertexMod(i)->position())
+                (f.vertexMod(i - 1).position() - f.vertexMod(i).position())
                     .squaredNorm();
             NScalarType e2 =
-                (f.vertexMod(i + 1)->position() - f.vertexMod(i)->position())
+                (f.vertexMod(i + 1).position() - f.vertexMod(i).position())
                     .squaredNorm();
 
-            f.vertex(i)->normal() += n / (e1 * e2);
+            f.vertex(i).normal() += n / (e1 * e2);
         }
     }
 

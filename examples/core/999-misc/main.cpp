@@ -28,6 +28,7 @@
 #include "test_presets.h"
 #include "test_mesh_info.h"
 #include "test_mesh_pos.h"
+#include "test_update_normals.h"
 
 int main()
 {
@@ -52,6 +53,7 @@ int main()
     testElemAlgorithms();
     testMeshInfo();
     testMeshPos();
+    testUpdateNormals();
 
     std::println("All mesh tests passed successfully!");
     return 0;

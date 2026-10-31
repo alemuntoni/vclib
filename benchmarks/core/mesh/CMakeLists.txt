@@ -26,7 +26,7 @@ set(SOURCES
     # stat/barycenter.cpp
     stat/bounding_box.cpp
     # stat/geometry.cpp
-    # update/normal.cpp
+    update/normal.cpp
     # update/transform.cpp
 )
 
