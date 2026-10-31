@@ -472,7 +472,7 @@ uint verticesToDuplicateByWedgeTexCoordsCount(
         hasMaterials = mesh.isFaceMaterialIndexAvailable();
     }
 
-    using WedgeTexCoordType  = TexCoordType<typename MeshType::FaceType>;
+    using WedgeTexCoordType  = TexCoordType<WedgeType<FaceType<MeshType>>>;
     using WedgeTexCoordsInfo = detail::WedgeTexCoordsInfo<WedgeTexCoordType>;
 
     // list of faces that reference a wedge texcoord, with the index of the

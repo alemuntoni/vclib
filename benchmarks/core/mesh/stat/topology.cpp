@@ -46,18 +46,6 @@ BENCH(
     });
 
 BENCH(
-    "stat/topology/largest_per_element_adjacent_faces_count",
-    [](bench::State& s) {
-        const bench::Mesh& m = s.meshWithTopology();
-        s.run([&]() {
-            return vcl::largestPerElementAdjacentFacesCount<vcl::ElemId::FACE>(
-                m);
-        });
-    });
-
-// TODO: enable when ported to Mesh V2
-#if 0
-BENCH(
     "stat/topology/vertices_to_duplicate_by_wedge_tex_coords_count",
     [](bench::State& s) {
         const bench::Mesh& m = s.mesh();
@@ -66,7 +54,6 @@ BENCH(
 
         s.run([&]() { return vcl::verticesToDuplicateByWedgeTexCoordsCount(m); });
     });
-#endif
 
 // TODO: enable when ported to Mesh V2
 #if 0
