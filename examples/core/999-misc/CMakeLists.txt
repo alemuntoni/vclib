@@ -30,6 +30,7 @@ set(SOURCES
     test_elem_algorithms.h
     test_presets.h
     test_mesh_info.h
+    test_mesh_pos.h
     main.cpp
 )
 

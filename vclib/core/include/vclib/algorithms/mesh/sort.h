@@ -82,9 +82,9 @@ std::vector<MeshEdgeUtil<MeshType>> fillAndSortMeshEdgeUtilVector(
  * @tparam MeshType: The type of the mesh, must satisfy MeshConcept.
  *
  * @param[in] mesh: The input mesh containing the elements to sort.
- * @param[in] func: A comparison function that takes two const references to
- * elements of type ELEM_ID and returns true if the first element should come
- * before the second in the sorted order.
+ * @param[in] func: A comparison function that takes two const elements of type
+ * ELEM_ID (passed by value, see ConstElementType) and returns true if the
+ * first element should come before the second in the sorted order.
  * @param[in] getIndicesAsIfContainerCompact: If true, the returned indices are
  * remapped to represent positions as if the container were compacted (i.e.,
  * with deleted elements removed). Default is false.
@@ -93,41 +93,39 @@ std::vector<MeshEdgeUtil<MeshType>> fillAndSortMeshEdgeUtilVector(
  * the mesh, ordered according to the comparison function. If
  * getIndicesAsIfContainerCompact is true, the indices are remapped.
  */
-// template<uint ELEM_ID, MeshConcept MeshType>
-// std::vector<uint> sortElemIndicesByFunction(
-//     const MeshType&                                                mesh,
-//     const std::function<bool(
-//         const typename MeshType::template ElementType<ELEM_ID>&,
-//         const typename MeshType::template ElementType<ELEM_ID>&)>& func,
-//     bool getIndicesAsIfContainerCompact = false)
-// {
-//     using ElemType = typename MeshType::template ElementType<ELEM_ID>;
+template<uint ELEM_ID, MeshConcept MeshType>
+std::vector<uint> sortElemIndicesByFunction(
+    const MeshType&                                                mesh,
+    const std::function<bool(
+        typename MeshType::template ConstElementType<ELEM_ID>,
+        typename MeshType::template ConstElementType<ELEM_ID>)>& func,
+    bool getIndicesAsIfContainerCompact = false)
+{
+    auto compactIndices = detail::elemCompactIndices<ELEM_ID>(
+        mesh, getIndicesAsIfContainerCompact);
 
-//     auto compactIndices = detail::elemCompactIndices<ELEM_ID>(
-//         mesh, getIndicesAsIfContainerCompact);
+    std::vector<uint> indices;
+    indices.reserve(mesh.template count<ELEM_ID>());
 
-//     std::vector<uint> indices;
-//     indices.reserve(mesh.template count<ELEM_ID>());
+    // Initialize indices with the actual non-deleted element container indices
+    for (const auto& el : mesh.template elements<ELEM_ID>()) {
+        indices.push_back(el.index());
+    }
 
-//     // Initialize indices with the actual non-deleted element container indices
-//     for (const auto& el : mesh.template elements<ELEM_ID>()) {
-//         indices.push_back(el.index());
-//     }
+    std::sort(indices.begin(), indices.end(), [&](uint a, uint b) {
+        return func(
+            mesh.template element<ELEM_ID>(a),
+            mesh.template element<ELEM_ID>(b));
+    });
 
-//     std::sort(indices.begin(), indices.end(), [&](uint a, uint b) {
-//         return func(
-//             mesh.template element<ELEM_ID>(a),
-//             mesh.template element<ELEM_ID>(b));
-//     });
+    if (!compactIndices.empty()) {
+        for (auto& idx : indices) {
+            idx = compactIndices[idx];
+        }
+    }
 
-//     if (!compactIndices.empty()) {
-//         for (auto& idx : indices) {
-//             idx = compactIndices[idx];
-//         }
-//     }
-
-//     return indices;
-// }
+    return indices;
+}
 
 /**
  * @brief Sorts the indices of mesh vertices by a custom comparison function.
@@ -139,8 +137,8 @@ std::vector<MeshEdgeUtil<MeshType>> fillAndSortMeshEdgeUtilVector(
  * @tparam MeshType: The type of the mesh, must satisfy MeshConcept.
  *
  * @param[in] mesh: The input mesh containing the vertices to sort.
- * @param[in] func: A comparison function that takes two const references to
- * vertices and returns true if the first vertex should come before the second
+ * @param[in] func: A comparison function that takes two ConstVertex (passed by
+ * value) and returns true if the first vertex should come before the second
  * in the sorted order.
  * @param[in] getIndicesAsIfContainerCompact: If true, the returned indices are
  * remapped to represent positions as if the container were compacted (i.e.,
@@ -150,17 +148,17 @@ std::vector<MeshEdgeUtil<MeshType>> fillAndSortMeshEdgeUtilVector(
  * the mesh, ordered according to the comparison function. If
  * getIndicesAsIfContainerCompact is true, the indices are remapped.
  */
-// template<MeshConcept MeshType>
-// std::vector<uint> sortVertexIndicesByFunction(
-//     const MeshType&                             mesh,
-//     const std::function<bool(
-//         const typename MeshType::VertexType&,
-//         const typename MeshType::VertexType&)>& func,
-//     bool getIndicesAsIfContainerCompact = false)
-// {
-//     return sortElemIndicesByFunction<ElemId::VERTEX>(
-//         mesh, func, getIndicesAsIfContainerCompact);
-// }
+template<MeshConcept MeshType>
+std::vector<uint> sortVertexIndicesByFunction(
+    const MeshType&                             mesh,
+    const std::function<bool(
+        typename MeshType::ConstVertex,
+        typename MeshType::ConstVertex)>& func,
+    bool getIndicesAsIfContainerCompact = false)
+{
+    return sortElemIndicesByFunction<ElemId::VERTEX>(
+        mesh, func, getIndicesAsIfContainerCompact);
+}
 
 /**
  * @brief Sorts the indices of mesh faces by a custom comparison function.
@@ -172,8 +170,8 @@ std::vector<MeshEdgeUtil<MeshType>> fillAndSortMeshEdgeUtilVector(
  * @tparam MeshType: The type of the mesh, must satisfy FaceMeshConcept.
  *
  * @param[in] mesh: The input mesh containing the faces to sort.
- * @param[in] func: A comparison function that takes two const references to
- * faces and returns true if the first face should come before the second
+ * @param[in] func: A comparison function that takes two ConstFace (passed by
+ * value) and returns true if the first face should come before the second
  * in the sorted order.
  * @param[in] getIndicesAsIfContainerCompact: If true, the returned indices are
  * remapped to represent positions as if the container were compacted (i.e.,
@@ -183,17 +181,17 @@ std::vector<MeshEdgeUtil<MeshType>> fillAndSortMeshEdgeUtilVector(
  * the mesh, ordered according to the comparison function. If
  * getIndicesAsIfContainerCompact is true, the indices are remapped.
  */
-// template<FaceMeshConcept MeshType>
-// std::vector<uint> sortFaceIndicesByFunction(
-//     const MeshType&                           mesh,
-//     const std::function<bool(
-//         const typename MeshType::FaceType&,
-//         const typename MeshType::FaceType&)>& func,
-//     bool getIndicesAsIfContainerCompact = false)
-// {
-//     return sortElemIndicesByFunction<ElemId::FACE>(
-//         mesh, func, getIndicesAsIfContainerCompact);
-// }
+template<FaceMeshConcept MeshType>
+std::vector<uint> sortFaceIndicesByFunction(
+    const MeshType&                           mesh,
+    const std::function<bool(
+        typename MeshType::ConstFace,
+        typename MeshType::ConstFace)>& func,
+    bool getIndicesAsIfContainerCompact = false)
+{
+    return sortElemIndicesByFunction<ElemId::FACE>(
+        mesh, func, getIndicesAsIfContainerCompact);
+}
 
 /**
  * @brief Sorts the indices of mesh edges by a custom comparison function.
@@ -205,8 +203,8 @@ std::vector<MeshEdgeUtil<MeshType>> fillAndSortMeshEdgeUtilVector(
  * @tparam MeshType: The type of the mesh, must satisfy EdgeMeshConcept.
  *
  * @param[in] mesh: The input mesh containing the edges to sort.
- * @param[in] func: A comparison function that takes two const references to
- * edges and returns true if the first edge should come before the second
+ * @param[in] func: A comparison function that takes two ConstEdge (passed by
+ * value) and returns true if the first edge should come before the second
  * in the sorted order.
  * @param[in] getIndicesAsIfContainerCompact: If true, the returned indices are
  * remapped to represent positions as if the container were compacted (i.e.,
@@ -216,17 +214,17 @@ std::vector<MeshEdgeUtil<MeshType>> fillAndSortMeshEdgeUtilVector(
  * the mesh, ordered according to the comparison function. If
  * getIndicesAsIfContainerCompact is true, the indices are remapped.
  */
-// template<EdgeMeshConcept MeshType>
-// std::vector<uint> sortEdgeIndicesByFunction(
-//     const MeshType&                           mesh,
-//     const std::function<bool(
-//         const typename MeshType::EdgeType&,
-//         const typename MeshType::EdgeType&)>& func,
-//     bool getIndicesAsIfContainerCompact = false)
-// {
-//     return sortElemIndicesByFunction<ElemId::EDGE>(
-//         mesh, func, getIndicesAsIfContainerCompact);
-// }
+template<EdgeMeshConcept MeshType>
+std::vector<uint> sortEdgeIndicesByFunction(
+    const MeshType&                           mesh,
+    const std::function<bool(
+        typename MeshType::ConstEdge,
+        typename MeshType::ConstEdge)>& func,
+    bool getIndicesAsIfContainerCompact = false)
+{
+    return sortElemIndicesByFunction<ElemId::EDGE>(
+        mesh, func, getIndicesAsIfContainerCompact);
+}
 
 } // namespace vcl
 

@@ -120,6 +120,13 @@ public:
     template<uint ELEM_ID>
     using ElementType = typename ContainerType<ELEM_ID>::ElementType;
 
+    /**
+     * @brief Type alias for the const element type of the container of the
+     * given ELEM_ID.
+     */
+    template<uint ELEM_ID>
+    using ConstElementType = typename ContainerType<ELEM_ID>::ConstElementType;
+
     /* Constexpr static member functions */
 
     /**
