@@ -202,21 +202,20 @@ public:
     {
         ConstFaceType nf = mFace.adjFace(mEdge);
         if (nf) {
-            short oldEdge = mEdge;
-            uint  newEdge = nf.indexOfAdjFace(mFace);
+            // The edge of the adjacent face must be found using the vertices
+            // of the current edge: searching the position of the current face
+            // in the adjacent faces of nf is not enough, because nf could be
+            // adjacent to the current face along more than one edge (e.g. two
+            // faces with the same vertices), and in this case the first match
+            // could be the wrong edge, leading to wrong (and possibly endless)
+            // navigations.
+            auto v0      = mFace.vertex(mEdge);
+            auto v1      = mFace.vertexMod(mEdge + 1);
+            uint newEdge = nf.indexOfEdge(v0, v1);
+            assert(newEdge != UINT_NULL);
             if (newEdge == UINT_NULL) {
-                // non-manifold edge. I need to find the edge that has the
-                // current vertex
-                auto v0 = mFace.vertex(oldEdge);
-                auto v1 = mFace.vertexMod(oldEdge + 1);
-                newEdge = nf.indexOfEdge(v0, v1);
-                // if this assert fails, it means that the edge was not found.
-                // you probably need to update adjacency information of the mesh
-                assert(newEdge != UINT_NULL);
-                if (newEdge == UINT_NULL) {
-                    *this = MeshPos(); // reset to null
-                    return false;
-                }
+                *this = MeshPos();
+                return false;
             }
             mEdge = newEdge;
             mFace = nf;
@@ -253,7 +252,7 @@ public:
         else {
             short n = mFace.vertexCount();
             mEdge   = ((mEdge - 1) % n + n) %
-                    n; // be sure to get the right index of the previous edge
+                      n; // be sure to get the right index of the previous edge
         }
     }
 
