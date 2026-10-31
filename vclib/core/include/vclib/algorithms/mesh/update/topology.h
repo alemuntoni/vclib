@@ -35,7 +35,7 @@ void clearPerElementAdjacentFaces(MeshType& mesh)
 {
     requireElementComponent<ELEM_ID, CompId::ADJACENT_FACES>(mesh);
 
-    using AdjacentFacesType = comp::ComponentType<
+    using AdjacentFacesType = comp::ComponentTypeT<
         CompId::ADJACENT_FACES,
         typename MeshType::template ElementType<ELEM_ID>::Components>;
 
@@ -71,7 +71,7 @@ void clearPerElementAdjacentEdges(MeshType& mesh)
 {
     requireElementComponent<ELEM_ID, CompId::ADJACENT_EDGES>(mesh);
 
-    using AdjacentEdgesType = comp::ComponentType<
+    using AdjacentEdgesType = comp::ComponentTypeT<
         CompId::ADJACENT_EDGES,
         typename MeshType::template ElementType<ELEM_ID>::Components>;
 
@@ -416,7 +416,7 @@ void updatePerFaceAdjacentEdges(MeshType& mesh)
 {
     using FaceType = FaceType<MeshType>;
 
-    using AdjacentEdgesType = comp::ComponentType<
+    using AdjacentEdgesType = comp::ComponentTypeT<
         CompId::ADJACENT_EDGES,
         typename FaceType::Components>;
 

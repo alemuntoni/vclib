@@ -13,10 +13,15 @@
 #include "test_building.h"
 #include "test_compact.h"
 #include "test_copy.h"
+#include "test_load.h"
 #include "test_normals.h"
+#include "test_topology.h"
 #include "test_transform.h"
 #include "test_traversal.h"
 #include "types.h"
+
+#include <vclib/algorithms.h>
+#include <vclib/io.h>
 
 #include <filesystem>
 #include <iostream>
@@ -55,10 +60,18 @@ int main(int argc, char** argv)
     if (!opts.positionalArgs.empty()) {
         meshPath = opts.positionalArgs[0];
     }
+    else if (gridRows == 0) {
+#ifdef VCLIB_EXAMPLE_MESHES_PATH
+        meshPath = VCLIB_EXAMPLE_MESHES_PATH "/bimba.obj";
+#else
+        gridRows = 500;
+        gridCols = 500;
+#endif
+    }
 
     std::string datasetName;
-    Eigen::MatrixX3d V;
-    Eigen::MatrixX3i F;
+    bench::Mesh mesh;
+    bool        fromFile = false;
 
     try {
         if (gridRows > 0) {
@@ -66,32 +79,13 @@ int main(int argc, char** argv)
             std::println(
                 "Generating synthetic grid {}x{}...", gridRows, gridCols);
             auto grid = bench::makeGridMatrices(gridRows, gridCols);
-            V         = std::move(grid.vertices);
-            F         = std::move(grid.faces);
-        }
-        else if (!meshPath.empty()) {
-            // TODO: re-enable once io/mesh is ported to Mesh V2
-            std::println(
-                stderr,
-                "Notice: Mesh file loading is temporarily disabled until io/mesh is ported to Mesh V2.");
-            std::println(stderr, "Using synthetic grid 500x500 instead.");
-            gridRows = 500;
-            gridCols = 500;
-            datasetName = std::format("grid_{}x{}", gridRows, gridCols);
-            auto grid = bench::makeGridMatrices(gridRows, gridCols);
-            V         = std::move(grid.vertices);
-            F         = std::move(grid.faces);
+            bench::buildMesh(mesh, grid.vertices, grid.faces);
         }
         else {
-            // Default when no args provided
-            gridRows = 500;
-            gridCols = 500;
-            datasetName = std::format("grid_{}x{}", gridRows, gridCols);
-            std::println(
-                "Generating synthetic grid {}x{} (default)...", gridRows, gridCols);
-            auto grid = bench::makeGridMatrices(gridRows, gridCols);
-            V         = std::move(grid.vertices);
-            F         = std::move(grid.faces);
+            fromFile    = true;
+            datasetName = fs::path(meshPath).filename().string();
+            std::println("Loading mesh from: {}", meshPath);
+            mesh = vcl::loadMesh<bench::Mesh>(meshPath);
         }
     }
     catch (const std::exception& e) {
@@ -100,29 +94,39 @@ int main(int argc, char** argv)
     }
 
     nlohmann::json metadata = {
-        {"vertices", V.rows()},
-        {"faces",    F.rows()}
+        {"vertices", mesh.vertexCount()},
+        {"faces",    mesh.faceCount()  }
     };
 
     std::println("==================================================");
     std::println("VCLib Mesh Benchmark [Version: V2 (SoA Core)]");
     std::println(
-        "Dataset: {} ({} vertices, {} faces)", datasetName, V.rows(), F.rows());
+        "Dataset: {} ({} vertices, {} faces)",
+        datasetName,
+        mesh.vertexCount(),
+        mesh.faceCount());
     std::println("Iterations: {}, Warmup: {}", opts.iterations, opts.warmup);
     std::println("==================================================");
 
     bench::BenchmarkRunner runner(
         "v2", datasetName, metadata, opts.iterations, opts.warmup);
-    bench::Mesh mesh;
 
-    // Building
-    bench::benchmarkBuilding(runner, V, F, mesh, opts.iterations);
+    // Loading from file (the loaded mesh is the one used by all the others)
+    if (fromFile) {
+        bench::benchmarkLoad(runner, meshPath, opts.iterations);
+    }
 
-    // High-level library algorithms (to be re-enabled as algorithms are ported to Mesh V2)
+    // Conversions from/to matrices
+    // (to be re-enabled once import_export is ported to Mesh V2)
+    // bench::benchmarkBuilding(runner, mesh, opts.iterations);
+
+    // High-level library algorithms
+    // (to be re-enabled as algorithms are ported to Mesh V2)
     // bench::benchmarkBoundingBox(runner, mesh, opts.iterations);
     // bench::benchmarkTraversal(runner, mesh, opts.iterations);
     // bench::benchmarkNormals(runner, mesh, opts.iterations);
     // bench::benchmarkTransform(runner, mesh, opts.iterations);
+    bench::benchmarkTopology(runner, mesh, opts.iterations);
 
     // Element management & containers
     bench::benchmarkCopy(runner, mesh, opts.iterations);
