@@ -22,7 +22,7 @@
 //#include "mesh/smooth.h"
 //#include "mesh/sort.h"
 #include "mesh/stat.h"
-//#include "mesh/type_name.h"
+#include "mesh/type_name.h"
 #include "mesh/update.h"
 
 /**

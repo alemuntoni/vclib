@@ -368,6 +368,13 @@ struct ScalarTypeHelper<M>
     using type = typename ScalarTypeHelper<typename M::Vertex>::type;
 };
 
+// 4. FaceConcept (scalar of the referenced vertices)
+template<FaceConcept F>
+struct ScalarTypeHelper<F>
+{
+    using type = typename ScalarTypeHelper<typename VertexTypeHelper<F>::type>::type;
+};
+
 // ============================================================================
 // NormalTypeHelper
 // ============================================================================

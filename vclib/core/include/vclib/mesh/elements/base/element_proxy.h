@@ -15,6 +15,7 @@
 
 #include <vclib/base.h>
 
+#include <compare>
 #include <concepts>
 #include <limits>
 #include <type_traits>
@@ -129,6 +130,33 @@ public:
             return true;
         }
         return mContainer == other.mContainer && mIndex == other.mIndex;
+    }
+
+    /**
+     * @brief Three-way comparison for element proxies.
+     * Two invalid proxies are considered equal.
+     */
+    template<typename OtherContainer>
+        requires std::same_as<
+            std::remove_const_t<ContainerType>,
+            std::remove_const_t<OtherContainer>>
+    auto operator<=>(
+        const ElementProxy<ELEM_ID, OtherContainer, vcl::TypeWrapper<Comps...>>&
+            other) const
+    {
+        if (!isValid() && !other.isValid()) {
+            return std::strong_ordering::equal;
+        }
+        if (!isValid()) {
+            return std::strong_ordering::less;
+        }
+        if (!other.isValid()) {
+            return std::strong_ordering::greater;
+        }
+        if (mContainer != other.mContainer) {
+            return mContainer <=> other.mContainer;
+        }
+        return mIndex <=> other.mIndex;
     }
 
     /**
@@ -301,5 +329,24 @@ concept ElementConcept = requires (T&& obj) {
 };
 
 } // namespace vcl
+
+namespace std {
+
+template<vcl::uint ELEM_ID, typename ContainerType, typename Comps>
+struct hash<vcl::ElementProxy<ELEM_ID, ContainerType, Comps>>
+{
+    std::size_t operator()(
+        const vcl::ElementProxy<ELEM_ID, ContainerType, Comps>& ep) const
+    {
+        if (!ep.isValid()) {
+            return 0;
+        }
+        std::size_t seed = 0;
+        vcl::hashCombine(seed, ep.index());
+        return seed;
+    }
+};
+
+} // namespace std
 
 #endif // VCL_MESH_ELEMENTS_BASE_ELEMENT_PROXY_H

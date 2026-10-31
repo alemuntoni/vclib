@@ -98,11 +98,10 @@ template<
     vcl::FaceMeshConcept MeshType>
 auto computeGrid(const MeshType& mesh)
 {
-    using ScalarType = MeshType::Vertex::PositionType::ScalarType;
-    using FaceType   = MeshType::Face;
+    using ScalarType = typename MeshType::Vertex::PositionType::ScalarType;
+    using FaceType   = typename MeshType::ConstFace;
 
-    return Grid<const FaceType*, ScalarType>(
-        mesh.faces() | vcl::views::constAddrOf);
+    return Grid<FaceType, ScalarType>(mesh.faces());
 }
 
 #endif // COMMON_H
