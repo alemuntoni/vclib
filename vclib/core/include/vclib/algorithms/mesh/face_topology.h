@@ -178,7 +178,7 @@ bool isFaceManifoldOnEdge(const FaceType& f, uint edge)
         return true;
     }
     else { // Check if the edge is shared by exactly two faces.
-        return f.adjFace(edge)->indexOfAdjFace(&f) != UINT_NULL;
+        return f.adjFace(edge).indexOfAdjFace(f) != UINT_NULL;
     }
 }
 

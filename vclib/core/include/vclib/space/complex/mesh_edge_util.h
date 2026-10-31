@@ -79,10 +79,15 @@ public:
     /**
      * @brief Constructs a MeshEdgeUtil from the ne-th edge of face pf.
      *
-     * @param[in] pf: The face proxy.
+     * The face proxy is accepted by value (proxies are lightweight) and can be
+     * either a mutable or a const face proxy (Face<Container> or
+     * Face<const Container>), which is why this constructor is templated on the
+     * concrete face proxy type rather than using FaceType<MeshType> directly.
+     *
+     * @param[in] pf: The face proxy (mutable or const).
      * @param[in] ne: The edge index within the face (0 <= ne < vertexCount()).
      */
-    MeshEdgeUtil(const vcl::FaceType<MeshType>& pf, uint ne)
+    MeshEdgeUtil(FaceConcept auto pf, uint ne)
     {
         v[0] = pf.vertexIndex(ne);
         v[1] = pf.vertexIndexMod(static_cast<int>(ne) + 1);

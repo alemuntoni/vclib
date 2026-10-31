@@ -84,6 +84,12 @@ class Mesh : public mesh::detail::RebindContainer<Args, Mesh<Args...>>...
             !mesh::ElementContainerConcept<T> && comp::ComponentConcept<T>;
     };
 
+    template<typename T>
+    struct IsElementContainerPred
+    {
+        static constexpr bool value = mesh::ElementContainerConcept<T>;
+    };
+
 public:
     using IndexType = typename VertexContainerType::IndexType;
 
@@ -104,6 +110,27 @@ public:
      */
     using Components = typename FilterTypesByCondition<
         IsMeshComponentPred,
+        TypeWrapper<Rebound<Args>...>>::type;
+
+    /**
+     * @brief ElementContainers is an alias to a vcl::TypeWrapper that wraps
+     * all the element container types of the Mesh (i.e. all the types from
+     * which the Mesh inherits that satisfy the ElementContainerConcept, such
+     * as VertexContainer, FaceContainer, EdgeContainer, …).
+     *
+     * This allows algorithms to iterate at compile-time over every element
+     * container present in the mesh without having to enumerate specific
+     * ELEM_IDs by hand:
+     *
+     * @code{.cpp}
+     * // Call f<ContainerType>() for every element container in the mesh:
+     * [&]<typename... Cont>(TypeWrapper<Cont...>) {
+     *     (f.template operator()<Cont>(), ...);
+     * }(typename MeshType::ElementContainers{});
+     * @endcode
+     */
+    using ElementContainers = typename FilterTypesByCondition<
+        IsElementContainerPred,
         TypeWrapper<Rebound<Args>...>>::type;
 
     /**

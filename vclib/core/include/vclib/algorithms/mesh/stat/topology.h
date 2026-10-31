@@ -84,9 +84,7 @@ template<FaceMeshConcept MeshType>
 std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
     requires HasFaceAdjacentFaces<MeshType>
 {
-    requirePerFaceAdjacentFaces(m);
-
-    using FaceType = MeshType::FaceType;
+    requireFaceAdjacentFaces(m);
 
     std::vector<bool> nonManifoldVertices(m.vertexContainerSize(), false);
 
@@ -94,7 +92,7 @@ std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
     std::vector<bool> nonManifoldInc(m.vertexContainerSize(), false);
     // First Loop, count how many faces are incident on a vertex and store it in
     // TD, and flag how many vertices are incident on non manifold edges.
-    for (const FaceType& f : m.faces()) {
+    for (const auto& f : m.faces()) {
         for (uint i = 0; i < f.vertexCount(); ++i) {
             TD[f.vertexIndex(i)]++;
             if (!isFaceManifoldOnEdge(f, i)) {
@@ -105,12 +103,12 @@ std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
     }
 
     std::vector<bool> visited(m.vertexContainerSize(), false);
-    for (const FaceType& f : m.faces()) {
+    for (const auto& f : m.faces()) {
         for (uint i = 0; i < f.vertexCount(); ++i) {
             if (!visited[f.vertexIndex(i)]) {
                 visited[f.vertexIndex(i)] = true;
-                MeshPos pos(&f, i);
-                uint    starSize = pos.numberOfAdjacentFacesToV();
+                MeshPos<MeshType> pos(f, i);
+                uint              starSize = pos.numberOfAdjacentFacesToV();
                 if (starSize != TD[f.vertexIndex(i)])
                     nonManifoldVertices[f.vertexIndex(i)] = true;
             }
@@ -602,23 +600,23 @@ Container referencedVertices(
     uint&           nUnref,
     bool            onlyFaces = false)
 {
-    using VertexType = VertexType<MeshType>;
-
     uint nRefs = 0;
 
     Container refVertices(mesh.vertexContainerSize(), false);
 
     if (onlyFaces) {
         if constexpr (FaceMeshConcept<MeshType>) {
-            using FaceContainer = MeshType::FaceContainer;
-
-            detail::setReferencedVertices(
-                mesh, refVertices, nRefs, TypeWrapper<FaceContainer>());
+            using FaceContainerType =
+                typename MeshType::template ContainerType<ElemId::FACE>;
+            detail::setReferencedVertices<FaceContainerType>(
+                mesh, refVertices, nRefs);
         }
     }
     else {
+        // Iterate over every element container present in this mesh at
+        // compile-time and mark the vertices they reference.
         detail::setReferencedVertices(
-            mesh, refVertices, nRefs, typename MeshType::Containers());
+            mesh, refVertices, nRefs, typename MeshType::ElementContainers());
     }
 
     nUnref = mesh.vertexCount() - nRefs;
@@ -732,10 +730,7 @@ bool isWaterTight(const MeshType& m)
 template<FaceMeshConcept MeshType>
 uint holeCount(const MeshType& m) requires HasFaceAdjacentFaces<MeshType>
 {
-    requirePerFaceAdjacentFaces(m);
-
-    using VertexType = VertexType<MeshType>;
-    using FaceType   = FaceType<MeshType>;
+    requireFaceAdjacentFaces(m);
 
     uint loopNum = 0;
 
@@ -744,16 +739,16 @@ uint holeCount(const MeshType& m) requires HasFaceAdjacentFaces<MeshType>
 
     // Traverse the mesh using a depth-first search algorithm to find all the
     // holes.
-    for (const FaceType& f : m.faces()) {
+    for (const auto& f : m.faces()) {
         uint e = 0;
-        for (const VertexType& v : f.vertices()) {
-            if (!visitedFaces[f.index()] && f.adjFace(e)) {
-                MeshPos<FaceType> startPos(f, e);
-                MeshPos<FaceType> curPos = startPos;
+        for (const auto& v : f.vertices()) {
+            if (!visitedFaces[f.index()] && !f.adjFace(e)) {
+                MeshPos<MeshType> startPos(f, e);
+                MeshPos<MeshType> curPos = startPos;
                 do {
                     curPos.nextEdgeOnBorderAdjacentToV();
                     curPos.flipVertex();
-                    visitedFaces[m.index(curPos.face())] = true;
+                    visitedFaces[curPos.face().index()] = true;
                 } while (curPos != startPos);
                 ++loopNum;
             }
@@ -790,9 +785,9 @@ template<FaceMeshConcept MeshType>
 std::vector<std::set<uint>> connectedComponents(const MeshType& m)
     requires HasFaceAdjacentFaces<MeshType>
 {
-    requirePerFaceAdjacentFaces(m);
+    requireFaceAdjacentFaces(m);
 
-    using FaceType = FaceType<MeshType>;
+    using FaceType = ConstFaceType<MeshType>;
 
     std::vector<std::set<uint>> cc;
 
@@ -805,7 +800,7 @@ std::vector<std::set<uint>> connectedComponents(const MeshType& m)
 
     // traverse the mesh using a depth-first search algorithm to find the
     // connected components.
-    for (const FaceType& f : m.faces()) {
+    for (auto f : m.faces()) {
         if (!visitedFaces[f.index()]) { // first time I see this face
             visitedFaces[f.index()] = true;
 

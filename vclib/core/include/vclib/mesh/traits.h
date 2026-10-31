@@ -79,6 +79,62 @@ struct VertexTypeHelper<V>
 };
 
 // ============================================================================
+// ConstVertexTypeHelper
+// ============================================================================
+
+template<typename T>
+struct ConstVertexTypeHelper
+{
+};
+
+// 1. MeshConcept
+template<MeshConcept M>
+struct ConstVertexTypeHelper<M>
+{
+    using type = typename M::ConstVertex;
+};
+
+// 2. VertexContainerConcept
+template<mesh::VertexContainerConcept C>
+struct ConstVertexTypeHelper<C>
+{
+    using type = typename C::ConstElementType;
+};
+
+// 3. FaceConcept (guaranteed to have .vertex(0) by FaceConcept)
+template<FaceConcept F>
+struct ConstVertexTypeHelper<F>
+{
+    using type =
+        std::remove_cvref_t<decltype(std::declval<const F&>().vertex(0))>;
+};
+
+// 4. EdgeConcept (guaranteed to have .vertex(0) by EdgeConcept)
+template<EdgeConcept E>
+struct ConstVertexTypeHelper<E>
+{
+    using type =
+        std::remove_cvref_t<decltype(std::declval<const E&>().vertex(0))>;
+};
+
+// 5. WedgeConcept (guaranteed to have .vertex() by WedgeConcept)
+template<WedgeConcept W>
+struct ConstVertexTypeHelper<W>
+{
+    using type =
+        std::remove_cvref_t<decltype(std::declval<const W&>().vertex())>;
+};
+
+// 6. VertexConcept
+template<VertexConcept V>
+struct ConstVertexTypeHelper<V>
+{
+    using Container =
+        std::remove_cvref_t<decltype(std::declval<V&>().parentContainer())>;
+    using type = typename Container::ConstElementType;
+};
+
+// ============================================================================
 // FaceTypeHelper
 // ============================================================================
 
@@ -116,6 +172,46 @@ struct FaceTypeHelper<F>
 };
 
 // ============================================================================
+// ConstFaceTypeHelper
+// ============================================================================
+
+template<typename T>
+struct ConstFaceTypeHelper
+{
+};
+
+// 1. FaceMeshConcept
+template<FaceMeshConcept M>
+struct ConstFaceTypeHelper<M>
+{
+    using type = typename M::ConstFace;
+};
+
+// 2. FaceContainerConcept
+template<mesh::FaceContainerConcept C>
+struct ConstFaceTypeHelper<C>
+{
+    using type = typename C::ConstElementType;
+};
+
+// 3. WedgeConcept (guaranteed to have .parentFace() by WedgeConcept)
+template<WedgeConcept W>
+struct ConstFaceTypeHelper<W>
+{
+    using type =
+        std::remove_cvref_t<decltype(std::declval<const W&>().parentFace())>;
+};
+
+// 4. FaceConcept
+template<FaceConcept F>
+struct ConstFaceTypeHelper<F>
+{
+    using Container =
+        std::remove_cvref_t<decltype(std::declval<F&>().parentContainer())>;
+    using type = typename Container::ConstElementType;
+};
+
+// ============================================================================
 // EdgeTypeHelper
 // ============================================================================
 
@@ -143,6 +239,38 @@ template<EdgeConcept E>
 struct EdgeTypeHelper<E>
 {
     using type = E;
+};
+
+// ============================================================================
+// ConstEdgeTypeHelper
+// ============================================================================
+
+template<typename T>
+struct ConstEdgeTypeHelper
+{
+};
+
+// 1. EdgeMeshConcept
+template<EdgeMeshConcept M>
+struct ConstEdgeTypeHelper<M>
+{
+    using type = typename M::ConstEdge;
+};
+
+// 2. EdgeContainerConcept
+template<mesh::EdgeContainerConcept C>
+struct ConstEdgeTypeHelper<C>
+{
+    using type = typename C::ConstElementType;
+};
+
+// 3. EdgeConcept
+template<EdgeConcept E>
+struct ConstEdgeTypeHelper<E>
+{
+    using Container =
+        std::remove_cvref_t<decltype(std::declval<E&>().parentContainer())>;
+    using type = typename Container::ConstElementType;
 };
 
 // ============================================================================
@@ -295,6 +423,16 @@ using VertexType =
     typename detail::VertexTypeHelper<std::remove_cvref_t<T>>::type;
 
 /**
+ * @brief Extracts the ConstVertex proxy type from a Mesh, a Face, an Edge, a
+ * Wedge, or a Vertex itself.
+ * @tparam T: The type to query (cv-ref stripped automatically).
+ * @ingroup mesh_traits
+ */
+template<typename T>
+using ConstVertexType =
+    typename detail::ConstVertexTypeHelper<std::remove_cvref_t<T>>::type;
+
+/**
  * @brief Extracts the Face proxy type from a FaceMesh, a Wedge, or a Face
  * itself.
  * @tparam T: The type to query (cv-ref stripped automatically).
@@ -304,12 +442,31 @@ template<typename T>
 using FaceType = typename detail::FaceTypeHelper<std::remove_cvref_t<T>>::type;
 
 /**
+ * @brief Extracts the ConstFace proxy type from a FaceMesh, a Wedge, or a Face
+ * itself.
+ * @tparam T: The type to query (cv-ref stripped automatically).
+ * @ingroup mesh_traits
+ */
+template<typename T>
+using ConstFaceType =
+    typename detail::ConstFaceTypeHelper<std::remove_cvref_t<T>>::type;
+
+/**
  * @brief Extracts the Edge proxy type from an EdgeMesh or an Edge itself.
  * @tparam T: The type to query (cv-ref stripped automatically).
  * @ingroup mesh_traits
  */
 template<typename T>
 using EdgeType = typename detail::EdgeTypeHelper<std::remove_cvref_t<T>>::type;
+
+/**
+ * @brief Extracts the ConstEdge proxy type from an EdgeMesh or an Edge itself.
+ * @tparam T: The type to query (cv-ref stripped automatically).
+ * @ingroup mesh_traits
+ */
+template<typename T>
+using ConstEdgeType =
+    typename detail::ConstEdgeTypeHelper<std::remove_cvref_t<T>>::type;
 
 /**
  * @brief Extracts the Wedge proxy type from a Face.
