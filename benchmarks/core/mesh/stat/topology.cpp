@@ -55,6 +55,8 @@ BENCH(
         });
     });
 
+// TODO: enable when ported to Mesh V2
+#if 0
 BENCH(
     "stat/topology/vertices_to_duplicate_by_wedge_tex_coords_count",
     [](bench::State& s) {
@@ -64,7 +66,10 @@ BENCH(
 
         s.run([&]() { return vcl::verticesToDuplicateByWedgeTexCoordsCount(m); });
     });
+#endif
 
+// TODO: enable when ported to Mesh V2
+#if 0
 BENCH("stat/topology/referenced_vertices", [](bench::State& s) {
     const bench::Mesh& m = s.mesh();
     s.run([&]() {
@@ -72,33 +77,52 @@ BENCH("stat/topology/referenced_vertices", [](bench::State& s) {
         return vcl::referencedVertices<std::vector<bool>>(m, unreferenced);
     });
 });
+#endif
 
+// TODO: enable when ported to Mesh V2
+#if 0
 BENCH("stat/topology/unreferenced_vertex_count", [](bench::State& s) {
     const bench::Mesh& m = s.mesh();
     s.run([&]() { return vcl::unreferencedVertexCount(m); });
 });
+#endif
 
+// TODO: enable when ported to Mesh V2
+#if 0
 BENCH("stat/topology/non_manifold_vertex_count", [](bench::State& s) {
     const bench::Mesh& m = s.meshWithTopology();
     s.run([&]() { return vcl::nonManifoldVertexCount(m); });
 });
+#endif
 
+// TODO: enable when ported to Mesh V2
+#if 0
 BENCH("stat/topology/is_water_tight", [](bench::State& s) {
     const bench::Mesh& m = s.mesh();
     s.run([&]() { return vcl::isWaterTight(m); });
 });
+#endif
 
+// TODO: enable when ported to Mesh V2
+#if 0
 BENCH("stat/topology/hole_count", [](bench::State& s) {
     const bench::Mesh& m = s.meshWithTopology();
     s.run([&]() { return vcl::holeCount(m); });
 });
+#endif
 
+// TODO: enable when ported to Mesh V2
+#if 0
 BENCH("stat/topology/connected_components", [](bench::State& s) {
     const bench::Mesh& m = s.meshWithTopology();
     s.run([&]() { return vcl::connectedComponents(m); });
 });
+#endif
 
+// TODO: enable when ported to Mesh V2
+#if 0
 BENCH("stat/topology/connected_component_count", [](bench::State& s) {
     const bench::Mesh& m = s.meshWithTopology();
     s.run([&]() { return vcl::connectedComponentCount(m); });
 });
+#endif

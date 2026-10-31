@@ -22,6 +22,10 @@ namespace vcl {
 namespace detail {
 
 // function called for the Container Cont of the Mesh
+// mesh: the mesh
+// refs: vector of bools, one for each vertex of the mesh, to store if the
+//       vertex is referenced or not
+// nRefs: number of referenced vertices
 template<typename Cont>
 void setReferencedVertices(const auto& mesh, auto& refs, uint& nRefs)
 {
@@ -35,7 +39,7 @@ void setReferencedVertices(const auto& mesh, auto& refs, uint& nRefs)
                 // for each vertex of the element
                 for (uint vi : el.vertexIndices()) {
                     // vertex references shoule never be null
-                    assert(vi != UINT_NULL);
+                    assert(vi != mesh.NULL_INDEX);
                     if (!refs[vi]) {
                         // set the vertex as referenced
                         refs[vi] = true;
@@ -78,7 +82,7 @@ struct WedgeTexCoordsInfo
 
 template<FaceMeshConcept MeshType>
 std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
-    requires HasPerFaceAdjacentFaces<MeshType>
+    requires HasFaceAdjacentFaces<MeshType>
 {
     requirePerFaceAdjacentFaces(m);
 
@@ -92,10 +96,10 @@ std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
     // TD, and flag how many vertices are incident on non manifold edges.
     for (const FaceType& f : m.faces()) {
         for (uint i = 0; i < f.vertexCount(); ++i) {
-            TD[m.index(f.vertex(i))]++;
+            TD[f.vertexIndex(i)]++;
             if (!isFaceManifoldOnEdge(f, i)) {
-                nonManifoldInc[m.index(f.vertex(i))]        = true;
-                nonManifoldInc[m.index(f.vertexMod(i + 1))] = true;
+                nonManifoldInc[f.vertexIndex(i)]        = true;
+                nonManifoldInc[f.vertexIndexMod(i + 1)] = true;
             }
         }
     }
@@ -103,12 +107,12 @@ std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
     std::vector<bool> visited(m.vertexContainerSize(), false);
     for (const FaceType& f : m.faces()) {
         for (uint i = 0; i < f.vertexCount(); ++i) {
-            if (!visited[m.index(f.vertex(i))]) {
-                visited[m.index(f.vertex(i))] = true;
+            if (!visited[f.vertexIndex(i)]) {
+                visited[f.vertexIndex(i)] = true;
                 MeshPos pos(&f, i);
                 uint    starSize = pos.numberOfAdjacentFacesToV();
-                if (starSize != TD[m.index(f.vertex(i))])
-                    nonManifoldVertices[m.index(f.vertex(i))] = true;
+                if (starSize != TD[f.vertexIndex(i)])
+                    nonManifoldVertices[f.vertexIndex(i)] = true;
             }
         }
     }
@@ -122,7 +126,7 @@ uint edgeCount(
     uint&           numBoundaryEdges,
     uint&           numNonManifoldEdges)
 {
-    std::vector<ConstMeshEdgeUtil<MeshType>> edgeVec =
+    std::vector<MeshEdgeUtil<MeshType>> edgeVec =
         fillAndSortMeshEdgeUtilVector(m);
 
     uint numEdges       = 0;
@@ -196,7 +200,7 @@ uint faceVertexReferencesCount(const FaceMeshConcept auto& mesh)
  */
 uint largestFaceSize(const FaceMeshConcept auto& mesh)
 {
-    using FaceType = RemoveRef<decltype(mesh)>::FaceType;
+    using FaceType = FaceType<decltype(mesh)>;
 
     uint maxFaceSize = 0;
 
@@ -252,7 +256,7 @@ uint triangulatedFaceCount(const FaceMeshConcept auto& mesh)
  */
 uint largestPerVertexAdjacentVerticesCount(const MeshConcept auto& mesh)
 {
-    requirePerVertexAdjacentVertices(mesh);
+    requireVertexAdjacentVertices(mesh);
 
     uint maxAVC = 0;
 
@@ -284,7 +288,7 @@ uint largestPerVertexAdjacentVerticesCount(const MeshConcept auto& mesh)
 template<uint ELEM_ID>
 uint largestPerElementAdjacentFacesCount(const FaceMeshConcept auto& mesh)
 {
-    requirePerElementComponent<ELEM_ID, CompId::ADJACENT_FACES>(mesh);
+    requireElementComponent<ELEM_ID, CompId::ADJACENT_FACES>(mesh);
 
     uint maxAFC = 0;
 
@@ -461,14 +465,14 @@ uint verticesToDuplicateByWedgeTexCoordsCount(
     std::list<std::list<std::pair<uint, uint>>>& facesToReassign =
         detail::dummyListOfLists)
 {
-    vcl::requirePerFaceWedgeTexCoords(mesh);
+    vcl::requireFaceWedgeTexCoords(mesh);
 
     bool hasMaterials = false;
-    if constexpr (HasPerFaceMaterialIndex<MeshType>) {
-        hasMaterials = mesh.isPerFaceMaterialIndexEnabled();
+    if constexpr (HasFaceMaterialIndices<MeshType>) {
+        hasMaterials = mesh.isFaceMaterialIndexAvailable();
     }
 
-    using WedgeTexCoordType  = MeshType::FaceType::WedgeTexCoordType;
+    using WedgeTexCoordType  = TexCoordType<typename MeshType::FaceType>;
     using WedgeTexCoordsInfo = detail::WedgeTexCoordsInfo<WedgeTexCoordType>;
 
     // list of faces that reference a wedge texcoord, with the index of the
@@ -494,12 +498,12 @@ uint verticesToDuplicateByWedgeTexCoordsCount(
 
             // check if the i-th wedge texcoord of the face already exists
             uint matIdx = 0;
-            if constexpr (HasPerFaceMaterialIndex<MeshType>) {
+            if constexpr (HasFaceMaterialIndices<MeshType>) {
                 if (hasMaterials) {
                     matIdx = f.materialIndex();
                 }
             }
-            WedgeTexCoordsInfo wi = {f.wedgeTexCoord(i), matIdx};
+            WedgeTexCoordsInfo wi = {f.wedge(i).texCoord(), matIdx};
             auto               it = wedges[vi].find(wi);
             if (it == wedges[vi].end()) { // if it doesn't exist, add it
                 // if there was already a texcoord for the vertex, it means that
@@ -598,7 +602,7 @@ Container referencedVertices(
     uint&           nUnref,
     bool            onlyFaces = false)
 {
-    using VertexType = MeshType::VertexType;
+    using VertexType = VertexType<MeshType>;
 
     uint nRefs = 0;
 
@@ -726,12 +730,12 @@ bool isWaterTight(const MeshType& m)
  * @ingroup clean
  */
 template<FaceMeshConcept MeshType>
-uint holeCount(const MeshType& m) requires HasPerFaceAdjacentFaces<MeshType>
+uint holeCount(const MeshType& m) requires HasFaceAdjacentFaces<MeshType>
 {
     requirePerFaceAdjacentFaces(m);
 
-    using VertexType = MeshType::VertexType;
-    using FaceType   = MeshType::FaceType;
+    using VertexType = VertexType<MeshType>;
+    using FaceType   = FaceType<MeshType>;
 
     uint loopNum = 0;
 
@@ -742,9 +746,9 @@ uint holeCount(const MeshType& m) requires HasPerFaceAdjacentFaces<MeshType>
     // holes.
     for (const FaceType& f : m.faces()) {
         uint e = 0;
-        for (const VertexType* v : f.vertices()) {
-            if (!visitedFaces[m.index(f)] && f.adjFace(e) == nullptr) {
-                MeshPos<FaceType> startPos(&f, e);
+        for (const VertexType& v : f.vertices()) {
+            if (!visitedFaces[f.index()] && f.adjFace(e)) {
+                MeshPos<FaceType> startPos(f, e);
                 MeshPos<FaceType> curPos = startPos;
                 do {
                     curPos.nextEdgeOnBorderAdjacentToV();
@@ -784,11 +788,11 @@ uint holeCount(const MeshType& m) requires HasPerFaceAdjacentFaces<MeshType>
  */
 template<FaceMeshConcept MeshType>
 std::vector<std::set<uint>> connectedComponents(const MeshType& m)
-    requires HasPerFaceAdjacentFaces<MeshType>
+    requires HasFaceAdjacentFaces<MeshType>
 {
     requirePerFaceAdjacentFaces(m);
 
-    using FaceType = MeshType::FaceType;
+    using FaceType = FaceType<MeshType>;
 
     std::vector<std::set<uint>> cc;
 
@@ -797,35 +801,35 @@ std::vector<std::set<uint>> connectedComponents(const MeshType& m)
 
     // create a stack to hold the faces that need to be visited during the
     // depth-first search.
-    std::stack<const FaceType*> sf;
+    std::stack<FaceType> sf;
 
     // traverse the mesh using a depth-first search algorithm to find the
     // connected components.
     for (const FaceType& f : m.faces()) {
-        if (!visitedFaces[m.index(f)]) { // first time I see this face
-            visitedFaces[m.index(f)] = true;
+        if (!visitedFaces[f.index()]) { // first time I see this face
+            visitedFaces[f.index()] = true;
 
             // new connected component
             cc.emplace_back();
             std::set<uint>& ccf = cc[cc.size() - 1];
-            ccf.insert(m.index(f));
+            ccf.insert(f.index());
 
             // while the stack is empty, visit the adjacent faces of the top
             // face of the stack
-            sf.push(&f);
+            sf.push(f);
             while (!sf.empty()) {
-                const FaceType* fpt = sf.top();
+                FaceType fpt = sf.top();
                 // remove the top face and add it to the connected component
                 sf.pop();
-                ccf.insert(m.index(fpt));
+                ccf.insert(fpt.index());
 
                 // add the adjacent faces of the current visited in the stack
-                for (uint j = 0; j < fpt->vertexCount(); ++j) {
-                    const FaceType* adjf = fpt->adjFace(j);
+                for (uint j = 0; j < fpt.vertexCount(); ++j) {
+                    FaceType adjf = fpt.adjFace(j);
                     // if there is an adj face and it has not been visited
-                    if (adjf != nullptr && !visitedFaces[m.index(adjf)]) {
+                    if (adjf && !visitedFaces[adjf.index()]) {
                         sf.push(adjf);
-                        visitedFaces[m.index(adjf)] = true;
+                        visitedFaces[adjf.index()] = true;
                     }
                 }
             }

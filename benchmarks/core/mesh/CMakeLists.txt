@@ -18,6 +18,7 @@ set(SOURCES
     io/load_mesh.cpp
     mesh/copy.cpp
     mesh/delete_and_compact.cpp
+    stat/topology.cpp
     update/topology.cpp
     main.cpp
     # import_export/export_matrix.cpp
@@ -25,7 +26,6 @@ set(SOURCES
     # stat/barycenter.cpp
     # stat/bounding_box.cpp
     # stat/geometry.cpp
-    # stat/topology.cpp
     # update/normal.cpp
     # update/transform.cpp
 )
