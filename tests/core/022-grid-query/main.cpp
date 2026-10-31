@@ -11,8 +11,8 @@
 
 using Meshes         = std::tuple<vcl::TriMesh, vcl::PolyMesh>;
 using Meshesf        = std::tuple<vcl::TriMeshf, vcl::PolyMeshf>;
-using MeshesIndexed  = std::tuple<vcl::TriMeshIndexed, vcl::PolyMeshIndexed>;
-using MeshesIndexedf = std::tuple<vcl::TriMeshIndexedf, vcl::PolyMeshIndexedf>;
+using MeshesIndexed  = std::tuple<vcl::TriMesh64, vcl::PolyMesh64>;
+using MeshesIndexedf = std::tuple<vcl::TriMesh64f, vcl::PolyMesh64f>;
 
 static const vcl::uint N_POINTS_TEST = 50;
 
@@ -161,7 +161,7 @@ TEMPLATE_TEST_CASE(
 
     SECTION("TriMesh")
     {
-        using PointType  = TriMesh::VertexType::PositionType;
+        using PointType  = TriMesh::Vertex::PositionType;
         using ScalarType = PointType::ScalarType;
         using SphereType = Sphere<ScalarType>;
 
@@ -186,7 +186,7 @@ TEMPLATE_TEST_CASE(
 
     SECTION("PolyMesh")
     {
-        using PointType  = PolyMesh::VertexType::PositionType;
+        using PointType  = PolyMesh::Vertex::PositionType;
         using ScalarType = PointType::ScalarType;
         using SphereType = Sphere<ScalarType>;
 

@@ -24,7 +24,7 @@ set(SOURCES
     # import_export/export_matrix.cpp
     # import_export/import_matrix.cpp
     # stat/barycenter.cpp
-    # stat/bounding_box.cpp
+    stat/bounding_box.cpp
     # stat/geometry.cpp
     # update/normal.cpp
     # update/transform.cpp

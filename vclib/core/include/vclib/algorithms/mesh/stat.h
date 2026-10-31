@@ -9,7 +9,7 @@
 #define VCL_ALGORITHMS_MESH_STAT_H
 
 //#include "stat/barycenter.h"
-//#include "stat/bounding_box.h"
+#include "stat/bounding_box.h"
 //#include "stat/geometry.h"
 //#include "stat/quality.h"
 //#include "stat/selection.h"
