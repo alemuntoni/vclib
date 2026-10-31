@@ -187,6 +187,15 @@ public:
     }
 
     /**
+     * @brief Returns a ComponentView over the texture coordinates of the
+     * elements.
+     */
+    auto texCoords() const requires comp::HasTexCoord<Container>
+    {
+        return component<CompId::TEX_COORD>();
+    }
+
+    /**
      * @brief Returns a ComponentView over the tangents of the elements.
      */
     auto tangents() const requires comp::HasTangent<Container>
