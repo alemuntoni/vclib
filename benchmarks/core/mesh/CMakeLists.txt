@@ -21,7 +21,7 @@ set(SOURCES
     space/mesh_inertia.cpp
     stat/barycenter.cpp
     stat/bounding_box.cpp
-    # stat/geometry.cpp
+    stat/geometry.cpp
     stat/topology.cpp
     update/normal.cpp
     update/topology.cpp
