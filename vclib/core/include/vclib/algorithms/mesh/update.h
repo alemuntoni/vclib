@@ -16,7 +16,7 @@
 // #include "update/quality.h"
 // #include "update/selection.h"
 #include "update/topology.h"
-// #include "update/transform.h"
+#include "update/transform.h"
 
 /**
  * @defgroup update Update Mesh Algorithms

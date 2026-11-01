@@ -19,21 +19,19 @@ void applyTransformMatrix(
     const Matrix44<ScalarM>& matrix,
     bool                     updateNormals = true)
 {
-    using VertexType = MeshType::VertexType;
-
     multiplyPointsByMatrix(mesh.vertices() | vcl::views::positions, matrix);
 
     // TODO: automatize: for each element, check if it has normal and apply
     // the matrix to it
     if (updateNormals) {
-        if constexpr (HasPerVertexNormal<MeshType>) {
-            if (isPerVertexNormalAvailable(mesh)) {
+        if constexpr (HasVertexNormals<MeshType>) {
+            if (mesh.isVertexNormalAvailable()) {
                 multiplyNormalsByMatrix(
                     mesh.vertices() | vcl::views::normals, matrix);
             }
         }
-        if constexpr (HasPerFaceNormal<MeshType>) {
-            if (isPerFaceNormalAvailable(mesh)) {
+        if constexpr (HasFaceNormals<MeshType>) {
+            if (mesh.isFaceNormalAvailable()) {
                 multiplyNormalsByMatrix(
                     mesh.faces() | vcl::views::normals, matrix);
             }
@@ -44,8 +42,7 @@ void applyTransformMatrix(
 template<MeshConcept MeshType, PointConcept PointType>
 void translate(MeshType& mesh, const PointType& t)
 {
-    using VertexType = MeshType::VertexType;
-    for (VertexType& v : mesh.vertices()) {
+    for (auto&& v : mesh.vertices()) {
         v.position() += t;
     }
 }
@@ -53,8 +50,7 @@ void translate(MeshType& mesh, const PointType& t)
 template<MeshConcept MeshType, PointConcept PointType>
 void scale(MeshType& mesh, const PointType& s)
 {
-    using VertexType = MeshType::VertexType;
-    for (VertexType& v : mesh.vertices()) {
+    for (auto&& v : mesh.vertices()) {
         v.position()(0) *= s(0);
         v.position()(1) *= s(1);
         v.position()(2) *= s(2);
@@ -64,8 +60,7 @@ void scale(MeshType& mesh, const PointType& s)
 template<MeshConcept MeshType, typename Scalar = double>
 void scale(MeshType& mesh, const Scalar& s)
 {
-    using VertexType = MeshType::VertexType;
-    for (VertexType& v : mesh.vertices()) {
+    for (auto&& v : mesh.vertices()) {
         v.position() *= s;
     }
 }
@@ -76,22 +71,22 @@ void rotate(
     const Matrix33<Scalar>& m,
     bool                    updateNormals = true)
 {
-    for (auto& v : mesh.vertices()) {
+    for (auto&& v : mesh.vertices()) {
         v.position() = m * v.position();
     }
 
     if (updateNormals) {
-        if constexpr (HasPerVertexNormal<MeshType>) {
-            if (isPerVertexNormalAvailable(mesh)) {
-                for (auto& v : mesh.vertices()) {
+        if constexpr (HasVertexNormals<MeshType>) {
+            if (mesh.isVertexNormalAvailable(mesh)) {
+                for (auto&& v : mesh.vertices()) {
                     v.normal() = m * v.normal();
                 }
             }
         }
 
-        if constexpr (HasPerFaceNormal<MeshType>) {
-            if (isPerFaceNormalAvailable(mesh)) {
-                for (auto& f : mesh.faces()) {
+        if constexpr (HasFaceNormals<MeshType>) {
+            if (mesh.isFaceNormalAvailable()) {
+                for (auto&& f : mesh.faces()) {
                     f.normal() = m * f.normal();
                 }
             }
@@ -106,7 +101,7 @@ void rotate(
     const Scalar&    angleRad,
     bool             updateNormals = true)
 {
-    using ScalarType = MeshType::VertexType::PositionType::ScalarType;
+    using ScalarType = ScalarType<MeshType>;
 
     Matrix33<ScalarType> m;
     setTransformMatrixRotation(m, axis, angleRad);

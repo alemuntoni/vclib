@@ -11,8 +11,8 @@
 
 using Meshes         = std::tuple<vcl::TriMesh, vcl::PolyMesh>;
 using Meshesf        = std::tuple<vcl::TriMeshf, vcl::PolyMeshf>;
-using MeshesIndexed  = std::tuple<vcl::TriMesh64, vcl::PolyMesh64>;
-using MeshesIndexedf = std::tuple<vcl::TriMesh64f, vcl::PolyMesh64f>;
+using Meshes64  = std::tuple<vcl::TriMesh64, vcl::PolyMesh64>;
+using Meshes64f = std::tuple<vcl::TriMesh64f, vcl::PolyMesh64f>;
 
 static const vcl::uint N_POINTS_TEST = 50;
 
@@ -21,8 +21,8 @@ TEMPLATE_TEST_CASE(
     "",
     Meshes,
     Meshesf,
-    MeshesIndexed,
-    MeshesIndexedf)
+    Meshes64,
+    Meshes64f)
 {
     using TriMesh  = std::tuple_element_t<0, TestType>;
     using PolyMesh = std::tuple_element_t<1, TestType>;
@@ -83,8 +83,8 @@ TEMPLATE_TEST_CASE(
     "",
     Meshes,
     Meshesf,
-    MeshesIndexed,
-    MeshesIndexedf)
+    Meshes64,
+    Meshes64f)
 {
     using TriMesh  = std::tuple_element_t<0, TestType>;
     using PolyMesh = std::tuple_element_t<1, TestType>;
@@ -149,8 +149,8 @@ TEMPLATE_TEST_CASE(
     "",
     Meshes,
     Meshesf,
-    MeshesIndexed,
-    MeshesIndexedf)
+    Meshes64,
+    Meshes64f)
 {
     using TriMesh  = std::tuple_element_t<0, TestType>;
     using PolyMesh = std::tuple_element_t<1, TestType>;

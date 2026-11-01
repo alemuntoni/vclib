@@ -25,7 +25,7 @@ set(SOURCES
     stat/topology.cpp
     update/normal.cpp
     update/topology.cpp
-    # update/transform.cpp
+    update/transform.cpp
     main.cpp
 )
 
