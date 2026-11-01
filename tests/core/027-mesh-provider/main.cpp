@@ -21,12 +21,12 @@ TEMPLATE_TEST_CASE(
     "",
     vcl::TriMesh,
     vcl::TriMeshf,
-    vcl::TriMeshIndexed,
-    vcl::TriMeshIndexedf,
+    vcl::TriMesh64,
+    vcl::TriMesh64f,
     vcl::TriEdgeMesh)
 {
     using MeshType = vcl::MeshProvider<TestType>;
-    using PointT   = typename TestType::VertexType::PositionType;
+    using PointT   = typename vcl::PositionType<TestType>;
     using Provider = const vcl::AbstractMeshProvider*;
 
     MeshType m;
