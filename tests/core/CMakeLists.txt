@@ -37,6 +37,7 @@ add_subdirectory(022-grid-query)
 # add_subdirectory(025-mesh-convex-hull)
 add_subdirectory(026-random)
 # add_subdirectory(027-mesh-provider)
+add_subdirectory(028-space-complex)
 
 # if(TARGET vclib-3rd-tinygltf)
 #     add_subdirectory(023-load-mesh-gltf)
