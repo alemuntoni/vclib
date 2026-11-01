@@ -19,7 +19,7 @@ set(SOURCES
     mesh/copy.cpp
     mesh/delete_and_compact.cpp
     space/mesh_inertia.cpp
-    # stat/barycenter.cpp
+    stat/barycenter.cpp
     stat/bounding_box.cpp
     # stat/geometry.cpp
     stat/topology.cpp

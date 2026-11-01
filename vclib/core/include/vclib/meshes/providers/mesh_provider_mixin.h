@@ -211,26 +211,22 @@ public:
 
     uint selectedVertexCount() const override
     {
-        // TODO
-        // return vertexSelectionCount(getMesh());
-        return 0;
+        return vertexSelectionCount(getMesh());
     }
 
     uint selectedFaceCount() const override
     {
-        // TODO
-        // if constexpr (HasFaces<MeshType>) {
-        //     return faceSelectionCount(getMesh());
-        // }
+        if constexpr (HasFaces<MeshType>) {
+            return faceSelectionCount(getMesh());
+        }
         return 0;
     }
 
     uint selectedEdgeCount() const override
     {
-        // TODO
-        // if constexpr (HasEdges<MeshType>) {
-        //     return edgeSelectionCount(getMesh());
-        // }
+        if constexpr (HasEdges<MeshType>) {
+            return edgeSelectionCount(getMesh());
+        }
         return 0;
     }
 
