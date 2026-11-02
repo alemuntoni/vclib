@@ -207,7 +207,7 @@ public:
 
         PointT p;
         for (uint i = 0; i < f.vertexCount(); i++)
-            p += f.vertex(i)->position() * barCoords[i];
+            p += f.vertex(i).position() * barCoords[i];
 
         mSamples.push_back(p);
     }

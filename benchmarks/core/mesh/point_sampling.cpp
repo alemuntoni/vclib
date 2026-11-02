@@ -313,7 +313,7 @@ BENCH(
             return s.skip("the mesh has no faces");
         }
         else {
-            using Scalar             = typename Mesh::ScalarType;
+            using Scalar             = vcl::ScalarType<Mesh>;
             const Mesh&     m        = s.mesh();
             const vcl::uint nSamples = sampleCountForVertices(m);
             if (nSamples == 0) {

@@ -57,16 +57,16 @@ namespace bench {
 template<typename Mesh>
 void selectElements(Mesh& m, vcl::uint step = 2)
 {
-    for (auto& v : m.vertices()) {
-        v.selected() = (m.index(v) % step == 0);
+    for (auto&& v : m.vertices()) {
+        v.selected() = (v.index() % step == 0);
     }
 
     if constexpr (vcl::FaceMeshConcept<Mesh>) {
-        for (auto& f : m.faces()) {
-            f.selected() = (m.index(f) % step == 0);
+        for (auto&& f : m.faces()) {
+            f.selected() = (f.index() % step == 0);
             if constexpr (requires { f.edgeSelected(0); }) {
                 for (vcl::uint i = 0; i < f.vertexCount(); ++i) {
-                    f.edgeSelected(i) = ((m.index(f) + i) % step == 0);
+                    f.edgeSelected(i) = ((f.index() + i) % step == 0);
                 }
             }
         }

@@ -32,15 +32,12 @@ void enableTopologyComponents(Mesh& m)
 template<typename Mesh>
 void enableQualityComponents(Mesh& m)
 {
-    if constexpr (vcl::HasVertexQualities<Mesh>) {
-        if constexpr (requires { m.enableVertexQuality(); }) {
-            m.enableVertexQuality();
-        }
+    if constexpr (vcl::HasOptionalVertexQualities<Mesh>) {
+        m.enableVertexQuality();
     }
-    if constexpr (vcl::FaceMeshConcept<Mesh> && vcl::HasFaceQualities<Mesh>) {
-        if constexpr (requires { m.enablePerFaceQuality(); }) {
-            m.enableFaceQuality();
-        }
+    if constexpr (
+        vcl::FaceMeshConcept<Mesh> && vcl::HasOptionalFaceQualities<Mesh>) {
+        m.enableFaceQuality();
     }
 }
 
@@ -48,15 +45,15 @@ template<typename Mesh>
 void initQuality(Mesh& m)
 {
     if constexpr (vcl::HasVertexQualities<Mesh>) {
-        for (auto& v : m.vertices()) {
-            v.quality() = static_cast<typename Mesh::VertexType::QualityType>(
-                m.index(v) + 1);
+        using QType = vcl::VertexType<Mesh>::QualityType;
+        for (auto&& v : m.vertices()) {
+            v.quality() = static_cast<QType>(v.index() + 1);
         }
     }
     if constexpr (vcl::FaceMeshConcept<Mesh> && vcl::HasFaceQualities<Mesh>) {
-        for (auto& f : m.faces()) {
-            f.quality() = static_cast<typename Mesh::FaceType::QualityType>(
-                m.index(f) + 1);
+        using QType = vcl::FaceType<Mesh>::QualityType;
+        for (auto&& f : m.faces()) {
+            f.quality() = static_cast<QType>(f.index() + 1);
         }
     }
 }
