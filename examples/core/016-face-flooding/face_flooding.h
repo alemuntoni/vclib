@@ -26,8 +26,8 @@ auto faceFlooding()
         vcl::loadMesh<vcl::TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/bunny.obj");
 
     // Enable required components
-    m.enablePerFaceAdjacentFaces();
-    m.enablePerFaceColor();
+    m.enableFaceAdjacentFaces();
+    m.enableFaceColor();
 
     // Update topology and normals
     vcl::updatePerFaceAdjacentFaces(m);
@@ -35,7 +35,7 @@ auto faceFlooding()
     vcl::updateBoundingBox(m);
 
     // Initialize face colors
-    vcl::setPerFaceColor(m, vcl::Color::LightGray);
+    //vcl::setPerFaceColor(m, vcl::Color::LightGray);
 
     std::cout << "Mesh loaded: " << m.faceCount() << " faces\n";
 
@@ -68,9 +68,9 @@ auto faceFlooding()
         vcl::floodFacePatch(m.face(seedFaceId), upwardFacingSelector);
 
     // Color flooded faces in green
-    for (const auto* fPtr : floodedFaces) {
-        if (fPtr->index() != seedFaceId) {
-            m.face(fPtr->index()).color() = vcl::Color::Green;
+    for (auto&& ff : floodedFaces) {
+        if (ff.index() != seedFaceId) {
+            m.face(ff.index()).color() = vcl::Color::Green;
         }
     }
 

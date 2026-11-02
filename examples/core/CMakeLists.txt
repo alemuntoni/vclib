@@ -18,6 +18,7 @@ set(CORE_EXAMPLE_DIRS
     "000-mesh-io"
     "001-mesh-basics"
     "002-mesh-iteration"
+    #"016-face-flooding"
     "998-misc-no-lib"
     "999-misc"
 )

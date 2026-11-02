@@ -13,6 +13,7 @@
 #include "mesh/elem_algorithms.h"
 #include "mesh/elements.h"
 #include "mesh/exceptions.h"
+#include "mesh/iterators.h"
 #include "mesh/mesh.h"
 #include "mesh/mesh_components.h"
 #include "mesh/requirements.h"
