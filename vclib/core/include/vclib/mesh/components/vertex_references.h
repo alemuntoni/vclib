@@ -511,16 +511,6 @@ protected:
         bool                importRefs = true);
 };
 
-// Specialization Aliases
-template<std::unsigned_integral Index = uint>
-using EdgeVertexReferences = VertexReferences<2, Index>;
-
-template<std::unsigned_integral Index = uint>
-using TriangleVertexReferences = VertexReferences<3, Index>;
-
-template<std::unsigned_integral Index = uint>
-using PolygonVertexReferences = VertexReferences<-1, Index>;
-
 /* concepts */
 
 /**

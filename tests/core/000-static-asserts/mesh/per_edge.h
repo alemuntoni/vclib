@@ -47,6 +47,30 @@ void perEdgeStaticAsserts()
         "TriEdgeMesh&& does not satisfy the HasEdgeAdjacentFaces");
 
     static_assert(
+        HasEdgeOptionalAdjacentEdges<TriEdgeMesh>,
+        "TriEdgeMesh does not satisfy the HasEdgeOptionalAdjacentEdges");
+
+    static_assert(
+        HasEdgeOptionalAdjacentFaces<TriEdgeMesh>,
+        "TriEdgeMesh does not satisfy the HasEdgeOptionalAdjacentFaces");
+
+    static_assert(
+        !HasEdgeTexCoords<TriEdgeMesh>,
+        "TriEdgeMesh satisfies the HasEdgeTexCoords");
+
+    static_assert(
+        !HasEdgePrincipalCurvatures<TriEdgeMesh>,
+        "TriEdgeMesh satisfies the HasEdgePrincipalCurvatures");
+
+    static_assert(
+        !HasEdgeTangents<TriEdgeMesh>,
+        "TriEdgeMesh satisfies the HasEdgeTangents");
+
+    static_assert(
+        !HasEdgeMaterialIndices<TriEdgeMesh>,
+        "TriEdgeMesh satisfies the HasEdgeMaterialIndices");
+
+    static_assert(
         HasEdgeColors<TriEdgeMesh>,
         "TriEdgeMesh does not satisfy the HasEdgeColors");
     static_assert(

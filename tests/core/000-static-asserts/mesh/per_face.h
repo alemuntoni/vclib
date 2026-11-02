@@ -76,6 +76,14 @@ void perFaceStaticAsserts()
         "TriMesh&& does not satisfy the HasFaceAdjacentFaces");
 
     static_assert(
+        HasFaceOptionalAdjacentEdges<TriEdgeMesh>,
+        "TriEdgeMesh does not satisfy the HasFaceOptionalAdjacentEdges");
+
+    static_assert(
+        HasFaceOptionalAdjacentFaces<TriMesh>,
+        "TriMesh does not satisfy the HasFaceOptionalAdjacentFaces");
+
+    static_assert(
         HasFaceColors<TriMesh>,
         "TriMesh does not satisfy the HasFaceColors");
     static_assert(

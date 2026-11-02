@@ -70,7 +70,7 @@ using FaceComponents = vcl::FaceComponents<
 template<typename Scalar = double, std::unsigned_integral Index = uint>
 using EdgeComponents = vcl::EdgeComponents<
     edge::BitFlags,
-    edge::EdgeVertexReferences<Index>,
+    edge::VertexReferences<Index>,
     edge::OptionalNormal3<Scalar>,
     edge::OptionalColor,
     edge::OptionalQuality<Scalar>,

@@ -24,19 +24,25 @@ namespace bench {
 template<typename Mesh>
 void enableTopologyComponents(Mesh& m)
 {
-    m.enableVertexAdjacentFaces();
-    m.enableVertexAdjacentVertices();
-    m.enableFaceAdjacentFaces();
+    if constexpr (vcl::HasVertexOptionalAdjacentFaces<Mesh>) {
+        m.enableVertexAdjacentFaces();
+    }
+    if constexpr (vcl::HasVertexOptionalAdjacentVertices<Mesh>) {
+        m.enableVertexAdjacentVertices();
+    }
+    if constexpr (vcl::HasFaceOptionalAdjacentFaces<Mesh>) {
+        m.enableFaceAdjacentFaces();
+    }
 }
 
 template<typename Mesh>
 void enableQualityComponents(Mesh& m)
 {
-    if constexpr (vcl::HasOptionalVertexQualities<Mesh>) {
+    if constexpr (vcl::HasVertexOptionalQualities<Mesh>) {
         m.enableVertexQuality();
     }
     if constexpr (
-        vcl::FaceMeshConcept<Mesh> && vcl::HasOptionalFaceQualities<Mesh>) {
+        vcl::FaceMeshConcept<Mesh> && vcl::HasFaceOptionalQualities<Mesh>) {
         m.enableFaceQuality();
     }
 }

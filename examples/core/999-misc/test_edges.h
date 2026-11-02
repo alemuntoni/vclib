@@ -39,8 +39,8 @@ inline void testEdgeConcepts()
     // Component concepts
     static_assert(HasRequiredEdgeComponents<MyEdgeComponents>);
     static_assert(HasRequiredEdgeComponents<CCEdgeComponents>);
-    static_assert(edge::HasEdgeVertexReferences<MyEdgeComponents>);
-    static_assert(edge::HasEdgeVertexReferences<MyEdgeMesh::Edge>);
+    static_assert(edge::HasVertexReferences<MyEdgeComponents>);
+    static_assert(edge::HasVertexReferences<MyEdgeMesh::Edge>);
     static_assert(edge::HasColor<MyEdgeComponents>);
     static_assert(edge::HasColor<MyEdgeMesh::Edge>);
     static_assert(edge::HasOptionalQuality<MyEdgeComponents>);

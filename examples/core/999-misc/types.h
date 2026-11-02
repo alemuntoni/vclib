@@ -288,7 +288,7 @@ using AdjMesh = Mesh<
 
 using MyEdgeComponents = EdgeComponents<
     edge::BitFlags,
-    edge::EdgeVertexReferences<vcl::uint>,
+    edge::VertexReferences<vcl::uint>,
     edge::Color,
     edge::OptionalQualityf>;
 
@@ -303,7 +303,7 @@ using GraphMesh = Mesh<
 
 using CCEdgeComponents = EdgeComponents<
     edge::BitFlags,
-    edge::EdgeVertexReferences<vcl::uint>,
+    edge::VertexReferences<vcl::uint>,
     edge::CustomComponents>;
 
 using EdgeMeshWithCC = Mesh<

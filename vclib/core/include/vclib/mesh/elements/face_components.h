@@ -280,10 +280,10 @@ template<int N, std::unsigned_integral Index = uint>
 using VertexReferences = comp::VertexReferences<N, Index>;
 
 template<std::unsigned_integral Index = uint>
-using TriangleVertexReferences = comp::TriangleVertexReferences<Index>;
+using TriangleVertexReferences = VertexReferences<3, Index>;
 
 template<std::unsigned_integral Index = uint>
-using PolygonVertexReferences = comp::PolygonVertexReferences<Index>;
+using PolygonVertexReferences = VertexReferences<-1, Index>;
 
 /* Port Wedges class and aliases into face namespace */
 template<typename Comp, int N = 3, bool OPT = comp::IsCompOptional<Comp>::value>

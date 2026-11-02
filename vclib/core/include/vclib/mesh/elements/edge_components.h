@@ -73,8 +73,6 @@ template<typename T>
 concept HasOptionalTexCoord = comp::HasOptionalTexCoord<T>;
 template<typename T>
 concept HasVertexReferences = comp::HasVertexReferences<T>;
-template<typename T>
-concept HasEdgeVertexReferences = comp::HasEdgeVertexReferences<T>;
 
 /* Port AdjacentEdges class into edge namespace */
 template<
@@ -198,9 +196,6 @@ using OptionalTexCoordd = comp::TexCoordd<true>;
 /* Port VertexReferences class and aliases into edge namespace */
 template<std::unsigned_integral Index = uint>
 using VertexReferences = comp::VertexReferences<2, Index>;
-
-template<std::unsigned_integral Index = uint>
-using EdgeVertexReferences = comp::EdgeVertexReferences<Index>;
 
 } // namespace vcl::edge
 

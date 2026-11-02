@@ -368,28 +368,28 @@ inline void testMeshConcepts()
     // Element Components on Mesh
     // Normals
     static_assert(HasVertexNormals<FullMesh>);
-    static_assert(HasOptionalVertexNormals<MyMesh>);
+    static_assert(HasVertexOptionalNormals<MyMesh>);
     static_assert(!HasVertexNormals<SimpleMesh>);
     static_assert(!HasFaceNormals<MyMesh>);
     static_assert(HasFaceNormals<TangentMesh>);
 
     // Colors
     static_assert(HasVertexColors<MyMesh>);
-    static_assert(HasOptionalVertexColors<MyMesh>);
+    static_assert(HasVertexOptionalColors<MyMesh>);
     static_assert(HasFaceColors<MyMesh>);
-    static_assert(HasOptionalFaceColors<MyMesh>);
+    static_assert(HasFaceOptionalColors<MyMesh>);
     static_assert(HasVertexColors<FullMesh>);
-    static_assert(!HasOptionalVertexColors<FullMesh>);
+    static_assert(!HasVertexOptionalColors<FullMesh>);
     static_assert(HasFaceColors<FullMesh>);
-    static_assert(!HasOptionalFaceColors<FullMesh>);
+    static_assert(!HasFaceOptionalColors<FullMesh>);
     static_assert(!HasVertexColors<SimpleMesh>);
     static_assert(HasFaceColors<SimpleMesh>);
-    static_assert(HasOptionalFaceColors<SimpleMesh>);
+    static_assert(HasFaceOptionalColors<SimpleMesh>);
     static_assert(!HasFaceColors<SimplePolyMesh>);
     static_assert(!HasFaceColors<SimpleQuadMesh>);
     static_assert(!HasFaceColors<MyEdgeMesh>);
     static_assert(HasEdgeColors<MyEdgeMesh>);
-    static_assert(!HasOptionalEdgeColors<MyEdgeMesh>);
+    static_assert(!HasEdgeOptionalColors<MyEdgeMesh>);
     static_assert(!HasEdgeColors<MyMesh>);
 
     // Adjacencies
@@ -405,31 +405,31 @@ inline void testMeshConcepts()
     // Qualities
     static_assert(HasVertexQualities<QualityMesh>);
     static_assert(HasFaceQualities<QualityMesh>);
-    static_assert(!HasOptionalVertexQualities<QualityMesh>);
-    static_assert(HasOptionalFaceQualities<QualityMesh>);
-    static_assert(HasOptionalVertexQualities<OptionalQualityMesh>);
+    static_assert(!HasVertexOptionalQualities<QualityMesh>);
+    static_assert(HasFaceOptionalQualities<QualityMesh>);
+    static_assert(HasVertexOptionalQualities<OptionalQualityMesh>);
     static_assert(!HasVertexQualities<MyMesh>);
 
     // Curvatures
     static_assert(HasVertexPrincipalCurvatures<CurvatureMesh>);
     static_assert(HasFacePrincipalCurvatures<CurvatureMesh>);
-    static_assert(!HasOptionalVertexPrincipalCurvatures<CurvatureMesh>);
-    static_assert(HasOptionalFacePrincipalCurvatures<CurvatureMesh>);
-    static_assert(HasOptionalVertexPrincipalCurvatures<OptionalCurvatureMesh>);
+    static_assert(!HasVertexOptionalPrincipalCurvatures<CurvatureMesh>);
+    static_assert(HasFaceOptionalPrincipalCurvatures<CurvatureMesh>);
+    static_assert(HasVertexOptionalPrincipalCurvatures<OptionalCurvatureMesh>);
     static_assert(!HasVertexPrincipalCurvatures<MyMesh>);
 
     // Tangents
     static_assert(HasVertexTangents<TangentMesh>);
     static_assert(HasFaceTangents<TangentMesh>);
-    static_assert(!HasOptionalVertexTangents<TangentMesh>);
-    static_assert(HasOptionalFaceTangents<TangentMesh>);
-    static_assert(HasOptionalVertexTangents<OptionalTangentMesh>);
+    static_assert(!HasVertexOptionalTangents<TangentMesh>);
+    static_assert(HasFaceOptionalTangents<TangentMesh>);
+    static_assert(HasVertexOptionalTangents<OptionalTangentMesh>);
     static_assert(!HasVertexTangents<MyMesh>);
 
     // Material Index
     static_assert(HasFaceMaterialIndices<MaterialMesh>);
     static_assert(!HasFaceMaterialIndices<MyMesh>);
-    static_assert(HasOptionalFaceMaterialIndices<OptionalMaterialMesh>);
+    static_assert(HasFaceOptionalMaterialIndices<OptionalMaterialMesh>);
 
     // Custom Components
     static_assert(HasVertexCustomComponents<CCMesh>);

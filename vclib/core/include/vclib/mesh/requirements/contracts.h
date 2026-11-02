@@ -330,6 +330,19 @@ void requireVertexTexCoords(const MeshType& m)
     requireElementComponent<ElemId::VERTEX, CompId::TEX_COORD>(m);
 }
 
+template<MeshConcept MeshType>
+bool enableIfEdgeTexCoordsOptional(MeshType& m)
+{
+    return enableIfElementComponentOptional<ElemId::EDGE, CompId::TEX_COORD>(m);
+}
+
+template<MeshConcept MeshType>
+requires (HasEdgeTexCoords<MeshType>)
+void requireEdgeTexCoords(const MeshType& m)
+{
+    requireElementComponent<ElemId::EDGE, CompId::TEX_COORD>(m);
+}
+
 /* --- Wedges (Face) --- */
 
 template<MeshConcept MeshType>
@@ -505,19 +518,6 @@ void requireVertexAdjacentVertices(const MeshType& m)
 }
 
 template<MeshConcept MeshType>
-bool enableIfFaceAdjacentVerticesOptional(MeshType& m)
-{
-    return enableIfElementComponentOptional<ElemId::FACE, CompId::ADJACENT_VERTICES>(m);
-}
-
-template<MeshConcept MeshType>
-requires (HasFaceAdjacentVertices<MeshType>)
-void requireFaceAdjacentVertices(const MeshType& m)
-{
-    requireElementComponent<ElemId::FACE, CompId::ADJACENT_VERTICES>(m);
-}
-
-template<MeshConcept MeshType>
 bool enableIfEdgeAdjacentVerticesOptional(MeshType& m)
 {
     return enableIfElementComponentOptional<ElemId::EDGE, CompId::ADJACENT_VERTICES>(m);
@@ -599,6 +599,19 @@ void requireFacePrincipalCurvatures(const MeshType& m)
     requireElementComponent<ElemId::FACE, CompId::PRINCIPAL_CURVATURE>(m);
 }
 
+template<MeshConcept MeshType>
+bool enableIfEdgePrincipalCurvaturesOptional(MeshType& m)
+{
+    return enableIfElementComponentOptional<ElemId::EDGE, CompId::PRINCIPAL_CURVATURE>(m);
+}
+
+template<MeshConcept MeshType>
+requires (HasEdgePrincipalCurvatures<MeshType>)
+void requireEdgePrincipalCurvatures(const MeshType& m)
+{
+    requireElementComponent<ElemId::EDGE, CompId::PRINCIPAL_CURVATURE>(m);
+}
+
 /* --- Tangents --- */
 
 template<MeshConcept MeshType>
@@ -627,6 +640,19 @@ void requireFaceTangents(const MeshType& m)
     requireElementComponent<ElemId::FACE, CompId::TANGENT>(m);
 }
 
+template<MeshConcept MeshType>
+bool enableIfEdgeTangentsOptional(MeshType& m)
+{
+    return enableIfElementComponentOptional<ElemId::EDGE, CompId::TANGENT>(m);
+}
+
+template<MeshConcept MeshType>
+requires (HasEdgeTangents<MeshType>)
+void requireEdgeTangents(const MeshType& m)
+{
+    requireElementComponent<ElemId::EDGE, CompId::TANGENT>(m);
+}
+
 /* --- Material Index --- */
 
 template<MeshConcept MeshType>
@@ -636,7 +662,7 @@ bool enableIfVertexMaterialIndicesOptional(MeshType& m)
 }
 
 template<MeshConcept MeshType>
-requires (HasFaceMaterialIndices<MeshType>)
+requires (HasVertexMaterialIndices<MeshType>)
 void requireVertexMaterialIndices(const MeshType& m)
 {
     requireElementComponent<ElemId::VERTEX, CompId::MATERIAL_INDEX>(m);
@@ -653,6 +679,19 @@ requires (HasFaceMaterialIndices<MeshType>)
 void requireFaceMaterialIndices(const MeshType& m)
 {
     requireElementComponent<ElemId::FACE, CompId::MATERIAL_INDEX>(m);
+}
+
+template<MeshConcept MeshType>
+bool enableIfEdgeMaterialIndicesOptional(MeshType& m)
+{
+    return enableIfElementComponentOptional<ElemId::EDGE, CompId::MATERIAL_INDEX>(m);
+}
+
+template<MeshConcept MeshType>
+requires (HasEdgeMaterialIndices<MeshType>)
+void requireEdgeMaterialIndices(const MeshType& m)
+{
+    requireElementComponent<ElemId::EDGE, CompId::MATERIAL_INDEX>(m);
 }
 
 /* --- Custom Components --- */

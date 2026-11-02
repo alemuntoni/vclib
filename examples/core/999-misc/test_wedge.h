@@ -57,7 +57,7 @@ inline void testWedgeConcepts()
     static_assert(HasFaceWedgeColors<WedgeMesh>);
     static_assert(HasFaceWedgeTexCoords<WedgeMesh>);
     static_assert(HasFaceWedgeNormals<WedgeMesh>);
-    static_assert(HasOptionalFaceWedgeNormals<WedgeMesh>);
+    static_assert(HasFaceOptionalWedgeNormals<WedgeMesh>);
     static_assert(HasFaceWedges<WedgeMesh>);
 
     // Negative concepts on mesh without wedges

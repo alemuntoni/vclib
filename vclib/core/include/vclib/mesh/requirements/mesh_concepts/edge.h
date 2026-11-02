@@ -1,0 +1,114 @@
+// VCLib - Visual Computing Library
+// Copyright (C) 2021-2026 Visual Computing Lab, ISTI - CNR.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License,
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at https://mozilla.org/MPL/2.0/.
+
+#ifndef VCL_MESH_REQUIREMENTS_MESH_CONCEPTS_EDGE_H
+#define VCL_MESH_REQUIREMENTS_MESH_CONCEPTS_EDGE_H
+
+#include "base.h"
+
+namespace vcl {
+
+/* =========================================================================
+ * Edge Component Concepts
+ * ========================================================================= */
+
+/* Normals */
+template<typename M>
+concept HasEdgeNormals =
+    HasElementComponent<M, ElemId::EDGE, CompId::NORMAL>;
+
+template<typename M>
+concept HasEdgeOptionalNormals =
+    HasElementOptionalComponent<M, ElemId::EDGE, CompId::NORMAL>;
+
+/* Colors */
+template<typename M>
+concept HasEdgeColors =
+    HasElementComponent<M, ElemId::EDGE, CompId::COLOR>;
+
+template<typename M>
+concept HasEdgeOptionalColors =
+    HasElementOptionalComponent<M, ElemId::EDGE, CompId::COLOR>;
+
+/* TexCoords */
+template<typename M>
+concept HasEdgeTexCoords =
+    HasElementComponent<M, ElemId::EDGE, CompId::TEX_COORD>;
+
+template<typename M>
+concept HasEdgeOptionalTexCoords =
+    HasElementOptionalComponent<M, ElemId::EDGE, CompId::TEX_COORD>;
+
+/* Adjacencies */
+template<typename M>
+concept HasEdgeAdjacentFaces =
+    HasElementAdjacentFaces<M, ElemId::EDGE>;
+
+template<typename M>
+concept HasEdgeOptionalAdjacentFaces =
+    HasElementOptionalAdjacentFaces<M, ElemId::EDGE>;
+
+template<typename M>
+concept HasEdgeAdjacentEdges =
+    HasElementAdjacentEdges<M, ElemId::EDGE>;
+
+template<typename M>
+concept HasEdgeOptionalAdjacentEdges =
+    HasElementOptionalAdjacentEdges<M, ElemId::EDGE>;
+
+template<typename M>
+concept HasEdgeAdjacentVertices =
+    HasElementAdjacentVertices<M, ElemId::EDGE>;
+
+template<typename M>
+concept HasEdgeOptionalAdjacentVertices =
+    HasElementOptionalAdjacentVertices<M, ElemId::EDGE>;
+
+/* Quality */
+template<typename M>
+concept HasEdgeQualities =
+    HasElementComponent<M, ElemId::EDGE, CompId::QUALITY>;
+
+template<typename M>
+concept HasEdgeOptionalQualities =
+    HasElementOptionalComponent<M, ElemId::EDGE, CompId::QUALITY>;
+
+/* PrincipalCurvature */
+template<typename M>
+concept HasEdgePrincipalCurvatures =
+    HasElementComponent<M, ElemId::EDGE, CompId::PRINCIPAL_CURVATURE>;
+
+template<typename M>
+concept HasEdgeOptionalPrincipalCurvatures =
+    HasElementOptionalComponent<M, ElemId::EDGE, CompId::PRINCIPAL_CURVATURE>;
+
+/* Tangent */
+template<typename M>
+concept HasEdgeTangents =
+    HasElementComponent<M, ElemId::EDGE, CompId::TANGENT>;
+
+template<typename M>
+concept HasEdgeOptionalTangents =
+    HasElementOptionalComponent<M, ElemId::EDGE, CompId::TANGENT>;
+
+/* MaterialIndex */
+template<typename M>
+concept HasEdgeMaterialIndices =
+    HasElementComponent<M, ElemId::EDGE, CompId::MATERIAL_INDEX>;
+
+template<typename M>
+concept HasEdgeOptionalMaterialIndices =
+    HasElementOptionalComponent<M, ElemId::EDGE, CompId::MATERIAL_INDEX>;
+
+/* Custom Components */
+template<typename M>
+concept HasEdgeCustomComponents =
+    HasElementCustomComponents<M, ElemId::EDGE>;
+
+} // namespace vcl
+
+#endif // VCL_MESH_REQUIREMENTS_MESH_CONCEPTS_EDGE_H

@@ -63,6 +63,18 @@ void perVertexStaticAsserts()
         "TriMesh&& does not satisfy the HasVertexAdjacentVertices");
 
     static_assert(
+        HasVertexOptionalAdjacentEdges<TriEdgeMesh>,
+        "TriEdgeMesh does not satisfy the HasVertexOptionalAdjacentEdges");
+
+    static_assert(
+        HasVertexOptionalAdjacentFaces<TriMesh>,
+        "TriMesh does not satisfy the HasVertexOptionalAdjacentFaces");
+
+    static_assert(
+        HasVertexOptionalAdjacentVertices<TriMesh>,
+        "TriMesh does not satisfy the HasVertexOptionalAdjacentVertices");
+
+    static_assert(
         HasVertexColors<TriMesh>,
         "TriMesh does not satisfy the HasVertexColors");
     static_assert(
