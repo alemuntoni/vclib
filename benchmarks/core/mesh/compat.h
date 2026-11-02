@@ -21,22 +21,25 @@ namespace bench {
  * @brief Enables the per-vertex adjacent faces, the per-vertex adjacent
  * vertices and the per-face adjacent faces of the given mesh.
  */
-inline void enableTopologyComponents(Mesh& m)
+template<typename Mesh>
+void enableTopologyComponents(Mesh& m)
 {
     m.enableVertexAdjacentFaces();
     m.enableVertexAdjacentVertices();
     m.enableFaceAdjacentFaces();
 }
 
-inline bool hasWedgeTexCoords(const Mesh& m)
+template<typename Mesh>
+bool hasWedgeTexCoords(const Mesh& m)
 {
-    return m.isFaceComponentAvailable<vcl::CompId::WEDGE_TEX_COORDS>();
+    return m.template isFaceComponentAvailable<vcl::CompId::WEDGE_TEX_COORDS>();
 }
 
 /**
  * @brief Fills the given mesh with a regular triangulated grid.
  */
-inline void buildGridMesh(Mesh& m, vcl::uint rows, vcl::uint cols)
+template<typename Mesh>
+void buildGridMesh(Mesh& m, vcl::uint rows, vcl::uint cols)
 {
     // TODO: replace with vcl::meshFromMatrices once import_export is ported
     auto grid = makeGridMatrices(rows, cols);
