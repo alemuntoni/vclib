@@ -30,6 +30,38 @@ void enableTopologyComponents(Mesh& m)
 }
 
 template<typename Mesh>
+void enableQualityComponents(Mesh& m)
+{
+    if constexpr (vcl::HasVertexQualities<Mesh>) {
+        if constexpr (requires { m.enableVertexQuality(); }) {
+            m.enableVertexQuality();
+        }
+    }
+    if constexpr (vcl::FaceMeshConcept<Mesh> && vcl::HasFaceQualities<Mesh>) {
+        if constexpr (requires { m.enablePerFaceQuality(); }) {
+            m.enableFaceQuality();
+        }
+    }
+}
+
+template<typename Mesh>
+void initQuality(Mesh& m)
+{
+    if constexpr (vcl::HasVertexQualities<Mesh>) {
+        for (auto& v : m.vertices()) {
+            v.quality() = static_cast<typename Mesh::VertexType::QualityType>(
+                m.index(v) + 1);
+        }
+    }
+    if constexpr (vcl::FaceMeshConcept<Mesh> && vcl::HasFaceQualities<Mesh>) {
+        for (auto& f : m.faces()) {
+            f.quality() = static_cast<typename Mesh::FaceType::QualityType>(
+                m.index(f) + 1);
+        }
+    }
+}
+
+template<typename Mesh>
 bool hasWedgeTexCoords(const Mesh& m)
 {
     return m.template isFaceComponentAvailable<vcl::CompId::WEDGE_TEX_COORDS>();
