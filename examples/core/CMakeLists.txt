@@ -16,6 +16,8 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 # Temporarily restricted to active examples during mesh migration
 set(CORE_EXAMPLE_DIRS
     "000-mesh-io"
+    "001-mesh-basics"
+    "002-mesh-iteration"
     "998-misc-no-lib"
     "999-misc"
 )
