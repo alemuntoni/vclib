@@ -43,6 +43,13 @@ struct AdjFacesView : std::ranges::range_adaptor_closure<AdjFacesView>
         return std::forward<R>(r).adjFaces();
     }
 
+    template<typename R>
+    requires (!std::ranges::range<R>) && HasAdjFacesMember<R>
+    friend constexpr auto operator|(R&& r, AdjFacesView)
+    {
+        return std::forward<R>(r).adjFaces();
+    }
+
     template<AdjFacesRangeConcept R>
     constexpr auto operator()(R&& r) const
     {

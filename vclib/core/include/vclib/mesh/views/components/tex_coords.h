@@ -50,6 +50,13 @@ struct TexCoordsView : std::ranges::range_adaptor_closure<TexCoordsView>
         return std::forward<R>(r).wedges().texCoords();
     }
 
+    template<typename R>
+    requires (!std::ranges::range<R>) && HasWedgeTexCoordsMember<R>
+    friend constexpr auto operator|(R&& r, TexCoordsView)
+    {
+        return std::forward<R>(r).wedges().texCoords();
+    }
+
     template<TexCoordRangeConcept R>
     constexpr auto operator()(R&& r) const
     {

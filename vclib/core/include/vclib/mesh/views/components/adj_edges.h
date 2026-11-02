@@ -43,6 +43,13 @@ struct AdjEdgesView : std::ranges::range_adaptor_closure<AdjEdgesView>
         return std::forward<R>(r).adjEdges();
     }
 
+    template<typename R>
+    requires (!std::ranges::range<R>) && HasAdjEdgesMember<R>
+    friend constexpr auto operator|(R&& r, AdjEdgesView)
+    {
+        return std::forward<R>(r).adjEdges();
+    }
+
     template<AdjEdgesRangeConcept R>
     constexpr auto operator()(R&& r) const
     {
