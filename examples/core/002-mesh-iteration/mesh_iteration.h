@@ -48,7 +48,7 @@ void meshIteration()
 
     // Iterate with traditional for loop using indices
     std::cout << "\nFirst 3 faces (using indices):" << std::endl;
-    for (vcl::uint i = 0; i < std::min(3ul, mesh.faceCount()); ++i) {
+    for (vcl::uint i = 0; i < std::min(3uz, mesh.faceCount()); ++i) {
         const auto& face = mesh.face(i);
         std::cout << "  Face " << i << ": vertices [";
         for (int j = 0; j < 3; ++j) {

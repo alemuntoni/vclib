@@ -52,10 +52,6 @@ struct ColorsView : std::ranges::range_adaptor_closure<ColorsView>
             return std::forward<R>(r) | std::views::transform(getColor);
         }
     }
-
-    // TODO: When WedgeColors component is ported to mesh_v2:
-    // template<comp::HasWedgeColors R>
-    // constexpr auto operator()(R&& r) const { ... }
 };
 
 } // namespace detail

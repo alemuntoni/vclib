@@ -12,5 +12,6 @@
 #include "elements/edge.h"
 #include "elements/face.h"
 #include "elements/vertex.h"
+#include "elements/wedge.h"
 
 #endif // VCL_MESH_VIEWS_ELEMENTS_H

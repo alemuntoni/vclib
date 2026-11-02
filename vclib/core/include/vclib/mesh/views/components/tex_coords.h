@@ -21,11 +21,6 @@ concept HasTexCoordMember = requires(T&& t) {
     { t.texCoord() };
 };
 
-template<typename T>
-concept HasWedgeTexCoordsMember = requires(T&& t) {
-    { t.wedges().texCoords() } -> std::ranges::range;
-};
-
 template<typename R>
 concept TexCoordRangeConcept =
     std::ranges::range<R> &&
@@ -43,20 +38,6 @@ inline constexpr auto getTexCoord = [](auto&& p) -> decltype(auto) {
 
 struct TexCoordsView : std::ranges::range_adaptor_closure<TexCoordsView>
 {
-    template<typename R>
-    requires (!std::ranges::range<R>) && HasWedgeTexCoordsMember<R>
-    constexpr auto operator()(R&& r) const
-    {
-        return std::forward<R>(r).wedges().texCoords();
-    }
-
-    template<typename R>
-    requires (!std::ranges::range<R>) && HasWedgeTexCoordsMember<R>
-    friend constexpr auto operator|(R&& r, TexCoordsView)
-    {
-        return std::forward<R>(r).wedges().texCoords();
-    }
-
     template<TexCoordRangeConcept R>
     constexpr auto operator()(R&& r) const
     {
@@ -86,9 +67,9 @@ struct TexCoordsView : std::ranges::range_adaptor_closure<TexCoordsView>
  * `mesh.vertices() | views::selected | views::texCoords`), it transforms each
  * element to its texture coordinate reference.
  *
- * When applied to a single element having the wedge texture coordinates (e.g.
- * `face | views::texCoords`), it returns the range of its wedge texture
- * coordinates.
+ * When applied to a range of wedge elements (e.g.
+ * `face.wedges() | views::texCoords` or `face | views::wedges | views::texCoords`),
+ * it returns the range of its wedge texture coordinates.
  *
  * @ingroup views
  */

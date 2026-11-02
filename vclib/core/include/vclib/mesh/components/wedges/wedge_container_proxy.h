@@ -17,6 +17,7 @@
 
 #include <cassert>
 #include <concepts>
+#include <ranges>
 #include <utility>
 
 namespace vcl::comp {
@@ -35,6 +36,7 @@ namespace vcl::comp {
  */
 template<typename FaceType>
 class WedgeContainerProxy
+    : public std::ranges::view_interface<WedgeContainerProxy<FaceType>>
 {
     FaceType mFace;
 
