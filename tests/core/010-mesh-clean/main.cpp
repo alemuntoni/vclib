@@ -15,7 +15,7 @@
 template<vcl::FaceMeshConcept MeshType>
 void populateTriMesh(MeshType& tm)
 {
-    using Point = MeshType::VertexType::PositionType;
+    using Point = vcl::VertexType<MeshType>::PositionType;
 
     // note: p3 and p4 have same position
     const Point p0(0, 0, 0);
@@ -42,7 +42,7 @@ void populateTriMesh(MeshType& tm)
 template<vcl::FaceMeshConcept MeshType>
 void populatePolyMesh(MeshType& pm)
 {
-    using Point = MeshType::VertexType::PositionType;
+    using Point = vcl::VertexType<MeshType>::PositionType;
 
     // note: p3 and p4 have same position
     const Point p0(0, 0, 0);
@@ -64,7 +64,7 @@ void populatePolyMesh(MeshType& pm)
 template<vcl::EdgeMeshConcept MeshType>
 void populateEdgeMesh(MeshType& m)
 {
-    using Point = MeshType::VertexType::PositionType;
+    using Point = vcl::VertexType<MeshType>::PositionType;
 
     const Point p0(0, 0, 0);
     const Point p1(1, 0, 0);
@@ -82,9 +82,9 @@ void populateEdgeMesh(MeshType& m)
 using Meshes  = std::tuple<vcl::TriMesh, vcl::PolyMesh, vcl::EdgeMesh>;
 using Meshesf = std::tuple<vcl::TriMeshf, vcl::PolyMeshf, vcl::EdgeMeshf>;
 using MeshesIndexed =
-    std::tuple<vcl::TriMeshIndexed, vcl::PolyMeshIndexed, vcl::EdgeMeshIndexed>;
+    std::tuple<vcl::TriMesh64, vcl::PolyMesh64, vcl::EdgeMesh64>;
 using MeshesIndexedf = std::
-    tuple<vcl::TriMeshIndexedf, vcl::PolyMeshIndexedf, vcl::EdgeMeshIndexedf>;
+    tuple<vcl::TriMesh64f, vcl::PolyMesh64f, vcl::EdgeMesh64f>;
 
 TEMPLATE_TEST_CASE(
     "Clean Duplicated Faces",
@@ -149,8 +149,8 @@ TEMPLATE_TEST_CASE(
     "",
     vcl::TriMesh,
     vcl::TriMeshf,
-    vcl::TriMeshIndexed,
-    vcl::TriMeshIndexedf)
+    vcl::TriMesh64,
+    vcl::TriMesh64f)
 {
     using TriMesh = TestType;
 
@@ -182,8 +182,8 @@ TEMPLATE_TEST_CASE(
     "",
     vcl::TriMesh,
     vcl::TriMeshf,
-    vcl::TriMeshIndexed,
-    vcl::TriMeshIndexedf)
+    vcl::TriMesh64,
+    vcl::TriMesh64f)
 {
     using TriMesh = TestType;
 
@@ -191,13 +191,13 @@ TEMPLATE_TEST_CASE(
 
     populateTriMesh(tm);
 
-    REQUIRE(tm.face(5).vertex(1) == &tm.vertex(4));
+    REQUIRE(tm.face(5).vertex(1) == tm.vertex(4));
 
     unsigned int nv = vcl::removeDuplicateVertices(tm);
 
     REQUIRE(nv == 1);
 
-    REQUIRE(tm.face(5).vertex(1) == &tm.vertex(3));
+    REQUIRE(tm.face(5).vertex(1) == tm.vertex(3));
 }
 
 TEMPLATE_TEST_CASE("Unreferenced Vertices", "", Meshes, Meshesf)
@@ -233,8 +233,8 @@ TEMPLATE_TEST_CASE(
     "",
     vcl::TriMesh,
     vcl::TriMeshf,
-    vcl::TriMeshIndexed,
-    vcl::TriMeshIndexedf)
+    vcl::TriMesh64,
+    vcl::TriMesh64f)
 {
     using TriMesh = TestType;
 

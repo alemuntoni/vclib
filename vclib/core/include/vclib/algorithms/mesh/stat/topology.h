@@ -8,6 +8,7 @@
 #ifndef VCL_ALGORITHMS_MESH_STAT_TOPOLOGY_H
 #define VCL_ALGORITHMS_MESH_STAT_TOPOLOGY_H
 
+#include "../face_topology.h"
 #include "../sort.h"
 
 #include <vclib/mesh.h>
@@ -27,23 +28,23 @@ namespace detail {
 //       vertex is referenced or not
 // nRefs: number of referenced vertices
 template<typename Cont>
-void setReferencedVertices(const auto& mesh, auto& refs, uint& nRefs)
+void setReferencedVertices(const auto& mesh, auto& refs, auto& nRefs)
 {
     // check if the Cont container of the Mesh has vertex references
     if constexpr (comp::HasVertexReferences<typename Cont::ElementType>) {
         // if there are still some vertices non-referenced
         if (nRefs < mesh.vertexCount()) {
             constexpr uint ELEM_ID = Cont::ElementType::ELEMENT_ID;
-            // for eache element of the Cont container
+            // for each element of the Cont container
             for (const auto& el : mesh.template elements<ELEM_ID>()) {
                 // for each vertex of the element
-                for (uint vi : el.vertexIndices()) {
-                    // vertex references shoule never be null
-                    assert(vi != mesh.NULL_INDEX);
-                    if (!refs[vi]) {
-                        // set the vertex as referenced
-                        refs[vi] = true;
-                        nRefs++;
+                for (auto vi : el.vertexIndices()) {
+                    if (vi != mesh.NULL_INDEX && !mesh.vertex(vi).deleted()) {
+                        if (!refs[vi]) {
+                            // set the vertex as referenced
+                            refs[vi] = true;
+                            nRefs++;
+                        }
                     }
                 }
             }
@@ -56,7 +57,7 @@ template<typename... Cont>
 void setReferencedVertices(
     const auto& mesh,
     auto&       refs,
-    uint&       nRefs,
+    auto&       nRefs,
     TypeWrapper<Cont...>)
 {
     // call the setReferencedVerticesOnVector function for each container of the
@@ -94,10 +95,16 @@ std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
     // TD, and flag how many vertices are incident on non manifold edges.
     for (const auto& f : m.faces()) {
         for (uint i = 0; i < f.vertexCount(); ++i) {
-            TD[f.vertexIndex(i)]++;
-            if (!isFaceManifoldOnEdge(f, i)) {
-                nonManifoldInc[f.vertexIndex(i)]        = true;
-                nonManifoldInc[f.vertexIndexMod(i + 1)] = true;
+            auto vi = f.vertexIndex(i);
+            if (vi != m.NULL_INDEX) {
+                TD[vi]++;
+                if (!isFaceManifoldOnEdge(f, i)) {
+                    nonManifoldInc[vi] = true;
+                    auto viNext = f.vertexIndexMod(i + 1);
+                    if (viNext != m.NULL_INDEX) {
+                        nonManifoldInc[viNext] = true;
+                    }
+                }
             }
         }
     }
@@ -105,12 +112,13 @@ std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
     std::vector<bool> visited(m.vertexContainerSize(), false);
     for (const auto& f : m.faces()) {
         for (uint i = 0; i < f.vertexCount(); ++i) {
-            if (!visited[f.vertexIndex(i)]) {
-                visited[f.vertexIndex(i)] = true;
+            auto vi = f.vertexIndex(i);
+            if (vi != m.NULL_INDEX && !visited[vi]) {
+                visited[vi] = true;
                 MeshPos<MeshType> pos(f, i);
                 uint              starSize = pos.numberOfAdjacentFacesToV();
-                if (starSize != TD[f.vertexIndex(i)])
-                    nonManifoldVertices[f.vertexIndex(i)] = true;
+                if (starSize != TD[vi])
+                    nonManifoldVertices[vi] = true;
             }
         }
     }
@@ -119,20 +127,22 @@ std::vector<bool> nonManifoldVerticesVectorBool(const MeshType& m)
 }
 
 template<FaceMeshConcept MeshType>
-uint edgeCount(
+auto edgeCount(
     const MeshType& m,
-    uint&           numBoundaryEdges,
-    uint&           numNonManifoldEdges)
+    auto&           numBoundaryEdges,
+    auto&           numNonManifoldEdges)
 {
+    using IndexType = typename MeshType::IndexType;
+
     std::vector<MeshEdgeUtil<MeshType>> edgeVec =
         fillAndSortMeshEdgeUtilVector(m);
 
-    uint numEdges       = 0;
+    IndexType numEdges  = 0;
     numBoundaryEdges    = 0;
     numNonManifoldEdges = 0;
 
-    size_t f_on_cur_edge = 1;
-    for (size_t i = 0; i < edgeVec.size(); ++i) {
+    std::size_t f_on_cur_edge = 1;
+    for (std::size_t i = 0; i < edgeVec.size(); ++i) {
         if (((i + 1) == edgeVec.size()) || !(edgeVec[i] == edgeVec[i + 1])) {
             ++numEdges;
             if (f_on_cur_edge == 1)
@@ -148,9 +158,6 @@ uint edgeCount(
     return numEdges;
 }
 
-inline std::list<uint>                             dummyUintList;
-inline std::list<std::list<std::pair<uint, uint>>> dummyListOfLists;
-inline std::vector<std::pair<uint, uint>>          dummyVectorOfPairs;
 
 } // namespace detail
 
@@ -166,14 +173,15 @@ inline std::vector<std::pair<uint, uint>>          dummyVectorOfPairs;
  *
  * @ingroup mesh_stat
  */
-uint faceVertexReferencesCount(const FaceMeshConcept auto& mesh)
+auto faceVertexReferencesCount(const FaceMeshConcept auto& mesh)
 {
-    using MeshType = decltype(mesh);
+    using MeshType  = std::remove_cvref_t<decltype(mesh)>;
+    using IndexType = typename MeshType::IndexType;
 
-    uint nRefs = 0;
+    IndexType nRefs = 0;
 
     if constexpr (TriangleMeshConcept<MeshType>) {
-        return mesh.faceCount() * 3;
+        return static_cast<IndexType>(mesh.faceCount() * 3);
     }
     else {
         for (const auto& f : mesh.faces()) {
@@ -224,11 +232,12 @@ uint largestFaceSize(const FaceMeshConcept auto& mesh)
  *
  * @ingroup mesh_stat
  */
-uint triangulatedFaceCount(const FaceMeshConcept auto& mesh)
+auto triangulatedFaceCount(const FaceMeshConcept auto& mesh)
 {
-    using MeshType = decltype(mesh);
+    using MeshType  = std::remove_cvref_t<decltype(mesh)>;
+    using IndexType = typename MeshType::IndexType;
 
-    uint nTris = 0;
+    IndexType nTris = 0;
 
     for (const auto& f : mesh.faces()) {
         nTris += f.vertexCount() - 2;
@@ -454,15 +463,18 @@ uint largestPerEdgeAdjacentEdgesCount(const EdgeMeshConcept auto& mesh)
  *
  * @ingroup mesh_stat
  */
-template<FaceMeshConcept MeshType>
-uint verticesToDuplicateByWedgeTexCoordsCount(
-    const MeshType&                     mesh,
-    std::vector<std::pair<uint, uint>>& vertWedgeMap =
-        detail::dummyVectorOfPairs,
-    std::list<uint>& vertsToDuplicate = detail::dummyUintList,
-    std::list<std::list<std::pair<uint, uint>>>& facesToReassign =
-        detail::dummyListOfLists)
+template<
+    FaceMeshConcept MeshType,
+    typename VertWedgeMap,
+    typename VertsToDuplicate,
+    typename FacesToReassign>
+auto verticesToDuplicateByWedgeTexCoordsCount(
+    const MeshType&   mesh,
+    VertWedgeMap&     vertWedgeMap,
+    VertsToDuplicate& vertsToDuplicate,
+    FacesToReassign&  facesToReassign)
 {
+    using IndexType = typename MeshType::IndexType;
     vcl::requireFaceWedgeTexCoords(mesh);
 
     bool hasMaterials = false;
@@ -475,13 +487,13 @@ uint verticesToDuplicateByWedgeTexCoordsCount(
 
     // list of faces that reference a wedge texcoord, with the index of the
     // vertex in the face
-    using FaceList = std::list<std::pair<uint, uint>>;
+    using FaceList = std::list<std::pair<IndexType, uint>>;
 
     vertWedgeMap.resize(mesh.vertexContainerSize());
     vertsToDuplicate.clear();
     facesToReassign.clear();
 
-    uint count = 0;
+    IndexType count = 0;
 
     // for each vertex, I'll store a map of WedgeTexCoordsInfo
     // each element of the map represent a unique wedge texcoord(the texcoord
@@ -492,7 +504,10 @@ uint verticesToDuplicateByWedgeTexCoordsCount(
 
     for (const auto& f : mesh.faces()) {
         for (uint i = 0; i < f.vertexCount(); ++i) {
-            uint vi = f.vertexIndex(i);
+            auto vi = f.vertexIndex(i);
+            if (vi == mesh.NULL_INDEX) {
+                continue;
+            }
 
             // check if the i-th wedge texcoord of the face already exists
             uint matIdx = 0;
@@ -523,7 +538,8 @@ uint verticesToDuplicateByWedgeTexCoordsCount(
     // note: here we will modify the maps for convenience: at the end of this
     // loop, the info will be contained in the two lists vertsToDuplicate and
     // facesToReassign (the wedges vector of map will be inconsistent)
-    for (uint vi = 0; auto& map : wedges) {
+    IndexType vi = 0;
+    for (auto& map : wedges) {
         if (map.size() > 1) {
             // there are multiple texcoords for the vertex vi, so it will be
             // duplicated
@@ -553,7 +569,7 @@ uint verticesToDuplicateByWedgeTexCoordsCount(
                 vertWedgeMap[vi] = map.begin()->second.front();
             }
             else { // the vertex was unreferenced
-                vertWedgeMap[vi] = {UINT_NULL, UINT_NULL};
+                vertWedgeMap[vi] = {mesh.NULL_INDEX, UINT_NULL};
             }
         }
         ++vi;
@@ -564,6 +580,17 @@ uint verticesToDuplicateByWedgeTexCoordsCount(
     assert(facesToReassign.size() == count);
 
     return count;
+}
+
+template<FaceMeshConcept MeshType>
+auto verticesToDuplicateByWedgeTexCoordsCount(const MeshType& mesh)
+{
+    using IndexType = typename MeshType::IndexType;
+    std::vector<std::pair<IndexType, uint>>          vertWedgeMap;
+    std::list<IndexType>                             vertsToDuplicate;
+    std::list<std::list<std::pair<IndexType, uint>>> facesToReassign;
+    return verticesToDuplicateByWedgeTexCoordsCount(
+        mesh, vertWedgeMap, vertsToDuplicate, facesToReassign);
 }
 
 /**
@@ -594,13 +621,18 @@ uint verticesToDuplicateByWedgeTexCoordsCount(
  * @ingroup mesh_stat
  * @ingroup clean
  */
-template<typename Container, MeshConcept MeshType>
+template<
+    typename Container = std::vector<bool>,
+    MeshConcept MeshType,
+    typename Integer = typename MeshType::IndexType>
+    requires (!std::is_same_v<std::remove_cvref_t<Integer>, bool>)
 Container referencedVertices(
     const MeshType& mesh,
-    uint&           nUnref,
+    Integer&        nUnref,
     bool            onlyFaces = false)
 {
-    uint nRefs = 0;
+    using IndexType = typename MeshType::IndexType;
+    IndexType nRefs = 0;
 
     Container refVertices(mesh.vertexContainerSize(), false);
 
@@ -619,9 +651,18 @@ Container referencedVertices(
             mesh, refVertices, nRefs, typename MeshType::ElementContainers());
     }
 
-    nUnref = mesh.vertexCount() - nRefs;
+    nUnref = static_cast<Integer>(mesh.vertexCount() - nRefs);
 
     return refVertices;
+}
+
+template<typename Container = std::vector<bool>, MeshConcept MeshType>
+Container referencedVertices(
+    const MeshType& mesh,
+    bool            onlyFaces = false)
+{
+    typename MeshType::IndexType dummy = 0;
+    return referencedVertices<Container>(mesh, dummy, onlyFaces);
 }
 
 /**
@@ -643,9 +684,10 @@ Container referencedVertices(
  * @ingroup clean
  */
 template<MeshConcept MeshType>
-uint unreferencedVertexCount(const MeshType& m, bool onlyFaces = false)
+auto unreferencedVertexCount(const MeshType& m, bool onlyFaces = false)
 {
-    uint nV = 0;
+    using IndexType = typename MeshType::IndexType;
+    IndexType nV = 0;
     // store the number of unref vertices into nV
     referencedVertices<std::vector<bool>>(m, nV, onlyFaces);
 
@@ -672,12 +714,13 @@ uint unreferencedVertexCount(const MeshType& m, bool onlyFaces = false)
  * @ingroup clean
  */
 template<FaceMeshConcept MeshType>
-uint nonManifoldVertexCount(const MeshType& m)
+auto nonManifoldVertexCount(const MeshType& m)
 {
+    using IndexType = typename MeshType::IndexType;
     std::vector<bool> nonManifoldVertices =
         detail::nonManifoldVerticesVectorBool(m);
-    return std::count(
-        nonManifoldVertices.begin(), nonManifoldVertices.end(), true);
+    return static_cast<IndexType>(std::count(
+        nonManifoldVertices.begin(), nonManifoldVertices.end(), true));
 }
 
 /**
@@ -703,7 +746,7 @@ uint nonManifoldVertexCount(const MeshType& m)
 template<FaceMeshConcept MeshType>
 bool isWaterTight(const MeshType& m)
 {
-    uint numEdgeBorder, numNonManifoldEdges;
+    typename MeshType::IndexType numEdgeBorder = 0, numNonManifoldEdges = 0;
     detail::edgeCount(m, numEdgeBorder, numNonManifoldEdges);
     return numEdgeBorder == 0 && numNonManifoldEdges == 0;
 }
@@ -728,11 +771,12 @@ bool isWaterTight(const MeshType& m)
  * @ingroup clean
  */
 template<FaceMeshConcept MeshType>
-uint holeCount(const MeshType& m) requires HasFaceAdjacentFaces<MeshType>
+auto holeCount(const MeshType& m) requires HasFaceAdjacentFaces<MeshType>
 {
     requireFaceAdjacentFaces(m);
 
-    uint loopNum = 0;
+    using IndexType = typename MeshType::IndexType;
+    IndexType loopNum = 0;
 
     // create a vector of bools to keep track of visited faces.
     std::vector<bool> visitedFaces(m.faceContainerSize(), false);
@@ -782,14 +826,15 @@ uint holeCount(const MeshType& m) requires HasFaceAdjacentFaces<MeshType>
  * @ingroup clean
  */
 template<FaceMeshConcept MeshType>
-std::vector<std::set<uint>> connectedComponents(const MeshType& m)
+auto connectedComponents(const MeshType& m)
     requires HasFaceAdjacentFaces<MeshType>
 {
     requireFaceAdjacentFaces(m);
 
-    using FaceType = ConstFaceType<MeshType>;
+    using IndexType = typename MeshType::IndexType;
+    using FaceType  = ConstFaceType<MeshType>;
 
-    std::vector<std::set<uint>> cc;
+    std::vector<std::set<IndexType>> cc;
 
     // create a vector of bools to keep track of visited faces.
     std::vector<bool> visitedFaces(m.faceContainerSize(), false);
@@ -806,7 +851,7 @@ std::vector<std::set<uint>> connectedComponents(const MeshType& m)
 
             // new connected component
             cc.emplace_back();
-            std::set<uint>& ccf = cc[cc.size() - 1];
+            std::set<IndexType>& ccf = cc.back();
             ccf.insert(f.index());
 
             // while the stack is empty, visit the adjacent faces of the top
@@ -853,7 +898,7 @@ std::vector<std::set<uint>> connectedComponents(const MeshType& m)
  * @ingroup clean
  */
 template<FaceMeshConcept MeshType>
-uint connectedComponentCount(const MeshType& m)
+auto connectedComponentCount(const MeshType& m)
 {
     return connectedComponents(m).size();
 }

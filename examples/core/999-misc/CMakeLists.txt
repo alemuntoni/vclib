@@ -33,6 +33,7 @@ set(SOURCES
     test_mesh_pos.h
     test_update_normals.h
     test_delete_algorithms.h
+    test_clean_algorithms.h
     main.cpp
 )
 

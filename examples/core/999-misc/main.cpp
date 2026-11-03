@@ -30,6 +30,7 @@
 #include "test_mesh_pos.h"
 #include "test_update_normals.h"
 #include "test_delete_algorithms.h"
+#include "test_clean_algorithms.h"
 
 int main()
 {
@@ -56,6 +57,7 @@ int main()
     testMeshPos();
     testUpdateNormals();
     testDeleteAlgorithms();
+    testCleanAlgorithms();
 
     std::println("All mesh tests passed successfully!");
     return 0;

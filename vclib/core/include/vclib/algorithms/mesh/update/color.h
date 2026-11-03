@@ -479,14 +479,14 @@ void setPerVertexColorFromFaceBorderFlag(
  */
 template<FaceMeshConcept MeshType>
 void setPerFaceColorFromConnectedComponents(
-    MeshType&                          m,
-    const std::vector<std::set<uint>>& connectedComponents)
+    MeshType&   m,
+    const auto& connectedComponents)
 {
     std::vector<Color> vc = colorScattering(connectedComponents.size());
 
     uint cid = 0;
-    for (const std::set<uint>& connComp : connectedComponents) {
-        for (const uint& fid : connComp) {
+    for (const auto& connComp : connectedComponents) {
+        for (const auto& fid : connComp) {
             m.face(fid).color() = vc[cid];
         }
         cid++;
@@ -515,7 +515,7 @@ void setPerFaceColorFromConnectedComponents(MeshType& m)
 {
     requirePerFaceColor(m);
 
-    std::vector<std::set<uint>> connComps = connectedComponents(m);
+    auto connComps = connectedComponents(m);
 
     setPerFaceColorFromConnectedComponents(m, connComps);
 }
