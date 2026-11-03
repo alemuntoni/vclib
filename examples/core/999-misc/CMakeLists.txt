@@ -31,6 +31,8 @@ set(SOURCES
     test_presets.h
     test_mesh_info.h
     test_mesh_pos.h
+    test_update_normals.h
+    test_delete_algorithms.h
     main.cpp
 )
 
