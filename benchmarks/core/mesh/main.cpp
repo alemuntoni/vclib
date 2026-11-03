@@ -26,7 +26,7 @@ namespace fs = std::filesystem;
 template<typename Mesh>
 int runBenchmarks(
     const bench::CommonOptions& opts,
-    const nlohmann::json&        config,
+    const nlohmann::json&       config,
     std::string_view            meshType)
 {
     const auto& registry = bench::Registry<Mesh>::instance();
@@ -154,7 +154,12 @@ int main(int argc, char** argv)
 {
     try {
         auto opts = bench::parseCommonOptions(
-            argc, argv, {{"--grid", 2}, {"--mesh-type", 1}});
+            argc,
+            argv,
+            {
+                {"--grid",      2},
+                {"--mesh-type", 1}
+        });
 
         std::string supportedTypes;
         bench::forEachMeshType([&](auto, std::string_view name) {
@@ -188,7 +193,7 @@ int main(int argc, char** argv)
         bool        meshTypeSet = false;
         for (size_t i = 0; i < opts.extraArgs.size(); ++i) {
             if (opts.extraArgs[i] == "--mesh-type") {
-                meshType = opts.extraArgs[++i];
+                meshType    = opts.extraArgs[++i];
                 meshTypeSet = true;
             }
         }
@@ -200,7 +205,7 @@ int main(int argc, char** argv)
         bench::forEachMeshType([&](auto type, std::string_view name) {
             if (meshType == name) {
                 matched = true;
-                result = runBenchmarks<typename decltype(type)::type>(
+                result  = runBenchmarks<typename decltype(type)::type>(
                     opts, config, name);
             }
         });
