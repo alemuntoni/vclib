@@ -76,16 +76,19 @@ namespace vcl {
  */
 template<MeshConcept MeshType>
 void vertexPositionsFromBuffer(
-    MeshType&         mesh,
-    const auto*       buffer,
-    uint              vertexCount,
-    bool              clearBeforeSet = true,
-    MatrixStorageType storage        = MatrixStorageType::ROW_MAJOR,
-    uint              numRows        = UINT_NULL)
+    MeshType&                    mesh,
+    const auto*                  buffer,
+    typename MeshType::IndexType vertexCount,
+    bool                         clearBeforeSet = true,
+    MatrixStorageType            storage        = MatrixStorageType::ROW_MAJOR,
+    typename MeshType::IndexType numRows        = MeshType::NULL_INDEX)
 {
     using namespace detail;
 
-    const uint NUM_ROWS = numRows == UINT_NULL ? vertexCount : numRows;
+    using IndexType = typename MeshType::IndexType;
+
+    const IndexType NUM_ROWS =
+        numRows == MeshType::NULL_INDEX ? vertexCount : numRows;
 
     if (clearBeforeSet) {
         mesh.clearVertices();
@@ -103,7 +106,7 @@ void vertexPositionsFromBuffer(
         }
     }
 
-    for (uint i = 0; auto& p : mesh.vertices() | views::positions) {
+    for (IndexType i = 0; auto& p : mesh.vertices() | views::positions) {
         p.x() = at(buffer, i, 0, NUM_ROWS, 3, storage);
         p.y() = at(buffer, i, 1, NUM_ROWS, 3, storage);
         p.z() = at(buffer, i, 2, NUM_ROWS, 3, storage);
@@ -127,8 +130,8 @@ void vertexPositionsFromBuffer(
  *
  * If the MeshType is a polygonal mesh, the size of each polygonal face is
  * determined by counting the number of valid vertex indices in each row of the
- * input buffer. Valid vertex indices are non-negative and not equal to
- * UINT_NULL.
+ * input buffer. Valid vertex indices are non-negative and not equal to the
+ * buffer scalar type sentinel value (`static_cast<BufferValueType>(-1)`).
  *
  * If the argument `clearBeforeSet` is set to `true` (default), the function
  * clears the face container of the mesh and then adds a number of faces
@@ -173,17 +176,20 @@ void vertexPositionsFromBuffer(
  */
 template<FaceMeshConcept MeshType>
 void faceIndicesFromBuffer(
-    MeshType&         mesh,
-    const auto*       buffer,
-    uint              faceCount,
-    uint              faceSize       = 3,
-    bool              clearBeforeSet = true,
-    MatrixStorageType storage        = MatrixStorageType::ROW_MAJOR,
-    uint              numRows        = UINT_NULL)
+    MeshType&                    mesh,
+    const auto*                  buffer,
+    typename MeshType::IndexType faceCount,
+    uint                         faceSize       = 3,
+    bool                         clearBeforeSet = true,
+    MatrixStorageType            storage        = MatrixStorageType::ROW_MAJOR,
+    typename MeshType::IndexType numRows        = MeshType::NULL_INDEX)
 {
     using namespace detail;
 
-    const uint NUM_ROWS = numRows == UINT_NULL ? faceCount : numRows;
+    using IndexType = typename MeshType::IndexType;
+
+    const IndexType NUM_ROWS =
+        numRows == MeshType::NULL_INDEX ? faceCount : numRows;
 
     if (clearBeforeSet) {
         mesh.clearFaces();
@@ -201,33 +207,34 @@ void faceIndicesFromBuffer(
     }
 
     if constexpr (HasPolygons<MeshType>) {
-        uint i = 0;
-        for (auto& f : mesh.faces()) {
-            uint vertexCount = 0;
+        using BufferValueType = std::remove_cvref_t<decltype(*buffer)>;
+        const auto SENTINEL   = bufferSentinel<BufferValueType>();
+
+        IndexType i = 0;
+        for (auto f : mesh.faces()) {
+            IndexType vertexCount = 0;
 
             // count the number of vertices of the face
             while (vertexCount < faceSize &&
                    at(buffer, i, vertexCount, NUM_ROWS, faceSize, storage) !=
-                       -1 &&
-                   at(buffer, i, vertexCount, NUM_ROWS, faceSize, storage) !=
-                       UINT_NULL)
+                       SENTINEL)
                 vertexCount++;
 
             f.resizeVertices(vertexCount);
 
-            for (uint j = 0; j < vertexCount; ++j)
+            for (IndexType j = 0; j < vertexCount; ++j)
                 f.setVertex(j, at(buffer, i, j, NUM_ROWS, faceSize, storage));
             ++i;
         }
     }
     else { // the vertex number of mesh faces is fixed
-        using FaceType = MeshType::FaceType;
+        using FaceType = FaceType<MeshType>;
 
         constexpr int VC = FaceType::VERTEX_COUNT;
         if (faceSize == VC) { // faces of matrix and mesh have same size
-            uint i = 0;
-            for (auto& f : mesh.faces()) {
-                for (uint j = 0; j < VC; ++j)
+            IndexType i = 0;
+            for (auto f : mesh.faces()) {
+                for (IndexType j = 0; j < VC; ++j)
                     f.setVertex(
                         j, at(buffer, i, j, NUM_ROWS, faceSize, storage));
                 ++i;
@@ -292,14 +299,19 @@ void faceIndicesFromBuffer(
  */
 template<EdgeMeshConcept MeshType>
 void edgeIndicesFromBuffer(
-    MeshType&         mesh,
-    const auto*       buffer,
-    uint              edgeCount,
-    bool              clearBeforeSet = true,
-    MatrixStorageType storage        = MatrixStorageType::ROW_MAJOR,
-    uint              numRows        = UINT_NULL)
+    MeshType&                    mesh,
+    const auto*                  buffer,
+    typename MeshType::IndexType edgeCount,
+    bool                         clearBeforeSet = true,
+    MatrixStorageType            storage        = MatrixStorageType::ROW_MAJOR,
+    typename MeshType::IndexType numRows        = MeshType::NULL_INDEX)
 {
     using namespace detail;
+
+    using IndexType = typename MeshType::IndexType;
+
+    const IndexType NUM_ROWS =
+        numRows == MeshType::NULL_INDEX ? edgeCount : numRows;
 
     if (clearBeforeSet) {
         mesh.clearEdges();
@@ -316,10 +328,10 @@ void edgeIndicesFromBuffer(
         }
     }
 
-    uint i = 0;
-    for (auto& e : mesh.edges()) {
-        e.setVertex(0, at(buffer, i, 0, numRows, 2, storage));
-        e.setVertex(1, at(buffer, i, 1, numRows, 2, storage));
+    IndexType i = 0;
+    for (auto e : mesh.edges()) {
+        e.setVertex(0, at(buffer, i, 0, NUM_ROWS, 2, storage));
+        e.setVertex(1, at(buffer, i, 1, NUM_ROWS, 2, storage));
         i++;
     }
 }
@@ -341,7 +353,9 @@ void edgeIndicesFromBuffer(
 template<uint ELEM_ID, MeshConcept MeshType>
 void elementSelectionFromBuffer(MeshType& mesh, const auto* buffer)
 {
-    for (uint i = 0; auto& e : mesh.template elements<ELEM_ID>()) {
+    using IndexType = typename MeshType::IndexType;
+
+    for (IndexType i = 0; auto e : mesh.template elements<ELEM_ID>()) {
         e.selected() = buffer[i];
         ++i;
     }
@@ -439,21 +453,24 @@ void edgeSelectionFromBuffer(MeshType& mesh, const auto* buffer)
  */
 template<uint ELEM_ID, MeshConcept MeshType>
 void elementNormalsFromBuffer(
-    MeshType&         mesh,
-    const auto*       buffer,
-    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
-    uint              numRows = UINT_NULL)
+    MeshType&                    mesh,
+    const auto*                  buffer,
+    MatrixStorageType            storage = MatrixStorageType::ROW_MAJOR,
+    typename MeshType::IndexType numRows = MeshType::NULL_INDEX)
 {
     using namespace detail;
 
-    const uint NUM_ROWS =
-        numRows == UINT_NULL ? mesh.template count<ELEM_ID>() : numRows;
+    using IndexType = typename MeshType::IndexType;
 
-    enableIfPerElementComponentOptional<ELEM_ID, CompId::NORMAL>(mesh);
-    requirePerElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
+    const IndexType NUM_ROWS = numRows == MeshType::NULL_INDEX ?
+                                   mesh.template count<ELEM_ID>() :
+                                   numRows;
 
-    for (uint  i = 0;
-         auto& n : mesh.template elements<ELEM_ID>() | views::normals) {
+    enableIfElementComponentOptional<ELEM_ID, CompId::NORMAL>(mesh);
+    requireElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
+
+    for (IndexType i = 0;
+         auto&     n : mesh.template elements<ELEM_ID>() | views::normals) {
         n.x() = at(buffer, i, 0, NUM_ROWS, 3, storage);
         n.y() = at(buffer, i, 1, NUM_ROWS, 3, storage);
         n.z() = at(buffer, i, 2, NUM_ROWS, 3, storage);
@@ -491,10 +508,10 @@ void elementNormalsFromBuffer(
  */
 template<MeshConcept MeshType>
 void vertexNormalsFromBuffer(
-    MeshType&         mesh,
-    const auto*       buffer,
-    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
-    uint              numRows = UINT_NULL)
+    MeshType&                    mesh,
+    const auto*                  buffer,
+    MatrixStorageType            storage = MatrixStorageType::ROW_MAJOR,
+    typename MeshType::IndexType numRows = MeshType::NULL_INDEX)
 {
     elementNormalsFromBuffer<ElemId::VERTEX, MeshType>(
         mesh, buffer, storage, numRows);
@@ -529,10 +546,10 @@ void vertexNormalsFromBuffer(
  */
 template<FaceMeshConcept MeshType>
 void faceNormalsFromBuffer(
-    MeshType&         mesh,
-    const auto*       buffer,
-    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
-    uint              numRows = UINT_NULL)
+    MeshType&                    mesh,
+    const auto*                  buffer,
+    MatrixStorageType            storage = MatrixStorageType::ROW_MAJOR,
+    typename MeshType::IndexType numRows = MeshType::NULL_INDEX)
 {
     elementNormalsFromBuffer<ElemId::FACE, MeshType>(
         mesh, buffer, storage, numRows);
@@ -567,10 +584,10 @@ void faceNormalsFromBuffer(
  */
 template<EdgeMeshConcept MeshType>
 void edgeNormalsFromBuffer(
-    MeshType&         mesh,
-    const auto*       buffer,
-    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
-    uint              numRows = UINT_NULL)
+    MeshType&                    mesh,
+    const auto*                  buffer,
+    MatrixStorageType            storage = MatrixStorageType::ROW_MAJOR,
+    typename MeshType::IndexType numRows = MeshType::NULL_INDEX)
 {
     elementNormalsFromBuffer<ElemId::EDGE, MeshType>(
         mesh, buffer, storage, numRows);
@@ -623,23 +640,26 @@ void elementColorsFromBuffer(
     uint                  channelCount   = 4,
     MatrixStorageType     storage        = MatrixStorageType::ROW_MAJOR,
     Color::Representation representation = Color::Representation::INT_0_255,
-    uint                  numRows        = UINT_NULL)
+    typename MeshType::IndexType numRows = MeshType::NULL_INDEX)
 {
     using namespace detail;
 
-    const uint NUM_ROWS =
-        numRows == UINT_NULL ? mesh.template count<ELEM_ID>() : numRows;
+    using IndexType = typename MeshType::IndexType;
+
+    const IndexType NUM_ROWS = numRows == MeshType::NULL_INDEX ?
+                                   mesh.template count<ELEM_ID>() :
+                                   numRows;
 
     if (channelCount != 3 && channelCount != 4)
         throw WrongSizeException(
             "The input " + elementEnumString<ELEM_ID>() +
             " colors must have 3 or 4 channels.");
 
-    enableIfPerElementComponentOptional<ELEM_ID, CompId::COLOR>(mesh);
-    requirePerElementComponent<ELEM_ID, CompId::COLOR>(mesh);
+    enableIfElementComponentOptional<ELEM_ID, CompId::COLOR>(mesh);
+    requireElementComponent<ELEM_ID, CompId::COLOR>(mesh);
 
-    for (uint  i = 0;
-         auto& c : mesh.template elements<ELEM_ID>() | views::colors) {
+    for (IndexType i = 0;
+         auto&     c : mesh.template elements<ELEM_ID>() | views::colors) {
         if (representation == Color::Representation::INT_0_255) {
             c.x() = at(buffer, i, 0, NUM_ROWS, channelCount, storage);
             c.y() = at(buffer, i, 1, NUM_ROWS, channelCount, storage);
@@ -692,11 +712,13 @@ void elementColorsFromBuffer(
     const auto*   buffer,
     Color::Format colorFormat)
 {
-    enableIfPerElementComponentOptional<ELEM_ID, CompId::COLOR>(mesh);
-    requirePerElementComponent<ELEM_ID, CompId::COLOR>(mesh);
+    using IndexType = typename MeshType::IndexType;
 
-    for (uint  i = 0;
-         auto& c : mesh.template elements<ELEM_ID>() | views::colors) {
+    enableIfElementComponentOptional<ELEM_ID, CompId::COLOR>(mesh);
+    requireElementComponent<ELEM_ID, CompId::COLOR>(mesh);
+
+    for (IndexType i = 0;
+         auto&     c : mesh.template elements<ELEM_ID>() | views::colors) {
         c = Color(buffer[i++], colorFormat);
     }
 }
@@ -745,7 +767,7 @@ void vertexColorsFromBuffer(
     uint                  channelCount   = 4,
     MatrixStorageType     storage        = MatrixStorageType::ROW_MAJOR,
     Color::Representation representation = Color::Representation::INT_0_255,
-    uint                  numRows        = UINT_NULL)
+    typename MeshType::IndexType numRows = MeshType::NULL_INDEX)
 {
     elementColorsFromBuffer<ElemId::VERTEX, MeshType>(
         mesh, buffer, channelCount, storage, representation, numRows);
@@ -825,7 +847,7 @@ void faceColorsFromBuffer(
     uint                  channelCount   = 4,
     MatrixStorageType     storage        = MatrixStorageType::ROW_MAJOR,
     Color::Representation representation = Color::Representation::INT_0_255,
-    uint                  numRows        = UINT_NULL)
+    typename MeshType::IndexType numRows = MeshType::NULL_INDEX)
 {
     elementColorsFromBuffer<ElemId::FACE, MeshType>(
         mesh, buffer, channelCount, storage, representation, numRows);
@@ -904,7 +926,7 @@ void edgeColorsFromBuffer(
     uint                  channelCount   = 4,
     MatrixStorageType     storage        = MatrixStorageType::ROW_MAJOR,
     Color::Representation representation = Color::Representation::INT_0_255,
-    uint                  numRows        = UINT_NULL)
+    typename MeshType::IndexType numRows = MeshType::NULL_INDEX)
 {
     elementColorsFromBuffer<ElemId::EDGE, MeshType>(
         mesh, buffer, channelCount, storage, representation, numRows);
@@ -961,10 +983,12 @@ void edgeColorsFromBuffer(
 template<uint ELEM_ID, MeshConcept MeshType>
 void elementQualityFromBuffer(MeshType& mesh, const auto* buffer)
 {
-    enableIfPerElementComponentOptional<ELEM_ID, CompId::QUALITY>(mesh);
-    requirePerElementComponent<ELEM_ID, CompId::QUALITY>(mesh);
+    using IndexType = typename MeshType::IndexType;
 
-    for (uint i = 0; auto& e : mesh.template elements<ELEM_ID>()) {
+    enableIfElementComponentOptional<ELEM_ID, CompId::QUALITY>(mesh);
+    requireElementComponent<ELEM_ID, CompId::QUALITY>(mesh);
+
+    for (IndexType i = 0; auto e : mesh.template elements<ELEM_ID>()) {
         e.quality() = buffer[i];
         ++i;
     }
@@ -1073,19 +1097,22 @@ void edgeQualityFromBuffer(MeshType& mesh, const auto* buffer)
  */
 template<MeshConcept MeshType>
 void vertexTexCoordsFromBuffer(
-    MeshType&         mesh,
-    const auto*       buffer,
-    MatrixStorageType storage = MatrixStorageType::ROW_MAJOR,
-    uint              numRows = UINT_NULL)
+    MeshType&                    mesh,
+    const auto*                  buffer,
+    MatrixStorageType            storage = MatrixStorageType::ROW_MAJOR,
+    typename MeshType::IndexType numRows = MeshType::NULL_INDEX)
 {
     using namespace detail;
 
-    const uint NUM_ROWS = numRows == UINT_NULL ? mesh.vertexCount() : numRows;
+    using IndexType = typename MeshType::IndexType;
 
-    enableIfPerVertexTexCoordOptional(mesh);
-    requirePerVertexTexCoord(mesh);
+    const IndexType NUM_ROWS =
+        numRows == MeshType::NULL_INDEX ? mesh.vertexCount() : numRows;
 
-    for (uint i = 0; auto& t : mesh.vertices() | views::texCoords) {
+    enableIfVertexTexCoordsOptional(mesh);
+    requireVertexTexCoords(mesh);
+
+    for (IndexType i = 0; auto& t : mesh.vertices() | views::texCoords) {
         t.u() = at(buffer, i, 0, NUM_ROWS, 2, storage);
         t.v() = at(buffer, i, 1, NUM_ROWS, 2, storage);
 
@@ -1116,10 +1143,12 @@ void vertexTexCoordsFromBuffer(
 template<MeshConcept MeshType>
 void vertexMaterialIndicesFromBuffer(MeshType& mesh, const auto* buffer)
 {
-    enableIfPerVertexMaterialIndexOptional(mesh);
-    requirePerVertexMaterialIndex(mesh);
+    using IndexType = typename MeshType::IndexType;
 
-    for (uint i = 0; auto& v : mesh.vertices()) {
+    enableIfVertexMaterialIndicesOptional(mesh);
+    requireVertexMaterialIndices(mesh);
+
+    for (IndexType i = 0; auto v : mesh.vertices()) {
         v.materialIndex() = buffer[i];
         ++i;
     }
@@ -1163,22 +1192,25 @@ void vertexMaterialIndicesFromBuffer(MeshType& mesh, const auto* buffer)
  */
 template<FaceMeshConcept MeshType>
 void faceWedgeTexCoordsFromBuffer(
-    MeshType&         mesh,
-    const auto*       buffer,
-    uint              largestFaceSize = 3,
-    MatrixStorageType storage         = MatrixStorageType::ROW_MAJOR,
-    uint              numRows         = UINT_NULL)
+    MeshType&                    mesh,
+    const auto*                  buffer,
+    typename MeshType::IndexType largestFaceSize = 3,
+    MatrixStorageType            storage         = MatrixStorageType::ROW_MAJOR,
+    typename MeshType::IndexType numRows         = MeshType::NULL_INDEX)
 {
     using namespace detail;
 
-    const uint NUM_ROWS = numRows == UINT_NULL ? mesh.faceCount() : numRows;
-    const uint NUM_COLS = largestFaceSize * 2;
+    using IndexType = typename MeshType::IndexType;
 
-    enableIfPerFaceWedgeTexCoordsOptional(mesh);
-    requirePerFaceWedgeTexCoords(mesh);
+    const IndexType NUM_ROWS =
+        numRows == MeshType::NULL_INDEX ? mesh.faceCount() : numRows;
+    const IndexType NUM_COLS = largestFaceSize * 2;
 
-    for (uint i = 0; auto& f : mesh.faces()) {
-        for (uint j = 0; auto& w : f.wedgeTexCoords()) {
+    enableIfFaceWedgeTexCoordsOptional(mesh);
+    requireFaceWedgeTexCoords(mesh);
+
+    for (IndexType i = 0; auto f : mesh.faces()) {
+        for (IndexType j = 0; auto& w : f.wedges().texCoords()) {
             if (j < largestFaceSize) {
                 w.u() = at(buffer, i, 2 * j + 0, NUM_ROWS, NUM_COLS, storage);
                 w.v() = at(buffer, i, 2 * j + 1, NUM_ROWS, NUM_COLS, storage);
@@ -1187,7 +1219,7 @@ void faceWedgeTexCoordsFromBuffer(
         }
         ++i;
     }
-};
+}
 
 /**
  * @brief Sets the face material indices of the given input `mesh` from
@@ -1212,10 +1244,12 @@ void faceWedgeTexCoordsFromBuffer(
 template<FaceMeshConcept MeshType>
 void faceMaterialIndicesFromBuffer(MeshType& mesh, const auto* buffer)
 {
-    enableIfPerFaceMaterialIndexOptional(mesh);
-    requirePerFaceMaterialIndex(mesh);
+    using IndexType = typename MeshType::IndexType;
 
-    for (uint i = 0; auto& f : mesh.faces()) {
+    enableIfFaceMaterialIndicesOptional(mesh);
+    requireFaceMaterialIndices(mesh);
+
+    for (IndexType i = 0; auto f : mesh.faces()) {
         f.materialIndex() = buffer[i];
         ++i;
     }

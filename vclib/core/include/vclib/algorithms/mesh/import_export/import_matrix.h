@@ -228,7 +228,7 @@ void vertexPositionsFromMatrix(
  * If the MeshType is a polygonal mesh, the size of each polygonal face is
  * determined by counting the number of valid vertex indices in each row of the
  * input face matrix. Valid vertex indices are non-negative and not equal to
- * UINT_NULL.
+ * MeshType::NULL_INDEX.
  *
  * If the argument `clearBeforeSet` is set to `true` (default), the function
  * clears the face container of the mesh and then adds a number of faces
@@ -355,7 +355,7 @@ void elementSelectionFromRange(MeshType& mesh, R&& selection)
             elementEnumString<ELEM_ID>() + " element in the mesh");
 
     auto s = selection.begin();
-    for (auto& e : mesh.template elements<ELEM_ID>()) {
+    for (auto e : mesh.template elements<ELEM_ID>()) {
         e.selected() = *s;
         ++s;
     }
@@ -628,11 +628,11 @@ void elementColorsFromRange(
             "as the number of " +
             elementEnumString<ELEM_ID>() + " element in the mesh");
 
-    enableIfPerElementComponentOptional<ELEM_ID, CompId::COLOR>(mesh);
-    requirePerElementComponent<ELEM_ID, CompId::COLOR>(mesh);
+    enableIfElementComponentOptional<ELEM_ID, CompId::COLOR>(mesh);
+    requireElementComponent<ELEM_ID, CompId::COLOR>(mesh);
 
     auto c = colors.begin();
-    for (auto& e : mesh.template elements<ELEM_ID>()) {
+    for (auto e : mesh.template elements<ELEM_ID>()) {
         e.color() = Color(*c, colorFormat);
         ++c;
     }
@@ -862,11 +862,11 @@ void elementQualityFromRange(MeshType& mesh, R&& quality)
             "as the number of " +
             elementEnumString<ELEM_ID>() + " element in the mesh");
 
-    enableIfPerElementComponentOptional<ELEM_ID, CompId::QUALITY>(mesh);
-    requirePerElementComponent<ELEM_ID, CompId::QUALITY>(mesh);
+    enableIfElementComponentOptional<ELEM_ID, CompId::QUALITY>(mesh);
+    requireElementComponent<ELEM_ID, CompId::QUALITY>(mesh);
 
     auto q = quality.begin();
-    for (auto& e : mesh.template elements<ELEM_ID>()) {
+    for (auto e : mesh.template elements<ELEM_ID>()) {
         e.quality() = *q;
         ++q;
     }
@@ -1010,14 +1010,14 @@ void vertexMaterialIndicesFromRange(MeshType& mesh, R&& materialIndices)
 {
     if (std::ranges::size(materialIndices) != mesh.vertexCount())
         throw WrongSizeException(
-            "The input quality range must have the same number of elements "
-            "as the number of vertices in the mesh");
+            "The input material indices range must have the same number of "
+            "elements as the number of vertices in the mesh");
 
-    enableIfPerVertexMaterialIndexOptional(mesh);
-    requirePerVertexMaterialIndex(mesh);
+    enableIfVertexMaterialIndicesOptional(mesh);
+    requireVertexMaterialIndices(mesh);
 
     auto tt = materialIndices.begin();
-    for (auto& v : mesh.vertices()) {
+    for (auto v : mesh.vertices()) {
         v.materialIndex() = *tt;
         ++tt;
     }
@@ -1081,23 +1081,23 @@ void faceWedgeTexCoordsFromMatrix(
  * @tparam R: the type of the input range. It must satisfy the Range concept.
  * @param[in/out] mesh: the mesh on which import the input face material
  * indices.
- * @param[in] texCoordIndices: the input face material indices range.
+ * @param[in] materialIndices: the input face material indices range.
  *
  * @ingroup import_matrix
  */
 template<FaceMeshConcept MeshType, Range R>
-void faceMaterialIndicesFromRange(MeshType& mesh, R&& texCoordIndices)
+void faceMaterialIndicesFromRange(MeshType& mesh, R&& materialIndices)
 {
-    if (std::ranges::size(texCoordIndices) != mesh.faceCount())
+    if (std::ranges::size(materialIndices) != mesh.faceCount())
         throw WrongSizeException(
-            "The input quality range must have the same number of elements "
-            "as the number of faces in the mesh");
+            "The input material indices range must have the same number of "
+            "elements as the number of faces in the mesh");
 
-    enableIfPerFaceMaterialIndexOptional(mesh);
-    requirePerFaceMaterialIndex(mesh);
+    enableIfFaceMaterialIndicesOptional(mesh);
+    requireFaceMaterialIndices(mesh);
 
-    auto tt = texCoordIndices.begin();
-    for (auto& f : mesh.faces()) {
+    auto tt = materialIndices.begin();
+    for (auto f : mesh.faces()) {
         f.materialIndex() = *tt;
         ++tt;
     }
