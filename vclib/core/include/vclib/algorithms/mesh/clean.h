@@ -17,7 +17,6 @@
 #include <vclib/space/complex.h>
 
 #include <algorithm>
-#include <execution>
 #include <numeric>
 #include <vector>
 
