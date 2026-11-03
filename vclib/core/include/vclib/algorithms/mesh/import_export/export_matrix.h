@@ -100,7 +100,7 @@ Matrix vertexPositionsMatrix(const MeshType& mesh)
 template<typename Vect, FaceMeshConcept MeshType>
 Vect faceSizesVector(const MeshType& mesh)
 {
-    requireVertexContainerCompactness(mesh);
+    requireVertexCompactness(mesh);
 
     Vect fM(mesh.faceCount());
 
@@ -143,7 +143,7 @@ Vect faceSizesVector(const MeshType& mesh)
 template<typename Vect, FaceMeshConcept MeshType>
 Vect faceVertexIndicesVector(const MeshType& mesh)
 {
-    requireVertexContainerCompactness(mesh);
+    requireVertexCompactness(mesh);
 
     uint nIndices = faceVertexReferencesCount(mesh);
 
@@ -159,8 +159,9 @@ Vect faceVertexIndicesVector(const MeshType& mesh)
  * each face of a Mesh. LFS is the largest face size of the mesh (this number is
  * variable only for polygonal meshes).
  *
- * If the mesh is polygonal, the matrix will have a number of rows equal to the
- * greatest polygon of the mesh, and unused values will be set to -1.
+ * If the mesh is polygonal, the matrix will have a number of columns equal to
+ * the largest polygon of the mesh, and unused values will be set to the
+ * sentinel value of the matrix scalar type (`static_cast<Scalar>(-1)`).
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
  *
@@ -191,7 +192,7 @@ Vect faceVertexIndicesVector(const MeshType& mesh)
 template<MatrixConcept Matrix, FaceMeshConcept MeshType>
 Matrix faceVertexIndicesMatrix(const MeshType& mesh)
 {
-    requireVertexContainerCompactness(mesh);
+    requireVertexCompactness(mesh);
 
     uint fMaxSize = largestFaceSize(mesh);
 
@@ -236,7 +237,7 @@ Matrix triangulatedFaceVertexIndicesMatrix(
     const MeshType&    mesh,
     TriPolyIndexBiMap& indexMap = detail::indexMap)
 {
-    requireVertexContainerCompactness(mesh);
+    requireVertexCompactness(mesh);
 
     uint tCount = vcl::triangulatedFaceCount(mesh);
 
@@ -283,7 +284,7 @@ Matrix triangulatedFaceVertexIndicesMatrix(
 template<MatrixConcept Matrix, EdgeMeshConcept MeshType>
 Matrix edgeVertexIndicesMatrix(const MeshType& mesh)
 {
-    requireVertexContainerCompactness(mesh);
+    requireVertexCompactness(mesh);
 
     Matrix eM(mesh.edgeCount(), 2);
 
@@ -1163,8 +1164,8 @@ template<
     MeshConcept MeshType>
 Container<Container<T>> vertexAdjacentVerticesVectors(const MeshType& mesh)
 {
-    requireVertexContainerCompactness(mesh);
-    requirePerVertexAdjacentVertices(mesh);
+    requireVertexCompactness(mesh);
+    requireVertexAdjacentVertices(mesh);
 
     Container<Container<T>> vv(mesh.vertexCount());
 
@@ -1174,9 +1175,8 @@ Container<Container<T>> vertexAdjacentVerticesVectors(const MeshType& mesh)
 
         vec.resize(v.adjVertexCount());
         auto vecIt = vec.begin();
-        for (const auto* ve : v.adjVertices()) {
-            uint idx = ve ? ve->index() : UINT_NULL;
-            *vecIt   = T(idx);
+        for (auto idx : v.adjVertexIndices()) {
+            *vecIt = T(idx);
             ++vecIt;
         }
 
@@ -1189,7 +1189,8 @@ Container<Container<T>> vertexAdjacentVerticesVectors(const MeshType& mesh)
 /**
  * @brief Get a \#V*LVA Matrix of integers containing the adjacent vertex
  * indices for each vertex of a Mesh. LVA is the largest vertex adjacency size
- * of the mesh. The unused values will be set to -1 (@ref vcl::UINT_NULL).
+ * of the mesh. The unused values will be set to the sentinel value of the
+ * matrix scalar type (`static_cast<Scalar>(-1)`).
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
  *
@@ -1275,8 +1276,8 @@ template<
     FaceMeshConcept MeshType>
 Container<Container<T>> elementAdjacentFacesVectors(const MeshType& mesh)
 {
-    requireFaceContainerCompactness(mesh);
-    requirePerElementComponent<ELEM_ID, CompId::ADJACENT_FACES>(mesh);
+    requireFaceCompactness(mesh);
+    requireElementComponent<ELEM_ID, CompId::ADJACENT_FACES>(mesh);
 
     Container<Container<T>> vv(mesh.template count<ELEM_ID>());
 
@@ -1286,9 +1287,8 @@ Container<Container<T>> elementAdjacentFacesVectors(const MeshType& mesh)
 
         vec.resize(v.adjFaceCount());
         auto vecIt = vec.begin();
-        for (const auto* fe : v.adjFaces()) {
-            uint idx = fe ? fe->index() : UINT_NULL;
-            *vecIt   = T(idx);
+        for (auto idx : v.adjFaceIndices()) {
+            *vecIt = T(idx);
             ++vecIt;
         }
 
@@ -1301,8 +1301,8 @@ Container<Container<T>> elementAdjacentFacesVectors(const MeshType& mesh)
 /**
  * @brief Get a \#E*LFA Matrix of integers containing the adjacent face
  * indices for each ELEM_ID element of a Mesh. LFA is the largest face
- * adjacency size of the mesh. The unused values will be set to -1 (@ref
- * vcl::UINT_NULL).
+ * adjacency size of the mesh. The unused values will be set to the sentinel
+ * value of the matrix scalar type (`static_cast<Scalar>(-1)`).
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
  *
@@ -1397,8 +1397,8 @@ Container<Container<T>> vertexAdjacentFacesVectors(const MeshType& mesh)
 /**
  * @brief Get a \#V*LFA Matrix of integers containing the adjacent face
  * indices for each vertex of a Mesh. LFA is the largest face
- * adjacency size of the mesh. The unused values will be set to -1 (@ref
- * vcl::UINT_NULL).
+ * adjacency size of the mesh. The unused values will be set to the sentinel
+ * value of the matrix scalar type (`static_cast<Scalar>(-1)`).
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
  *
@@ -1479,8 +1479,8 @@ Container<Container<T>> faceAdjacentFacesVectors(const MeshType& mesh)
 /**
  * @brief Get a \#F*LFA Matrix of integers containing the adjacent face
  * indices for each face of a Mesh. LFA is the largest face
- * adjacency size of the mesh. The unused values will be set to -1 (@ref
- * vcl::UINT_NULL).
+ * adjacency size of the mesh. The unused values will be set to the sentinel
+ * value of the matrix scalar type (`static_cast<Scalar>(-1)`).
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
  *
@@ -1562,8 +1562,8 @@ Container<Container<T>> edgeAdjacentFacesVectors(const MeshType& mesh)
 /**
  * @brief Get a \#E*LFA Matrix of integers containing the adjacent face
  * indices for each edge of a Mesh. LFA is the largest face
- * adjacency size of the mesh. The unused values will be set to -1 (@ref
- * vcl::UINT_NULL).
+ * adjacency size of the mesh. The unused values will be set to the sentinel
+ * value of the matrix scalar type (`static_cast<Scalar>(-1)`).
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
  *
@@ -1647,8 +1647,8 @@ template<
     EdgeMeshConcept MeshType>
 Container<Container<T>> elementAdjacentEdgesVectors(const MeshType& mesh)
 {
-    requireEdgeContainerCompactness(mesh);
-    requirePerElementComponent<ELEM_ID, CompId::ADJACENT_EDGES>(mesh);
+    requireEdgeCompactness(mesh);
+    requireElementComponent<ELEM_ID, CompId::ADJACENT_EDGES>(mesh);
 
     Container<Container<T>> vv(mesh.template count<ELEM_ID>());
 
@@ -1658,9 +1658,8 @@ Container<Container<T>> elementAdjacentEdgesVectors(const MeshType& mesh)
 
         vec.resize(v.adjEdgeCount());
         auto vecIt = vec.begin();
-        for (const auto* fe : v.adjEdges()) {
-            uint idx = fe ? fe->index() : UINT_NULL;
-            *vecIt   = T(idx);
+        for (auto idx : v.adjEdgeIndices()) {
+            *vecIt = T(idx);
             ++vecIt;
         }
 
@@ -1673,8 +1672,8 @@ Container<Container<T>> elementAdjacentEdgesVectors(const MeshType& mesh)
 /**
  * @brief Get a \#E*LEA Matrix of integers containing the adjacent edge
  * indices for each ELEM_ID element of a Mesh. LEA is the largest edge
- * adjacency size of the mesh. The unused values will be set to -1 (@ref
- * vcl::UINT_NULL).
+ * adjacency size of the mesh. The unused values will be set to the sentinel
+ * value of the matrix scalar type (`static_cast<Scalar>(-1)`).
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
  *
@@ -1769,8 +1768,8 @@ Container<Container<T>> vertexAdjacentEdgesVectors(const MeshType& mesh)
 /**
  * @brief Get a \#V*LEA Matrix of integers containing the adjacent edge
  * indices for each vertex of a Mesh. LEA is the largest edge
- * adjacency size of the mesh. The unused values will be set to -1 (@ref
- * vcl::UINT_NULL).
+ * adjacency size of the mesh. The unused values will be set to the sentinel
+ * value of the matrix scalar type (`static_cast<Scalar>(-1)`).
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
  *
@@ -1857,8 +1856,8 @@ Container<Container<T>> faceAdjacentEdgesVectors(const MeshType& mesh)
 /**
  * @brief Get a \#F*LEA Matrix of integers containing the adjacent edge
  * indices for each face of a Mesh. LEA is the largest edge
- * adjacency size of the mesh. The unused values will be set to -1 (@ref
- * vcl::UINT_NULL).
+ * adjacency size of the mesh. The unused values will be set to the sentinel
+ * value of the matrix scalar type (`static_cast<Scalar>(-1)`).
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
  *
@@ -1940,8 +1939,8 @@ Container<Container<T>> edgeAdjacentEdgesVectors(const MeshType& mesh)
 /**
  * @brief Get a \#E*LEA Matrix of integers containing the adjacent edge
  * indices for each edge of a Mesh. LEA is the largest edge
- * adjacency size of the mesh. The unused values will be set to -1 (@ref
- * vcl::UINT_NULL).
+ * adjacency size of the mesh. The unused values will be set to the sentinel
+ * value of the matrix scalar type (`static_cast<Scalar>(-1)`).
  *
  * This function works with every Matrix type that satisfies the MatrixConcept.
  *

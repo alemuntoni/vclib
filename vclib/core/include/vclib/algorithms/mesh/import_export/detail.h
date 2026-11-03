@@ -8,8 +8,15 @@
 #ifndef VCL_ALGORITHMS_MESH_IMPORT_EXPORT_DETAIL_H
 #define VCL_ALGORITHMS_MESH_IMPORT_EXPORT_DETAIL_H
 
+#include <vclib/base.h>
 #include <vclib/space/complex.h>
 #include <vclib/space/core.h>
+
+#include <concepts>
+#include <limits>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace vcl::detail {
 
@@ -17,10 +24,10 @@ namespace vcl::detail {
 // storage type (row-major or column-major)
 inline auto& at(
     auto*             buffer,
-    uint              i,
-    uint              j,
-    uint              numRows,
-    uint              numCols,
+    auto              i,
+    auto              j,
+    auto              numRows,
+    auto              numCols,
     MatrixStorageType storage)
 {
     if (storage == MatrixStorageType::ROW_MAJOR) {
@@ -32,6 +39,51 @@ inline auto& at(
 }
 
 inline TriPolyIndexBiMap indexMap;
+
+/**
+ * @brief Returns the sentinel value for a given buffer or scalar value type.
+ * For signed integer types, this evaluates to -1.
+ * For unsigned integer types, this evaluates to the maximum representable
+ * value.
+ */
+template<typename BufferValueType>
+constexpr BufferValueType bufferSentinel()
+{
+    return static_cast<BufferValueType>(-1);
+}
+
+/**
+ * @brief Verifies that BufferValueType has sufficient capacity to store indices
+ * in the range [0, elementCount - 1]. If elementCount cannot be represented
+ * safely in BufferValueType without overflowing or colliding with the sentinel
+ * value, throws a WrongSizeException.
+ */
+template<typename BufferValueType, typename SizeType>
+void checkBufferIndexCapacity(SizeType elementCount)
+{
+    using ValueType = std::remove_cvref_t<BufferValueType>;
+    if constexpr (std::integral<ValueType>) {
+        if (elementCount > 0) {
+            auto lastIndex = elementCount - 1;
+            if constexpr (std::is_signed_v<ValueType>) {
+                if (std::cmp_greater(
+                        lastIndex, std::numeric_limits<ValueType>::max())) {
+                    throw WrongSizeException(
+                        "Buffer element type is too small to represent the "
+                        "indices of the mesh.");
+                }
+            }
+            else {
+                if (std::cmp_greater_equal(
+                        lastIndex, std::numeric_limits<ValueType>::max())) {
+                    throw WrongSizeException(
+                        "Buffer element type is too small to represent the "
+                        "indices of the mesh.");
+                }
+            }
+        }
+    }
+}
 
 } // namespace vcl::detail
 

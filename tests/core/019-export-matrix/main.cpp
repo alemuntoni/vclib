@@ -53,7 +53,7 @@ void randomSelection(auto& tm)
     std::mt19937                    gen(rd());
     std::uniform_int_distribution<> dis(0, 1);
 
-    for (auto& el : tm.template elements<ELEM_ID>()) {
+    for (auto el : tm.template elements<ELEM_ID>()) {
         bool sel      = dis(gen);
         el.selected() = sel;
     }
@@ -66,9 +66,9 @@ void randomColor(auto& tm)
     std::mt19937                    gen(rd());
     std::uniform_int_distribution<> dis(0, 255);
 
-    tm.template enablePerElementComponent<ELEM_ID, vcl::CompId::COLOR>();
+    tm.template enableElementComponent<ELEM_ID, vcl::CompId::COLOR>();
 
-    for (auto& el : tm.template elements<ELEM_ID>()) {
+    for (auto el : tm.template elements<ELEM_ID>()) {
         el.color() = vcl::Color(dis(gen), dis(gen), dis(gen), dis(gen));
     }
 }
@@ -80,9 +80,9 @@ void randomQuality(auto& tm)
     std::mt19937                     gen(rd());
     std::uniform_real_distribution<> dis(-100, 100);
 
-    tm.template enablePerElementComponent<ELEM_ID, vcl::CompId::QUALITY>();
+    tm.template enableElementComponent<ELEM_ID, vcl::CompId::QUALITY>();
 
-    for (auto& el : tm.template elements<ELEM_ID>()) {
+    for (auto el : tm.template elements<ELEM_ID>()) {
         double qual  = dis(gen);
         el.quality() = qual;
     }
@@ -145,8 +145,8 @@ void testFaceVector(const auto& pm)
     REQUIRE(faces.size() == nIndices);
 
     for (vcl::uint i = 0; const auto& f : pm.faces()) {
-        for (const auto* v : f.vertices()) {
-            REQUIRE(faces[i] == pm.index(v));
+        for (auto vi : f.vertexIndices()) {
+            REQUIRE(faces[i] == vi);
             ++i;
         }
     }
@@ -187,8 +187,8 @@ void testTriangulatedFaceMatrix(const auto& pm)
 
     for (vcl::uint i = 0; i < 3; ++i) {
         // polygon associated to ith triangle
-        vcl::uint   fIdx = indexMap.polygon(i);
-        const auto& f    = pm.face(fIdx);
+        vcl::uint fIdx = indexMap.polygon(i);
+        auto      f    = pm.face(fIdx);
 
         for (vcl::uint j = 0; j < 3; ++j) {
             REQUIRE(f.containsVertex(tris(i, j)));
@@ -355,8 +355,8 @@ void testVertexAdjacentVerticesVectors(const auto& tm)
         REQUIRE(adjList.size() == v.adjVertexCount());
 
         vcl::uint j = 0;
-        for (const auto* adjV : v.adjVertices()) {
-            REQUIRE(adjList[j] == static_cast<T>(adjV->index()));
+        for (auto adjV : v.adjVertexIndices()) {
+            REQUIRE(adjList[j] == static_cast<T>(adjV));
             ++j;
         }
         ++i;
@@ -375,8 +375,8 @@ void testVertexAdjacentVerticesMatrix(const auto& tm)
 
     for (vcl::uint i = 0; const auto& v : tm.vertices()) {
         vcl::uint j = 0;
-        for (const auto* adjV : v.adjVertices()) {
-            REQUIRE(adjMatrix(i, j) == static_cast<vcl::uint>(adjV->index()));
+        for (auto adjV : v.adjVertexIndices()) {
+            REQUIRE(adjMatrix(i, j) == static_cast<vcl::uint>(adjV));
             ++j;
         }
         // Check that remaining entries are set to -1 (UINT_NULL)
@@ -399,8 +399,8 @@ void testVertexAdjacentFacesVectors(const auto& tm)
         REQUIRE(adjList.size() == v.adjFaceCount());
 
         vcl::uint j = 0;
-        for (const auto* adjF : v.adjFaces()) {
-            REQUIRE(adjList[j] == static_cast<T>(adjF->index()));
+        for (auto adjF : v.adjFaceIndices()) {
+            REQUIRE(adjList[j] == static_cast<T>(adjF));
             ++j;
         }
         ++i;
@@ -419,8 +419,8 @@ void testVertexAdjacentFacesMatrix(const auto& tm)
 
     for (vcl::uint i = 0; const auto& v : tm.vertices()) {
         vcl::uint j = 0;
-        for (const auto* adjF : v.adjFaces()) {
-            REQUIRE(adjMatrix(i, j) == static_cast<vcl::uint>(adjF->index()));
+        for (auto adjF : v.adjFaceIndices()) {
+            REQUIRE(adjMatrix(i, j) == static_cast<vcl::uint>(adjF));
             ++j;
         }
         // Check that remaining entries are set to -1 (UINT_NULL)
@@ -443,8 +443,8 @@ void testFaceAdjacentFacesVectors(const auto& tm)
         REQUIRE(adjList.size() == f.adjFaceCount());
 
         vcl::uint j = 0;
-        for (const auto* adjF : f.adjFaces()) {
-            REQUIRE(adjList[j] == static_cast<T>(adjF->index()));
+        for (auto adjF : f.adjFaceIndices()) {
+            REQUIRE(adjList[j] == static_cast<T>(adjF));
             ++j;
         }
         ++i;
@@ -463,8 +463,8 @@ void testFaceAdjacentFacesMatrix(const auto& tm)
 
     for (vcl::uint i = 0; const auto& f : tm.faces()) {
         vcl::uint j = 0;
-        for (const auto* adjF : f.adjFaces()) {
-            REQUIRE(adjMatrix(i, j) == static_cast<vcl::uint>(adjF->index()));
+        for (auto adjF : f.adjFaceIndices()) {
+            REQUIRE(adjMatrix(i, j) == static_cast<vcl::uint>(adjF));
             ++j;
         }
         // Check that remaining entries are set to -1 (UINT_NULL)
@@ -478,9 +478,9 @@ void testFaceAdjacentFacesMatrix(const auto& tm)
 using Meshes  = std::tuple<vcl::TriMesh, vcl::PolyMesh, vcl::EdgeMesh>;
 using Meshesf = std::tuple<vcl::TriMeshf, vcl::PolyMeshf, vcl::EdgeMeshf>;
 using MeshesIndexed =
-    std::tuple<vcl::TriMeshIndexed, vcl::PolyMeshIndexed, vcl::EdgeMeshIndexed>;
+    std::tuple<vcl::TriMesh64, vcl::PolyMesh64, vcl::EdgeMesh64>;
 using MeshesIndexedf = std::
-    tuple<vcl::TriMeshIndexedf, vcl::PolyMeshIndexedf, vcl::EdgeMeshIndexedf>;
+    tuple<vcl::TriMesh64f, vcl::PolyMesh64f, vcl::EdgeMesh64f>;
 
 TEMPLATE_TEST_CASE(
     "Export Mesh to Matrix",
@@ -501,8 +501,7 @@ TEMPLATE_TEST_CASE(
 
     SECTION("Positions...")
     {
-        using ScalarType =
-            typename TriMesh::VertexType::PositionType::ScalarType;
+        using ScalarType = vcl::ScalarType<TriMesh>;
 
         SECTION("Eigen Row Major")
         {
@@ -705,7 +704,7 @@ TEMPLATE_TEST_CASE(
 
     SECTION("Vertex Normals...")
     {
-        using ScalarType = typename TriMesh::VertexType::NormalType::ScalarType;
+        using ScalarType = vcl::VertexType<TriMesh>::NormalType::ScalarType;
 
         vcl::updatePerVertexNormals(tm);
 
@@ -733,7 +732,7 @@ TEMPLATE_TEST_CASE(
 
     SECTION("Face Normals...")
     {
-        using ScalarType = typename TriMesh::FaceType::NormalType::ScalarType;
+        using ScalarType = vcl::FaceType<TriMesh>::NormalType::ScalarType;
 
         vcl::updatePerFaceNormals(tm);
 
@@ -837,7 +836,7 @@ TEMPLATE_TEST_CASE(
 
     SECTION("Vertex Quality...")
     {
-        using ScalarType = typename TriMesh::VertexType::QualityType;
+        using ScalarType = vcl::VertexType<TriMesh>::QualityType;
 
         randomQuality<vcl::ElemId::VERTEX>(tm);
 
@@ -857,7 +856,7 @@ TEMPLATE_TEST_CASE(
 
     SECTION("Face Quality...")
     {
-        using ScalarType = typename TriMesh::FaceType::QualityType;
+        using ScalarType = vcl::FaceType<TriMesh>::QualityType;
 
         randomQuality<vcl::ElemId::FACE>(tm);
 
@@ -878,7 +877,7 @@ TEMPLATE_TEST_CASE(
     SECTION("Vertex Adjacent Vertices Vectors...")
     {
         // Update per-vertex adjacency information first
-        tm.enablePerVertexAdjacentVertices();
+        tm.enableVertexAdjacentVertices();
         vcl::updatePerVertexAdjacentVertices(tm);
 
         SECTION("std::vector<std::vector<vcl::uint>>")
@@ -898,7 +897,7 @@ TEMPLATE_TEST_CASE(
     SECTION("Vertex Adjacent Vertices Matrix...")
     {
         // Update per-vertex adjacency information first
-        tm.enablePerVertexAdjacentVertices();
+        tm.enableVertexAdjacentVertices();
         vcl::updatePerVertexAdjacentVertices(tm);
 
         SECTION("Eigen Row Major")
@@ -918,7 +917,7 @@ TEMPLATE_TEST_CASE(
     SECTION("Vertex Adjacent Faces Vectors...")
     {
         // Update per-vertex adjacent faces information first
-        tm.enablePerVertexAdjacentFaces();
+        tm.enableVertexAdjacentFaces();
         vcl::updatePerVertexAdjacentFaces(tm);
 
         SECTION("std::vector<std::vector<vcl::uint>>")
@@ -938,7 +937,7 @@ TEMPLATE_TEST_CASE(
     SECTION("Vertex Adjacent Faces Matrix...")
     {
         // Update per-vertex adjacent faces information first
-        tm.enablePerVertexAdjacentFaces();
+        tm.enableVertexAdjacentFaces();
         vcl::updatePerVertexAdjacentFaces(tm);
 
         SECTION("Eigen Row Major")
@@ -958,7 +957,7 @@ TEMPLATE_TEST_CASE(
     SECTION("Face Adjacent Faces Vectors...")
     {
         // Update per-face adjacent faces information first
-        tm.enablePerFaceAdjacentFaces();
+        tm.enableFaceAdjacentFaces();
         vcl::updatePerFaceAdjacentFaces(tm);
 
         SECTION("std::vector<std::vector<vcl::uint>>")
@@ -978,7 +977,7 @@ TEMPLATE_TEST_CASE(
     SECTION("Face Adjacent Faces Matrix...")
     {
         // Update per-face adjacent faces information first
-        tm.enablePerFaceAdjacentFaces();
+        tm.enableFaceAdjacentFaces();
         vcl::updatePerFaceAdjacentFaces(tm);
 
         SECTION("Eigen Row Major")

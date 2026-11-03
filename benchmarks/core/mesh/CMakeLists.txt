@@ -13,7 +13,7 @@ set(SOURCES
     compat.h
     grid.h
     types.h
-    # import_export/export_matrix.cpp
+    import_export/export_matrix.cpp
     # import_export/import_matrix.cpp
     io/load_mesh.cpp
     mesh/copy.cpp
