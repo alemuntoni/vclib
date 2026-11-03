@@ -1690,7 +1690,7 @@ void faceWedgeTexCoordsToBuffer(
             if (storage == MatrixStorageType::COLUMN_MAJOR)
                 index = j * NUM_ROWS + i;
             if (fi < f.vertexCount()) {
-                const auto& w = f.wedgeTexCoord(fi);
+                const auto& w = f.wedge(fi).texCoord();
                 if (j % 2 == 0)
                     buffer[index] = w.u();
                 else
