@@ -34,6 +34,7 @@ set(SOURCES
     test_update_normals.h
     test_delete_algorithms.h
     test_clean_algorithms.h
+    test_create_algorithms.h
     main.cpp
 )
 

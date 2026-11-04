@@ -42,26 +42,27 @@ void applyTransformMatrix(
 template<MeshConcept MeshType, PointConcept PointType>
 void translate(MeshType& mesh, const PointType& t)
 {
-    for (auto&& v : mesh.vertices()) {
-        v.position() += t;
+    using Scalar = ScalarType<MeshType>;
+    for (auto& p : mesh.vertices().positions()) {
+        p += t.template cast<Scalar>();
     }
 }
 
 template<MeshConcept MeshType, PointConcept PointType>
 void scale(MeshType& mesh, const PointType& s)
 {
-    for (auto&& v : mesh.vertices()) {
-        v.position()(0) *= s(0);
-        v.position()(1) *= s(1);
-        v.position()(2) *= s(2);
+    for (auto& p : mesh.vertices().positions()) {
+        p(0) *= s(0);
+        p(1) *= s(1);
+        p(2) *= s(2);
     }
 }
 
 template<MeshConcept MeshType, typename Scalar = double>
 void scale(MeshType& mesh, const Scalar& s)
 {
-    for (auto&& v : mesh.vertices()) {
-        v.position() *= s;
+    for (auto& p : mesh.vertices().positions()) {
+        p *= s;
     }
 }
 

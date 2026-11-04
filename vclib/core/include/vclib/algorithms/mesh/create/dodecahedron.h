@@ -8,7 +8,6 @@
 #ifndef VCL_ALGORITHMS_MESH_CREATE_DODECAHEDRON_H
 #define VCL_ALGORITHMS_MESH_CREATE_DODECAHEDRON_H
 
-#include "vclib/mesh/traits.h"
 #include <vclib/algorithms/core.h>
 #include <vclib/mesh.h>
 

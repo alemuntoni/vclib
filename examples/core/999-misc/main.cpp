@@ -31,6 +31,7 @@
 #include "test_update_normals.h"
 #include "test_delete_algorithms.h"
 #include "test_clean_algorithms.h"
+#include "test_create_algorithms.h"
 
 int main()
 {
@@ -58,6 +59,7 @@ int main()
     testUpdateNormals();
     testDeleteAlgorithms();
     testCleanAlgorithms();
+    testCreateAlgorithms();
 
     std::println("All mesh tests passed successfully!");
     return 0;

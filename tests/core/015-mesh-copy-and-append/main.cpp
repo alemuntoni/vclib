@@ -70,75 +70,75 @@ TEMPLATE_TEST_CASE(
         }
     }
 
-    // WHEN("Appending a mesh")
-    // {
-    //     Mesh m2 = vcl::createTetrahedron<Mesh>();
-    //     vcl::updatePerVertexAndFaceNormals(m2);
+    WHEN("Appending a mesh")
+    {
+        Mesh m2 = vcl::createTetrahedron<Mesh>();
+        vcl::updatePerVertexAndFaceNormals(m2);
 
-    //     m2.template addVertexCustomComponent<float>("v_comp");
+        m2.template addVertexCustomComponent<float>("v_comp");
 
-    //     // putting some value into v_comp
-    //     for (auto v : m2.vertices()) {
-    //         v.template customComponent<float>("v_comp") = v.normal().z() * 3;
-    //     }
+        // putting some value into v_comp
+        for (auto v : m2.vertices()) {
+            v.template customComponent<float>("v_comp") = v.normal().z() * 3;
+        }
 
-    //     Mesh m3 = m1;
-    //     m3.append(m2);
+        Mesh m3 = m1;
+        m3.append(m2);
 
-    //     unsigned int m1vn = m1.vertexCount();
-    //     unsigned int m2vn = m2.vertexCount();
-    //     unsigned int m1fn = m1.faceCount();
-    //     unsigned int m2fn = m2.faceCount();
+        unsigned int m1vn = m1.vertexCount();
+        unsigned int m2vn = m2.vertexCount();
+        unsigned int m1fn = m1.faceCount();
+        unsigned int m2fn = m2.faceCount();
 
-    //     THEN("Right number of vertices and faces")
-    //     {
-    //         REQUIRE(m3.vertexCount() == m1vn + m2vn);
-    //         REQUIRE(m3.faceCount() == m1fn + m2fn);
-    //     }
+        THEN("Right number of vertices and faces")
+        {
+            REQUIRE(m3.vertexCount() == m1vn + m2vn);
+            REQUIRE(m3.faceCount() == m1fn + m2fn);
+        }
 
-    //     THEN("Vertices are copied correctly")
-    //     {
-    //         for (size_t i = 0; i < m1vn; ++i) {
-    //             REQUIRE(m3.vertex(i).position() == m1.vertex(i).position());
-    //             REQUIRE(m3.vertex(i).normal() == m1.vertex(i).normal());
-    //             REQUIRE(
-    //                 m3.vertex(i).template customComponent<float>("v_comp") ==
-    //                 m1.vertex(i).template customComponent<float>("v_comp"));
-    //         }
+        THEN("Vertices are copied correctly")
+        {
+            for (size_t i = 0; i < m1vn; ++i) {
+                REQUIRE(m3.vertex(i).position() == m1.vertex(i).position());
+                REQUIRE(m3.vertex(i).normal() == m1.vertex(i).normal());
+                REQUIRE(
+                    m3.vertex(i).template customComponent<float>("v_comp") ==
+                    m1.vertex(i).template customComponent<float>("v_comp"));
+            }
 
-    //         for (size_t i = m1vn; i < m1vn + m2vn; ++i) {
-    //             REQUIRE(
-    //                 m3.vertex(i).position() == m2.vertex(i - m1vn).position());
-    //             REQUIRE(m3.vertex(i).normal() == m2.vertex(i - m1vn).normal());
-    //             REQUIRE(
-    //                 m3.vertex(i).template customComponent<float>("v_comp") ==
-    //                 m2.vertex(i - m1vn).template customComponent<float>(
-    //                     "v_comp"));
-    //         }
-    //     }
+            for (size_t i = m1vn; i < m1vn + m2vn; ++i) {
+                REQUIRE(
+                    m3.vertex(i).position() == m2.vertex(i - m1vn).position());
+                REQUIRE(m3.vertex(i).normal() == m2.vertex(i - m1vn).normal());
+                REQUIRE(
+                    m3.vertex(i).template customComponent<float>("v_comp") ==
+                    m2.vertex(i - m1vn).template customComponent<float>(
+                        "v_comp"));
+            }
+        }
 
-    //     THEN("Faces are copied correctly")
-    //     {
-    //         for (size_t i = 0; i < m1fn; ++i) {
-    //             REQUIRE(m3.face(i).vertexCount() == m1.face(i).vertexCount());
-    //             for (size_t j = 0; j < m1.face(i).vertexCount(); ++j) {
-    //                 REQUIRE(
-    //                     m3.face(i).vertexIndex(j) == m1.face(i).vertexIndex(j));
-    //             }
-    //             REQUIRE(m3.face(i).normal() == m1.face(i).normal());
-    //         }
+        THEN("Faces are copied correctly")
+        {
+            for (size_t i = 0; i < m1fn; ++i) {
+                REQUIRE(m3.face(i).vertexCount() == m1.face(i).vertexCount());
+                for (size_t j = 0; j < m1.face(i).vertexCount(); ++j) {
+                    REQUIRE(
+                        m3.face(i).vertexIndex(j) == m1.face(i).vertexIndex(j));
+                }
+                REQUIRE(m3.face(i).normal() == m1.face(i).normal());
+            }
 
-    //         for (size_t i = m1fn; i < m1fn + m2fn; ++i) {
-    //             REQUIRE(
-    //                 m3.face(i).vertexCount() ==
-    //                 m2.face(i - m1fn).vertexCount());
-    //             for (size_t j = 0; j < m3.face(i).vertexCount(); ++j) {
-    //                 REQUIRE(
-    //                     m3.face(i).vertexIndex(j) ==
-    //                     m2.face(i - m1fn).vertexIndex(j) + m1vn);
-    //             }
-    //             REQUIRE(m3.face(i).normal() == m2.face(i - m1fn).normal());
-    //         }
-    //     }
-    // }
+            for (size_t i = m1fn; i < m1fn + m2fn; ++i) {
+                REQUIRE(
+                    m3.face(i).vertexCount() ==
+                    m2.face(i - m1fn).vertexCount());
+                for (size_t j = 0; j < m3.face(i).vertexCount(); ++j) {
+                    REQUIRE(
+                        m3.face(i).vertexIndex(j) ==
+                        m2.face(i - m1fn).vertexIndex(j) + m1vn);
+                }
+                REQUIRE(m3.face(i).normal() == m2.face(i - m1fn).normal());
+            }
+        }
+    }
 }

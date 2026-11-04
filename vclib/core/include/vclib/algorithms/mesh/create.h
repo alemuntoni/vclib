@@ -8,11 +8,11 @@
 #ifndef VCL_ALGORITHMS_MESH_CREATE_H
 #define VCL_ALGORITHMS_MESH_CREATE_H
 
-//#include "create/axis.h"
-//#include "create/cone.h"
+#include "create/axis.h"
+#include "create/cone.h"
 #include "create/dodecahedron.h"
 #include "create/hexahedron.h"
-//#include "create/icosahedron.h"
+#include "create/icosahedron.h"
 #include "create/sphere.h"
 #include "create/tetrahedron.h"
 

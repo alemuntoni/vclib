@@ -444,7 +444,8 @@ MeshType createSphere(
 template<FaceMeshConcept MeshType>
 MeshType createSphere()
 {
-    return createSphere<MeshType>(Sphere(Point3d(), 1.0));
+    using ScalarType = ScalarType<MeshType>;
+    return createSphere<MeshType>(Sphere(Point3<ScalarType>(), ScalarType(1.0)));
 }
 
 } // namespace vcl
