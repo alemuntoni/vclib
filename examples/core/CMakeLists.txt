@@ -13,11 +13,11 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 # For each directory, we check if it's a valid example by looking for a main.cpp file.
 # If a requirements.cmake is present, we include it to read EXAMPLE_REQUIRED_TARGETS
 # and ensure all required targets are available before adding the subdirectory.
-# Temporarily restricted to active examples during mesh migration
 set(CORE_EXAMPLE_DIRS
     "000-mesh-io"
     "001-mesh-basics"
     "002-mesh-iteration"
+    "003-mesh-creation"
     #"016-face-flooding"
     "998-misc-no-lib"
     "999-misc"

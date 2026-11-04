@@ -108,9 +108,7 @@ MeshType createSphereUV(
     uint                      parallels = 10,
     uint                      meridians = 20)
 {
-    using VertexType   = MeshType::VertexType;
-    using PositionType = VertexType::PositionType;
-    using Facetype     = MeshType::FaceType;
+    using PositionType = PositionType<MeshType>;
 
     MeshType mesh;
 
@@ -132,9 +130,9 @@ MeshType createSphereUV(
     mesh.addVertex(PositionType(0, -1, 0));
 
     for (uint i = 0; i < meridians; ++i) {
-        VertexType* v = &mesh.vertex(0);
-        VertexType* a = &mesh.vertex(i + 1);
-        VertexType* b = &mesh.vertex((i + 1) % meridians + 1);
+        auto v = mesh.vertex(0);
+        auto a = mesh.vertex(i + 1);
+        auto b = mesh.vertex((i + 1) % meridians + 1);
         mesh.addFace(0, b, a);
     }
 
@@ -142,10 +140,10 @@ MeshType createSphereUV(
         uint32_t aStart = j * meridians + 1;
         uint32_t bStart = (j + 1) * meridians + 1;
         for (uint32_t i = 0; i < meridians; ++i) {
-            VertexType* a  = &mesh.vertex(aStart + i);
-            VertexType* a1 = &mesh.vertex(aStart + (i + 1) % meridians);
-            VertexType* b  = &mesh.vertex(bStart + i);
-            VertexType* b1 = &mesh.vertex(bStart + (i + 1) % meridians);
+            auto a  = mesh.vertex(aStart + i);
+            auto a1 = mesh.vertex(aStart + (i + 1) % meridians);
+            auto b  = mesh.vertex(bStart + i);
+            auto b1 = mesh.vertex(bStart + (i + 1) % meridians);
             if constexpr (HasTriangles<MeshType>) {
                 mesh.addFace(a, a1, b1);
                 mesh.addFace(b1, b, a);
@@ -157,10 +155,10 @@ MeshType createSphereUV(
     }
 
     for (uint32_t i = 0; i < meridians; ++i) {
-        VertexType* a = &mesh.vertex(i + meridians * (parallels - 2) + 1);
-        VertexType* b =
-            &mesh.vertex((i + 1) % meridians + meridians * (parallels - 2) + 1);
-        VertexType* v = &mesh.vertex(mesh.vertexCount() - 1);
+        auto a = mesh.vertex(i + meridians * (parallels - 2) + 1);
+        auto b =
+            mesh.vertex((i + 1) % meridians + meridians * (parallels - 2) + 1);
+        auto v = mesh.vertex(mesh.vertexCount() - 1);
         mesh.addFace(v, a, b);
     }
 
@@ -188,10 +186,8 @@ MeshType createSphereNormalizedCube(
     const SphereConcept auto& sp,
     uint                      divisions)
 {
-    using VertexType   = MeshType::VertexType;
-    using PositionType = VertexType::PositionType;
-    using Facetype     = MeshType::FaceType;
-    using ScalarType   = PositionType::ScalarType;
+    using PositionType = PositionType<MeshType>;
+    using ScalarType   = ScalarType<MeshType>;
 
     MeshType mesh;
 
@@ -221,10 +217,10 @@ MeshType createSphereNormalizedCube(
             const bool bottom = j < (divisions / 2);
             for (uint i = 0; i < divisions; ++i) {
                 const bool  left = i < (divisions / 2);
-                VertexType* a    = &mesh.vertex((face * k + j) * k + i);
-                VertexType* b    = &mesh.vertex((face * k + j) * k + i + 1);
-                VertexType* c    = &mesh.vertex((face * k + j + 1) * k + i);
-                VertexType* d    = &mesh.vertex((face * k + j + 1) * k + i + 1);
+                auto a    = mesh.vertex((face * k + j) * k + i);
+                auto b    = mesh.vertex((face * k + j) * k + i + 1);
+                auto c    = mesh.vertex((face * k + j + 1) * k + i);
+                auto d    = mesh.vertex((face * k + j + 1) * k + i + 1);
 
                 if constexpr (HasTriangles<MeshType>) {
                     if (bottom ^ left) {
@@ -267,10 +263,8 @@ MeshType createSphereSpherifiedCube(
     const SphereConcept auto& sp,
     uint                      divisions)
 {
-    using VertexType   = MeshType::VertexType;
-    using PositionType = VertexType::PositionType;
-    using ScalarType   = PositionType::ScalarType;
-    using Facetype     = MeshType::FaceType;
+    using PositionType = PositionType<MeshType>;
+    using ScalarType   = ScalarType<MeshType>;
 
     MeshType mesh;
 
@@ -310,10 +304,10 @@ MeshType createSphereSpherifiedCube(
             const bool bottom = j < (divisions / 2);
             for (uint i = 0; i < divisions; ++i) {
                 const bool  left = i < (divisions / 2);
-                VertexType* a    = &mesh.vertex((face * k + j) * k + i);
-                VertexType* b    = &mesh.vertex((face * k + j) * k + i + 1);
-                VertexType* c    = &mesh.vertex((face * k + j + 1) * k + i);
-                VertexType* d    = &mesh.vertex((face * k + j + 1) * k + i + 1);
+                auto a    = mesh.vertex((face * k + j) * k + i);
+                auto b    = mesh.vertex((face * k + j) * k + i + 1);
+                auto c    = mesh.vertex((face * k + j + 1) * k + i);
+                auto d    = mesh.vertex((face * k + j + 1) * k + i + 1);
                 if constexpr (HasTriangles<MeshType>) {
                     if (bottom ^ left) {
                         mesh.addFace(a, c, b);
@@ -353,21 +347,20 @@ MeshType createSphereSpherifiedCube(
 template<FaceMeshConcept MeshType>
 MeshType createSphereIcosahedron(const SphereConcept auto& sp, uint divisions)
 {
-    using VertexType   = MeshType::VertexType;
-    using PositionType = VertexType::PositionType;
-    using FaceType     = MeshType::FaceType;
+    using PositionType = PositionType<MeshType>;
+    using ScalarType   = ScalarType<MeshType>;
 
     MeshType mesh = createIcosahedron<MeshType>(true);
 
     for (uint d = 0; d < divisions; d++) {
         uint nf = mesh.faceCount();
         for (uint f = 0; f < nf; f++) {
-            FaceType&   f0   = mesh.face(f);
-            VertexType& v0   = *f0.vertex(0);
-            VertexType& v1   = *f0.vertex(1);
-            VertexType& v2   = *f0.vertex(2);
-            uint        v1id = mesh.index(v1);
-            uint        v2id = mesh.index(v2);
+            auto f0   = mesh.face(f);
+            auto v0   = f0.vertex(0);
+            auto v1   = f0.vertex(1);
+            auto v2   = f0.vertex(2);
+            uint v1id = v1.index();
+            uint v2id = v2.index();
 
             PositionType pa = (v0.position() + v1.position());
             pa.normalize();
