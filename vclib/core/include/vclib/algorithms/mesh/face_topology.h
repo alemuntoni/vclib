@@ -398,13 +398,13 @@ auto faceDihedralAngleOnEdge(const FaceType& f, uint e)
      */
 
     assert(f.adjFace(e) != nullptr);
-    const FaceType& f1 = *(f.adjFace(e));
+    auto f1 = f.adjFace(e);
 
-    uint e1 = f1.indexOfAdjFace(&f);
+    uint e1 = f1.indexOfAdjFace(f);
     assert(e1 != UINT_NULL);
 
-    const auto& vf0 = *(f.vertexMod((int) e - 1));
-    const auto& vf1 = *(f1.vertexMod(e1 - 1));
+    auto vf0 = f.vertexMod((int) e - 1);
+    auto vf1 = f1.vertexMod((int) e1 - 1);
 
     auto n0 = faceNormal(f);
     auto n1 = faceNormal(f1);

@@ -38,6 +38,7 @@ set(SOURCES
     test_stat_quality.h
     test_update_color.h
     test_update_quality.h
+    test_update_selection.h
     main.cpp
 )
 

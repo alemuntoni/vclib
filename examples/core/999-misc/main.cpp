@@ -35,6 +35,7 @@
 #include "test_stat_quality.h"
 #include "test_update_color.h"
 #include "test_update_quality.h"
+#include "test_update_selection.h"
 
 int main()
 {
@@ -66,6 +67,7 @@ int main()
     testStatQuality();
     testUpdateColor();
     testUpdateQuality();
+    testUpdateSelection();
 
     std::println("All mesh tests passed successfully!");
     return 0;

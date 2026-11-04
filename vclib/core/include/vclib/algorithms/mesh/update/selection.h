@@ -38,7 +38,7 @@ void clearFaceSelection(MeshType& m)
 template<FaceMeshConcept MeshType>
 void clearFaceEdgesSelection(MeshType& m)
 {
-    for (auto& f : m.faces()) {
+    for (auto f : m.faces()) {
         for (uint i = 0; i < f.vertexCount(); ++i) {
             f.edgeSelected(i) = false;
         }
@@ -57,10 +57,8 @@ void selectNonManifoldVertices(MeshType& m, bool clearSelectionFirst = true)
     std::vector<bool> nonManifoldVertices =
         detail::nonManifoldVerticesVectorBool(m);
 
-    using VertexType = MeshType::VertexType;
-
-    for (VertexType& v : m.vertices()) {
-        if (nonManifoldVertices[m.index(v)]) {
+    for (auto v : m.vertices()) {
+        if (nonManifoldVertices[v.index()]) {
             v.selected() = true;
         }
         else if (clearSelectionFirst) {
