@@ -32,6 +32,8 @@
 #include "test_delete_algorithms.h"
 #include "test_clean_algorithms.h"
 #include "test_create_algorithms.h"
+#include "test_stat_quality.h"
+#include "test_update_color.h"
 
 int main()
 {
@@ -60,6 +62,8 @@ int main()
     testDeleteAlgorithms();
     testCleanAlgorithms();
     testCreateAlgorithms();
+    testStatQuality();
+    testUpdateColor();
 
     std::println("All mesh tests passed successfully!");
     return 0;

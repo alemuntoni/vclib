@@ -81,9 +81,9 @@ void populateEdgeMesh(MeshType& m)
 
 using Meshes  = std::tuple<vcl::TriMesh, vcl::PolyMesh, vcl::EdgeMesh>;
 using Meshesf = std::tuple<vcl::TriMeshf, vcl::PolyMeshf, vcl::EdgeMeshf>;
-using MeshesIndexed =
+using Meshes64 =
     std::tuple<vcl::TriMesh64, vcl::PolyMesh64, vcl::EdgeMesh64>;
-using MeshesIndexedf = std::
+using Meshes64f = std::
     tuple<vcl::TriMesh64f, vcl::PolyMesh64f, vcl::EdgeMesh64f>;
 
 TEMPLATE_TEST_CASE(
@@ -91,8 +91,8 @@ TEMPLATE_TEST_CASE(
     "",
     Meshes,
     Meshesf,
-    MeshesIndexed,
-    MeshesIndexedf)
+    Meshes64,
+    Meshes64f)
 {
     using TriMesh  = std::tuple_element_t<0, TestType>;
     using PolyMesh = std::tuple_element_t<1, TestType>;
