@@ -59,8 +59,7 @@ void saveOff(
     fp << std::endl; // remove last char (a space) and add a newline
 
     // vertices
-    using VertexType = MeshType::VertexType;
-    for (const VertexType& v : m.vertices()) {
+    for (auto v : m.vertices()) {
         io::writeDouble(fp, v.position().x(), false);
         io::writeDouble(fp, v.position().y(), false);
         io::writeDouble(fp, v.position().z(), false);
@@ -92,16 +91,14 @@ void saveOff(
 
     // faces
     if constexpr (HasFaces<MeshType>) {
-        using VertexType = MeshType::VertexType;
-        using FaceType   = FaceType<MeshType>;
-
+        using IndexType = MeshType::IndexType;
         // indices of vertices that do not consider deleted vertices
-        std::vector<uint> vIndices = m.vertexCompactIndices();
+        std::vector<IndexType> vIndices = m.vertexCompactIndices();
 
-        for (const FaceType& f : m.faces()) {
+        for (auto f : m.faces()) {
             io::writeInt(fp, f.vertexCount(), false);
-            for (const VertexType* v : f.vertices()) {
-                io::writeInt(fp, vIndices[m.index(v)], false);
+            for (auto vi : f.vertexIndices()) {
+                io::writeInt(fp, vIndices[vi], false);
             }
             if constexpr (HasFaceColors<MeshType>) {
                 if (meshInfo.hasPerFaceColor()) {

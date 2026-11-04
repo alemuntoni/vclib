@@ -114,8 +114,8 @@ TEMPLATE_TEST_CASE(
     "",
     vcl::TriMesh,
     vcl::TriMeshf,
-    vcl::TriMeshIndexed,
-    vcl::TriMeshIndexedf)
+    vcl::TriMesh64,
+    vcl::TriMesh64f)
 {
     using TriMesh = TestType;
 
@@ -136,8 +136,8 @@ TEMPLATE_TEST_CASE(
     "",
     vcl::TriMesh,
     vcl::TriMeshf,
-    vcl::TriMeshIndexed,
-    vcl::TriMeshIndexedf)
+    vcl::TriMesh64,
+    vcl::TriMesh64f)
 {
     using TriMesh = TestType;
 

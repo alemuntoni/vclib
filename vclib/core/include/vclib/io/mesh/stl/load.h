@@ -135,8 +135,8 @@ void readStlBin(
         if constexpr (HasFaces<MeshType>) {
             using FaceType = FaceType<MeshType>;
 
-            uint      fi = m.addFace();
-            FaceType& f  = m.face(fi);
+            uint     fi = m.addFace();
+            FaceType f  = m.face(fi);
             // we have a polygonal mesh
             if constexpr (FaceType::VERTEX_COUNT < 0) {
                 // need to resize the face to the right number of verts
@@ -229,7 +229,7 @@ void readStlAscii(
                     using FaceType = FaceType<MeshType>;
                     uint fi        = m.addFace();
 
-                    FaceType& f = m.face(fi);
+                    FaceType f = m.face(fi);
                     // we have a polygonal mesh
                     if constexpr (FaceType::VERTEX_COUNT < 0) {
                         // need to resize the face to the right number of verts

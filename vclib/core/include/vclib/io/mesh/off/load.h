@@ -301,14 +301,12 @@ void readOffVertices(
     uint            nv,
     LogType&        log)
 {
-    using VertexType = MeshType::VertexType;
-
     const uint nTexCoords = fileInfo.hasPerVertexTexCoord() ? 2 : 0;
 
     log.startProgress("Reading vertices", nv);
     mesh.addVertices(nv);
     for (uint i = 0; i < nv; i++) {
-        VertexType& v = mesh.vertex(i);
+        auto v = mesh.vertex(i);
 
         Tokenizer           tokens = readAndTokenizeNextNonCommentLine(file);
         Tokenizer::iterator token  = tokens.begin();
@@ -398,7 +396,7 @@ void readOffFaces(
             Tokenizer tokens          = readAndTokenizeNextNonCommentLine(file);
             Tokenizer::iterator token = tokens.begin();
             mesh.addFace();
-            FaceType& f = mesh.face(mesh.faceCount() - 1);
+            FaceType f = mesh.face(mesh.faceCount() - 1);
 
             // read vertex indices
             uint fSize = io::readUInt<uint>(token);
@@ -442,13 +440,13 @@ void readOffFaces(
                 if constexpr (HasFaceColors<MeshType>) {
                     if (mesh.isFaceColorAvailable() ||
                         (settings.enableOptionalComponents &&
-                         enableIfPerFaceColorOptional(mesh))) {
+                         enableIfFaceColorsOptional(mesh))) {
                         loadedInfo.setPerFaceColor();
                         f.color() = readOffColor(
                             token, tokens.size() - (token - tokens.begin()));
                         // in case the loaded polygon has been triangulated in
                         // the last n triangles
-                        for (uint ff = mesh.index(f); ff < mesh.faceCount();
+                        for (uint ff = f.index(); ff < mesh.faceCount();
                              ++ff) {
                             mesh.face(ff).color() = f.color();
                         }

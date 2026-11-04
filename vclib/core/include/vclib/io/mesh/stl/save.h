@@ -104,15 +104,13 @@ void saveStl(
     detail::writeStlHeader(fp, settings);
 
     if constexpr (HasFaces<MeshType>) {
-        using FaceType = FaceType<MeshType>;
-
         if (settings.binary) {
             io::writeInt(fp, m.faceCount());
         }
 
         log.startProgress("Saving STL file", m.faceCount());
 
-        for (const FaceType& f : m.faces()) {
+        for (auto f : m.faces()) {
             // For each triangle write the normal, the 3 vert positions and a
             // short
             auto n = faceNormal(f);
@@ -131,9 +129,9 @@ void saveStl(
             if (f.vertexCount() == 3) {
                 detail::writeSTLTriangle(
                     fp,
-                    f.vertex(0)->position(),
-                    f.vertex(1)->position(),
-                    f.vertex(2)->position(),
+                    f.vertex(0).position(),
+                    f.vertex(1).position(),
+                    f.vertex(2).position(),
                     n,
                     attributes,
                     settings);
@@ -143,16 +141,16 @@ void saveStl(
                 for (uint i = 0; i < tris.size(); i += 3) {
                     detail::writeSTLTriangle(
                         fp,
-                        f.vertex(tris[i])->position(),
-                        f.vertex(tris[i + 1])->position(),
-                        f.vertex(tris[i + 2])->position(),
+                        f.vertex(tris[i]).position(),
+                        f.vertex(tris[i + 1]).position(),
+                        f.vertex(tris[i + 2]).position(),
                         n,
                         attributes,
                         settings);
                 }
             }
 
-            log.progress(m.index(f));
+            log.progress(f.index());
         }
 
         log.endProgress();
