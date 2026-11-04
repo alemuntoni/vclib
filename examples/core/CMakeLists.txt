@@ -19,6 +19,8 @@ set(CORE_EXAMPLE_DIRS
     "002-mesh-iteration"
     "003-mesh-creation"
     "004-mesh-copy-and-transform"
+    "005-mesh-normals"
+    "006-mesh-topology"
     #"016-face-flooding"
     "998-misc-no-lib"
     "999-misc"
