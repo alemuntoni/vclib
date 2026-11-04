@@ -37,6 +37,7 @@ set(SOURCES
     test_create_algorithms.h
     test_stat_quality.h
     test_update_color.h
+    test_update_quality.h
     main.cpp
 )
 

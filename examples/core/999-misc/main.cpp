@@ -34,6 +34,7 @@
 #include "test_create_algorithms.h"
 #include "test_stat_quality.h"
 #include "test_update_color.h"
+#include "test_update_quality.h"
 
 int main()
 {
@@ -64,6 +65,7 @@ int main()
     testCreateAlgorithms();
     testStatQuality();
     testUpdateColor();
+    testUpdateQuality();
 
     std::println("All mesh tests passed successfully!");
     return 0;
