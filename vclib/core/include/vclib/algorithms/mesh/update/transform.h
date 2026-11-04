@@ -78,7 +78,7 @@ void rotate(
 
     if (updateNormals) {
         if constexpr (HasVertexNormals<MeshType>) {
-            if (mesh.isVertexNormalAvailable(mesh)) {
+            if (mesh.isVertexNormalAvailable()) {
                 for (auto&& v : mesh.vertices()) {
                     v.normal() = m * v.normal();
                 }
