@@ -40,7 +40,7 @@ OutMeshType perElementMeshFilter(
     for (const auto& [birthV, filter] :
          std::views::zip(m.template elements<ELEM_ID>(), elemFilterRng)) {
         if (filter) {
-            IndexType v = res.template add<ELEM_ID>();
+            auto v = res.template add<ELEM_ID>();
             // import all the components from the input mesh
             res.template element<ELEM_ID>(v).importFrom(birthV, false);
             // set the birth element
@@ -77,8 +77,9 @@ OutMeshType perElementMeshFilterWithVRefs(
     Range auto&&      elemFilterRng,
     bool              saveBirthIndicesInCustomComponent = true)
 {
-    using IndexType   = InMeshType::IndexType;
-    using OutElemType = OutMeshType::template ElementType<ELEM_ID>;
+    using IndexType    = InMeshType::IndexType;
+    using OutIndexType = OutMeshType::IndexType;
+    using OutElemType  = OutMeshType::template ElementType<ELEM_ID>;
 
     std::string ccname = "birth" + elementEnumString<ELEM_ID>();
 
@@ -99,14 +100,14 @@ OutMeshType perElementMeshFilterWithVRefs(
         }
     }
 
-    std::vector<IndexType> vertexMapping(
-        m.vertexContainerSize(), InMeshType::NULL_INDEX);
+    std::vector<OutIndexType> vertexMapping(
+        m.vertexContainerSize(), OutMeshType::NULL_INDEX);
 
     for (const auto& [birthF, filter] :
          std::views::zip(m.template elements<ELEM_ID>(), elemFilterRng)) {
         if (filter) {
-            std::vector<IndexType> verts(
-                birthF.vertexCount(), InMeshType::NULL_INDEX);
+            std::vector<OutIndexType> verts(
+                birthF.vertexCount(), OutMeshType::NULL_INDEX);
             uint vi = 0; // incremented with vertices of the element
             // set all the vertex indices in the verts vector
             // two cases here:
@@ -118,9 +119,9 @@ OutMeshType perElementMeshFilterWithVRefs(
             for (auto&& v : birthF.vertices()) {
                 IndexType inVIdx = v.index();
                 // the vertex has not already added
-                if (vertexMapping[inVIdx] == InMeshType::NULL_INDEX) {
+                if (vertexMapping[inVIdx] == OutMeshType::NULL_INDEX) {
                     // add the vertex to the out mesh
-                    IndexType ov = res.addVertex();
+                    OutIndexType ov = res.addVertex();
                     // import all the components from the input mesh
                     res.vertex(ov).importFrom(v, false);
                     if constexpr (HasVertexCustomComponents<OutMeshType>) {
@@ -141,7 +142,7 @@ OutMeshType perElementMeshFilterWithVRefs(
 
             // now all the vertices of the elements are in the out mesh, we can
             // add the actual element
-            IndexType f = res.template add<ELEM_ID>();
+            auto f = res.template add<ELEM_ID>();
             // import all the components from the input mesh
             res.template element<ELEM_ID>(f).importFrom(birthF, false);
 
@@ -572,7 +573,8 @@ OutMeshType perFaceEdgeMeshFilter(
     bool dontDuplicateEdges                = true,
     bool saveBirthIndicesInCustomComponent = true)
 {
-    using IndexType = InMeshType::IndexType;
+    using IndexType    = InMeshType::IndexType;
+    using OutIndexType = OutMeshType::IndexType;
 
     OutMeshType res;
     // todo: enable only per vertex same optional components of m
@@ -585,22 +587,22 @@ OutMeshType perFaceEdgeMeshFilter(
         }
     }
 
-    std::vector<IndexType> vertexMapping(
-        m.vertexContainerSize(), InMeshType::NULL_INDEX);
+    std::vector<OutIndexType> vertexMapping(
+        m.vertexContainerSize(), OutMeshType::NULL_INDEX);
 
     std::
-        set<std::pair<IndexType, IndexType>, UnorderedPairComparator<IndexType>>
+        set<std::pair<OutIndexType, OutIndexType>, UnorderedPairComparator<OutIndexType>>
             unorderedEdges;
 
     for (const auto& f : m.faces()) {
         for (uint ei = 0; ei < f.vertexCount(); ++ei) {
             if (faceEdgeFilter(f, ei)) {
-                std::array<IndexType, 2> verts = {
-                    InMeshType::NULL_INDEX, InMeshType::NULL_INDEX};
+                std::array<OutIndexType, 2> verts = {
+                    OutMeshType::NULL_INDEX, OutMeshType::NULL_INDEX};
                 for (uint i = 0; i < 2; ++i) {
                     IndexType inVIdx = f.vertexIndexMod(ei + i);
-                    if (vertexMapping[inVIdx] == InMeshType::NULL_INDEX) {
-                        IndexType ov = res.addVertex();
+                    if (vertexMapping[inVIdx] == OutMeshType::NULL_INDEX) {
+                        OutIndexType ov = res.addVertex();
                         res.vertex(ov).importFrom(f.vertexMod(ei + i), false);
                         if constexpr (HasVertexCustomComponents<OutMeshType>) {
                             if (saveBirthIndicesInCustomComponent) {
@@ -617,9 +619,9 @@ OutMeshType perFaceEdgeMeshFilter(
                     }
                 }
 
-                std::pair<IndexType, IndexType> ep {verts[0], verts[1]};
+                std::pair<OutIndexType, OutIndexType> ep {verts[0], verts[1]};
                 if (!dontDuplicateEdges || !unorderedEdges.contains(ep)) {
-                    IndexType e = res.addEdge(verts[0], verts[1]);
+                    OutIndexType e = res.addEdge(verts[0], verts[1]);
                     unorderedEdges.insert(ep);
                 }
             }

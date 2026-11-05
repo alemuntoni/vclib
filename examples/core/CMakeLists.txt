@@ -21,6 +21,7 @@ set(CORE_EXAMPLE_DIRS
     "004-mesh-copy-and-transform"
     "005-mesh-normals"
     "006-mesh-topology"
+    "014-mesh-smoothing"
     #"016-face-flooding"
     "017-mesh-convex-hull"
     "021-mesh-sphere-intersection"
