@@ -48,6 +48,16 @@ void enableQualityComponents(Mesh& m)
 }
 
 template<typename Mesh>
+void enableCurvatureComponents(Mesh& m)
+{
+    if constexpr (requires { m.enablePerVertexPrincipalCurvature(); }) {
+        m.enablePerVertexPrincipalCurvature();
+    } else if constexpr (requires { m.enableVertexPrincipalCurvature(); }) {
+        m.enableVertexPrincipalCurvature();
+    }
+}
+
+template<typename Mesh>
 void initQuality(Mesh& m)
 {
     if constexpr (vcl::HasVertexQualities<Mesh>) {
