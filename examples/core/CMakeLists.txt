@@ -23,6 +23,7 @@ set(CORE_EXAMPLE_DIRS
     "006-mesh-topology"
     #"016-face-flooding"
     "017-mesh-convex-hull"
+    "021-mesh-sphere-intersection"
     "998-misc-no-lib"
     "999-misc"
 )
