@@ -18,6 +18,7 @@
 #include <climits>
 #include <filesystem>
 #include <print>
+#include <random>
 #include <stdexcept>
 #include <string>
 
@@ -104,6 +105,7 @@ int runBenchmarks(
         return 1;
     }
 
+    const uint32_t seed = opts.seed.value_or(std::random_device{}());
     using Scalar = typename Mesh::PositionType::ScalarType;
     nlohmann::json metadata = {
         {"mesh_type",       meshType},
@@ -113,7 +115,8 @@ int runBenchmarks(
         {"reference_kind",  "index"},
         {"reference_bits",  sizeof(typename Mesh::IndexType) * CHAR_BIT},
         {"vertices",        mesh.vertexCount()},
-        {"faces",           mesh.faceCount()}
+        {"faces",           mesh.faceCount()},
+        {"seed",      seed              }
     };
 
     std::println("==================================================");
@@ -125,15 +128,16 @@ int runBenchmarks(
         mesh.vertexCount(),
         mesh.faceCount());
     std::println(
-        "Benchmarks: {}, Iterations: {}, Warmup: {}",
+        "Benchmarks: {}, Iterations: {}, Warmup: {}, Seed: {}",
         selected.size(),
         opts.iterations,
-        opts.warmup);
+        opts.warmup,
+        seed);
     std::println("==================================================");
 
     bench::BenchmarkRunner runner(
         "v2", datasetName, metadata, opts.iterations, opts.warmup);
-    bench::Context<Mesh> context(std::move(mesh), datasetName, meshPath);
+    bench::Context<Mesh> context(std::move(mesh), datasetName, meshPath, seed);
 
     for (const auto* entry : selected) {
         bench::State<Mesh> state(runner, context, entry->name, opts.iterations);
