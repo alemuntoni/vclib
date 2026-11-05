@@ -352,6 +352,20 @@ private:
     }
 };
 
+/* Deduction guides */
+
+template<FaceConcept FaceType, std::integral EdgeType>
+MeshPos(FaceType, EdgeType)
+    -> MeshPos<ParentMeshType<FaceType>>;
+
+template<FaceConcept FaceType, VertexConcept VertexType>
+MeshPos(FaceType, VertexType)
+    -> MeshPos<ParentMeshType<FaceType>>;
+
+template<FaceConcept FaceType, VertexConcept VertexType, std::integral EdgeType>
+MeshPos(FaceType, VertexType, EdgeType)
+    -> MeshPos<ParentMeshType<FaceType>>;
+
 } // namespace vcl
 
 #endif // VCL_SPACE_COMPLEX_MESH_POS_H

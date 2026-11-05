@@ -306,6 +306,52 @@ struct IndexTypeHelper<T>
 };
 
 // ============================================================================
+// ParentMeshTypeHelper
+// ============================================================================
+
+template<typename T>
+struct ParentMeshTypeHelper
+{
+};
+
+// 1. MeshConcept: if T is already a Mesh, its parent mesh is itself
+template<MeshConcept M>
+struct ParentMeshTypeHelper<M>
+{
+    using type = M;
+};
+
+// 2. Types exposing ParentMeshType directly (e.g. ElementContainer, ElementProxy, Face, Vertex, Edge, WedgeProxy)
+template<typename T>
+requires (!MeshConcept<T> && requires { typename T::ParentMeshType; })
+struct ParentMeshTypeHelper<T>
+{
+    using type = typename T::ParentMeshType;
+};
+
+// 3. Types that have a parentContainer()
+template<typename T>
+requires (
+    !MeshConcept<T> && !requires { typename T::ParentMeshType; } &&
+    requires(T& t) { t.parentContainer(); })
+struct ParentMeshTypeHelper<T>
+{
+    using Container =
+        std::remove_cvref_t<decltype(std::declval<T&>().parentContainer())>;
+    using type = typename Container::ParentMeshType;
+};
+
+// 4. WedgeConcept: extracts the parent mesh through its parent face
+template<WedgeConcept W>
+requires (!requires { typename W::ParentMeshType; })
+struct ParentMeshTypeHelper<W>
+{
+    using Face =
+        std::remove_cvref_t<decltype(std::declval<W&>().parentFace())>;
+    using type = typename ParentMeshTypeHelper<Face>::type;
+};
+
+// ============================================================================
 // PositionTypeHelper
 // ============================================================================
 
@@ -493,6 +539,16 @@ using WedgeType =
 template<typename T>
 using IndexType =
     typename detail::IndexTypeHelper<std::remove_cvref_t<T>>::type;
+
+/**
+ * @brief Extracts the parent Mesh type from an Element proxy, a Container, or a
+ * Mesh itself.
+ * @tparam T: The type to query (cv-ref stripped automatically).
+ * @ingroup mesh_traits
+ */
+template<typename T>
+using ParentMeshType =
+    typename detail::ParentMeshTypeHelper<std::remove_cvref_t<T>>::type;
 
 /**
  * @brief Extracts the 3D position type (e.g. Point3f, Point3d) from a Vertex or

@@ -38,6 +38,9 @@ class WedgeProxy
     uint     mIndex = 0;
 
 public:
+    using ParentMeshType =
+        typename std::remove_cvref_t<FaceType>::ParentMeshType;
+
     WedgeProxy() = default;
 
     WedgeProxy(FaceType face, uint index) : mFace(face), mIndex(index) {}

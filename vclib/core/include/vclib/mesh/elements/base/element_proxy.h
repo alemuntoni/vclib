@@ -60,6 +60,8 @@ class ElementProxy<ELEM_ID, ContainerType, vcl::TypeWrapper<Comps...>> :
 public:
     using Components = vcl::TypeWrapper<Comps...>;
     using IndexType  = typename std::remove_cv_t<ContainerType>::IndexType;
+    using ParentMeshType =
+        typename std::remove_cv_t<ContainerType>::ParentMeshType;
 
     /**
      * @brief The null/invalid sentinel value for this element's index type.

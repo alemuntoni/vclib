@@ -22,6 +22,7 @@ set(CORE_EXAMPLE_DIRS
     "005-mesh-normals"
     "006-mesh-topology"
     #"016-face-flooding"
+    "017-mesh-convex-hull"
     "998-misc-no-lib"
     "999-misc"
 )
