@@ -168,7 +168,7 @@ TEMPLATE_TEST_CASE(
     {
         REQUIRE(creaseEdges.edgeCount() == 36 * 2);
         REQUIRE(creaseEdges.hasVertexCustomComponent("birthVertex"));
-        for (uint i = 0; i < creaseEdges.vertexCount(); ++i) {
+        for (std::size_t i = 0; i < creaseEdges.vertexCount(); ++i) {
             auto birthV =
                 creaseEdges.vertex(i)
                     .template customComponent<typename TriMesh::IndexType>(

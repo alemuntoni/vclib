@@ -24,6 +24,7 @@ set(CORE_EXAMPLE_DIRS
     "014-mesh-smoothing"
     #"016-face-flooding"
     "017-mesh-convex-hull"
+    "018-mesh-distance"
     "021-mesh-sphere-intersection"
     "998-misc-no-lib"
     "999-misc"
