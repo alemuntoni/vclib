@@ -39,6 +39,7 @@ set(SOURCES
     test_update_color.h
     test_update_quality.h
     test_update_selection.h
+    test_shuffle.h
     main.cpp
 )
 

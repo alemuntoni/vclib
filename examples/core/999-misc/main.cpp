@@ -36,6 +36,7 @@
 #include "test_update_color.h"
 #include "test_update_quality.h"
 #include "test_update_selection.h"
+#include "test_shuffle.h"
 
 int main()
 {
@@ -68,6 +69,7 @@ int main()
     testUpdateColor();
     testUpdateQuality();
     testUpdateSelection();
+    testShuffle();
 
     std::println("All mesh tests passed successfully!");
     return 0;
