@@ -34,11 +34,11 @@ auto meshCurvature()
     std::cout << "  Faces: " << originalMesh.faceCount() << std::endl;
 
     // Enable required components
-    originalMesh.enablePerVertexAdjacentFaces();
-    originalMesh.enablePerFaceAdjacentFaces();
-    originalMesh.enablePerVertexPrincipalCurvature();
-    originalMesh.enablePerVertexColor();
-    originalMesh.enablePerVertexQuality();
+    originalMesh.enableVertexAdjacentFaces();
+    originalMesh.enableFaceAdjacentFaces();
+    originalMesh.enableVertexPrincipalCurvature();
+    originalMesh.enableVertexColor();
+    originalMesh.enableVertexQuality();
 
     vcl::updatePerVertexAndFaceNormals(originalMesh);
     vcl::updatePerFaceAdjacentFaces(originalMesh);
@@ -121,7 +121,7 @@ auto meshCurvature()
     }
 
     // Color mapping with maximum curvature
-    for (auto& v : generalMesh.vertices()) {
+    for (auto v : generalMesh.vertices()) {
         v.quality() = std::max(
             std::abs(v.principalCurvature().maxValue()),
             std::abs(v.principalCurvature().minValue()));

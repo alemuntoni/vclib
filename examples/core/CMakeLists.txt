@@ -22,6 +22,7 @@ set(CORE_EXAMPLE_DIRS
     "005-mesh-normals"
     "006-mesh-topology"
     "014-mesh-smoothing"
+    "015-mesh-curvature"
     #"016-face-flooding"
     "017-mesh-convex-hull"
     "018-mesh-distance"
