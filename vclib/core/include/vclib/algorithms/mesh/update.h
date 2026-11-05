@@ -8,7 +8,7 @@
 #ifndef VCL_ALGORITHMS_MESH_UPDATE_H
 #define VCL_ALGORITHMS_MESH_UPDATE_H
 
-// #include "update/border.h"
+#include "update/border.h"
 #include "update/bounding_box.h"
 #include "update/color.h"
 // #include "update/curvature.h"
