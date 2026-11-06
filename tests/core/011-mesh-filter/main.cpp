@@ -135,8 +135,8 @@ TEMPLATE_TEST_CASE(
 
 using Meshes         = std::pair<vcl::TriMesh, vcl::EdgeMesh>;
 using Meshesf        = std::pair<vcl::TriMeshf, vcl::EdgeMeshf>;
-using MeshesIndexed  = std::pair<vcl::TriMesh64, vcl::EdgeMesh64>;
-using MeshesIndexedf = std::pair<vcl::TriMesh64f, vcl::EdgeMesh64f>;
+using Meshes64  = std::pair<vcl::TriMesh64, vcl::EdgeMesh64>;
+using Meshes64f = std::pair<vcl::TriMesh64f, vcl::EdgeMesh64f>;
 using MeshesMixed1   = std::pair<vcl::TriMesh, vcl::EdgeMesh64>;
 using MeshesMixed2   = std::pair<vcl::TriMesh64, vcl::EdgeMesh>;
 
@@ -145,8 +145,8 @@ TEMPLATE_TEST_CASE(
     "",
     Meshes,
     Meshesf,
-    MeshesIndexed,
-    MeshesIndexedf,
+    Meshes64,
+    Meshes64f,
     MeshesMixed1,
     MeshesMixed2)
 {

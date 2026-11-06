@@ -409,6 +409,8 @@ void addMeshToTinygltfModel(
     bool             saveTextureImages,
     LogType&         log = nullLogger)
 {
+    using IndexType = MeshType::IndexType;
+
     // mesh
     tModel.meshes.emplace_back();
     tinygltf::Mesh& mesh  = tModel.meshes.back();
@@ -431,10 +433,10 @@ void addMeshToTinygltfModel(
         }
     }
 
-    std::vector<std::pair<uint, uint>>          vertWedgeMap;
-    std::list<uint>                             vertsToDuplicate;
-    std::list<std::list<std::pair<uint, uint>>> facesToReassign;
-    uint                                        nV = 0;
+    std::vector<std::pair<IndexType, uint>>          vertWedgeMap;
+    std::list<IndexType>                             vertsToDuplicate;
+    std::list<std::list<std::pair<IndexType, uint>>> facesToReassign;
+    IndexType                                        nV = 0;
 
     if constexpr (HasFaceWedgeTexCoords<MeshType>) {
         if (exportWedgeTexCoord) {
@@ -443,7 +445,7 @@ void addMeshToTinygltfModel(
         }
     }
 
-    uint totalVertices = m.vertexCount() + nV;
+    IndexType totalVertices = m.vertexCount() + nV;
 
     // vertices position buffer, buffer view and accessor
     auto posAlloc =
