@@ -18,48 +18,50 @@ void adjacentFacesComponentStaticAsserts()
     using TriMeshFace   = FaceType<TriMesh>;
     using PolyMeshFace  = FaceType<PolyMesh>;
 
-    using ATPComponent = face::AdjacentTriangles<>;
-    using APIComponent = face::AdjacentPolygons<>;
+    using ATPComponent = face::TriangleAdjacentFaces<>;
+    using APIComponent = face::PolygonAdjacentFaces<>;
 
     // test only the adjacent faces indices/pointers component
     static_assert(
         comp::HasAdjacentFaces<ATPComponent>,
-        "face::AdjacentTriangles does not satisfy the HasAdjacentFaces "
+        "face::TriangleAdjacentFaces does not satisfy the HasAdjacentFaces "
         "concept");
     static_assert(
         comp::HasAdjacentFaces<const ATPComponent>,
-        "const face::AdjacentTriangles does not satisfy the HasAdjacentFaces "
-        "concept");
+        "const face::TriangleAdjacentFaces does not satisfy the "
+        "HasAdjacentFaces concept");
     static_assert(
         comp::HasAdjacentFaces<ATPComponent&>,
-        "face::AdjacentTriangles& does not satisfy the HasAdjacentFaces "
+        "face::TriangleAdjacentFaces& does not satisfy the HasAdjacentFaces "
         "concept");
     static_assert(
         comp::HasAdjacentFaces<const ATPComponent&>,
-        "const face::AdjacentTriangles& does not satisfy the HasAdjacentFaces "
-        "concept");
+        "const face::TriangleAdjacentFaces& does not satisfy the "
+        "HasAdjacentFaces concept");
     static_assert(
         comp::HasAdjacentFaces<ATPComponent&&>,
-        "face::AdjacentTriangles&& does not satisfy the HasAdjacentFaces "
+        "face::TriangleAdjacentFaces&& does not satisfy the HasAdjacentFaces "
         "concept");
 
     static_assert(
         comp::HasAdjacentFaces<APIComponent>,
-        "face::AdjacentPolgons does not satisfy the HasAdjacentFaces concept");
+        "face::PolygonAdjacentFaces does not satisfy the HasAdjacentFaces "
+        "concept");
     static_assert(
         comp::HasAdjacentFaces<const APIComponent>,
-        "const face::AdjacentPolgons does not satisfy the HasAdjacentFaces "
+        "const face::PolygonAdjacentFaces does not satisfy the HasAdjacentFaces "
         "concept");
     static_assert(
         comp::HasAdjacentFaces<APIComponent&>,
-        "face::AdjacentPolgons& does not satisfy the HasAdjacentFaces concept");
+        "face::PolygonAdjacentFaces& does not satisfy the HasAdjacentFaces "
+        "concept");
     static_assert(
         comp::HasAdjacentFaces<const APIComponent&>,
-        "const face::AdjacentPolgons& does not satisfy the HasAdjacentFaces "
+        "const face::PolygonAdjacentFaces& does not satisfy the HasAdjacentFaces "
         "concept");
     static_assert(
         comp::HasAdjacentFaces<APIComponent&&>,
-        "face::AdjacentPolgons&& does not satisfy the HasAdjacentFaces "
+        "face::PolygonAdjacentFaces&& does not satisfy the HasAdjacentFaces "
         "concept");
 
     static_assert(

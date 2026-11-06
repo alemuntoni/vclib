@@ -54,7 +54,7 @@ using FaceComponents = vcl::FaceComponents<
     face::OptionalColor,
     face::OptionalQuality<Scalar>,
     face::OptionalTriangleAdjacentFaces<Index>,
-    face::OptionalAdjacentEdges<-1, Index>,
+    face::OptionalTriangleAdjacentEdges<Index>,
     face::OptionalTriangleWedgeTexCoords<Scalar>,
     face::OptionalMaterialIndex,
     face::CustomComponents>;

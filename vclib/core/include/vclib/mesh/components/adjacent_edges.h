@@ -361,23 +361,6 @@ concept HasStaticAdjacentEdges =
     HasAdjacentEdges<T> &&
     (ComponentTypeT<CompId::ADJACENT_EDGES, T>::ADJ_EDGE_COUNT > 0);
 
-/**
- * @brief Concept that checks whether a type T has a 3-element static AdjacentEdges component.
- */
-template<typename T>
-concept HasTriangleAdjacentEdges =
-    HasAdjacentEdges<T> &&
-    (ComponentTypeT<CompId::ADJACENT_EDGES, T>::ADJ_EDGE_COUNT == 3);
-
-/**
- * @brief Concept that checks whether a type T has a polygon (TTVC) AdjacentEdges component.
- */
-template<typename T>
-concept HasPolygonAdjacentEdges =
-    HasAdjacentEdges<T> &&
-    (ComponentTypeT<CompId::ADJACENT_EDGES, T>::ADJ_EDGE_COUNT == -1) &&
-    (ComponentTypeT<CompId::ADJACENT_EDGES, T>::TIED_TO_VERTEX_COUNT);
-
 /* Implementation of member functions */
 
 template<int N, std::unsigned_integral Index, bool TTVC, bool OPT>
@@ -429,26 +412,6 @@ void AdjacentEdges<N, Index, TTVC, OPT>::importFrom(
         }
     }
 }
-
-/* Specialization Aliases */
-
-template<std::unsigned_integral Index = uint, bool OPT = false>
-using TriangleAdjacentEdges = AdjacentEdges<3, Index, true, OPT>;
-
-template<std::unsigned_integral Index = uint, bool OPT = false>
-using PolygonAdjacentEdges = AdjacentEdges<-1, Index, true, OPT>;
-
-template<std::unsigned_integral Index = uint, bool OPT = false>
-using VertexAdjacentEdges = AdjacentEdges<-1, Index, false, OPT>;
-
-template<std::unsigned_integral Index = uint>
-using OptionalTriangleAdjacentEdges = TriangleAdjacentEdges<Index, true>;
-
-template<std::unsigned_integral Index = uint>
-using OptionalPolygonAdjacentEdges = PolygonAdjacentEdges<Index, true>;
-
-template<std::unsigned_integral Index = uint>
-using OptionalVertexAdjacentEdges = VertexAdjacentEdges<Index, true>;
 
 } // namespace vcl::comp
 

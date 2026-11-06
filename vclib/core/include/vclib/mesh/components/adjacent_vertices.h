@@ -414,14 +414,6 @@ void AdjacentVertices<N, Index, TTVC, OPT>::importFrom(
     }
 }
 
-/* Specialization Aliases */
-
-template<std::unsigned_integral Index = uint, bool OPT = false>
-using VertexAdjacentVertices = AdjacentVertices<-1, Index, false, OPT>;
-
-template<std::unsigned_integral Index = uint>
-using OptionalVertexAdjacentVertices = VertexAdjacentVertices<Index, true>;
-
 } // namespace vcl::comp
 
 #endif // VCL_MESH_COMPONENTS_ADJACENT_VERTICES_H

@@ -75,58 +75,25 @@ template<typename T>
 concept HasOptionalTexCoord = comp::HasOptionalTexCoord<T>;
 
 /* Port AdjacentEdges class into vert namespace */
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1,
-    bool                   OPT   = false>
-using AdjacentEdges = comp::AdjacentEdges<N, Index, false, OPT>;
-
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1>
-using OptionalAdjacentEdges = AdjacentEdges<Index, N, true>;
-
-template<std::unsigned_integral Index = uint, bool OPT = false>
-using VertexAdjacentEdges = comp::VertexAdjacentEdges<Index, OPT>;
+template<std::unsigned_integral Index = uint>
+using AdjacentEdges = comp::AdjacentEdges<-1, Index>;
 
 template<std::unsigned_integral Index = uint>
-using OptionalVertexAdjacentEdges = comp::OptionalVertexAdjacentEdges<Index>;
+using OptionalAdjacentEdges = comp::AdjacentEdges<-1, Index, false, true>;
 
 /* Port AdjacentFaces class into vert namespace */
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1,
-    bool                   OPT   = false>
-using AdjacentFaces = comp::AdjacentFaces<N, Index, false, OPT>;
-
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1>
-using OptionalAdjacentFaces = AdjacentFaces<Index, N, true>;
-
-template<std::unsigned_integral Index = uint, bool OPT = false>
-using VertexAdjacentFaces = comp::VertexAdjacentFaces<Index, OPT>;
+template<std::unsigned_integral Index = uint>
+using AdjacentFaces = comp::AdjacentFaces<-1, Index>;
 
 template<std::unsigned_integral Index = uint>
-using OptionalVertexAdjacentFaces = comp::OptionalVertexAdjacentFaces<Index>;
+using OptionalAdjacentFaces = comp::AdjacentFaces<-1, Index, false, true>;
 
 /* Port AdjacentVertices class into vert namespace */
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1,
-    bool                   OPT   = false>
-using AdjacentVertices = comp::AdjacentVertices<N, Index, false, OPT>;
-
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1>
-using OptionalAdjacentVertices = AdjacentVertices<Index, N, true>;
-
-template<std::unsigned_integral Index = uint, bool OPT = false>
-using VertexAdjacentVertices = comp::VertexAdjacentVertices<Index, OPT>;
+template<std::unsigned_integral Index = uint>
+using AdjacentVertices = comp::AdjacentVertices<-1, Index>;
 
 template<std::unsigned_integral Index = uint>
-using OptionalVertexAdjacentVertices = comp::OptionalVertexAdjacentVertices<Index>;
+using OptionalAdjacentVertices = comp::AdjacentVertices<-1, Index, false, true>;
 
 /* Port BitFlags class into vert namespace */
 using BitFlags = comp::BitFlags;

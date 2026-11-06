@@ -56,7 +56,6 @@ inline void testPresets()
         static_assert(!vcl::vert::HasAdjacentEdges<TM::Vertex>);
 
         // Face components
-        static_assert(vcl::face::HasTriangleAdjacentFaces<TM::Face>);
         static_assert(!vcl::face::HasAdjacentEdges<TM::Face>);
 
         TM tm;
@@ -77,7 +76,6 @@ inline void testPresets()
         static_assert(!vcl::vert::HasAdjacentEdges<PM::Vertex>);
 
         // Face components
-        static_assert(vcl::face::HasPolygonAdjacentFaces<PM::Face>);
         static_assert(!vcl::face::HasAdjacentEdges<PM::Face>);
 
         PM pm;
@@ -125,7 +123,6 @@ inline void testPresets()
         static_assert(vcl::vert::HasTangent<TEM::Vertex>);
 
         // Face components
-        static_assert(vcl::face::HasTriangleAdjacentFaces<TEM::Face>);
         static_assert(vcl::face::HasAdjacentEdges<TEM::Face>);
 
         // Edge components
@@ -153,7 +150,6 @@ inline void testPresets()
         static_assert(vcl::vert::HasTangent<PEM::Vertex>);
 
         // Face components
-        static_assert(vcl::face::HasPolygonAdjacentFaces<PEM::Face>);
         static_assert(vcl::face::HasAdjacentEdges<PEM::Face>);
 
         // Edge components

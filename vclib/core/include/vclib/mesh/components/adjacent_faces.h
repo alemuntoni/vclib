@@ -430,26 +430,6 @@ void AdjacentFaces<N, Index, TTVC, OPT>::importFrom(
     }
 }
 
-/* Specialization Aliases */
-
-template<std::unsigned_integral Index = uint, bool OPT = false>
-using TriangleAdjacentFaces = AdjacentFaces<3, Index, true, OPT>;
-
-template<std::unsigned_integral Index = uint, bool OPT = false>
-using PolygonAdjacentFaces = AdjacentFaces<-1, Index, true, OPT>;
-
-template<std::unsigned_integral Index = uint, bool OPT = false>
-using VertexAdjacentFaces = AdjacentFaces<-1, Index, false, OPT>;
-
-template<std::unsigned_integral Index = uint>
-using OptionalTriangleAdjacentFaces = TriangleAdjacentFaces<Index, true>;
-
-template<std::unsigned_integral Index = uint>
-using OptionalPolygonAdjacentFaces = PolygonAdjacentFaces<Index, true>;
-
-template<std::unsigned_integral Index = uint>
-using OptionalVertexAdjacentFaces = VertexAdjacentFaces<Index, true>;
-
 } // namespace vcl::comp
 
 #endif // VCL_MESH_COMPONENTS_ADJACENT_FACES_H

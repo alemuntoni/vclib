@@ -75,40 +75,25 @@ template<typename T>
 concept HasVertexReferences = comp::HasVertexReferences<T>;
 
 /* Port AdjacentEdges class into edge namespace */
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1,
-    bool                   OPT   = false>
-using AdjacentEdges = comp::AdjacentEdges<N, Index, false, OPT>;
+template<std::unsigned_integral Index = uint>
+using AdjacentEdges = comp::AdjacentEdges<-1, Index>;
 
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1>
-using OptionalAdjacentEdges = AdjacentEdges<Index, N, true>;
+template<std::unsigned_integral Index = uint>
+using OptionalAdjacentEdges = comp::AdjacentEdges<-1, Index, false, true>;
 
 /* Port AdjacentFaces class into edge namespace */
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1,
-    bool                   OPT   = false>
-using AdjacentFaces = comp::AdjacentFaces<N, Index, false, OPT>;
+template<std::unsigned_integral Index = uint>
+using AdjacentFaces = comp::AdjacentFaces<-1, Index>;
 
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1>
-using OptionalAdjacentFaces = AdjacentFaces<Index, N, true>;
+template<std::unsigned_integral Index = uint>
+using OptionalAdjacentFaces = comp::AdjacentFaces<-1, Index, false, true>;
 
 /* Port AdjacentVertices class into edge namespace */
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1,
-    bool                   OPT   = false>
-using AdjacentVertices = comp::AdjacentVertices<N, Index, false, OPT>;
+template<std::unsigned_integral Index = uint>
+using AdjacentVertices = comp::AdjacentVertices<-1, Index>;
 
-template<
-    std::unsigned_integral Index = uint,
-    int                    N     = -1>
-using OptionalAdjacentVertices = AdjacentVertices<Index, N, true>;
+template<std::unsigned_integral Index = uint>
+using OptionalAdjacentVertices = comp::AdjacentVertices<-1, Index, false, true>;
 
 /* Port BitFlags class into edge namespace */
 using BitFlags = comp::BitFlags;

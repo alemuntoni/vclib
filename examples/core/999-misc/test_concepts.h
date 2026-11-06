@@ -169,10 +169,6 @@ inline void testComponentConcepts()
     // Adjacency Component Concepts
     static_assert(HasAdjacentFaces<AdjFaceComponents>);
     static_assert(HasAdjacentFaces<AdjMesh::Face>);
-    static_assert(face::HasTriangleAdjacentFaces<AdjFaceComponents>);
-    static_assert(face::HasTriangleAdjacentFaces<AdjMesh::Face>);
-    static_assert(!face::HasPolygonAdjacentFaces<AdjMesh::Face>);
-    static_assert(!face::HasOptionalAdjacentFaces<AdjMesh::Face>);
 
     static_assert(HasAdjacentFaces<AdjVertexComponents>);
     static_assert(HasAdjacentFaces<AdjMesh::Vertex>);
