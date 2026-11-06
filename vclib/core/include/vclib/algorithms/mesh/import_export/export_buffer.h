@@ -1827,8 +1827,8 @@ void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
     MatrixStorageType storage = MatrixStorageType::ROW_MAJOR)
 {
     using namespace detail;
-    using TexCoordType = typename MeshType::FaceType::WedgeTexCoordType;
-    using IndexType    = typename MeshType::IndexType;
+    using TexCoordType = TexCoordType<WedgeType<FaceType<MeshType>>>;
+    using IndexType    = MeshType::IndexType;
 
     requireFaceWedgeTexCoords(mesh);
 
@@ -1845,7 +1845,7 @@ void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
         // check if the vi is referenced
         if (fInd != MeshType::NULL_INDEX && wInd != MeshType::NULL_INDEX &&
             fInd != UINT_NULL && wInd != UINT_NULL) {
-            w = mesh.face(fInd).wedgeTexCoord(wInd);
+            w = mesh.face(fInd).wedge(wInd).texCoord();
         }
         at(buffer, vi, 0, NUM_ROWS, 2, storage) = w.u();
         at(buffer, vi, 1, NUM_ROWS, 2, storage) = w.v();
@@ -1861,7 +1861,7 @@ void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
         auto        fInd = p.first;
         auto        wInd = p.second;
 
-        const auto& w = mesh.face(fInd).wedgeTexCoord(wInd);
+        const auto& w = mesh.face(fInd).wedge(wInd).texCoord();
         at(buffer, vi, 0, NUM_ROWS, 2, storage) = w.u();
         at(buffer, vi, 1, NUM_ROWS, 2, storage) = w.v();
 

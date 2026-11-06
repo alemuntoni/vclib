@@ -14,7 +14,7 @@
 #include "stl/load.h"
 
 #ifdef VCLIB_WITH_TINYGLTF
-//#include "gltf/load.h"
+#include "gltf/load.h"
 #endif
 
 #include "capability.h"
@@ -102,7 +102,7 @@ void loadMesh(
     }
 #ifdef VCLIB_WITH_TINYGLTF
     else if (ff == gltfFileFormat()) {
-        //loadGltf(m, filename, loadedInfo, settings, log);
+        loadGltf(m, filename, loadedInfo, settings, log);
     }
 #endif
     else {

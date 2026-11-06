@@ -146,7 +146,7 @@ void writePlyEdges(
     const PlyHeader& header,
     const MeshType&  mesh)
 {
-    using EdgeType = MeshType::EdgeType;
+    using EdgeType = ConstEdgeType<MeshType>;
 
     FileType format;
     if (header.format() == ply::ASCII) {
@@ -159,17 +159,17 @@ void writePlyEdges(
     // indices of vertices that do not consider deleted vertices
     std::vector<uint> vIndices = mesh.vertexCompactIndices();
 
-    for (const EdgeType& e : mesh.edges()) {
+    for (EdgeType e : mesh.edges()) {
         for (const PlyProperty& p : header.edgeProperties()) {
             bool hasBeenWritten = false;
             if (p.name == ply::vertex1) {
                 io::writeProperty(
-                    file, vIndices[mesh.index(e.vertex(0))], p.type, format);
+                    file, vIndices[e.vertexIndex(0)], p.type, format);
                 hasBeenWritten = true;
             }
             else if (p.name == ply::vertex2) {
                 io::writeProperty(
-                    file, vIndices[mesh.index(e.vertex(1))], p.type, format);
+                    file, vIndices[e.vertexIndex(1)], p.type, format);
                 hasBeenWritten = true;
             }
             else if (p.name == ply::bit_flags) {

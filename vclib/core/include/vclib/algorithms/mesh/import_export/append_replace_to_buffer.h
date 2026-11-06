@@ -9,6 +9,7 @@
 #define VCL_ALGORITHMS_MESH_IMPORT_EXPORT_APPEND_REPLACE_TO_BUFFER_H
 
 #include "detail.h"
+#include "vclib/mesh/requirements/contracts.h"
 
 #include <vclib/algorithms/mesh/sort.h>
 
@@ -313,8 +314,8 @@ void permuteFaceVertexIndicesByFunctionToBuffer(
     const MeshType&                           mesh,
     auto*                                     buffer,
     const std::function<bool(
-        const typename MeshType::FaceType&,
-        const typename MeshType::FaceType&)>& func,
+        ConstFaceType<MeshType>,
+        ConstFaceType<MeshType>)>& func,
     TriPolyIndexBiMap&                        indexMap = detail::indexMap)
 {
     // get the list of face indices sorted by material ID and using the given
@@ -476,7 +477,7 @@ void appendDuplicateVertexNormalsToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requirePerVertexNormal(mesh);
+    requireVertexNormals(mesh);
 
     const uint NUM_ROWS = mesh.vertexCount() + vertsToDuplicate.size();
 
@@ -544,7 +545,7 @@ void appendDuplicateVertexColorsToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requirePerVertexColor(mesh);
+    requireVertexColors(mesh);
 
     const bool R_INT    = representation == Color::Representation::INT_0_255;
     const uint NUM_ROWS = mesh.vertexCount() + vertsToDuplicate.size();
@@ -610,7 +611,7 @@ void appendDuplicateVertexColorsToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requirePerVertexColor(mesh);
+    requireVertexColors(mesh);
 
     for (uint i = mesh.vertexCount(); const auto& v : vertsToDuplicate) {
         const auto& c = mesh.vertex(v).color();
@@ -671,7 +672,7 @@ void appendDuplicateVertexQualityToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requirePerVertexQuality(mesh);
+    requireVertexQualities(mesh);
 
     for (uint i = mesh.vertexCount(); const auto& v : vertsToDuplicate) {
         buffer[i] = mesh.vertex(v).quality();
@@ -733,7 +734,7 @@ void appendDuplicateVertexTexCoordsToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requirePerVertexTexCoord(mesh);
+    requireVertexTexCoords(mesh);
 
     const uint NUM_ROWS = mesh.vertexCount() + vertsToDuplicate.size();
 
@@ -807,7 +808,7 @@ void appendDuplicateVertexTangentsToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requirePerVertexTangent(mesh);
+    requireVertexTangents(mesh);
 
     const uint NUM_ROWS = mesh.vertexCount() + vertsToDuplicate.size();
     const uint NUM_COLS = storeHandednessAsW ? 4 : 3;
@@ -876,7 +877,7 @@ void appendDuplicateVertexMaterialIndicesToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requirePerVertexMaterialIndex(mesh);
+    requireVertexMaterialIndices(mesh);
 
     for (uint i = mesh.vertexCount(); const auto& v : vertsToDuplicate) {
         buffer[i] = mesh.vertex(v).materialIndex();

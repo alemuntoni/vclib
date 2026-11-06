@@ -27,6 +27,7 @@ set(CORE_EXAMPLE_DIRS
     "017-mesh-convex-hull"
     "018-mesh-distance"
     "021-mesh-sphere-intersection"
+    "024-save-gltf"
     "998-misc-no-lib"
     "999-misc"
 )

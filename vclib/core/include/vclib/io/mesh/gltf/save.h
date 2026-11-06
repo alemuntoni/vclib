@@ -627,11 +627,11 @@ void addMeshToTinygltfModel(
                 // created with relative accessor and buffer view into the
                 // index buffer materials are saved into the model
 
-                using FaceType = FaceType<MeshType>;
+                using FaceType = ConstFaceType<MeshType>;
 
                 // comparator of faces
                 // ordering by material index (if available)
-                auto faceComp = [&](const FaceType& f1, const FaceType& f2) {
+                auto faceComp = [&](FaceType f1, FaceType f2) {
                     if (usePerFaceMaterial) {
                         if constexpr (HasFaceMaterialIndices<MeshType>) {
                             if (m.isFaceMaterialIndexAvailable()) {
@@ -646,8 +646,8 @@ void addMeshToTinygltfModel(
                     else if (usePerVertexMaterial) {
                         if constexpr (HasVertexMaterialIndices<MeshType>) {
                             if (m.isVertexMaterialIndexAvailable()) {
-                                uint id1 = f1.vertex(0)->materialIndex();
-                                uint id2 = f2.vertex(0)->materialIndex();
+                                uint id1 = f1.vertex(0).materialIndex();
+                                uint id2 = f2.vertex(0).materialIndex();
                                 if (id1 != id2) { // do not return true if equal
                                     return id1 < id2;
                                 }
@@ -723,7 +723,7 @@ void addMeshToTinygltfModel(
                 };
 
                 for (auto faceCompactIndex : faceIndicesSortedByMaterialID) {
-                    auto& face = m.face(oldFaceIndices[faceCompactIndex]);
+                    auto face = m.face(oldFaceIndices[faceCompactIndex]);
 
                     uint materialIndex = 0;
                     if (usePerFaceMaterial) {
@@ -733,7 +733,7 @@ void addMeshToTinygltfModel(
                     }
                     else if (usePerVertexMaterial) {
                         if constexpr (HasVertexMaterialIndices<MeshType>) {
-                            materialIndex = face.vertex(0)->materialIndex();
+                            materialIndex = face.vertex(0).materialIndex();
                         }
                     }
                     uint faceChunkLength =

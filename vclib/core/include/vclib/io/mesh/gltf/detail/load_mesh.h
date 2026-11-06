@@ -340,7 +340,7 @@ bool populateGltfVertices(
     uint          stride,
     uint          vertCount)
 {
-    using PositionType = typename MeshType::VertexType::PositionType;
+    using PositionType = PositionType<MeshType>;
 
     uint base = m.addVertices(vertCount);
 
@@ -363,7 +363,7 @@ bool populateGltfVNormals(
     unsigned int  vertCount)
 {
     if constexpr (HasVertexNormals<MeshType>) {
-        using NormalType = typename MeshType::VertexType::NormalType;
+        using NormalType = VertexType<MeshType>::NormalType;
 
         if (enableOptionalComponents)
             enableIfVertexNormalsOptional(m);
@@ -396,12 +396,12 @@ bool populateGltfVTangents(
     unsigned int  vertCount)
 {
     if constexpr (HasVertexTangents<MeshType>) {
-        using TangentType = typename MeshType::VertexType::TangentType;
+        using TangentType = VertexType<MeshType>::TangentType;
 
         if (enableOptionalComponents)
-            enableIfPerVertexTangentOptional(m);
+            enableIfVertexTangentsOptional(m);
 
-        if (isPerVertexTangentAvailable(m)) {
+        if (m.isVertexTangentAvailable()) {
             for (unsigned int i = 0; i < vertCount; i++) {
                 const Scalar* tangBase = reinterpret_cast<const Scalar*>(
                     reinterpret_cast<const char*>(tangArray) + i * stride);
@@ -479,7 +479,7 @@ bool populateGltfVTextCoords(
     unsigned int  vertCount)
 {
     if constexpr (HasVertexTexCoords<MeshType>) {
-        using TexCoordType = typename MeshType::VertexType::TexCoordType;
+        using TexCoordType = VertexType<MeshType>::TexCoordType;
 
         if (enableOptionalComponents)
             enableIfVertexTexCoordsOptional(m);
@@ -510,11 +510,12 @@ bool populateGltfTriangles(
     const Scalar* triArray,
     uint          triCount)
 {
+    using IndexType = IndexType<MeshType>;
     if constexpr (HasFaces<MeshType>) {
         if (triArray != nullptr) {
-            uint fi = m.addFaces(triCount);
-            for (unsigned int i = 0; i < triCount * 3; i += 3, ++fi) {
-                auto& f = m.face(fi);
+            IndexType fi = m.addFaces(triCount);
+            for (uint i = 0; i < triCount * 3; i += 3, ++fi) {
+                auto f = m.face(fi);
                 if constexpr (HasPolygons<MeshType>) {
                     f.resizeVertices(3);
                 }
@@ -525,9 +526,9 @@ bool populateGltfTriangles(
         }
         else {
             triCount = m.vertexCount() / 3 - firstVertex;
-            uint fi  = m.addFaces(triCount);
+            IndexType fi  = m.addFaces(triCount);
             for (uint i = 0; i < triCount * 3; i += 3, ++fi) {
-                auto& f = m.face(fi);
+                auto f = m.face(fi);
                 for (uint j = 0; j < 3; ++j) {
                     f.setVertex(j, firstVertex + i + j);
                 }
@@ -547,20 +548,21 @@ bool populateGltfLines(
     const Scalar* lineArray,
     uint          lineCount)
 {
+    using IndexType = IndexType<MeshType>;
     if constexpr (HasEdges<MeshType>) {
         if (lineArray != nullptr) {
-            uint ei = m.addEdges(lineCount);
-            for (unsigned int i = 0; i < lineCount * 2; i += 2, ++ei) {
-                auto& e = m.edge(ei);
+            IndexType ei = m.addEdges(lineCount);
+            for (uint i = 0; i < lineCount * 2; i += 2, ++ei) {
+                auto e = m.edge(ei);
                 e.setVertices(
                     firstVertex + lineArray[i], firstVertex + lineArray[i + 1]);
             }
         }
         else {
             lineCount = m.vertexCount() / 2 - firstVertex;
-            uint ei   = m.addEdges(lineCount);
+            IndexType ei   = m.addEdges(lineCount);
             for (uint i = 0; i < lineCount * 2; i += 2, ++ei) {
-                auto& e = m.edge(ei);
+                auto e = m.edge(ei);
                 e.setVertices(firstVertex + i, firstVertex + i + 1);
             }
         }

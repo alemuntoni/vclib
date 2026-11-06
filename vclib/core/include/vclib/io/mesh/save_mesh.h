@@ -14,7 +14,7 @@
 #include "stl/save.h"
 
 #ifdef VCLIB_WITH_TINYGLTF
-//#include "gltf/save.h"
+#include "gltf/save.h"
 #endif
 
 #include "capability.h"
@@ -95,7 +95,7 @@ void saveMesh(
     }
 #ifdef VCLIB_WITH_TINYGLTF
     else if (ff == gltfFileFormat()) {
-        //saveGltf(m, filename, settings, log);
+        saveGltf(m, filename, settings, log);
     }
 #endif
     else {
