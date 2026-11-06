@@ -40,6 +40,8 @@ class WedgeProxy
 public:
     using ParentMeshType =
         typename std::remove_cvref_t<FaceType>::ParentMeshType;
+    using IndexType =
+        typename std::remove_cvref_t<FaceType>::IndexType;
 
     WedgeProxy() = default;
 
@@ -66,7 +68,7 @@ public:
     /**
      * @brief Returns the index of the vertex associated with this wedge corner.
      */
-    uint vertexIndex() const
+    IndexType vertexIndex() const
     {
         return mFace.vertexIndex(mIndex);
     }

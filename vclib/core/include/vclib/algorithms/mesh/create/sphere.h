@@ -359,8 +359,8 @@ MeshType createSphereIcosahedron(const SphereConcept auto& sp, uint divisions)
             auto v0   = f0.vertex(0);
             auto v1   = f0.vertex(1);
             auto v2   = f0.vertex(2);
-            uint v1id = v1.index();
-            uint v2id = v2.index();
+            auto v1id = v1.index();
+            auto v2id = v2.index();
 
             PositionType pa = (v0.position() + v1.position());
             pa.normalize();
@@ -368,9 +368,9 @@ MeshType createSphereIcosahedron(const SphereConcept auto& sp, uint divisions)
             pb.normalize();
             PositionType pc = (v2.position() + v0.position());
             pc.normalize();
-            uint vaid = mesh.addVertex(pa);
-            uint vbid = mesh.addVertex(pb);
-            uint vcid = mesh.addVertex(pc);
+            auto vaid = mesh.addVertex(pa);
+            auto vbid = mesh.addVertex(pb);
+            auto vcid = mesh.addVertex(pc);
 
             f0.setVertex(1, vaid);
             f0.setVertex(2, vcid);

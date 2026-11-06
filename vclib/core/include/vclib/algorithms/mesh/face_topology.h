@@ -43,11 +43,14 @@ namespace vcl {
  * @param[in,out] f: the first face of the triangulation, that will be filled.
  * @param[in] polygon: the vertex indices in the mesh representing the polygon.
  */
-template<FaceMeshConcept MeshType, FaceConcept FaceType>
+template<
+    FaceMeshConcept MeshType,
+    FaceConcept     FaceType,
+    typename IndexT = IndexType<MeshType>>
 void addTriangleFacesFromPolygon(
-    MeshType&                m,
-    FaceType&                f,
-    const std::vector<uint>& polygon)
+    MeshType&                  m,
+    FaceType&                  f,
+    const std::vector<IndexT>& polygon)
 {
     using PositionType = VertexType<MeshType>::PositionType;
 
@@ -100,7 +103,7 @@ void addTriangleFacesFromPolygon(
 
     // remaining triangles, need to create more faces in the mesh
     for (uint i = 3; i < tris.size(); i += 3) {
-        uint ff = m.addFace();
+        auto ff = m.addFace();
 
         if constexpr (FaceType::VERTEX_COUNT < 0) {
             m.face(ff).resizeVertices(3);
@@ -139,10 +142,12 @@ void addTriangleFacesFromPolygon(
  * @param[in] polygon: the vertex indices in the mesh representing the polygon.
  * @return The index of the first triangle added to the mesh.
  */
-template<FaceMeshConcept MeshType>
-uint addTriangleFacesFromPolygon(MeshType& m, const std::vector<uint>& polygon)
+template<FaceMeshConcept MeshType, typename IndexT = IndexType<MeshType>>
+IndexType<MeshType> addTriangleFacesFromPolygon(
+    MeshType&                  m,
+    const std::vector<IndexT>& polygon)
 {
-    uint fid = m.addFace();
+    auto fid = m.addFace();
     addTriangleFacesFromPolygon(m, m.face(fid), polygon);
     return fid;
 }
@@ -460,7 +465,7 @@ void detachAdjacentFacesOnEdge(FaceType f, uint edge)
     // if nextFace == nullptr there is nothing to do
     // the face is already detached on the edge
     if (nextFace != nullptr) {
-        FaceType                          prevFace;
+        FaceType                      prevFace;
         EdgeAdjFaceIterator<FaceType> begin(f, edge), end;
         for (auto it = begin; it != end; ++it) {
             prevFace = *it;
@@ -521,10 +526,10 @@ void detachFace(FaceType f) requires comp::HasAdjacentFaces<FaceType>
             if (f.vertex(e).isAdjacentFacesAvailable()) {
                 VertexType v    = f.vertex(e);
                 uint       vpos = v->indexOfAdjFace(f);
-                if (vpos != UINT_NULL) {   // may happen if vertex adj faces are
-                                           // not initialized / updated
+                if (vpos != UINT_NULL) {  // may happen if vertex adj faces are
+                                          // not initialized / updated
                     v.eraseAdjFace(vpos); // the vertex v has not anymore the
-                                           // adjacent face f
+                                          // adjacent face f
                 }
             }
         }

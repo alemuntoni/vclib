@@ -664,7 +664,7 @@ void addMeshToTinygltfModel(
 
                 // get the list of face indices sorted by material ID
                 // using the face comparator defined above
-                const std::vector<uint> faceIndicesSortedByMaterialID =
+                const std::vector<IndexType> faceIndicesSortedByMaterialID =
                     sortFaceIndicesByFunction(m, faceComp, true);
                 auto indAlloc = allocateInGltfBuffer(
                     tModel, 3 * triangulatedFaceCount(m) * sizeof(uint));

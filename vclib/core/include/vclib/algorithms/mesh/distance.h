@@ -160,13 +160,13 @@ template<
     PointSamplerConcept SamplerType,
     LoggerConcept       LogType>
 HausdorffDistResult hausdorffDistance(
-    const MeshType1&   m1,
-    const MeshType2&   m2,
-    uint               nSamples,
-    RandomConfig       config,
-    SamplerType&       sampler,
-    std::vector<uint>& birth,
-    LogType&           log)
+    const MeshType1&                   m1,
+    const MeshType2&                   m2,
+    uint                               nSamples,
+    RandomConfig                       config,
+    SamplerType&                       sampler,
+    std::vector<IndexType<MeshType2>>& birth,
+    LogType&                           log)
 {
     std::string meshName1 = "first mesh";
     std::string meshName2 = "second mesh";
@@ -223,7 +223,7 @@ HausdorffDistResult hausdorffDistance(
     if (nSamples == 0)
         nSamples = m2.vertexCount();
 
-    std::vector<uint> birth;
+    std::vector<IndexType<MeshType2>> birth;
 
     switch (sampMethod) {
     case HAUSDORFF_VERTEX_UNIFORM: {
