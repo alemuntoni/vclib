@@ -873,9 +873,9 @@ void triangulatedFaceNormalsToBuffer(
         auto n = f.normal();
         if (normalize)
             n.normalize();
-        uint first = indexMap.triangleBegin(f.index());
-        uint last  = first + indexMap.triangleCount(f.index());
-        for (uint t = first; t < last; ++t) {
+        auto first = indexMap.triangleBegin(f.index());
+        auto last  = first + indexMap.triangleCount(f.index());
+        for (auto t = first; t < last; ++t) {
             at(buffer, t, 0, NUM_ROWS, 3, storage) = n.x();
             at(buffer, t, 1, NUM_ROWS, 3, storage) = n.y();
             at(buffer, t, 2, NUM_ROWS, 3, storage) = n.z();
@@ -1161,9 +1161,9 @@ void triangulatedFaceColorsToBuffer(
 
     for (const auto& f : mesh.faces()) {
         const auto& c     = f.color();
-        uint        first = indexMap.triangleBegin(f.index());
-        uint        last  = first + indexMap.triangleCount(f.index());
-        for (uint t = first; t < last; ++t) {
+        auto first = indexMap.triangleBegin(f.index());
+        auto last  = first + indexMap.triangleCount(f.index());
+        for (auto t = first; t < last; ++t) {
             at(buffer, t, 0, NUM_ROWS, 4, storage) = R_INT ? c.red() : c.redF();
             at(buffer, t, 1, NUM_ROWS, 4, storage) =
                 R_INT ? c.green() : c.greenF();
@@ -1238,9 +1238,9 @@ void triangulatedFaceColorsToBuffer(
 
     for (const auto& f : mesh.faces()) {
         const auto& c     = f.color();
-        uint        first = indexMap.triangleBegin(f.index());
-        uint        last  = first + indexMap.triangleCount(f.index());
-        for (uint t = first; t < last; ++t) {
+        auto first = indexMap.triangleBegin(f.index());
+        auto last  = first + indexMap.triangleCount(f.index());
+        for (auto t = first; t < last; ++t) {
             switch (colorFormat) {
                 using enum Color::Format;
             case ABGR: buffer[t] = c.abgr(); break;
@@ -1787,11 +1787,12 @@ void triangulatedFaceMaterialIndicesToBuffer(
  *
  * @code{.cpp}
  *
- * std::vector<std::pair<uint, uint>> vertWedgeMap;
- * std::list<uint> vertsToDuplicate;
- * std::list<std::list<std::pair<uint, uint>>> facesToReassign;
+ * using IndexType = IndexType<MeshType>;
+ * std::vector<std::pair<IndexType, uint>> vertWedgeMap;
+ * std::list<IndexType> vertsToDuplicate;
+ * std::list<std::list<std::pair<IndexType, uint>>> facesToReassign;
  *
- * uint nV = verticesToDuplicateByWedgeTexCoordsCount(mesh, vertWedgeMap,
+ * IndexType nV = verticesToDuplicateByWedgeTexCoordsCount(mesh, vertWedgeMap,
  *     vertsToDuplicate, facesToReassign);
  *
  * std::vector<double> buffer((mesh.vertexCount() + nV) * 2);
@@ -1819,11 +1820,10 @@ void triangulatedFaceMaterialIndicesToBuffer(
  */
 template<FaceMeshConcept MeshType>
 void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
-    const MeshType&                                     mesh,
-    const std::vector<std::pair<vcl::uint, vcl::uint>>& vertWedgeMap,
-    const std::list<std::list<std::pair<vcl::uint, vcl::uint>>>&
-                      facesToReassign,
-    auto*             buffer,
+    const MeshType&                                                   mesh,
+    const std::vector<std::pair<IndexType<MeshType>, uint>>&          vertWedgeMap,
+    const std::list<std::list<std::pair<IndexType<MeshType>, uint>>>& facesToReassign,
+    auto*                                                             buffer,
     MatrixStorageType storage = MatrixStorageType::ROW_MAJOR)
 {
     using namespace detail;
@@ -1843,8 +1843,7 @@ void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
         auto         wInd = vertWedgeMap[vi].second;
 
         // check if the vi is referenced
-        if (fInd != MeshType::NULL_INDEX && wInd != MeshType::NULL_INDEX &&
-            fInd != UINT_NULL && wInd != UINT_NULL) {
+        if (fInd != MeshType::NULL_INDEX && wInd != UINT_NULL) {
             w = mesh.face(fInd).wedge(wInd).texCoord();
         }
         at(buffer, vi, 0, NUM_ROWS, 2, storage) = w.u();
@@ -1883,11 +1882,12 @@ void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
  *
  * @code{.cpp}
  *
- * std::vector<std::pair<uint, uint>> vertWedgeMap;
- * std::list<uint> vertsToDuplicate;
- * std::list<std::list<std::pair<uint, uint>>> facesToReassign;
+ * using IndexType = IndexType<MeshType>;
+ * std::vector<std::pair<IndexType, uint>> vertWedgeMap;
+ * std::list<IndexType> vertsToDuplicate;
+ * std::list<std::list<std::pair<IndexType, uint>>> facesToReassign;
  *
- * uint nV = verticesToDuplicateByWedgeTexCoordsCount(mesh, vertWedgeMap,
+ * IndexType nV = verticesToDuplicateByWedgeTexCoordsCount(mesh, vertWedgeMap,
  *     vertsToDuplicate, facesToReassign);
  *
  * std::vector<ushort> buffer(mesh.vertexCount() + nV);
@@ -1913,11 +1913,10 @@ void wedgeTexCoordsAsDuplicatedVertexTexCoordsToBuffer(
  */
 template<FaceMeshConcept MeshType>
 void faceMaterialIndicesAsDuplicatedVertexMaterialIndicesToBuffer(
-    const MeshType&                                     mesh,
-    const std::vector<std::pair<vcl::uint, vcl::uint>>& vertWedgeMap,
-    const std::list<std::list<std::pair<vcl::uint, vcl::uint>>>&
-          facesToReassign,
-    auto* buffer)
+    const MeshType&                                                   mesh,
+    const std::vector<std::pair<IndexType<MeshType>, uint>>&          vertWedgeMap,
+    const std::list<std::list<std::pair<IndexType<MeshType>, uint>>>& facesToReassign,
+    auto*                                                             buffer)
 {
     using IndexType = typename MeshType::IndexType;
 
