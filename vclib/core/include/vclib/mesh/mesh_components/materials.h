@@ -31,6 +31,20 @@ struct MData
     std::vector<Material> materials;
     // A map where keys are texture paths and values are the loaded Image data.
     std::map<std::string, Image> textureImages;
+
+    void serialize(std::ostream& os) const
+    {
+        vcl::serialize(os, meshPath);
+        vcl::serialize(os, materials);
+        vcl::serialize(os, textureImages);
+    }
+
+    void deserialize(std::istream& is)
+    {
+        vcl::deserialize(is, meshPath);
+        vcl::deserialize(is, materials);
+        vcl::deserialize(is, textureImages);
+    }
 };
 
 } // namespace detail
@@ -261,16 +275,12 @@ protected:
 
     void serialize(std::ostream& os) const
     {
-        vcl::serialize(os, mMaterials.meshPath);
-        vcl::serialize(os, mMaterials.materials);
-        vcl::serialize(os, mMaterials.textureImages);
+        vcl::serialize(os, mMaterials);
     }
 
     void deserialize(std::istream& is)
     {
-        vcl::deserialize(is, mMaterials.meshPath);
-        vcl::deserialize(is, mMaterials.materials);
-        vcl::deserialize(is, mMaterials.textureImages);
+        vcl::deserialize(is, mMaterials);
     }
 
 private:

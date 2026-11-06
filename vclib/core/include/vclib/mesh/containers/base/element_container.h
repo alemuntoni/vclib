@@ -1407,7 +1407,7 @@ private:
     // --- Friend classes ---
 
     // to access to the parallel vectors tuple of the container
-    template<uint, typename, bool>
+    template<uint, comp::ComponentData, bool>
     friend class comp::Component;
 
     // to access to the custom components map of the container

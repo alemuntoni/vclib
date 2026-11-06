@@ -15,11 +15,25 @@
 namespace vcl::comp {
 
 /**
+ * @brief Concept that checks whether a type Data can be used as the data type of
+ * a Component.
+ *
+ * A valid component data type must be either `void` (for components that do not
+ * store per-element data in the container tuple, like CustomComponents) or a
+ * semiregular, serializable type.
+ *
+ * @ingroup components_concepts
+ */
+template<typename T>
+concept ComponentData =
+    std::is_void_v<T> || (std::semiregular<T> && Serializable<T>);
+
+/**
  * @brief Base class for all components.
  * It exposes the DataType (used by the container to build the tuple)
  * and the COMPONENT_ID (for metaprogramming checks).
  */
-template<uint COMP_ID, typename Data, bool OPT = false>
+template<uint COMP_ID, ComponentData Data, bool OPT = false>
 class Component
 {
 public:

@@ -21,6 +21,61 @@ void componentStaticAsserts()
     using OptionalAdjEdges    = face::OptionalAdjacentEdges<>;
     using OptionalWedgeColors = face::OptionalPolygonWedgeColors;
 
+    // ComponentData
+    static_assert(
+        comp::ComponentData<void>,
+        "void does not satisfy the ComponentData concept");
+    static_assert(
+        comp::ComponentData<int>,
+        "int does not satisfy the ComponentData concept");
+    static_assert(
+        comp::ComponentData<double>,
+        "double does not satisfy the ComponentData concept");
+    static_assert(
+        comp::ComponentData<Point3f>,
+        "Point3f does not satisfy the ComponentData concept");
+    static_assert(
+        comp::ComponentData<Color>,
+        "Color does not satisfy the ComponentData concept");
+    static_assert(
+        comp::ComponentData<std::string>,
+        "std::string does not satisfy the ComponentData concept");
+    static_assert(
+        comp::ComponentData<std::vector<int>>,
+        "std::vector<int> does not satisfy the ComponentData concept");
+    static_assert(
+        comp::ComponentData<vcl::mesh::detail::MData>,
+        "MData does not satisfy the ComponentData concept");
+
+    struct NonSerializableData
+    {
+        int a;
+    };
+    static_assert(
+        !comp::ComponentData<NonSerializableData>,
+        "NonSerializableData does satisfy the ComponentData concept");
+
+    struct NonCopyableData
+    {
+        NonCopyableData() = default;
+        NonCopyableData(const NonCopyableData&) = delete;
+        void serialize(std::ostream&) const {}
+        void deserialize(std::istream&) {}
+    };
+    static_assert(
+        !comp::ComponentData<NonCopyableData>,
+        "NonCopyableData does satisfy the ComponentData concept");
+
+    struct NonDefaultConstructibleData
+    {
+        NonDefaultConstructibleData(int) {}
+        void serialize(std::ostream&) const {}
+        void deserialize(std::istream&) {}
+    };
+    static_assert(
+        !comp::ComponentData<NonDefaultConstructibleData>,
+        "NonDefaultConstructibleData does satisfy the ComponentData concept");
+
     // ComponentConcept
     static_assert(
         comp::ComponentConcept<vert::Color>,
