@@ -47,8 +47,8 @@ auto meshCreaseEdges()
     std::cout << "\n=== Method 1: Crease Edge Selection ===" << std::endl;
 
     // Enable face adjacency for crease edge detection
-    cylinder.enablePerFaceAdjacentFaces();
-    icosahedron.enablePerFaceAdjacentFaces();
+    cylinder.enableFaceAdjacentFaces();
+    icosahedron.enableFaceAdjacentFaces();
 
     vcl::updatePerFaceAdjacentFaces(cylinder);
     vcl::updatePerFaceAdjacentFaces(icosahedron);
@@ -119,10 +119,10 @@ auto meshCreaseEdges()
 
     // color edges of cylinderCreaseMesh
 
-    cylinderCreaseMesh.enablePerEdgeColor();
+    cylinderCreaseMesh.enableEdgeColor();
 
-    for (auto& e : cylinderCreaseMesh.edges()) {
-        if (e.vertex(0)->position().y() > 0)
+    for (auto e : cylinderCreaseMesh.edges()) {
+        if (e.vertex(0).position().y() > 0)
             e.color() = vcl::Color::Red;
         else
             e.color() = vcl::Color::Blue;
@@ -133,8 +133,8 @@ auto meshCreaseEdges()
     std::cout << "\n=== Method 4: Custom Filtering ===" << std::endl;
 
     // Create a custom filter for very sharp edges only
-    auto sharpEdgeFilter = [&](const vcl::TriMesh::FaceType& face,
-                               vcl::uint                     edgeIdx) {
+    auto sharpEdgeFilter = [&](vcl::TriMesh::ConstFace face,
+                               vcl::uint               edgeIdx) {
         if (face.adjFace(edgeIdx) == nullptr)
             return false; // Skip border edges
 

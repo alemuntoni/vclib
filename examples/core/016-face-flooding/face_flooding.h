@@ -8,6 +8,7 @@
 #ifndef FACE_FLOODING_H
 #define FACE_FLOODING_H
 
+#include "vclib/meshes/tri_mesh.h"
 #include <vclib/algorithms.h>
 #include <vclib/io.h>
 #include <vclib/meshes.h>
@@ -17,9 +18,11 @@
 // to find all connected faces that satisfy the selection condition, using a
 // depth-first search approach.
 
-auto faceFlooding()
+inline auto faceFlooding()
 {
     std::cout << "=== VCLib Example 016: Face Flooding ===\n\n";
+
+    using IndexType = vcl::TriMesh::IndexType;
 
     // Load mesh
     vcl::TriMesh m =
@@ -40,12 +43,12 @@ auto faceFlooding()
     std::cout << "Mesh loaded: " << m.faceCount() << " faces\n";
 
     // Custom flooding function: select faces with normal pointing upward
-    auto upwardFacingSelector = [](const vcl::TriMesh::Face& f) {
+    auto upwardFacingSelector = [](vcl::TriMesh::ConstFace f) {
         return f.normal().y() > 0.5; // faces pointing significantly upward
     };
 
     // Find a seed face that satisfies our condition
-    vcl::uint seedFaceId = vcl::UINT_NULL;
+    IndexType seedFaceId = m.NULL_INDEX;
     for (const auto& f : m.faces()) {
         if (upwardFacingSelector(f)) {
             seedFaceId = f.index();
@@ -53,7 +56,7 @@ auto faceFlooding()
         }
     }
 
-    if (seedFaceId == vcl::UINT_NULL) {
+    if (seedFaceId == m.NULL_INDEX) {
         std::cout << "No suitable seed face found!\n";
         return std::make_tuple(m);
         ;

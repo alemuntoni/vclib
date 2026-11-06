@@ -12,7 +12,7 @@
 #include <vclib/io.h>
 #include <vclib/meshes.h>
 
-void meshTopologyStatistics()
+inline void meshTopologyStatistics()
 {
     std::cout << "=== VCLib Example 012: Mesh Topology Statistics ===\n\n";
 
@@ -24,7 +24,7 @@ void meshTopologyStatistics()
     vcl::TriMesh rangeMesh =
         vcl::loadMesh<vcl::TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/rangemap.ply");
 
-    rangeMesh.enablePerFaceAdjacentFaces();
+    rangeMesh.enableFaceAdjacentFaces();
     vcl::updatePerFaceAdjacentFaces(rangeMesh);
 
     std::cout << "Range mesh: " << rangeMesh.vertexCount() << " vertices, "
@@ -54,7 +54,7 @@ void meshTopologyStatistics()
     mesh.name() = "Brain Mesh";
 
     // Enable adjacency information for topology checks
-    mesh.enablePerFaceAdjacentFaces();
+    mesh.enableFaceAdjacentFaces();
     vcl::updatePerFaceAdjacentFaces(mesh);
 
     // Check if mesh is water tight
