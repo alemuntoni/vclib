@@ -13,6 +13,8 @@
 #include <vclib/space/core.h>
 
 #include <cassert>
+#include <istream>
+#include <ostream>
 
 namespace vcl::comp {
 
@@ -43,6 +45,16 @@ struct PolygonBitFlagsData
     }
 
     bool operator==(const PolygonBitFlagsData&) const = default;
+
+    void serialize(std::ostream& os) const
+    {
+        vcl::serialize(os, flags, edgeFlags);
+    }
+
+    void deserialize(std::istream& is)
+    {
+        vcl::deserialize(is, flags, edgeFlags);
+    }
 };
 
 /**

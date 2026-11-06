@@ -13,39 +13,11 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 # For each directory, we check if it's a valid example by looking for a main.cpp file.
 # If a requirements.cmake is present, we include it to read EXAMPLE_REQUIRED_TARGETS
 # and ensure all required targets are available before adding the subdirectory.
-set(CORE_EXAMPLE_DIRS
-    "000-mesh-io"
-    "001-mesh-basics"
-    "002-mesh-iteration"
-    "003-mesh-creation"
-    "004-mesh-copy-and-transform"
-    "005-mesh-normals"
-    "006-mesh-topology"
-    "007-mesh-statistics"
-    "008-polymesh-specifics"
-    "009-mesh-custom-components"
-    "010-mesh-matrix-conversion"
-    "011-mesh-texture-and-texcoords"
-    "012-mesh-topology-statistics"
-    "013-mesh-clean"
-    "014-mesh-smoothing"
-    "015-mesh-curvature"
-    "016-face-flooding"
-    "017-mesh-convex-hull"
-    "018-mesh-distance"
-    "019-mesh-point-sampling"
-    "020-mesh-crease-edges"
-    "021-mesh-sphere-intersection"
-    "022-mesh-grid"
-    "024-save-gltf"
-    "998-misc-no-lib"
-    "999-misc"
+file(
+    GLOB CORE_EXAMPLE_DIRS
+    RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*"
 )
-# file(
-#     GLOB CORE_EXAMPLE_DIRS
-#     RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-#     "${CMAKE_CURRENT_SOURCE_DIR}/*"
-# )
 foreach(dir IN LISTS CORE_EXAMPLE_DIRS)
     if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${dir}")
         if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${dir}/main.cpp")
