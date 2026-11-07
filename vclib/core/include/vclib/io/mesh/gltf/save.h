@@ -692,7 +692,7 @@ void addMeshToTinygltfModel(
                 // compactIndices tells for each valid face, which is its new
                 // compact position. We need the inverse mapping: for each new
                 // position (compact index), which is the actual face index.
-                std::vector<uint> oldFaceIndices;
+                std::vector<IndexType> oldFaceIndices;
                 oldFaceIndices.reserve(m.faceCount());
                 for (const auto& f : m.faces()) {
                     oldFaceIndices.push_back(f.index());

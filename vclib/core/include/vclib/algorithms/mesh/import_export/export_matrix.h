@@ -239,7 +239,7 @@ Matrix triangulatedFaceVertexIndicesMatrix(
 {
     requireVertexCompactness(mesh);
 
-    uint tCount = vcl::triangulatedFaceCount(mesh);
+    auto tCount = vcl::triangulatedFaceCount(mesh);
 
     Matrix tM(tCount, 3);
 

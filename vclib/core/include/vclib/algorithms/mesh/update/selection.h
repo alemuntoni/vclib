@@ -76,7 +76,7 @@ void selectCreaseFaceEdges(
 {
     clearFaceEdgesSelection(m);
 
-    std::vector<std::pair<uint, uint>> creaseEdges =
+    auto creaseEdges =
         creaseFaceEdges(m, angleRadNeg, angleRadPos, alsoBorderEdges);
 
     for (const auto& [fi, ei] : creaseEdges) {

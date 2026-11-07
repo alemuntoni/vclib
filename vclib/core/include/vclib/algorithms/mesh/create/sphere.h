@@ -109,6 +109,7 @@ MeshType createSphereUV(
     uint                      meridians = 20)
 {
     using PositionType = PositionType<MeshType>;
+    using IndexType    = IndexType<MeshType>;
 
     MeshType mesh;
 
@@ -136,10 +137,10 @@ MeshType createSphereUV(
         mesh.addFace(0, b, a);
     }
 
-    for (uint32_t j = 0; j < parallels - 2; ++j) {
-        uint32_t aStart = j * meridians + 1;
-        uint32_t bStart = (j + 1) * meridians + 1;
-        for (uint32_t i = 0; i < meridians; ++i) {
+    for (uint j = 0; j < parallels - 2; ++j) {
+        uint aStart = j * meridians + 1;
+        uint bStart = (j + 1) * meridians + 1;
+        for (uint i = 0; i < meridians; ++i) {
             auto a  = mesh.vertex(aStart + i);
             auto a1 = mesh.vertex(aStart + (i + 1) % meridians);
             auto b  = mesh.vertex(bStart + i);
@@ -154,7 +155,7 @@ MeshType createSphereUV(
         }
     }
 
-    for (uint32_t i = 0; i < meridians; ++i) {
+    for (uint i = 0; i < meridians; ++i) {
         auto a = mesh.vertex(i + meridians * (parallels - 2) + 1);
         auto b =
             mesh.vertex((i + 1) % meridians + meridians * (parallels - 2) + 1);
@@ -216,11 +217,11 @@ MeshType createSphereNormalizedCube(
         for (uint j = 0; j < divisions; ++j) {
             const bool bottom = j < (divisions / 2);
             for (uint i = 0; i < divisions; ++i) {
-                const bool  left = i < (divisions / 2);
-                auto a    = mesh.vertex((face * k + j) * k + i);
-                auto b    = mesh.vertex((face * k + j) * k + i + 1);
-                auto c    = mesh.vertex((face * k + j + 1) * k + i);
-                auto d    = mesh.vertex((face * k + j + 1) * k + i + 1);
+                const bool left = i < (divisions / 2);
+                auto       a    = mesh.vertex((face * k + j) * k + i);
+                auto       b    = mesh.vertex((face * k + j) * k + i + 1);
+                auto       c    = mesh.vertex((face * k + j + 1) * k + i);
+                auto       d    = mesh.vertex((face * k + j + 1) * k + i + 1);
 
                 if constexpr (HasTriangles<MeshType>) {
                     if (bottom ^ left) {
@@ -303,11 +304,11 @@ MeshType createSphereSpherifiedCube(
         for (uint j = 0; j < divisions; ++j) {
             const bool bottom = j < (divisions / 2);
             for (uint i = 0; i < divisions; ++i) {
-                const bool  left = i < (divisions / 2);
-                auto a    = mesh.vertex((face * k + j) * k + i);
-                auto b    = mesh.vertex((face * k + j) * k + i + 1);
-                auto c    = mesh.vertex((face * k + j + 1) * k + i);
-                auto d    = mesh.vertex((face * k + j + 1) * k + i + 1);
+                const bool left = i < (divisions / 2);
+                auto       a    = mesh.vertex((face * k + j) * k + i);
+                auto       b    = mesh.vertex((face * k + j) * k + i + 1);
+                auto       c    = mesh.vertex((face * k + j + 1) * k + i);
+                auto       d    = mesh.vertex((face * k + j + 1) * k + i + 1);
                 if constexpr (HasTriangles<MeshType>) {
                     if (bottom ^ left) {
                         mesh.addFace(a, c, b);
@@ -349,12 +350,13 @@ MeshType createSphereIcosahedron(const SphereConcept auto& sp, uint divisions)
 {
     using PositionType = PositionType<MeshType>;
     using ScalarType   = ScalarType<MeshType>;
+    using IndexType    = IndexType<MeshType>;
 
     MeshType mesh = createIcosahedron<MeshType>(true);
 
     for (uint d = 0; d < divisions; d++) {
-        uint nf = mesh.faceCount();
-        for (uint f = 0; f < nf; f++) {
+        IndexType nf = mesh.faceCount();
+        for (IndexType f = 0; f < nf; f++) {
             auto f0   = mesh.face(f);
             auto v0   = f0.vertex(0);
             auto v1   = f0.vertex(1);
@@ -445,7 +447,8 @@ template<FaceMeshConcept MeshType>
 MeshType createSphere()
 {
     using ScalarType = ScalarType<MeshType>;
-    return createSphere<MeshType>(Sphere(Point3<ScalarType>(), ScalarType(1.0)));
+    return createSphere<MeshType>(
+        Sphere(Point3<ScalarType>(), ScalarType(1.0)));
 }
 
 } // namespace vcl

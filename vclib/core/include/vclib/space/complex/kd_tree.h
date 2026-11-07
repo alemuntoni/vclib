@@ -58,9 +58,9 @@ class KDTree
     inline static Scalar              dummyScalar;
     inline static std::vector<Scalar> dummyScalars;
 
-    std::vector<PointType> mPoints;
-    std::vector<uint>      mIndices;
-    std::vector<Node>      mNodes;
+    std::vector<PointType>   mPoints;
+    std::vector<std::size_t> mIndices;
+    std::vector<Node>        mNodes;
 
     uint mPointsPerCell = 16; // min number of point in a leaf
     uint mMaxDepth      = 64; // max tree depth
@@ -109,7 +109,7 @@ public:
             mPoints(m.vertexCount()), mIndices(m.vertexCount()),
             mPointsPerCell(pointsPerCell), mMaxDepth(maxDepth)
     {
-        uint i = 0;
+        std::size_t i = 0;
         for (auto v : m.vertices()) {
             mPoints[i]  = v.position();
             mIndices[i] = v.index();
@@ -127,7 +127,7 @@ public:
      * The result of the query, the closest point to the query point, is the
      * index of the point and and the distance from the query point.
      */
-    uint nearestNeighborIndex(
+    std::size_t nearestNeighborIndex(
         const PointType& queryPoint,
         Scalar&          dist = dummyScalar) const
     {
@@ -136,9 +136,9 @@ public:
         mNodeStack[0].sq     = 0.;
         unsigned int count   = 1;
 
-        int    minIndex = mIndices.size() / 2;
-        Scalar minDist  = queryPoint.squaredDist(mPoints[minIndex]);
-        minIndex        = mIndices[minIndex];
+        std::size_t minIndex = mIndices.size() / 2;
+        Scalar      minDist  = queryPoint.squaredDist(mPoints[minIndex]);
+        minIndex             = mIndices[minIndex];
 
         while (count) {
             QueryNode&  qnode = mNodeStack[count - 1];
@@ -207,17 +207,17 @@ public:
      * The result of the query, the k-nearest neighbors, are stored into a
      * vector, and they are sorted on order of neighbohood.
      */
-    std::vector<uint> kNearestNeighborsIndices(
+    std::vector<std::size_t> kNearestNeighborsIndices(
         const PointType&     queryPoint,
         uint                 k,
         std::vector<Scalar>& distances = dummyScalars) const
     {
         struct P
         {
-            P(const PointType& p, int i) : p(p), i(i) {}
+            P(const PointType& p, std::size_t i) : p(p), i(i) {}
 
-            PointType p;
-            uint      i;
+            PointType   p;
+            std::size_t i;
         };
 
         struct Comparator
@@ -301,7 +301,7 @@ public:
             }
         }
         distances.clear();
-        std::vector<uint> res;
+        std::vector<std::size_t> res;
 
         uint i = 0;
         while (!neighborQueue.empty() && i < k) {
@@ -318,11 +318,11 @@ public:
         uint                 k,
         std::vector<Scalar>& distances = dummyScalars) const
     {
-        std::vector<uint> dists =
+        std::vector<std::size_t> dists =
             kNearestNeighborsIndices(queryPoint, k, distances);
         std::vector<PointType> res;
         res.reserve(dists.size());
-        for (uint k : dists) {
+        for (std::size_t k : dists) {
             res.push_back(mPoints[k]);
         }
         return res;
@@ -335,12 +335,12 @@ public:
      * query point, is the vector of the indeces and the vector of the distances
      * from the query point.
      */
-    std::vector<uint> neighborsIndicesInDistance(
+    std::vector<std::size_t> neighborsIndicesInDistance(
         const PointType&     queryPoint,
         Scalar               dist,
         std::vector<Scalar>& distances = dummyScalars) const
     {
-        std::vector<uint> queryPoints;
+        std::vector<std::size_t> queryPoints;
         distances.clear();
         std::vector<QueryNode> mNodeStack(mDepth + 1);
         mNodeStack[0].nodeId = 0;
@@ -395,11 +395,11 @@ public:
         Scalar               dist,
         std::vector<Scalar>& distances = dummyScalars) const
     {
-        std::vector<uint> dists =
+        std::vector<std::size_t> dists =
             neighborsIndicesInDistance(queryPoint, dist, distances);
         std::vector<PointType> res;
         res.reserve(dists.size());
-        for (uint k : dists) {
+        for (std::size_t k : dists) {
             res.push_back(mPoints[k]);
         }
         return res;

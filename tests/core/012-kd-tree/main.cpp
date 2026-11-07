@@ -13,7 +13,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 template<typename MeshType, typename PointType>
-std::vector<unsigned int> getKNearestNeighbors(
+std::vector<std::size_t> getKNearestNeighbors(
     const PointType& p,
     unsigned int     k,
     std::string      mesh = "bone.ply")
@@ -40,5 +40,5 @@ TEMPLATE_TEST_CASE(
     REQUIRE(getKNearestNeighbors<TriMesh>(p, 1)[0] == 1558);
     REQUIRE(
         getKNearestNeighbors<TriMesh>(p, 5) ==
-        std::vector<unsigned int> {1558, 1613, 1720, 1576, 163});
+        std::vector<std::size_t> {1558, 1613, 1720, 1576, 163});
 }

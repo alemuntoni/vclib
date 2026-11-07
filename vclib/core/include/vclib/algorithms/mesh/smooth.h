@@ -201,10 +201,10 @@ void smoothPerVertexNormalsPointCloud(
         for (const auto& v : m.vertices()) {
             std::vector<Scalar> distances;
 
-            std::vector<uint> neighbors = tree.kNearestNeighborsIndices(
+            std::vector<std::size_t> neighbors = tree.kNearestNeighborsIndices(
                 v.position(), neighborCount, distances);
 
-            for (uint nid : neighbors) {
+            for (auto nid : neighbors) {
                 if (m.vertex(nid).normal() * v.normal() > 0) {
                     TD[v.index()] += m.vertex(nid).normal();
                 }

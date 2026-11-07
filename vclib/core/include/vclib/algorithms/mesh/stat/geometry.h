@@ -242,7 +242,7 @@ auto vertexRadiusFromWeights(
  * dihedral angle outside the given range.
  */
 template<FaceMeshConcept MeshType>
-std::vector<std::pair<uint, uint>> creaseFaceEdges(
+std::vector<std::pair<IndexType<MeshType>, uint>> creaseFaceEdges(
     const MeshType& m,
     double          angleRadNeg,
     double          angleRadPos,
@@ -250,7 +250,9 @@ std::vector<std::pair<uint, uint>> creaseFaceEdges(
 {
     requireFaceAdjacentFaces(m);
 
-    std::vector<std::pair<uint, uint>> creaseEdges;
+    using IndexType = IndexType<MeshType>;
+
+    std::vector<std::pair<IndexType, uint>> creaseEdges;
 
     for (auto&& f : m.faces()) {
         for (uint i = 0; i < f.vertexCount(); ++i) {

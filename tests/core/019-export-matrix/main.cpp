@@ -180,14 +180,14 @@ void testTriangulatedFaceMatrix(const auto& pm)
     auto                   tris =
         vcl::triangulatedFaceVertexIndicesMatrix<MatrixType>(pm, indexMap);
 
-    vcl::uint tCount = triangulatedFaceCount(pm);
+    auto tCount = triangulatedFaceCount(pm);
 
     REQUIRE(tris.rows() == tCount);
     REQUIRE(tris.cols() == 3);
 
     for (vcl::uint i = 0; i < 3; ++i) {
         // polygon associated to ith triangle
-        vcl::uint fIdx = indexMap.polygon(i);
+        auto fIdx = indexMap.polygon(i);
         auto      f    = pm.face(fIdx);
 
         for (vcl::uint j = 0; j < 3; ++j) {
