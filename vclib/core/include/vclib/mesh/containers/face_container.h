@@ -455,7 +455,7 @@ public:
      * @tparam COMP_ID: The ID of the component to check.
      * @return `true` if currently available, `false` otherwise.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     bool isFaceComponentAvailable() const
     {
         return Base::template isComponentAvailable<COMP_ID>();
@@ -466,7 +466,7 @@ public:
      *
      * @tparam COMP_ID: The ID of the component to enable.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     void enableFaceComponent()
         requires comp::HasOptionalComponent<COMP_ID, FaceComponents>
     {
@@ -479,7 +479,7 @@ public:
      *
      * @tparam COMP_ID: The ID of the component to disable.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     void disableFaceComponent()
         requires comp::HasOptionalComponent<COMP_ID, FaceComponents>
     {

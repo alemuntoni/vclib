@@ -70,7 +70,7 @@ namespace vcl::comp {
  * count.
  */
 template<
-    uint                   COMP_ID,
+    CompId                 COMP_ID,
     std::unsigned_integral Index,
     ElemId                 REF_ELEM_ID,
     int                    N    = -1,

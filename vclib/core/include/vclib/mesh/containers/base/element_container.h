@@ -677,7 +677,7 @@ public:
      * @tparam COMP_ID: The ID of the component to check.
      * @return `true` if currently available, `false` otherwise.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     bool isComponentAvailable() const
     {
         if constexpr (comp::HasComponent<COMP_ID, Components>) {
@@ -700,7 +700,7 @@ public:
      *
      * @tparam COMP_ID: The ID of the component to enable.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     void enableOptionalComponent()
     {
         static_assert(
@@ -734,7 +734,7 @@ public:
      *
      * @tparam COMP_ID: The ID of the component to disable.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     void disableOptionalComponent()
     {
         static_assert(
@@ -1135,7 +1135,7 @@ private:
 
     // --- signle component vector accessors ---
 
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     auto& vector()
     {
         static_assert(
@@ -1147,7 +1147,7 @@ private:
         return mElemComponents.template get<N>();
     }
 
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     const auto& vector() const
     {
         static_assert(
@@ -1407,11 +1407,11 @@ private:
     // --- Friend classes ---
 
     // to access to the parallel vectors tuple of the container
-    template<uint, comp::ComponentData, bool>
+    template<CompId, comp::ComponentData, bool>
     friend class comp::Component;
 
     // to access to the custom components map of the container
-    template<uint, std::unsigned_integral, ElemId, int, bool, bool>
+    template<CompId, std::unsigned_integral, ElemId, int, bool, bool>
     friend class comp::ContainerReferencesComponent;
 
     // to access to the custom components map of the container
@@ -1422,11 +1422,11 @@ private:
     friend class ElementContainerProxy;
 
     // to access a specific component vector
-    template<uint, typename>
+    template<CompId, typename>
     friend class ComponentIterator;
 
     // to access a specific component vector
-    template<uint, typename>
+    template<CompId, typename>
     friend class ComponentView;
 
     // to allow TTVC resize, pushBack, insert, erase, clear members

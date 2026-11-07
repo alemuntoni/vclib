@@ -261,7 +261,7 @@ void transferFaceComponents(
 {
     constexpr ElemId F = vcl::ElemId::FACE;
 
-    auto transferComponent = [&]<uint COMP_ID>(
+    auto transferComponent = [&]<CompId COMP_ID>(
                                  auto&       f,
                                  int         index,
                                  uint        m0Faces,
@@ -366,7 +366,7 @@ void transferVertexComponents(
     if (transferQuality)
         qualityAccum.resize(out.vertexCount(), 0.0);
 
-    auto accumulateComponent = [&]<uint COMP_ID, typename AccumType>(
+    auto accumulateComponent = [&]<CompId COMP_ID, typename AccumType>(
                                    std::vector<AccumType>& accum,
                                    int                     outVIdx,
                                    bool                    fromM0,
@@ -465,7 +465,7 @@ void transferVertexComponents(
         }
     }
 
-    auto finalizeComponent = [&]<uint COMP_ID, typename AccumType>(
+    auto finalizeComponent = [&]<CompId COMP_ID, typename AccumType>(
                                  const std::vector<AccumType>& accum,
                                  int                           incCount,
                                  int                           vIdx) {

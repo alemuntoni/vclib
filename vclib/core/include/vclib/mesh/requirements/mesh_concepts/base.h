@@ -76,7 +76,7 @@ concept EdgeMeshConcept = MeshConcept<M> && HasEdges<M>;
  * ELEM_ID with the given component COMP_ID.
  * @ingroup mesh_concepts
  */
-template<typename MeshType, ElemId ELEM_ID, uint COMP_ID>
+template<typename MeshType, ElemId ELEM_ID, CompId COMP_ID>
 concept HasElementComponent =
     HasContainerOf<MeshType, ELEM_ID> &&
     comp::HasComponent<
@@ -89,7 +89,7 @@ concept HasElementComponent =
  * ELEM_ID with the given optional component COMP_ID.
  * @ingroup mesh_concepts
  */
-template<typename MeshType, ElemId ELEM_ID, uint COMP_ID>
+template<typename MeshType, ElemId ELEM_ID, CompId COMP_ID>
 concept HasElementOptionalComponent =
     HasContainerOf<MeshType, ELEM_ID> &&
     comp::HasOptionalComponent<

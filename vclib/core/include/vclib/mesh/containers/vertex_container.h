@@ -456,7 +456,7 @@ public:
      * @tparam COMP_ID: The ID of the component to check.
      * @return `true` if currently available, `false` otherwise.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     bool isVertexComponentAvailable() const
     {
         return Base::template isComponentAvailable<COMP_ID>();
@@ -467,7 +467,7 @@ public:
      *
      * @tparam COMP_ID: The ID of the component to enable.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     void enableVertexComponent()
         requires comp::HasOptionalComponent<COMP_ID, VertexComponents>
     {
@@ -480,7 +480,7 @@ public:
      *
      * @tparam COMP_ID: The ID of the component to disable.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     void disableVertexComponent()
         requires comp::HasOptionalComponent<COMP_ID, VertexComponents>
     {

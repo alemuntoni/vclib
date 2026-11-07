@@ -450,7 +450,7 @@ public:
      * @tparam COMP_ID: The ID of the component to check.
      * @return `true` if currently available, `false` otherwise.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     bool is%EL_UC%ComponentAvailable() const
     {
         return Base::template isComponentAvailable<COMP_ID>();
@@ -461,7 +461,7 @@ public:
      *
      * @tparam COMP_ID: The ID of the component to enable.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     void enable%EL_UC%Component()
         requires comp::HasOptionalComponent<COMP_ID, %EL_UC%Components>
     {
@@ -474,7 +474,7 @@ public:
      *
      * @tparam COMP_ID: The ID of the component to disable.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     void disable%EL_UC%Component()
         requires comp::HasOptionalComponent<COMP_ID, %EL_UC%Components>
     {

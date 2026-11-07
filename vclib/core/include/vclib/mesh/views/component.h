@@ -9,6 +9,7 @@
 #define VCL_MESH_VIEWS_COMPONENT_H
 
 #include <vclib/base.h>
+#include <vclib/mesh/components/base/base.h>
 
 namespace vcl::views {
 
@@ -29,7 +30,7 @@ struct UnsupportedComponentView
  * - component<CompId::COLOR>    = colors
  * - ...
  */
-template<uint COMP_ID>
+template<CompId COMP_ID>
 inline constexpr auto component = detail::UnsupportedComponentView {};
 
 } // namespace vcl::views

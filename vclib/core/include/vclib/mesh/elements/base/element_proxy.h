@@ -185,7 +185,7 @@ public:
     /**
      * @brief Checks if the component with COMP_ID is available (present and enabled).
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     bool isComponentAvailable() const
     {
         return mContainer && mContainer->template isComponentAvailable<COMP_ID>();

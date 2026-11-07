@@ -33,13 +33,13 @@ concept ComponentData =
  * It exposes the DataType (used by the container to build the tuple)
  * and the COMPONENT_ID (for metaprogramming checks).
  */
-template<uint COMP_ID, ComponentData Data, bool OPT = false>
+template<CompId COMP_ID, ComponentData Data, bool OPT = false>
 class Component
 {
 public:
-    using DataType                     = Data;
-    static constexpr uint COMPONENT_ID = COMP_ID;
-    static constexpr bool IS_OPTIONAL  = OPT;
+    using DataType                       = Data;
+    static constexpr CompId COMPONENT_ID = COMP_ID;
+    static constexpr bool IS_OPTIONAL    = OPT;
 
 protected:
     // needs to be static to be accessible from the derived classes
@@ -54,7 +54,7 @@ protected:
  */
 template<typename T>
 concept ComponentConcept = requires {
-    { std::remove_cvref_t<T>::COMPONENT_ID } -> std::convertible_to<uint>;
+    { std::remove_cvref_t<T>::COMPONENT_ID } -> std::convertible_to<CompId>;
 };
 
 } // namespace vcl::comp

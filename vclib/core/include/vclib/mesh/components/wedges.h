@@ -121,7 +121,7 @@ void Wedges<Comp, N, OPT>::importFrom(
     const OtherElement& other,
     bool)
 {
-    static constexpr uint COMP_ID = Base::COMPONENT_ID;
+    static constexpr CompId COMP_ID = Base::COMPONENT_ID;
     using ValueType               = typename Base::ValueType;
 
     if constexpr (HasComponent<COMP_ID, OtherElement>) {

@@ -9,6 +9,7 @@
 #define VCL_MESH_CONTAINERS_BASE_COMPONENT_VIEW_H
 
 #include <vclib/base.h>
+#include <vclib/mesh/components/base/base.h>
 #include <vclib/mesh/iterators/component_iterator.h>
 
 #include <cassert>
@@ -30,7 +31,7 @@ namespace vcl::mesh {
  * @tparam COMP_ID: The component ID.
  * @tparam Container: The type of the container (mutable or const).
  */
-template<uint COMP_ID, typename Container>
+template<CompId COMP_ID, typename Container>
 class ComponentView :
         public std::ranges::view_interface<ComponentView<COMP_ID, Container>>
 {

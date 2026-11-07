@@ -40,24 +40,24 @@ struct WedgeTraits;
 template<bool OPT>
 struct WedgeTraits<Color<OPT>>
 {
-    static constexpr uint COMP_ID = CompId::WEDGE_COLORS;
-    using ValueType               = vcl::Color;
+    static constexpr CompId COMP_ID = CompId::WEDGE_COLORS;
+    using ValueType                 = vcl::Color;
 };
 
 // Specialization for TexCoord component:
 template<typename Scalar, bool OPT>
 struct WedgeTraits<TexCoord<Scalar, OPT>>
 {
-    static constexpr uint COMP_ID = CompId::WEDGE_TEX_COORDS;
-    using ValueType               = vcl::TexCoord<Scalar>;
+    static constexpr CompId COMP_ID = CompId::WEDGE_TEX_COORDS;
+    using ValueType                 = vcl::TexCoord<Scalar>;
 };
 
 // Specialization for Normal component:
 template<PointConcept P, bool OPT>
 struct WedgeTraits<Normal<P, OPT>>
 {
-    static constexpr uint COMP_ID = CompId::WEDGE_NORMALS;
-    using ValueType               = P;
+    static constexpr CompId COMP_ID = CompId::WEDGE_NORMALS;
+    using ValueType                 = P;
 };
 
 // Specialization for raw types:
@@ -71,14 +71,14 @@ template<typename Scalar, uint Dim>
 requires (Dim == 3)
 struct WedgeTraits<vcl::Point<Scalar, Dim>>
 {
-    static constexpr uint COMP_ID = CompId::WEDGE_NORMALS;
-    using ValueType               = vcl::Point<Scalar, Dim>;
+    static constexpr CompId COMP_ID = CompId::WEDGE_NORMALS;
+    using ValueType                 = vcl::Point<Scalar, Dim>;
 };
 
 template<typename Comp>
 concept WedgeableComponent = requires {
     typename WedgeTraits<Comp>::ValueType;
-    { WedgeTraits<Comp>::COMP_ID } -> std::convertible_to<uint>;
+    { WedgeTraits<Comp>::COMP_ID } -> std::convertible_to<CompId>;
 };
 
 template<typename Comp>

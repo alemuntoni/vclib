@@ -51,7 +51,7 @@ namespace vcl::comp {
  * @tparam Container: The container type to use. Defaults to vcl::Vector<T, N>.
  */
 template<
-    uint COMP_ID,
+    CompId COMP_ID,
     typename T,
     int  N,
     bool TTVC,

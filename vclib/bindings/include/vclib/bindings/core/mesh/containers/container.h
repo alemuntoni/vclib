@@ -16,7 +16,7 @@ namespace vcl::bind {
 
 namespace detail {
 
-template<ElemId ELEM_ID, uint COMP_ID, MeshConcept MeshType, typename... Options>
+template<ElemId ELEM_ID, CompId COMP_ID, MeshConcept MeshType, typename... Options>
 void addOptionalComponentFunctions(
     pybind11::class_<MeshType, Options...>& c,
     const std::string&                      name,

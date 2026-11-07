@@ -29,43 +29,41 @@ namespace vcl {
  *
  * @ingroup base
  */
-struct CompId
+enum class CompId
 {
-    enum Enum {
-        BIT_FLAGS = 0,
-        POSITION,
-        NORMAL,
-        COLOR,
-        QUALITY,
-        MATERIAL_INDEX,
-        PRINCIPAL_CURVATURE,
-        TANGENT,
-        TEX_COORD,
-        VERTEX_REFERENCES,
-        ADJACENT_EDGES,
-        ADJACENT_FACES,
-        ADJACENT_VERTICES,
-        WEDGE_COLORS,
-        WEDGE_NORMALS,
-        WEDGE_TEX_COORDS,
-        BOUNDING_BOX,
-        NAME,
-        MATERIALS,
-        TRANSFORM_MATRIX,
-        CUSTOM_COMPONENTS,
-        // Additional components here
+    BIT_FLAGS = 0,
+    POSITION,
+    NORMAL,
+    COLOR,
+    QUALITY,
+    MATERIAL_INDEX,
+    PRINCIPAL_CURVATURE,
+    TANGENT,
+    TEX_COORD,
+    VERTEX_REFERENCES,
+    ADJACENT_EDGES,
+    ADJACENT_FACES,
+    ADJACENT_VERTICES,
+    WEDGE_COLORS,
+    WEDGE_NORMALS,
+    WEDGE_TEX_COORDS,
+    BOUNDING_BOX,
+    NAME,
+    MATERIALS,
+    TRANSFORM_MATRIX,
+    CUSTOM_COMPONENTS,
+    // Additional components here
 
-        COMPONENT_COUNT,
-    };
+    COMPONENT_COUNT,
 };
 
 /**
  * @brief The COMPONENT_ENUM_STRINGS array contains the string representation
- * of the CompId::Enum values.
+ * of the CompId values.
  *
  * @ingroup base
  */
-constexpr const char* COMPONENT_ENUM_STRINGS[CompId::COMPONENT_COUNT] = {
+constexpr const char* COMPONENT_ENUM_STRINGS[static_cast<uint>(CompId::COMPONENT_COUNT)] = {
     "BitFlags",
     "Position",
     "Normal",
@@ -100,14 +98,14 @@ constexpr const char* COMPONENT_ENUM_STRINGS[CompId::COMPONENT_COUNT] = {
  *
  * @ingroup base
  */
-template<uint COMP_ID>
+template<CompId COMP_ID>
 struct ComponentString
 {
     /**
      * @brief The string associated to the COMPONENT_ID.
      */
     const char* str = COMP_ID < CompId::COMPONENT_COUNT ?
-                          COMPONENT_ENUM_STRINGS[COMP_ID] :
+                          COMPONENT_ENUM_STRINGS[static_cast<uint>(COMP_ID)] :
                           nullptr;
 };
 
@@ -119,7 +117,7 @@ struct ComponentString
  *
  * @ingroup base
  */
-template<uint COMP_ID>
+template<CompId COMP_ID>
 constexpr const char* componentEnumString()
 {
     static_assert(

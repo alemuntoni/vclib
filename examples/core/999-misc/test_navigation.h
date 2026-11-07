@@ -13,7 +13,7 @@
 inline void testMeshCreationAndColors(const MyMesh& mesh)
 {
     using enum ElemId;
-    using enum CompId::Enum;
+    using enum CompId;
 
     assert(mesh.vertexCount() == 4);
     assert(mesh.faceCount() == 2);

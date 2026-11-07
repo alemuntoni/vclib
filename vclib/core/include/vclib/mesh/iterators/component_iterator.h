@@ -11,6 +11,7 @@
 #include "container_index_iterator.h"
 
 #include <vclib/base.h>
+#include <vclib/mesh/components/base/base.h>
 #include <vclib/mesh/components/base/component_predicates.h>
 
 namespace vcl::mesh {
@@ -25,7 +26,7 @@ namespace vcl::mesh {
  * @tparam COMP_ID: The ID of the component to iterate over.
  * @tparam ContainerType: The type of the container (mutable or const).
  */
-template<uint COMP_ID, typename ContainerType>
+template<CompId COMP_ID, typename ContainerType>
 class ComponentIterator :
         public ContainerIndexIterator<
             ContainerType,

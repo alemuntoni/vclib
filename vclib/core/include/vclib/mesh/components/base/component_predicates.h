@@ -21,11 +21,11 @@ template<typename Comp>
 concept IsOptionalComponent =
     requires { requires std::remove_cvref_t<Comp>::IS_OPTIONAL; };
 
-template<uint COMP_ID, typename T>
+template<CompId COMP_ID, typename T>
 inline constexpr bool HasComponentImpl =
     requires { requires std::remove_cvref_t<T>::COMPONENT_ID == COMP_ID; };
 
-template<uint COMP_ID, typename... Components>
+template<CompId COMP_ID, typename... Components>
 inline constexpr bool
     HasComponentImpl<COMP_ID, vcl::TypeWrapper<Components...>> =
         (HasComponentImpl<COMP_ID, Components> || ...);
@@ -34,10 +34,10 @@ inline constexpr bool
 // Components. It recursively checks each component's COMPONENT_ID against the
 // target COMP_ID, incrementing the CurrentIndex until a match is found or the
 // list is exhausted.
-template<uint COMP_ID, uint CurrentIndex, typename... Components>
+template<CompId COMP_ID, uint CurrentIndex, typename... Components>
 struct IndexOfCompIdImpl;
 
-template<uint COMP_ID, uint CurrentIndex, typename First, typename... Rest>
+template<CompId COMP_ID, uint CurrentIndex, typename First, typename... Rest>
 struct IndexOfCompIdImpl<COMP_ID, CurrentIndex, First, Rest...>
 {
     static constexpr uint value =
@@ -47,7 +47,7 @@ struct IndexOfCompIdImpl<COMP_ID, CurrentIndex, First, Rest...>
 };
 
 // Base case when the component is not found
-template<uint COMP_ID, uint CurrentIndex>
+template<CompId COMP_ID, uint CurrentIndex>
 struct IndexOfCompIdImpl<COMP_ID, CurrentIndex>
 {
     static constexpr uint value = UINT_NULL;
@@ -115,7 +115,7 @@ struct HasOptionalReferencesToImpl<TARGET_ELEM_ID, vcl::TypeWrapper<Comps...>> :
  * components, an ElementProxy, an ElementContainer, or a Mesh) contains a
  * component with the given COMP_ID.
  */
-template<uint COMP_ID, typename T>
+template<CompId COMP_ID, typename T>
 concept HasComponent = detail::
     HasComponentImpl<COMP_ID, typename detail::ComponentListHelper<T>::type>;
 
@@ -163,10 +163,10 @@ concept IsTiedToVertexCount = requires {
  *
  * Usage: IndexOfCompId<COMP_ID, TypeWrapper<...>>::value
  */
-template<uint COMP_ID, typename ComponentListWrapper>
+template<CompId COMP_ID, typename ComponentListWrapper>
 struct IndexOfCompId;
 
-template<uint COMP_ID, typename... Components>
+template<CompId COMP_ID, typename... Components>
 struct IndexOfCompId<COMP_ID, vcl::TypeWrapper<Components...>>
 {
     static_assert(
@@ -182,16 +182,16 @@ struct IndexOfCompId<COMP_ID, vcl::TypeWrapper<Components...>>
  * TypeWrapper or from an object that contains components (ElementProxy,
  * ElementContainer, Mesh, etc.).
  */
-template<uint COMP_ID, typename ComponentListWrapper>
+template<CompId COMP_ID, typename ComponentListWrapper>
 struct ComponentType;
 
-template<uint COMP_ID>
+template<CompId COMP_ID>
 struct ComponentType<COMP_ID, vcl::TypeWrapper<>>
 {
     using type = void;
 };
 
-template<uint COMP_ID, typename First, typename... Rest>
+template<CompId COMP_ID, typename First, typename... Rest>
 struct ComponentType<COMP_ID, vcl::TypeWrapper<First, Rest...>>
 {
     using type = std::conditional_t<
@@ -200,7 +200,7 @@ struct ComponentType<COMP_ID, vcl::TypeWrapper<First, Rest...>>
         typename ComponentType<COMP_ID, vcl::TypeWrapper<Rest...>>::type>;
 };
 
-template<uint COMP_ID, typename T>
+template<CompId COMP_ID, typename T>
 using ComponentTypeT = typename ComponentType<
     COMP_ID,
     typename detail::ComponentListHelper<T>::type>::type;
@@ -210,7 +210,7 @@ using ComponentTypeT = typename ComponentType<
  * components, an ElementProxy, an ElementContainer, or a Mesh) contains an
  * optional component with the given COMP_ID.
  */
-template<uint COMP_ID, typename T>
+template<CompId COMP_ID, typename T>
 concept HasOptionalComponent =
     HasComponent<COMP_ID, T> &&
     detail::IsOptionalComponent<ComponentTypeT<COMP_ID, T>>;

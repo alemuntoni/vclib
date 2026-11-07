@@ -204,7 +204,7 @@ public:
      * @return `true` if this Mesh has a container of elements having ID ELEM_ID
      * and that container has a component having ID COMP_ID, `false` otherwise.
      */
-    template<ElemId ELEM_ID, uint COMP_ID>
+    template<ElemId ELEM_ID, CompId COMP_ID>
     static constexpr bool hasElementComponent()
     {
         if constexpr (hasContainerOf<ELEM_ID>()) {
@@ -239,7 +239,7 @@ public:
      * and that container has an optional component having ID COMP_ID, `false`
      * otherwise.
      */
-    template<ElemId ELEM_ID, uint COMP_ID>
+    template<ElemId ELEM_ID, CompId COMP_ID>
     static constexpr bool hasElementOptionalComponent()
     {
         if constexpr (hasContainerOf<ELEM_ID>()) {
@@ -933,7 +933,7 @@ public:
      * @return `true` if Component `COMP_ID` is available for elements of
      * type `ELEM_ID` in the mesh.
      */
-    template<ElemId ELEM_ID, uint COMP_ID>
+    template<ElemId ELEM_ID, CompId COMP_ID>
     bool isElementComponentAvailable() const
         requires (hasContainerOf<ELEM_ID>())
     {
@@ -952,7 +952,7 @@ public:
      * @tparam ELEM_ID: the ID of the element.
      * @tparam COMP_ID: the ID of the component.
      */
-    template<ElemId ELEM_ID, uint COMP_ID>
+    template<ElemId ELEM_ID, CompId COMP_ID>
     void enableElementComponent()
         requires (hasElementOptionalComponent<ELEM_ID, COMP_ID>())
     {
@@ -970,7 +970,7 @@ public:
      * @tparam ELEM_ID: the ID of the element.
      * @tparam COMP_ID: the ID of the component.
      */
-    template<ElemId ELEM_ID, uint COMP_ID>
+    template<ElemId ELEM_ID, CompId COMP_ID>
     void disableElementComponent()
         requires (hasElementOptionalComponent<ELEM_ID, COMP_ID>())
     {

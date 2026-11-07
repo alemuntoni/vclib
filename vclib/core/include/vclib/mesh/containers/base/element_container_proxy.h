@@ -100,20 +100,20 @@ public:
         return mContainer && mContainer->isCompact();
     }
 
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     bool isComponentAvailable() const
     {
         return mContainer && mContainer->template isComponentAvailable<COMP_ID>();
     }
 
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     void enableOptionalComponent() const requires (!std::is_const_v<Container>)
     {
         assert(mContainer != nullptr);
         mContainer->template enableOptionalComponent<COMP_ID>();
     }
 
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     void disableOptionalComponent() const requires (!std::is_const_v<Container>)
     {
         assert(mContainer != nullptr);
@@ -208,7 +208,7 @@ private:
      * @brief Generic access to a ComponentView for a specific COMP_ID.
      * Prevents access to CompId::BIT_FLAGS to preserve container invariants.
      */
-    template<uint COMP_ID>
+    template<CompId COMP_ID>
     requires comp::HasComponent<COMP_ID, Container> &&
              (COMP_ID != CompId::BIT_FLAGS)
     auto component() const
