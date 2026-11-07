@@ -54,25 +54,27 @@
  *    - Stored inside reference containers (e.g. `VertexReferences`,
  *      `AdjacentFaces`, `AdjacentEdges`, `AdjacentVertices`).
  *    - Passed to search or membership queries such as
- * `face.indexOfVertex(IndexType vi)` or `face.containsVertex(IndexType vi)`.
+ *      `face.indexOfVertex(IndexType vi)` or `face.containsVertex(IndexType
+ * vi)`.
  *
  * 2. **Local Container Position (`uint`) - Offsets in `ContainerComponent`**:
  *    - Represents the 0-based offset or slot within a single element's local
- * `ContainerComponent` (such as `VertexReferences`, `AdjacentFaces`,
- * `AdjacentEdges`, `AdjacentVertices`, and per-corner `Wedges`).
+ *      `ContainerComponent` (such as `VertexReferences`, `AdjacentFaces`,
+ *      `AdjacentEdges`, `AdjacentVertices`, and per-corner `Wedges`).
  *    - Always typed as `uint` (`uint32_t`), because the number of sub-elements
- * or references per element (e.g. 3 vertices of a triangle, $k$ vertices of a
- * polygon, or the valence of a vertex) is a small, local cardinality that never
- * requires 64 bits.
+ *      or references per element (e.g. 3 vertices of a triangle, $k$ vertices
+ *      of a polygon, or the valence of a vertex) is a small, local cardinality
+ *      that never requires 64 bits.
  *    - Its "not found" sentinel value is `vcl::UINT_NULL` (`0xFFFFFFFF`).
  *    - Passed as the position argument `uint i` to access local items (e.g.
- * `face.vertex(uint i)`, `face.vertexIndex(uint i)`, or `face.wedge(uint i)`).
+ *      `face.vertex(uint i)`, `face.vertexIndex(uint i)`, or `face.wedge(uint
+ *      i)`).
  *    - Returned by search methods such as `face.indexOfVertex(IndexType vi)`,
  *      `face.indexOfEdge(IndexType vi1, IndexType vi2)`, or
- * `face.indexOfAdjFace(IndexType fi)`, which locate the local position of a
- * global element within the local container.
+ *      `face.indexOfAdjFace(IndexType fi)`, which locate the local position of
+ *      a global element within the local container.
  *    - Returned by `wedge.index()`, representing the corner index (0, 1, 2...)
- * within the face.
+ *      within the face.
  *
  * @note **Crucial Sentinel Distinction**:
  * Always use `NULL_INDEX` when comparing global element references

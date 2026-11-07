@@ -229,23 +229,11 @@ using PolygonVertexReferences = VertexReferences<-1, Index>;
 template<typename Comp, int N = 3, bool OPT = comp::IsCompOptional<Comp>::value>
 using Wedges = comp::Wedges<Comp, N, OPT>;
 
-template<typename Comp, int N = 3, bool OPT = comp::IsCompOptional<Comp>::value>
-using Wedge = comp::Wedge<Comp, N, OPT>;
-
-template<int N = 3, bool OPT = false>
-using WedgesColors = comp::WedgesColors<N, OPT>;
-
 template<int N = 3, bool OPT = false>
 using WedgeColors = comp::WedgeColors<N, OPT>;
 
 template<typename Scalar = float, int N = 3, bool OPT = false>
-using WedgesTexCoords = comp::WedgesTexCoords<Scalar, N, OPT>;
-
-template<typename Scalar = float, int N = 3, bool OPT = false>
 using WedgeTexCoords = comp::WedgeTexCoords<Scalar, N, OPT>;
-
-template<typename Point = Point3f, int N = 3, bool OPT = false>
-using WedgesNormals = comp::WedgesNormals<Point, N, OPT>;
 
 template<typename Point = Point3f, int N = 3, bool OPT = false>
 using WedgeNormals = comp::WedgeNormals<Point, N, OPT>;
