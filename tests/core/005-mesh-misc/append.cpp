@@ -156,6 +156,43 @@ TEST_CASE("Append - Container Range Views")
     REQUIRE(count == 1);
 }
 
+// The relative transform of the appended mesh is computed with a matrix
+// inverse, that is not guaranteed to be exact on every platform.
+inline bool nearlyEqual(const Point3f& a, const Point3f& b)
+{
+    return (a - b).norm() < 1e-4f;
+}
+
+TEST_CASE("Append - Transform Matrix Helpers")
+{
+    // 90 degrees rotation around X: (x, y, z) -> (x, -z, y)
+    Matrix44f r = Matrix44f::Identity();
+    r(1, 1)     = 0.0f;
+    r(1, 2)     = -1.0f;
+    r(2, 1)     = 1.0f;
+    r(2, 2)     = 0.0f;
+
+    Matrix44f t = Matrix44f::Identity();
+    t(0, 3)     = 5.0f;
+
+    REQUIRE((t.inverse() * t).isApprox(Matrix44f::Identity(), 1e-5f));
+    REQUIRE((r.inverse() * r).isApprox(Matrix44f::Identity(), 1e-5f));
+
+    Point3f n(0.0f, 0.0f, 1.0f);
+    REQUIRE(nearlyEqual(multiplyNormalByMatrix(n, r), Point3f(0, -1, 0)));
+
+    std::vector<Point3f> normals = {n, n};
+    multiplyNormalsByMatrix(normals, r);
+    for (const auto& nn : normals) {
+        REQUIRE(nearlyEqual(nn, Point3f(0.0f, -1.0f, 0.0f)));
+    }
+
+    std::vector<Point3f> points = {Point3f(0, 0, 1), Point3f(1, 0, 0)};
+    multiplyPointsByMatrix(points, t);
+    REQUIRE(nearlyEqual(points[0], Point3f(5, 0, 1)));
+    REQUIRE(nearlyEqual(points[1], Point3f(6, 0, 0)));
+}
+
 TEST_CASE("Append - Append With Transform Matrix")
 {
     TransformedMesh m1 = createSampleTransformedMesh();
@@ -171,11 +208,11 @@ TEST_CASE("Append - Append With Transform Matrix")
     REQUIRE(m1.vertexCount() == 8);
     REQUIRE(m1.transformMatrix() == Matrix44f::Identity());
     // m1 original vertex 0 position (0, 0, 1), normal (0, 0, 1)
-    REQUIRE(m1.vertex(0).position() == Point3f(0.0f, 0.0f, 1.0f));
-    REQUIRE(m1.vertex(0).normal() == Point3f(0.0f, 0.0f, 1.0f));
+    REQUIRE(nearlyEqual(m1.vertex(0).position(), Point3f(0.0f, 0.0f, 1.0f)));
+    REQUIRE(nearlyEqual(m1.vertex(0).normal(), Point3f(0.0f, 0.0f, 1.0f)));
     // m2 appended vertex 0 -> index 4: same position and normal
-    REQUIRE(m1.vertex(4).position() == Point3f(0.0f, 0.0f, 1.0f));
-    REQUIRE(m1.vertex(4).normal() == Point3f(0.0f, 0.0f, 1.0f));
+    REQUIRE(nearlyEqual(m1.vertex(4).position(), Point3f(0.0f, 0.0f, 1.0f)));
+    REQUIRE(nearlyEqual(m1.vertex(4).normal(), Point3f(0.0f, 0.0f, 1.0f)));
 
     // 2. Relative translation append:
     TransformedMesh m3 = createSampleTransformedMesh();
@@ -192,17 +229,17 @@ TEST_CASE("Append - Append With Transform Matrix")
     REQUIRE(m3.transformMatrix() == Matrix44f::Identity());
 
     // Original vertices 0..3 of m3 unchanged
-    REQUIRE(m3.vertex(0).position() == Point3f(0.0f, 0.0f, 1.0f));
-    REQUIRE(m3.vertex(1).position() == Point3f(1.0f, 0.0f, 0.0f));
+    REQUIRE(nearlyEqual(m3.vertex(0).position(), Point3f(0.0f, 0.0f, 1.0f)));
+    REQUIRE(nearlyEqual(m3.vertex(1).position(), Point3f(1.0f, 0.0f, 0.0f)));
 
     // Appended vertices 4..7 from m4: position shifted by relative transform
     // (T3^-1 * T4 = I * T4 = T4) Vertex 0 of m4 was (0, 0, 1) -> now (10, 20,
     // 1)
-    REQUIRE((m3.vertex(4).position() == Point3f(10.0f, 20.0f, 1.0f)));
+    REQUIRE(nearlyEqual(m3.vertex(4).position(), Point3f(10.0f, 20.0f, 1.0f)));
     // Vertex 1 of m4 was (1, 0, 0) -> now (11, 20, 0)
-    REQUIRE((m3.vertex(5).position() == Point3f(11.0f, 20.0f, 0.0f)));
+    REQUIRE(nearlyEqual(m3.vertex(5).position(), Point3f(11.0f, 20.0f, 0.0f)));
     // Normals are unchanged because translation does not alter normals
-    REQUIRE((m3.vertex(4).normal() == Point3f(0.0f, 0.0f, 1.0f)));
+    REQUIRE(nearlyEqual(m3.vertex(4).normal(), Point3f(0.0f, 0.0f, 1.0f)));
 
     // 3. Relative translation with non-identity source transform:
     // m5 has translation (5, 0, 0)
@@ -221,9 +258,9 @@ TEST_CASE("Append - Append With Transform Matrix")
     m5.append(m6);
     REQUIRE(m5.transformMatrix() == t5);
     // m5 vertex 0 original was (0, 0, 1)
-    REQUIRE((m5.vertex(0).position() == Point3f(0.0f, 0.0f, 1.0f)));
+    REQUIRE(nearlyEqual(m5.vertex(0).position(), Point3f(0.0f, 0.0f, 1.0f)));
     // m6 vertex 0 was (0, 0, 1) -> in m5's frame: (0 + 10, 0, 1) = (10, 0, 1)
-    REQUIRE((m5.vertex(4).position() == Point3f(10.0f, 0.0f, 1.0f)));
+    REQUIRE(nearlyEqual(m5.vertex(4).position(), Point3f(10.0f, 0.0f, 1.0f)));
 
     // 4. Relative rotation (normals rotation check):
     // Rotate m8 by 90 degrees around X axis: (x, y, z) -> (x, -z, y)
@@ -239,9 +276,7 @@ TEST_CASE("Append - Append With Transform Matrix")
     m7.append(m8);
     // Vertex 0 normal was (0, 0, 1) in m8
     // Rotated by 90 deg around X: (0, -1, 0)
-    REQUIRE(std::abs(m7.vertex(4).normal().x() - 0.0f) < 1e-5f);
-    REQUIRE(std::abs(m7.vertex(4).normal().y() - (-1.0f)) < 1e-5f);
-    REQUIRE(std::abs(m7.vertex(4).normal().z() - 0.0f) < 1e-5f);
+    REQUIRE(nearlyEqual(m7.vertex(4).normal(), Point3f(0.0f, -1.0f, 0.0f)));
 
     // 5. Self-append on a transformed mesh
     TransformedMesh mSelf   = createSampleTransformedMesh();
@@ -249,8 +284,8 @@ TEST_CASE("Append - Append With Transform Matrix")
     mSelf.append(mSelf);
     REQUIRE(mSelf.vertexCount() == 8);
     REQUIRE(mSelf.transformMatrix() == t5);
-    REQUIRE(mSelf.vertex(4).position() == mSelf.vertex(0).position());
-    REQUIRE(mSelf.vertex(5).position() == mSelf.vertex(1).position());
+    REQUIRE(nearlyEqual(mSelf.vertex(4).position(), mSelf.vertex(0).position()));
+    REQUIRE(nearlyEqual(mSelf.vertex(5).position(), mSelf.vertex(1).position()));
 }
 
 TEST_CASE("Append - Append With Materials")
