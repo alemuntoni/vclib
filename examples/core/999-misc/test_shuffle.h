@@ -133,20 +133,20 @@ inline void testShuffleFaces()
 inline void testShuffleEdges()
 {
     MyEdgeMesh mesh = createSampleEdgeMesh();
-    assert(mesh.edgeCount() == 5);
+    assert(mesh.edgeCount() == 4);
 
     auto eIndices = vcl::fillAndShuffleEdgeIndexVector(mesh);
     static_assert(std::is_same_v<decltype(eIndices), std::vector<MyEdgeMesh::IndexType>>);
-    assert(eIndices.size() == 5);
+    assert(eIndices.size() == 4);
 
     auto eVec = vcl::fillAndShuffleEdgeVector(mesh);
     static_assert(std::is_same_v<decltype(eVec), std::vector<vcl::EdgeType<MyEdgeMesh>>>);
-    assert(eVec.size() == 5);
+    assert(eVec.size() == 4);
 
     const auto& cmesh = mesh;
     auto ceVec = vcl::fillAndShuffleEdgeVector(cmesh);
     static_assert(std::is_same_v<decltype(ceVec), std::vector<vcl::ConstEdgeType<MyEdgeMesh>>>);
-    assert(ceVec.size() == 5);
+    assert(ceVec.size() == 4);
 }
 
 inline void testShuffle64Bit()

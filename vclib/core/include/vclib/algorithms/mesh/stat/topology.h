@@ -367,7 +367,7 @@ uint largestPerEdgeAdjacentFacesCount(const FaceMeshConcept auto& mesh)
 template<uint ELEM_ID>
 uint largestPerElementAdjacentEdgesCount(const EdgeMeshConcept auto& mesh)
 {
-    requirePerElementComponent<ELEM_ID, CompId::ADJACENT_EDGES>(mesh);
+    requireElementComponent<ELEM_ID, CompId::ADJACENT_EDGES>(mesh);
 
     uint maxAEC = 0;
 
@@ -758,7 +758,7 @@ bool isWaterTight(const MeshType& m)
  * defined as a closed loop of border edges. The function uses a depth-first
  * search algorithm to traverse the mesh and find all the holes. The function
  * requires the input MeshType to have per-face adjacent faces, and uses the
- * `vcl::requirePerFaceAdjacentFaces` function to enforce this requirement.
+ * `vcl::requireFaceAdjacentFaces` function to enforce this requirement.
  *
  * @tparam MeshType: The type of the input Mesh. It must satisfy the
  * FaceMeshConcept and have per-face adjacent faces.
@@ -811,7 +811,7 @@ auto holeCount(const MeshType& m) requires HasFaceAdjacentFaces<MeshType>
  * connected component and contains the face indices of the mesh that compose
  * it. The function uses a depth-first search algorithm to traverse the mesh and
  * find the connected components. The function requires the input MeshType to
- * have per-face adjacent faces, and uses the `vcl::requirePerFaceAdjacentFaces`
+ * have per-face adjacent faces, and uses the `vcl::requireFaceAdjacentFaces`
  * function to enforce this requirement.
  *
  * @tparam MeshType: The type of the input Mesh. It must satisfy the

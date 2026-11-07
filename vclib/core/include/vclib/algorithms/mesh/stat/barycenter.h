@@ -8,6 +8,7 @@
 #ifndef VCL_ALGORITHMS_MESH_STAT_BARYCENTER_H
 #define VCL_ALGORITHMS_MESH_STAT_BARYCENTER_H
 
+#include "vclib/mesh/requirements/contracts.h"
 #include <vclib/mesh.h>
 
 namespace vcl {
@@ -89,7 +90,7 @@ auto weightedBarycenter(const MeshType& m, Range auto&& weights)
 template<MeshConcept MeshType>
 auto qualityWeightedBarycenter(const MeshType& m) -> PositionType<MeshType>
 {
-    requirePerVertexQuality(m);
+    requireVertexQualities(m);
 
     return weightedBarycenter(m, m.vertices() | views::quality);
 }
