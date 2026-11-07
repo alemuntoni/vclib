@@ -61,7 +61,7 @@ void randomColor(auto& tm)
     std::mt19937                    gen(rd());
     std::uniform_int_distribution<> dis(0, 255);
 
-    tm.template enablePerElementComponent<ELEM_ID, vcl::CompId::COLOR>();
+    tm.template enableElementComponent<ELEM_ID, vcl::CompId::COLOR>();
 
     for (auto& el : tm.template elements<ELEM_ID>()) {
         el.color() = vcl::Color(dis(gen), dis(gen), dis(gen), dis(gen));
@@ -75,7 +75,7 @@ void randomQuality(auto& tm)
     std::mt19937                     gen(rd());
     std::uniform_real_distribution<> dis(-100, 100);
 
-    tm.template enablePerElementComponent<ELEM_ID, vcl::CompId::QUALITY>();
+    tm.template enableElementComponent<ELEM_ID, vcl::CompId::QUALITY>();
 
     for (auto& el : tm.template elements<ELEM_ID>()) {
         double qual  = dis(gen);

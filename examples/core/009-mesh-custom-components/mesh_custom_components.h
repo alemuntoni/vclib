@@ -353,11 +353,11 @@ auto meshCustomComponents()
     std::cout << "   - Store global properties and statistics\n\n";
 
     std::cout << "4. COMPONENT MANAGEMENT:\n";
-    std::cout << "   - hasPerVertexCustomComponent(name): check existence\n";
+    std::cout << "   - hasVertexCustomComponent(name): check existence\n";
     std::cout
-        << "   - isPerVertexCustomComponentOfType<T>(name): type checking\n";
+        << "   - isVertexCustomComponentOfType<T>(name): type checking\n";
     std::cout
-        << "   - deletePerVertexCustomComponent(name): remove component\n\n";
+        << "   - deleteVertexCustomComponent(name): remove component\n\n";
 
     std::cout << "Custom components are essential for:\n";
     std::cout << "- Algorithm development and intermediate data storage\n";

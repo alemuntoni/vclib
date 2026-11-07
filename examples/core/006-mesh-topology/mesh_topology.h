@@ -257,20 +257,20 @@ inline void meshTopology()
     std::cout << "\nIn this example we learned:\n\n";
 
     std::cout << "1. VERTEX-FACE ADJACENCY:\n";
-    std::cout << "   - enablePerVertexAdjacentFaces() + "
+    std::cout << "   - enableVertexAdjacentFaces() + "
                  "updatePerVertexAdjacentFaces()\n";
     std::cout << "   - Find all faces incident to a vertex\n";
     std::cout << "   - Useful for local surface analysis\n\n";
 
     std::cout << "2. VERTEX-VERTEX ADJACENCY:\n";
-    std::cout << "   - enablePerVertexAdjacentVertices() + "
+    std::cout << "   - enableVertexAdjacentVertices() + "
                  "updatePerVertexAdjacentVertices()\n";
     std::cout << "   - Find all vertices connected by an edge\n";
     std::cout << "   - Essential for graph-based algorithms\n\n";
 
     std::cout << "3. FACE-FACE ADJACENCY:\n";
     std::cout
-        << "   - enablePerFaceAdjacentFaces() + updatePerFaceAdjacentFaces()\n";
+        << "   - enableFaceAdjacentFaces() + updatePerFaceAdjacentFaces()\n";
     std::cout << "   - Find faces sharing an edge\n";
     std::cout << "   - Identify border edges (null adjacencies)\n\n";
 

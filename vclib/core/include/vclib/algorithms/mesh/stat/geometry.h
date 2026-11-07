@@ -170,8 +170,8 @@ auto covarianceMatrixOfMesh(const MeshType& m)
 
 /**
  * @brief When performing an adptive pruning for each sample we expect a varying
- * radius to be removed. The radius is a PerVertex attribute that we compute
- * from the current per vertex weights given as argument. The expected radius of
+ * radius to be removed. The radius is a vertex attribute that we compute
+ * from the current vertex weights given as argument. The expected radius of
  * the sample is computed so that it linearly maps the quality between
  * diskradius and diskradius*variance
  *

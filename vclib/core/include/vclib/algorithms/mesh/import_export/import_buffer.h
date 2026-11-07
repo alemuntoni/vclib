@@ -46,10 +46,9 @@ namespace vcl {
  * scenario, all the components (except the positions) of the vertices stored in
  * the mesh before calling this function are preserved.
  *
- * All the other containers of the mesh are left as they are. Pointers to
+ * All the other containers of the mesh are left as they are. Indices of
  * vertices stored in the other containers of the mesh are still valid only if
- * the number of vertices is not changed (same allocation policy of the
- * std::vector).
+ * the number of vertices is not changed.
  *
  * @throws vcl::WrongSizeException if `clearBeforeSet` is false and
  * `vertexCount` != mesh.vertexCount().
@@ -146,9 +145,9 @@ void vertexPositionsFromBuffer(
  * the components (except the indices) of the faces stored in the mesh before
  * calling this function are preserved.
  *
- * All the other containers of the mesh are left as they are. Pointers to faces
+ * All the other containers of the mesh are left as they are. Indices of faces
  * stored in the other containers of the mesh are still valid only if the number
- * of faces is not changed (same allocation policy of the std::vector).
+ * of faces is not changed.
  *
  * @tparam MeshType: the type of the mesh to be filled. It must satisfy the
  * FaceMeshConcept.
@@ -275,9 +274,9 @@ void faceIndicesFromBuffer(
  * the components (except the indices) of the edges stored in the mesh before
  * calling this function are preserved.
  *
- * All the other containers of the mesh are left as they are. Pointers to edges
+ * All the other containers of the mesh are left as they are. Indices of edges
  * stored in the other containers of the mesh are still valid only if the number
- * of edges is not changed (same allocation policy of the std::vector).
+ * of edges is not changed.
  *
  * @tparam MeshType: the type of the mesh to be filled. It must satisfy the
  * EdgeMeshConcept.

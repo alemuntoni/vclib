@@ -188,7 +188,7 @@ void clearPerVertexNormals(MeshConcept auto& mesh, LogType& log = nullLogger)
  *   - Vertices:
  *     - Normal
  *
- * @note Only VertexReferences (VertexPointers or VertexIndices) component is
+ * @note Only the VertexReferences component is
  * checked for each element of the mesh. AdjacentVertices component or other
  * componens that store vertex references are not considered.
  *
@@ -255,7 +255,7 @@ void normalizePerVertexNormals(
  *     - Normal
  *   - Face
  *
- * @note Only VertexReferences (VertexPointers or VertexIndices) component is
+ * @note Only the VertexReferences component is
  * checked for each element of the mesh. AdjacentVertices component or other
  * componens that store vertex references are not considered.
  *
