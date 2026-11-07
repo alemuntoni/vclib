@@ -72,7 +72,7 @@ namespace vcl::comp {
 template<
     uint                   COMP_ID,
     std::unsigned_integral Index,
-    uint                   REF_ELEM_ID,
+    ElemId                 REF_ELEM_ID,
     int                    N    = -1,
     bool                   TTVC = false,
     bool                   OPT  = false>
@@ -101,7 +101,7 @@ public:
      */
     static constexpr IndexType NULL_INDEX = vcl::NULL_INDEX<IndexType>;
 
-    template<uint TARGET_ELEM_ID>
+    template<ElemId TARGET_ELEM_ID>
     static constexpr bool referencesElement()
     {
         return TARGET_ELEM_ID == REF_ELEM_ID;
@@ -113,10 +113,10 @@ protected:
      * mapping after compaction, permutation, or renumbering of the referenced
      * element container.
      *
-     * @tparam TARGET_ELEM_ID: The element ID of the referenced elements.
+     * @tparam TARGET_ELEM_ID: The ElemId of the referenced elements.
      * @param[in] newIndices: A vector mapping old element indices to new ones.
      */
-    template<uint TARGET_ELEM_ID>
+    template<ElemId TARGET_ELEM_ID>
     void updateReferences(
         this auto&&                   self,
         const std::vector<IndexType>& newIndices)
@@ -138,7 +138,7 @@ protected:
      * @tparam TARGET_ELEM_ID: The element ID of the referenced elements.
      * @param[in] offset: The offset value to add to the references.
      */
-    template<uint TARGET_ELEM_ID>
+    template<ElemId TARGET_ELEM_ID>
     void shiftReferences(this auto&& self, IndexType offset)
     {
         if constexpr (TARGET_ELEM_ID == REF_ELEM_ID) {

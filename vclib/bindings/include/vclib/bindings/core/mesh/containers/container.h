@@ -16,7 +16,7 @@ namespace vcl::bind {
 
 namespace detail {
 
-template<uint ELEM_ID, uint COMP_ID, MeshConcept MeshType, typename... Options>
+template<ElemId ELEM_ID, uint COMP_ID, MeshConcept MeshType, typename... Options>
 void addOptionalComponentFunctions(
     pybind11::class_<MeshType, Options...>& c,
     const std::string&                      name,
@@ -53,7 +53,7 @@ void initContainer(
 {
     namespace py = pybind11;
 
-    static const uint ELEM_ID = Element::ELEMENT_ID;
+    static const ElemId ELEM_ID = Element::ELEMENT_ID;
 
     std::string capitalName = name;
     capitalName[0]          = std::toupper(capitalName[0]);

@@ -27,7 +27,7 @@ namespace vcl {
  * @return A `std::pair` having as first element the minimum, and as second
  * element the maximum quality.
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 auto elementQualityMinMax(const MeshType& m)
 {
     requireElementComponent<ELEM_ID, CompId::QUALITY>(m);
@@ -48,7 +48,7 @@ auto elementQualityMinMax(const MeshType& m)
  * @param[in] m: the input Mesh on which compute the average of the quality.
  * @return The average of the quality of the elements of the given type.
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 auto elementQualityAverage(const MeshType& m)
 {
     requireElementComponent<ELEM_ID, CompId::QUALITY>(m);
@@ -58,7 +58,7 @@ auto elementQualityAverage(const MeshType& m)
            m.template count<ELEM_ID>();
 }
 
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 auto elementQualityHistogram(
     const MeshType& m,
     bool            selectionOnly = false,

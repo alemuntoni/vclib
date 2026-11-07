@@ -349,7 +349,7 @@ void edgeIndicesFromBuffer(
  *
  * @ingroup import_buffer
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void elementSelectionFromBuffer(MeshType& mesh, const auto* buffer)
 {
     using IndexType = typename MeshType::IndexType;
@@ -450,7 +450,7 @@ void edgeSelectionFromBuffer(MeshType& mesh, const auto* buffer)
  *
  * @ingroup import_buffer
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void elementNormalsFromBuffer(
     MeshType&                    mesh,
     const auto*                  buffer,
@@ -632,7 +632,7 @@ void edgeNormalsFromBuffer(
  *
  * @ingroup import_buffer
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void elementColorsFromBuffer(
     MeshType&             mesh,
     const auto*           buffer,
@@ -705,7 +705,7 @@ void elementColorsFromBuffer(
  *
  * @ingroup import_buffer
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void elementColorsFromBuffer(
     MeshType&     mesh,
     const auto*   buffer,
@@ -979,7 +979,7 @@ void edgeColorsFromBuffer(
  *
  * @ingroup import_buffer
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void elementQualityFromBuffer(MeshType& mesh, const auto* buffer)
 {
     using IndexType = typename MeshType::IndexType;

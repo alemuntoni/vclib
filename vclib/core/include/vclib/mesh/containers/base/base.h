@@ -8,6 +8,8 @@
 #ifndef VCL_MESH_CONTAINERS_BASE_BASE_H
 #define VCL_MESH_CONTAINERS_BASE_BASE_H
 
+#include "../../elements/base/base.h"
+
 #include <vclib/base.h>
 #include <vclib/space/core.h>
 
@@ -37,17 +39,17 @@ using RebindContainer = typename RebindContainerHelper<T, NewParent>::type;
 /// Find Container
 
 // Compile-time search for a container with the given ELEMENT_ID
-template<uint ELEM_ID, typename... Types>
+template<ElemId ELEM_ID, typename... Types>
 struct FindContainer;
 
-template<uint ELEM_ID>
+template<ElemId ELEM_ID>
 struct FindContainer<ELEM_ID>
 {
     using type                  = void;
     static constexpr bool found = false;
 };
 
-template<uint ELEM_ID, typename Head, typename... Tail>
+template<ElemId ELEM_ID, typename Head, typename... Tail>
 struct FindContainer<ELEM_ID, Head, Tail...>
 {
 private:

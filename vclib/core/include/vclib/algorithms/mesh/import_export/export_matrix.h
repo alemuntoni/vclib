@@ -324,7 +324,7 @@ Matrix edgeVertexIndicesMatrix(const MeshType& mesh)
  *
  * @ingroup export_matrix
  */
-template<uint ELEM_ID, typename Vect, MeshConcept MeshType>
+template<ElemId ELEM_ID, typename Vect, MeshConcept MeshType>
 Vect elementSelectionVector(const MeshType& mesh)
 {
     Vect sV(mesh.template count<ELEM_ID>());
@@ -465,7 +465,7 @@ Vect edgeSelectionVector(const MeshType& mesh)
  *
  * @ingroup export_matrix
  */
-template<uint ELEM_ID, MatrixConcept Matrix, MeshConcept MeshType>
+template<ElemId ELEM_ID, MatrixConcept Matrix, MeshConcept MeshType>
 Matrix elementNormalsMatrix(const MeshType& mesh, bool normalize = false)
 {
     Matrix eNM(mesh.template count<ELEM_ID>(), 3);
@@ -574,7 +574,7 @@ Matrix faceNormalsMatrix(const MeshType& mesh, bool normalize = false)
  *
  * @ingroup export_matrix
  */
-template<uint ELEM_ID, MatrixConcept Matrix, MeshConcept MeshType>
+template<ElemId ELEM_ID, MatrixConcept Matrix, MeshConcept MeshType>
 Matrix elementColorsMatrix(const MeshType& mesh)
 {
     Matrix eCM(mesh.template count<ELEM_ID>(), 4);
@@ -618,7 +618,7 @@ Matrix elementColorsMatrix(const MeshType& mesh)
  *
  * @ingroup export_matrix
  */
-template<uint ELEM_ID, typename Vect, MeshConcept MeshType>
+template<ElemId ELEM_ID, typename Vect, MeshConcept MeshType>
 Vect elementColorsVector(const MeshType& mesh, Color::Format colorFormat)
 {
     Vect eCV(mesh.template count<ELEM_ID>());
@@ -862,7 +862,7 @@ Vect edgeColorsVector(const MeshType& mesh, Color::Format colorFormat)
  *
  * @ingroup export_matrix
  */
-template<uint ELEM_ID, typename Vect, MeshConcept MeshType>
+template<ElemId ELEM_ID, typename Vect, MeshConcept MeshType>
 Vect elementQualityVector(const MeshType& mesh)
 {
     Vect eQV(mesh.template count<ELEM_ID>());
@@ -1270,7 +1270,7 @@ Matrix vertexAdjacentVerticesMatrix(const MeshType& mesh)
  * @ingroup export_matrix
  */
 template<
-    uint ELEM_ID,
+    ElemId ELEM_ID,
     template<typename, typename...> typename Container,
     typename T,
     FaceMeshConcept MeshType>
@@ -1334,7 +1334,7 @@ Container<Container<T>> elementAdjacentFacesVectors(const MeshType& mesh)
  *
  * @ingroup export_matrix
  */
-template<uint ELEM_ID, MatrixConcept Matrix, FaceMeshConcept MeshType>
+template<ElemId ELEM_ID, MatrixConcept Matrix, FaceMeshConcept MeshType>
 Matrix elementAdjacentFacesMatrix(const MeshType& mesh)
 {
     uint lfa = vcl::largestPerElementAdjacentFacesCount<ELEM_ID>(mesh);
@@ -1641,7 +1641,7 @@ Matrix edgeAdjacentFacesMatrix(const MeshType& mesh)
  * @ingroup export_matrix
  */
 template<
-    uint ELEM_ID,
+    ElemId ELEM_ID,
     template<typename, typename...> typename Container,
     typename T,
     EdgeMeshConcept MeshType>
@@ -1705,7 +1705,7 @@ Container<Container<T>> elementAdjacentEdgesVectors(const MeshType& mesh)
  *
  * @ingroup export_matrix
  */
-template<uint ELEM_ID, MatrixConcept Matrix, EdgeMeshConcept MeshType>
+template<ElemId ELEM_ID, MatrixConcept Matrix, EdgeMeshConcept MeshType>
 Matrix elementAdjacentEdgesMatrix(const MeshType& mesh)
 {
     uint lea = vcl::largestPerElementAdjacentEdgesCount<ELEM_ID>(mesh);

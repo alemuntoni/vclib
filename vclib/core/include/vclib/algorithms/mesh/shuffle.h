@@ -31,7 +31,7 @@ namespace vcl {
 
 namespace detail {
 
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 auto genericFillAndShuffleElementIndexVector(
     const MeshType& m,
     RandomConfig    config = std::monostate())
@@ -50,7 +50,7 @@ auto genericFillAndShuffleElementIndexVector(
     return vec;
 }
 
-template<uint ELEM_ID, typename MeshRef>
+template<ElemId ELEM_ID, typename MeshRef>
 auto genericFillAndShuffleElementVector(
     MeshRef&&    m,
     RandomConfig config = std::monostate())
@@ -79,7 +79,7 @@ auto genericFillAndShuffleElementVector(
 // Generic Element Functions
 // ============================================================================
 
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 requires HasContainerOf<MeshType, ELEM_ID>
 std::vector<IndexType<MeshType>> fillAndShuffleElementIndexVector(
     const MeshType& m,
@@ -88,7 +88,7 @@ std::vector<IndexType<MeshType>> fillAndShuffleElementIndexVector(
     return detail::genericFillAndShuffleElementIndexVector<ELEM_ID>(m, config);
 }
 
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 requires HasContainerOf<MeshType, ELEM_ID>
 std::vector<typename MeshType::template ElementType<ELEM_ID>>
 fillAndShuffleElementVector(MeshType& m, RandomConfig config = std::monostate())
@@ -96,7 +96,7 @@ fillAndShuffleElementVector(MeshType& m, RandomConfig config = std::monostate())
     return detail::genericFillAndShuffleElementVector<ELEM_ID>(m, config);
 }
 
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 requires HasContainerOf<MeshType, ELEM_ID>
 std::vector<typename MeshType::template ConstElementType<ELEM_ID>>
 fillAndShuffleElementVector(

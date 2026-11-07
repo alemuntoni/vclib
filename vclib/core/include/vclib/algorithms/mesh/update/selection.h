@@ -15,7 +15,7 @@
 
 namespace vcl {
 
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void clearElementSelection(MeshType& mesh)
 {
     for (auto&& e : mesh.template elements<ELEM_ID>()) {

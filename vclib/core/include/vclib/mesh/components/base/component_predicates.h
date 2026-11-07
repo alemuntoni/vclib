@@ -9,6 +9,7 @@
 #define VCL_MESH_COMPONENTS_BASE_COMPONENT_PREDICATES_H
 
 #include "component.h"
+#include "../../elements/base/base.h"
 
 #include <vclib/base.h>
 
@@ -82,28 +83,28 @@ public:
     using type = decltype(helper());
 };
 
-template<uint TARGET_ELEM_ID, typename T>
+template<ElemId TARGET_ELEM_ID, typename T>
 struct HasReferencesToImpl : std::false_type {};
 
-template<uint TARGET_ELEM_ID, typename Comp>
+template<ElemId TARGET_ELEM_ID, typename Comp>
 requires requires {
     requires std::remove_cvref_t<Comp>::template referencesElement<TARGET_ELEM_ID>();
 }
 struct HasReferencesToImpl<TARGET_ELEM_ID, Comp> :
     std::bool_constant<std::remove_cvref_t<Comp>::template referencesElement<TARGET_ELEM_ID>()> {};
 
-template<uint TARGET_ELEM_ID, typename... Comps>
+template<ElemId TARGET_ELEM_ID, typename... Comps>
 struct HasReferencesToImpl<TARGET_ELEM_ID, vcl::TypeWrapper<Comps...>> :
     std::bool_constant<(HasReferencesToImpl<TARGET_ELEM_ID, Comps>::value || ...)> {};
 
-template<uint TARGET_ELEM_ID, typename T>
+template<ElemId TARGET_ELEM_ID, typename T>
 struct HasOptionalReferencesToImpl : std::false_type {};
 
-template<uint TARGET_ELEM_ID, typename Comp>
+template<ElemId TARGET_ELEM_ID, typename Comp>
 requires (HasReferencesToImpl<TARGET_ELEM_ID, Comp>::value && IsOptionalComponent<Comp>)
 struct HasOptionalReferencesToImpl<TARGET_ELEM_ID, Comp> : std::true_type {};
 
-template<uint TARGET_ELEM_ID, typename... Comps>
+template<ElemId TARGET_ELEM_ID, typename... Comps>
 struct HasOptionalReferencesToImpl<TARGET_ELEM_ID, vcl::TypeWrapper<Comps...>> :
     std::bool_constant<(HasOptionalReferencesToImpl<TARGET_ELEM_ID, Comps>::value || ...)> {};
 
@@ -130,7 +131,7 @@ concept IsOptionalComponent = detail::IsOptionalComponent<Comp>;
  * components, an ElementProxy, an ElementContainer, or a Mesh) stores
  * references to elements with TARGET_ELEM_ID (e.g. ElemId::VERTEX).
  */
-template<uint TARGET_ELEM_ID, typename T>
+template<ElemId TARGET_ELEM_ID, typename T>
 concept HasReferencesTo = detail::HasReferencesToImpl<
     TARGET_ELEM_ID,
     typename detail::ComponentListHelper<T>::type>::value;
@@ -140,7 +141,7 @@ concept HasReferencesTo = detail::HasReferencesToImpl<
  * components, an ElementProxy, an ElementContainer, or a Mesh) stores
  * optional references to elements with TARGET_ELEM_ID (e.g. ElemId::VERTEX).
  */
-template<uint TARGET_ELEM_ID, typename T>
+template<ElemId TARGET_ELEM_ID, typename T>
 concept HasOptionalReferencesTo = detail::HasOptionalReferencesToImpl<
     TARGET_ELEM_ID,
     typename detail::ComponentListHelper<T>::type>::value;

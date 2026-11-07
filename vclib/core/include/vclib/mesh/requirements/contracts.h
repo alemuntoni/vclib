@@ -53,7 +53,7 @@ void requireCompactness(const MeshType& m)
  * @throws MissingCompactnessException
  * @ingroup mesh_contracts
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 requires (HasContainerOf<MeshType, ELEM_ID>)
 void requireElementCompactness(const MeshType& m)
 {
@@ -191,7 +191,7 @@ void requireQuadMesh(const MeshType& m)
  * @return true if the component is available after the call.
  * @ingroup mesh_contracts
  */
-template<uint ELEM_ID, uint COMP_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, uint COMP_ID, MeshConcept MeshType>
 bool enableIfElementComponentOptional(MeshType& m)
 {
     if constexpr (HasElementOptionalComponent<MeshType, ELEM_ID, COMP_ID>) {
@@ -217,7 +217,7 @@ bool enableIfElementComponentOptional(MeshType& m)
  * @throws MissingComponentException
  * @ingroup mesh_contracts
  */
-template<uint ELEM_ID, uint COMP_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, uint COMP_ID, MeshConcept MeshType>
 requires (HasElementComponent<MeshType, ELEM_ID, COMP_ID>)
 void requireElementComponent(const MeshType& m)
 {

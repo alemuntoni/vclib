@@ -35,7 +35,7 @@ class ElementIterator;
 } // namespace mesh
 
 template<
-    uint ELEM_ID,
+    ElemId ELEM_ID,
     typename ContainerType,
     typename ComponentListWrapper =
         typename std::remove_cv_t<ContainerType>::Components>
@@ -53,7 +53,7 @@ class ElementProxy;
  * It will provide all the member functions of the components in the
  * ComponentListWrapper.
  */
-template<uint ELEM_ID, typename ContainerType, typename... Comps>
+template<ElemId ELEM_ID, typename ContainerType, typename... Comps>
 class ElementProxy<ELEM_ID, ContainerType, vcl::TypeWrapper<Comps...>> :
         public Comps...
 {
@@ -78,9 +78,9 @@ private:
     IndexType      mIndex     = NULL_INDEX;
 
 public:
-    static constexpr uint ELEMENT_ID = ELEM_ID;
+    static constexpr ElemId ELEMENT_ID = ELEM_ID;
 
-    template<uint TARGET_ELEM_ID>
+    template<ElemId TARGET_ELEM_ID>
     static constexpr bool referencesElement()
     {
         return (comp::HasReferencesTo<TARGET_ELEM_ID, Comps> || ...);
@@ -248,7 +248,7 @@ protected:
     {
     }
 
-    template<uint TARGET_ELEM_ID>
+    template<ElemId TARGET_ELEM_ID>
     void updateReferences(const std::vector<IndexType>& newIndices)
     {
         auto updateIfMatching = [&]<typename Comp>() {
@@ -271,7 +271,7 @@ protected:
         (updateIfMatching.template operator()<Comps>(), ...);
     }
 
-    template<uint TARGET_ELEM_ID>
+    template<ElemId TARGET_ELEM_ID>
     void shiftReferences(IndexType offset)
     {
         auto shiftIfMatching = [&]<typename Comp>() {
@@ -297,7 +297,7 @@ protected:
 private:
     /// friend classes declarations
 
-    template<uint, typename, typename>
+    template<ElemId, typename, typename>
     friend class ElementProxy;
 
     template<
@@ -323,7 +323,7 @@ private:
  */
 template<typename T>
 concept ElementConcept = requires (T&& obj) {
-    { std::remove_cvref_t<T>::ELEMENT_ID } -> std::convertible_to<uint>;
+    { std::remove_cvref_t<T>::ELEMENT_ID } -> std::convertible_to<ElemId>;
     typename std::remove_cvref_t<T>::Components;
     typename std::remove_cvref_t<T>::IndexType;
     { obj.index() } -> std::same_as<typename std::remove_cvref_t<T>::IndexType>;
@@ -334,7 +334,7 @@ concept ElementConcept = requires (T&& obj) {
 
 namespace std {
 
-template<vcl::uint ELEM_ID, typename ContainerType, typename Comps>
+template<vcl::ElemId ELEM_ID, typename ContainerType, typename Comps>
 struct hash<vcl::ElementProxy<ELEM_ID, ContainerType, Comps>>
 {
     std::size_t operator()(

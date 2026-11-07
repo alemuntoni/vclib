@@ -135,7 +135,7 @@ public:
      */
     static constexpr IndexType NULL_INDEX = vcl::NULL_INDEX<IndexType>;
 
-    static constexpr uint ELEMENT_ID = ElementType::ELEMENT_ID;
+    static constexpr ElemId ELEMENT_ID = ElementType::ELEMENT_ID;
 
     ElementContainer() { enableNonOptionalComponents(Components {}); }
 
@@ -996,7 +996,7 @@ protected:
      * @tparam TARGET_ELEM_ID: The element ID whose references should be updated.
      * @param[in] newIndices: A vector mapping old element indices to new ones.
      */
-    template<uint TARGET_ELEM_ID>
+    template<ElemId TARGET_ELEM_ID>
     void updateReferences(const std::vector<IndexType>& newIndices)
     {
         if constexpr (
@@ -1018,7 +1018,7 @@ protected:
      * @param[in] startFrom: The starting index.
      * @param[in] offset: The offset value to add to the references.
      */
-    template<uint TARGET_ELEM_ID>
+    template<ElemId TARGET_ELEM_ID>
     void shiftReferences(IndexType startFrom, IndexType offset)
     {
         if constexpr (
@@ -1411,7 +1411,7 @@ private:
     friend class comp::Component;
 
     // to access to the custom components map of the container
-    template<uint, std::unsigned_integral, uint, int, bool, bool>
+    template<uint, std::unsigned_integral, ElemId, int, bool, bool>
     friend class comp::ContainerReferencesComponent;
 
     // to access to the custom components map of the container
@@ -1449,7 +1449,7 @@ private:
  */
 template<typename T>
 concept ElementContainerConcept = requires {
-    { std::remove_cvref_t<T>::ELEMENT_ID } -> std::convertible_to<uint>;
+    { std::remove_cvref_t<T>::ELEMENT_ID } -> std::convertible_to<ElemId>;
     typename std::remove_cvref_t<T>::IndexType;
     typename std::remove_cvref_t<T>::ElementType;
     typename std::remove_cvref_t<T>::ConstElementType;

@@ -15,10 +15,10 @@ namespace vcl::detail {
 
 // returns a non-empty vector if the ELEM_ID container is not compact and the
 // user wants compact indices
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 auto elemCompactIndices(const MeshType& mesh, bool wantCompact)
 {
-    using IndexType = MeshType::IndexType;
+    using IndexType = IndexType<MeshType>;
 
     std::vector<IndexType> elemCompIndices;
 

@@ -21,7 +21,7 @@ namespace vcl {
  * @param[in] m: The input mesh.
  * @return The number of selected elements.
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 uint elementSelectionCount(const MeshType& m)
 {
     return std::ranges::distance(

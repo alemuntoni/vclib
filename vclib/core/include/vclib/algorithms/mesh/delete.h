@@ -34,7 +34,7 @@ namespace vcl {
 
 namespace detail {
 
-template<MeshConcept MeshType, uint ELEM_ID>
+template<MeshConcept MeshType, ElemId ELEM_ID>
 auto deleteElementsIf(MeshType& m, Range auto&& elemFilterRng)
 {
     using IndexType = MeshType::IndexType;
@@ -64,7 +64,7 @@ auto deleteElementsIf(MeshType& m, Range auto&& elemFilterRng)
     return count;
 }
 
-template<MeshConcept MeshType, uint ELEM_ID>
+template<MeshConcept MeshType, ElemId ELEM_ID>
 auto deleteElementsIf(
     MeshType&                                                   m,
     const std::function<bool(

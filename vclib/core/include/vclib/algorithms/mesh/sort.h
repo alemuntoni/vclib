@@ -93,7 +93,7 @@ std::vector<MeshEdgeUtil<MeshType>> fillAndSortMeshEdgeUtilVector(
  * the mesh, ordered according to the comparison function. If
  * getIndicesAsIfContainerCompact is true, the indices are remapped.
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 std::vector<IndexType<MeshType>> sortElemIndicesByFunction(
     const MeshType&                                              mesh,
     const std::function<bool(

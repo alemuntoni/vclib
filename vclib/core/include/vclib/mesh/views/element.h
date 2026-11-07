@@ -9,6 +9,7 @@
 #define VCL_MESH_VIEWS_ELEMENT_H
 
 #include <vclib/base.h>
+#include <vclib/mesh/elements/base/base.h>
 
 #include <ranges>
 
@@ -54,7 +55,7 @@ struct IndicesView : std::ranges::range_adaptor_closure<IndicesView>
  * - elements<ElemId::FACE>   = faces
  * - elements<ElemId::EDGE>   = edges
  */
-template<uint ELEM_ID>
+template<ElemId ELEM_ID>
 inline constexpr auto elements = detail::UnsupportedElementView {};
 
 /**

@@ -48,7 +48,7 @@ void importColor(VCLElem& vclElem, const VCGElem& vcgElem)
         vcgElem.C()[0], vcgElem.C()[1], vcgElem.C()[2], vcgElem.C()[3]);
 }
 
-template<uint ELEM_ID, typename T, MeshConcept MeshType>
+template<ElemId ELEM_ID, typename T, MeshConcept MeshType>
 void addCustomComponentsIfTypeMatches(MeshType& mesh, auto& p)
 {
     if (p._type == std::type_index(typeid(T))) {
@@ -64,7 +64,7 @@ void addCustomComponentsIfTypeMatches(MeshType& mesh, auto& p)
     }
 }
 
-template<uint ELEM_ID, typename T, MeshConcept MeshType, typename VCGMeshType>
+template<ElemId ELEM_ID, typename T, MeshConcept MeshType, typename VCGMeshType>
 void addCustomComponentsOfTypeFromVCGMesh(
     MeshType&          mesh,
     const VCGMeshType& vcgMesh)
@@ -99,7 +99,7 @@ void importCustomComponent(
 }
 
 template<
-    uint ELEM_ID,
+    ElemId ELEM_ID,
     typename T,
     ElementOrMeshConcept ElementType,
     typename VCGMeshType>

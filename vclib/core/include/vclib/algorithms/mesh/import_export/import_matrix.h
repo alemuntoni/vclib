@@ -344,7 +344,7 @@ void edgeIndicesFromMatrix(
  *
  * @ingroup import_matrix
  */
-template<uint ELEM_ID, MeshConcept MeshType, Range R>
+template<ElemId ELEM_ID, MeshConcept MeshType, Range R>
 void elementSelectionFromRange(MeshType& mesh, R&& selection)
 {
     if (std::ranges::size(selection) != mesh.template count<ELEM_ID>())
@@ -446,7 +446,7 @@ void edgeSelectionFromRange(MeshType& mesh, R&& selection)
  *
  * @ingroup import_matrix
  */
-template<uint ELEM_ID, MeshConcept MeshType, MatrixConcept NMatrix>
+template<ElemId ELEM_ID, MeshConcept MeshType, MatrixConcept NMatrix>
 void elementNormalsFromMatrix(MeshType& mesh, const NMatrix& normals)
 {
     MatrixStorageType stg = matrixStorageType<NMatrix>();
@@ -571,7 +571,7 @@ void edgeNormalsFromMatrix(MeshType& mesh, const ENMatrix& edgeNormals)
  *
  * @ingroup import_matrix
  */
-template<uint ELEM_ID, MeshConcept MeshType, MatrixConcept CMatrix>
+template<ElemId ELEM_ID, MeshConcept MeshType, MatrixConcept CMatrix>
 void elementColorsFromMatrix(MeshType& mesh, const CMatrix& colors)
 {
     using MatrixScalar = CMatrix::Scalar;
@@ -615,7 +615,7 @@ void elementColorsFromMatrix(MeshType& mesh, const CMatrix& colors)
  *
  * @ingroup import_matrix
  */
-template<uint ELEM_ID, MeshConcept MeshType, Range R>
+template<ElemId ELEM_ID, MeshConcept MeshType, Range R>
 void elementColorsFromRange(
     MeshType&     mesh,
     R&&           colors,
@@ -852,7 +852,7 @@ void edgeColorsFromRange(MeshType& mesh, R&& colors, Color::Format colorFormat)
  *
  * @ingroup import_matrix
  */
-template<uint ELEM_ID, MeshConcept MeshType, Range R>
+template<ElemId ELEM_ID, MeshConcept MeshType, Range R>
 void elementQualityFromRange(MeshType& mesh, R&& quality)
 {
     if (std::ranges::size(quality) != mesh.template count<ELEM_ID>())

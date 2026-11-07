@@ -964,7 +964,7 @@ private:
     }
 };
 
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void addPerElementCustomComponent(
     MeshType&                        m,
     const MeshInfo::CustomComponent& cc)

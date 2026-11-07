@@ -22,7 +22,7 @@ namespace vcl {
  * @param[in, out] mesh: the mesh on which set the element quality
  * @param[in] quality: quality value to set
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void setPerElementQuality(MeshType& mesh, auto quality)
 {
     requireElementComponent<ELEM_ID, CompId::QUALITY>(mesh);
@@ -40,7 +40,7 @@ void setPerElementQuality(MeshType& mesh, auto quality)
  * @param[in] maxQ: maximum value of the clamping interval
  */
 template<
-    uint        ELEM_ID,
+    ElemId      ELEM_ID,
     MeshConcept MeshType,
     typename Q1 = float,
     typename Q2 = float>
@@ -63,7 +63,7 @@ void clampPerElementQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
  * @param[in] maxQ: maximum value of the normalizing interval
  */
 template<
-    uint        ELEM_ID,
+    ElemId      ELEM_ID,
     MeshConcept MeshType,
     typename Q1 = float,
     typename Q2 = float>

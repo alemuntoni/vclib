@@ -30,7 +30,7 @@ namespace vcl {
  *
  * @param[in/out] mesh: the mesh on which clear the per element adjacent faces.
  */
-template<uint ELEM_ID, FaceMeshConcept MeshType>
+template<ElemId ELEM_ID, FaceMeshConcept MeshType>
 void clearPerElementAdjacentFaces(MeshType& mesh)
 {
     requireElementComponent<ELEM_ID, CompId::ADJACENT_FACES>(mesh);
@@ -66,7 +66,7 @@ void clearPerElementAdjacentFaces(MeshType& mesh)
  *
  * @param[in/out] mesh: the mesh on which clear the per element adjacent edges.
  */
-template<uint ELEM_ID, EdgeMeshConcept MeshType>
+template<ElemId ELEM_ID, EdgeMeshConcept MeshType>
 void clearPerElementAdjacentEdges(MeshType& mesh)
 {
     requireElementComponent<ELEM_ID, CompId::ADJACENT_EDGES>(mesh);
@@ -99,7 +99,7 @@ void clearPerElementAdjacentEdges(MeshType& mesh)
  * @param[in/out] mesh: the mesh on which clear the per element adjacent
  * vertices.
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void clearPerElementAdjacentVertices(MeshType& mesh)
 {
     requireElementComponent<ELEM_ID, CompId::ADJACENT_VERTICES>(mesh);

@@ -16,7 +16,7 @@ namespace vcl {
 
 namespace detail {
 
-template<MeshConcept OutMeshType, uint ELEM_ID, MeshConcept InMeshType>
+template<MeshConcept OutMeshType, ElemId ELEM_ID, MeshConcept InMeshType>
 OutMeshType perElementMeshFilter(
     const InMeshType& m,
     Range auto&&      elemFilterRng,
@@ -57,7 +57,7 @@ OutMeshType perElementMeshFilter(
     return res;
 }
 
-template<MeshConcept OutMeshType, uint ELEM_ID, MeshConcept InMeshType>
+template<MeshConcept OutMeshType, ElemId ELEM_ID, MeshConcept InMeshType>
 OutMeshType perElementMeshFilter(
     const InMeshType&                                              m,
     const std::function<bool(
@@ -71,7 +71,7 @@ OutMeshType perElementMeshFilter(
         m, view, saveBirthIndicesInCustomComponent);
 }
 
-template<MeshConcept OutMeshType, uint ELEM_ID, MeshConcept InMeshType>
+template<MeshConcept OutMeshType, ElemId ELEM_ID, MeshConcept InMeshType>
 OutMeshType perElementMeshFilterWithVRefs(
     const InMeshType& m,
     Range auto&&      elemFilterRng,
@@ -165,7 +165,7 @@ OutMeshType perElementMeshFilterWithVRefs(
     return res;
 }
 
-template<MeshConcept OutMeshType, uint ELEM_ID, MeshConcept InMeshType>
+template<MeshConcept OutMeshType, ElemId ELEM_ID, MeshConcept InMeshType>
 OutMeshType perElementMeshFilterWithVRefs(
     const InMeshType&                                              m,
     const std::function<bool(

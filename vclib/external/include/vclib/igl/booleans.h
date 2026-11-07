@@ -259,7 +259,7 @@ void transferFaceComponents(
     Color                  colorPlaceHolder,
     auto                   qualityPlaceHolder)
 {
-    constexpr uint F = vcl::ElemId::FACE;
+    constexpr ElemId F = vcl::ElemId::FACE;
 
     auto transferComponent = [&]<uint COMP_ID>(
                                  auto&       f,
@@ -330,7 +330,7 @@ void transferVertexComponents(
     Color                  colorPlaceHolder,
     auto                   qualityPlaceHolder)
 {
-    constexpr uint V = vcl::ElemId::VERTEX;
+    constexpr ElemId V = vcl::ElemId::VERTEX;
     using ScalarType = typename MeshType::VertexType::PositionType::ScalarType;
 
     // Determine which vertex components need to be transferred to the output

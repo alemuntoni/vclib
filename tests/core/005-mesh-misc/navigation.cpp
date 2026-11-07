@@ -11,7 +11,7 @@
 
 inline void testMeshCreationAndColors(const MyMesh& mesh)
 {
-    using enum ElemId::Enum;
+    using enum ElemId;
     using enum CompId::Enum;
 
     REQUIRE(mesh.vertexCount() == 4);

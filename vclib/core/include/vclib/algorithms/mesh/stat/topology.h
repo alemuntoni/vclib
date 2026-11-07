@@ -34,7 +34,7 @@ void setReferencedVertices(const auto& mesh, auto& refs, auto& nRefs)
     if constexpr (comp::HasVertexReferences<typename Cont::ElementType>) {
         // if there are still some vertices non-referenced
         if (nRefs < mesh.vertexCount()) {
-            constexpr uint ELEM_ID = Cont::ElementType::ELEMENT_ID;
+            constexpr ElemId ELEM_ID = Cont::ElementType::ELEMENT_ID;
             // for each element of the Cont container
             for (const auto& el : mesh.template elements<ELEM_ID>()) {
                 // for each vertex of the element
@@ -292,7 +292,7 @@ uint largestPerVertexAdjacentVerticesCount(const MeshConcept auto& mesh)
  *
  * @ingroup mesh_stat
  */
-template<uint ELEM_ID>
+template<ElemId ELEM_ID>
 uint largestPerElementAdjacentFacesCount(const FaceMeshConcept auto& mesh)
 {
     requireElementComponent<ELEM_ID, CompId::ADJACENT_FACES>(mesh);
@@ -364,7 +364,7 @@ uint largestPerEdgeAdjacentFacesCount(const FaceMeshConcept auto& mesh)
  *
  * @ingroup mesh_stat
  */
-template<uint ELEM_ID>
+template<ElemId ELEM_ID>
 uint largestPerElementAdjacentEdgesCount(const EdgeMeshConcept auto& mesh)
 {
     requireElementComponent<ELEM_ID, CompId::ADJACENT_EDGES>(mesh);

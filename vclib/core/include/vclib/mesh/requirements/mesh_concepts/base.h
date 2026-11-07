@@ -34,7 +34,7 @@ namespace vcl {
  * @tparam ELEM_ID: The element ID.
  * @ingroup mesh_concepts
  */
-template<typename MeshType, uint ELEM_ID>
+template<typename MeshType, ElemId ELEM_ID>
 concept HasContainerOf = requires {
     requires std::remove_cvref_t<MeshType>::template hasContainerOf<ELEM_ID>();
 };
@@ -76,7 +76,7 @@ concept EdgeMeshConcept = MeshConcept<M> && HasEdges<M>;
  * ELEM_ID with the given component COMP_ID.
  * @ingroup mesh_concepts
  */
-template<typename MeshType, uint ELEM_ID, uint COMP_ID>
+template<typename MeshType, ElemId ELEM_ID, uint COMP_ID>
 concept HasElementComponent =
     HasContainerOf<MeshType, ELEM_ID> &&
     comp::HasComponent<
@@ -89,7 +89,7 @@ concept HasElementComponent =
  * ELEM_ID with the given optional component COMP_ID.
  * @ingroup mesh_concepts
  */
-template<typename MeshType, uint ELEM_ID, uint COMP_ID>
+template<typename MeshType, ElemId ELEM_ID, uint COMP_ID>
 concept HasElementOptionalComponent =
     HasContainerOf<MeshType, ELEM_ID> &&
     comp::HasOptionalComponent<
@@ -98,32 +98,32 @@ concept HasElementOptionalComponent =
             ELEM_ID>>;
 
 /* Adjacencies (Generic per Element) */
-template<typename M, uint ELEM_ID>
+template<typename M, ElemId ELEM_ID>
 concept HasElementAdjacentFaces =
     HasElementComponent<M, ELEM_ID, CompId::ADJACENT_FACES>;
 
-template<typename M, uint ELEM_ID>
+template<typename M, ElemId ELEM_ID>
 concept HasElementOptionalAdjacentFaces =
     HasElementOptionalComponent<M, ELEM_ID, CompId::ADJACENT_FACES>;
 
-template<typename M, uint ELEM_ID>
+template<typename M, ElemId ELEM_ID>
 concept HasElementAdjacentEdges =
     HasElementComponent<M, ELEM_ID, CompId::ADJACENT_EDGES>;
 
-template<typename M, uint ELEM_ID>
+template<typename M, ElemId ELEM_ID>
 concept HasElementOptionalAdjacentEdges =
     HasElementOptionalComponent<M, ELEM_ID, CompId::ADJACENT_EDGES>;
 
-template<typename M, uint ELEM_ID>
+template<typename M, ElemId ELEM_ID>
 concept HasElementAdjacentVertices =
     HasElementComponent<M, ELEM_ID, CompId::ADJACENT_VERTICES>;
 
-template<typename M, uint ELEM_ID>
+template<typename M, ElemId ELEM_ID>
 concept HasElementOptionalAdjacentVertices =
     HasElementOptionalComponent<M, ELEM_ID, CompId::ADJACENT_VERTICES>;
 
 /* Custom Components on Elements (Generic) */
-template<typename M, uint ELEM_ID>
+template<typename M, ElemId ELEM_ID>
 concept HasElementCustomComponents =
     HasElementComponent<M, ELEM_ID, CompId::CUSTOM_COMPONENTS>;
 

@@ -26,7 +26,7 @@ struct ColorAvgInfo
     uint         cnt = 0;
 };
 
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void setPerElemColorFromVertexColor(MeshType& m)
 {
     requireVertexColors(m);
@@ -43,7 +43,7 @@ void setPerElemColorFromVertexColor(MeshType& m)
     }
 }
 
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void setPerVertexColorFromElemColor(MeshType& m)
 {
     requireVertexColors(m);
@@ -67,7 +67,7 @@ void setPerVertexColorFromElemColor(MeshType& m)
     }
 }
 
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void setPerElemColorFromMaterial(MeshType& m)
 {
     static_assert(

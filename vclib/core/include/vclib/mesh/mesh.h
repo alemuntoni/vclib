@@ -60,6 +60,8 @@ class Mesh : public mesh::detail::RebindContainer<Args, Mesh<Args...>>...
     template<typename T>
     using Rebound = mesh::detail::RebindContainer<T, Mesh<Args...>>;
 
+    static constexpr uint ELEM_COUNT = toUnderlying(ElemId::ELEMENT_COUNT);
+
     static_assert(
         mesh::detail::FindContainer<ElemId::VERTEX, Rebound<Args>...>::found,
         "A Mesh must have a VertexContainer.");
@@ -136,7 +138,7 @@ public:
     /**
      * @brief Type alias for the container of the given ELEM_ID.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     using ContainerType =
         typename mesh::detail::FindContainer<ELEM_ID, Rebound<Args>...>::type;
 
@@ -144,14 +146,14 @@ public:
      * @brief Type alias for the element type of the container of the given
      * ELEM_ID.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     using ElementType = typename ContainerType<ELEM_ID>::ElementType;
 
     /**
      * @brief Type alias for the const element type of the container of the
      * given ELEM_ID.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     using ConstElementType = typename ContainerType<ELEM_ID>::ConstElementType;
 
     /* Constexpr static member functions */
@@ -173,7 +175,7 @@ public:
      * @return true if this Mesh has a container of elements having the same
      * Element ID of the template ELEM_ID.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     static constexpr bool hasContainerOf()
     {
         return mesh::detail::FindContainer<ELEM_ID, Rebound<Args>...>::found;
@@ -202,7 +204,7 @@ public:
      * @return `true` if this Mesh has a container of elements having ID ELEM_ID
      * and that container has a component having ID COMP_ID, `false` otherwise.
      */
-    template<uint ELEM_ID, uint COMP_ID>
+    template<ElemId ELEM_ID, uint COMP_ID>
     static constexpr bool hasElementComponent()
     {
         if constexpr (hasContainerOf<ELEM_ID>()) {
@@ -237,7 +239,7 @@ public:
      * and that container has an optional component having ID COMP_ID, `false`
      * otherwise.
      */
-    template<uint ELEM_ID, uint COMP_ID>
+    template<ElemId ELEM_ID, uint COMP_ID>
     static constexpr bool hasElementOptionalComponent()
     {
         if constexpr (hasContainerOf<ELEM_ID>()) {
@@ -433,7 +435,7 @@ public:
             return;
         }
 
-        std::array<IndexType, ElemId::ELEMENT_COUNT> initialSizes = {0};
+        std::array<IndexType, ELEM_COUNT> initialSizes = {0};
         (saveInitialContainerSize<Rebound<Args>>(initialSizes), ...);
 
         (appendContainer<Rebound<Args>>(m), ...);
@@ -576,7 +578,7 @@ public:
      * @return the element of the given type ID at the given index inside its
      * container of this mesh.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     decltype(auto) element(this auto&& self, IndexType i)
         requires (hasContainerOf<ELEM_ID>())
     {
@@ -592,7 +594,7 @@ public:
      * @tparam ELEM_ID: the ID of the element.
      * @return the number of elements of the given type in this mesh.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     std::size_t count() const requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::elementCount();
@@ -612,7 +614,7 @@ public:
      * @return the size of the container of elements of the given type in this
      * mesh.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     std::size_t containerSize() const requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::elementContainerSize();
@@ -628,7 +630,7 @@ public:
      * @tparam ELEM_ID: the ID of the element.
      * @return the number of deleted elements of the given type in this mesh.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     std::size_t deletedCount() const requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::deletedElementCount();
@@ -644,7 +646,7 @@ public:
      * @tparam ELEM_ID: the ID of the element.
      * @return the index of the added element in its container.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     decltype(auto) add() requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::addElement();
@@ -661,7 +663,7 @@ public:
      * @param[in] n: the number of elements to add.
      * @return the index of the first added element in its container.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     decltype(auto) add(std::size_t n) requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::addElements(n);
@@ -685,7 +687,7 @@ public:
      *
      * @tparam ELEM_ID: the ID of the element.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     void clearElements() requires (hasContainerOf<ELEM_ID>())
     {
         ContainerType<ELEM_ID>::clearElements();
@@ -720,7 +722,7 @@ public:
      * @tparam ELEM_ID: the ID of the element.
      * @param[in] n: the new size of the container in the mesh.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     void resize(std::size_t n) requires (hasContainerOf<ELEM_ID>())
     {
         ContainerType<ELEM_ID>::resizeElements(n);
@@ -742,7 +744,7 @@ public:
      * @tparam ELEM_ID: the type ID of the element.
      * @param[in] n: the new capacity of the container in the mesh.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     void reserve(std::size_t n) requires (hasContainerOf<ELEM_ID>())
     {
         ContainerType<ELEM_ID>::reserveElements(n);
@@ -754,7 +756,7 @@ public:
      * function will automatically take care of updating all the Element
      * references contained in the Mesh.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     auto compactElements() requires (hasContainerOf<ELEM_ID>())
     {
         return this->ContainerType<ELEM_ID>::compactElements();
@@ -777,7 +779,7 @@ public:
      * @tparam ELEM_ID: the ID of the element.
      * @param[in] i: the index of the element to delete.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     void deleteElement(std::size_t i) requires (hasContainerOf<ELEM_ID>())
     {
         ContainerType<ELEM_ID>::deleteElement(i);
@@ -807,7 +809,7 @@ public:
      * @return a vector containing, for each element index, the new index if the
      * container would be compacted.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     auto compactIndices() const requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::elementCompactIndices();
@@ -822,7 +824,7 @@ public:
      * @param[in] i: the index of the element.
      * @return the new index after compaction, or NULL_INDEX if deleted.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     auto compactIndices(std::size_t i) const requires (hasContainerOf<ELEM_ID>())
     {
         return ContainerType<ELEM_ID>::elementCompactIndices(i);
@@ -853,7 +855,7 @@ public:
      * the new element index. If the old element must be left as unreferenced,
      * the value of the vector must be NULL_INDEX.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     void updateReferences(const std::vector<IndexType>& newIndices)
         requires (hasContainerOf<ELEM_ID>())
     {
@@ -882,7 +884,7 @@ public:
      * @return a lightweight view object that can be used in range-based for
      * loops to iterate over elements.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     decltype(auto) elements(this auto&& self, bool jumpDeleted = true)
         requires (hasContainerOf<ELEM_ID>())
     {
@@ -908,7 +910,7 @@ public:
      * elementContainerSize(), it will be set to elementContainerSize().
      * @return A View object allowing to iterate over the given range of the container.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     decltype(auto) elements(
         this auto&& self,
         IndexType   begin,
@@ -931,7 +933,7 @@ public:
      * @return `true` if Component `COMP_ID` is available for elements of
      * type `ELEM_ID` in the mesh.
      */
-    template<uint ELEM_ID, uint COMP_ID>
+    template<ElemId ELEM_ID, uint COMP_ID>
     bool isElementComponentAvailable() const
         requires (hasContainerOf<ELEM_ID>())
     {
@@ -950,7 +952,7 @@ public:
      * @tparam ELEM_ID: the ID of the element.
      * @tparam COMP_ID: the ID of the component.
      */
-    template<uint ELEM_ID, uint COMP_ID>
+    template<ElemId ELEM_ID, uint COMP_ID>
     void enableElementComponent()
         requires (hasElementOptionalComponent<ELEM_ID, COMP_ID>())
     {
@@ -968,21 +970,21 @@ public:
      * @tparam ELEM_ID: the ID of the element.
      * @tparam COMP_ID: the ID of the component.
      */
-    template<uint ELEM_ID, uint COMP_ID>
+    template<ElemId ELEM_ID, uint COMP_ID>
     void disableElementComponent()
         requires (hasElementOptionalComponent<ELEM_ID, COMP_ID>())
     {
         ContainerType<ELEM_ID>::template disableOptionalComponent<COMP_ID>();
     }
 
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     void enableAllElementOptionalComponents()
         requires (hasContainerOf<ELEM_ID>())
     {
         ContainerType<ELEM_ID>::enableAllOptionalComponents();
     }
 
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     void disableAllElementOptionalComponents()
         requires (hasContainerOf<ELEM_ID>())
     {
@@ -1005,7 +1007,7 @@ public:
      * @return `true` if the Element having ID `ELEM_ID` has a custom component
      * having the given name.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     bool hasElementCustomComponent(const std::string& name) const
         requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
@@ -1024,7 +1026,7 @@ public:
      * @return A vector of strings representing all the names of the custom
      * components for the Element having ID `ELEM_ID`.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     std::vector<std::string> elementCustomComponentNames() const
         requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
@@ -1045,7 +1047,7 @@ public:
      * @return `true` if the Element having ID `ELEM_ID` has a custom component
      * of type `K` having the given name.
      */
-    template<uint ELEM_ID, typename K>
+    template<ElemId ELEM_ID, typename K>
     bool isElementCustomComponentOfType(const std::string& name) const
         requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
@@ -1066,7 +1068,7 @@ public:
      * @return The std::type_index of the custom component having the given name
      * associated to the Element having ID `ELEM_ID`.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     std::type_index elementCustomComponentType(const std::string& name) const
         requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
@@ -1086,7 +1088,7 @@ public:
      * @return A vector of strings representing all the names of the custom
      * components of type `K` for the Element having ID `ELEM_ID`.
      */
-    template<uint ELEM_ID, typename K>
+    template<ElemId ELEM_ID, typename K>
     std::vector<std::string> elementCustomComponentNamesOfType() const
         requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
@@ -1106,7 +1108,7 @@ public:
      * @tparam K: the type of the custom component.
      * @param[in] name: the name of the custom component.
      */
-    template<uint ELEM_ID, typename K>
+    template<ElemId ELEM_ID, typename K>
     void addElementCustomComponent(const std::string& name)
         requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
@@ -1124,7 +1126,7 @@ public:
      * @tparam ELEM_ID: the ID of the element.
      * @param[in] name: the name of the custom component.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     void deleteElementCustomComponent(const std::string& name)
         requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
@@ -1172,7 +1174,7 @@ public:
      * @return A handle to the custom component of type `K` having the given
      * name associated to the Element having ID `ELEM_ID`.
      */
-    template<uint ELEM_ID, typename K>
+    template<ElemId ELEM_ID, typename K>
     decltype(auto) elementCustomComponentVectorHandle(
         this auto&&        self,
         const std::string& name)
@@ -1208,7 +1210,7 @@ public:
      * @param[in] os: the output stream to which serialize the custom
      * components.
      */
-    template<uint ELEM_ID, typename CompType>
+    template<ElemId ELEM_ID, typename CompType>
     void serializeElementCustomComponentsOfType(std::ostream& os) const
         requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
@@ -1228,7 +1230,7 @@ public:
      * @param[in] is: the input stream from which deserialize the custom
      * components.
      */
-    template<uint ELEM_ID, typename CompType>
+    template<ElemId ELEM_ID, typename CompType>
     void deserializeElementCustomComponentsOfType(std::istream& is)
         requires (hasElementComponent<ELEM_ID, CompId::CUSTOM_COMPONENTS>())
     {
@@ -1240,7 +1242,7 @@ private:
     /**
      * @brief Returns a reference to the container for the given ELEM_ID.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     requires (hasContainerOf<ELEM_ID>())
     ContainerType<ELEM_ID>& container()
     {
@@ -1250,7 +1252,7 @@ private:
     /**
      * @brief Returns a const reference to the container for the given ELEM_ID.
      */
-    template<uint ELEM_ID>
+    template<ElemId ELEM_ID>
     requires (hasContainerOf<ELEM_ID>())
     const ContainerType<ELEM_ID>& container() const
     {
@@ -1306,10 +1308,10 @@ private:
 
     template<typename Cont>
     void saveInitialContainerSize(
-        std::array<IndexType, ElemId::ELEMENT_COUNT>& sizes) const
+        std::array<IndexType, ELEM_COUNT>& sizes) const
     {
         if constexpr (mesh::ElementContainerConcept<Cont>) {
-            sizes[Cont::ELEMENT_ID] = this->Cont::elementContainerSize();
+            sizes[toUnderlying(Cont::ELEMENT_ID)] = this->Cont::elementContainerSize();
         }
     }
 
@@ -1321,7 +1323,7 @@ private:
         }
     }
 
-    template<typename Cont, uint TARGET_ELEM_ID>
+    template<typename Cont, ElemId TARGET_ELEM_ID>
     void shiftContainerReferences(IndexType startFrom, IndexType offset)
     {
         if constexpr (mesh::ElementContainerConcept<Cont>) {
@@ -1332,26 +1334,26 @@ private:
 
     template<typename Cont>
     void shiftReferencesOfContainer(
-        const std::array<IndexType, ElemId::ELEMENT_COUNT>& initialSizes)
+        const std::array<IndexType, ELEM_COUNT>& initialSizes)
     {
         if constexpr (mesh::ElementContainerConcept<Cont>) {
-            const IndexType startFrom = initialSizes[Cont::ELEMENT_ID];
+            const IndexType startFrom = initialSizes[toUnderlying(Cont::ELEMENT_ID)];
             [&]<uint... TargetIDs>(std::integer_sequence<uint, TargetIDs...>) {
-                (shiftContainerReferences<Cont, TargetIDs>(
+                (shiftContainerReferences<Cont, static_cast<ElemId>(TargetIDs)>(
                      startFrom, initialSizes[TargetIDs]),
                  ...);
-            }(std::make_integer_sequence<uint, ElemId::ELEMENT_COUNT> {});
+            }(std::make_integer_sequence<uint, ELEM_COUNT> {});
         }
     }
 
     template<typename Cont, typename MatrixType>
     void updatePosAndNormalsOfContainerAfterAppend(
-        const std::array<IndexType, ElemId::ELEMENT_COUNT>& initialSizes,
+        const std::array<IndexType, ELEM_COUNT>& initialSizes,
         const MatrixType& matrix)
     {
         if constexpr (mesh::ElementContainerConcept<Cont>) {
-            constexpr uint ELEM_ID = Cont::ELEMENT_ID;
-            const IndexType startFrom = initialSizes[ELEM_ID];
+            constexpr ElemId ELEM_ID = Cont::ELEMENT_ID;
+            const IndexType startFrom = initialSizes[toUnderlying(ELEM_ID)];
             if (startFrom >= this->Cont::elementContainerSize()) {
                 return;
             }
@@ -1386,12 +1388,12 @@ private:
 
     template<typename Cont, typename MappingType>
     void updateMaterialIndicesOfContainerAfterAppend(
-        const std::array<IndexType, ElemId::ELEMENT_COUNT>& initialSizes,
+        const std::array<IndexType, ELEM_COUNT>& initialSizes,
         const MappingType& mapping)
     {
         if constexpr (mesh::ElementContainerConcept<Cont>) {
-            constexpr uint ELEM_ID = Cont::ELEMENT_ID;
-            const IndexType startFrom = initialSizes[ELEM_ID];
+            constexpr ElemId ELEM_ID = Cont::ELEMENT_ID;
+            const IndexType startFrom = initialSizes[toUnderlying(ELEM_ID)];
             if (startFrom >= this->Cont::elementContainerSize()) {
                 return;
             }
@@ -1438,7 +1440,7 @@ private:
         }
     }
 
-    template<typename T, uint ELEM_ID>
+    template<typename T, ElemId ELEM_ID>
     void updateContainerReferences(const std::vector<IndexType>& newIndices)
     {
         if constexpr (mesh::ElementContainerConcept<T>) {

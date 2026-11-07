@@ -16,7 +16,7 @@ namespace vcl {
 
 namespace detail {
 
-template<uint ELEM_ID, LoggerConcept LogType = NullLogger>
+template<ElemId ELEM_ID, LoggerConcept LogType = NullLogger>
 void normalizeNoThrow(auto elem, LogType& log = nullLogger)
 {
     try {
@@ -48,7 +48,7 @@ void normalizeNoThrow(auto elem, LogType& log = nullLogger)
  * @param[in,out] mesh: The mesh on which clear the `ELEM_ID` normals.
  * @param[in,out] log: The logger used to log the performed operations.
  */
-template<uint ELEM_ID, LoggerConcept LogType = NullLogger>
+template<ElemId ELEM_ID, LoggerConcept LogType = NullLogger>
 void clearPerElementNormals(MeshConcept auto& mesh, LogType& log = nullLogger)
 {
     requireElementComponent<ELEM_ID, CompId::NORMAL>(mesh);
@@ -75,7 +75,7 @@ void clearPerElementNormals(MeshConcept auto& mesh, LogType& log = nullLogger)
  * @param[in,out] mesh: the mesh on which normalize the `ELEM_ID` normals.
  * @param[in,out] log: The logger used to log the performed operations.
  */
-template<uint ELEM_ID, LoggerConcept LogType = NullLogger>
+template<ElemId ELEM_ID, LoggerConcept LogType = NullLogger>
 void normalizePerElementNormals(
     MeshConcept auto& mesh,
     LogType&          log = nullLogger)
@@ -112,7 +112,7 @@ void normalizePerElementNormals(
  * removed from the matrix.
  * @param[in,out] log: The logger used to log the performed operations.
  */
-template<uint ELEM_ID, typename MScalar, LoggerConcept LogType = NullLogger>
+template<ElemId ELEM_ID, typename MScalar, LoggerConcept LogType = NullLogger>
 void multiplyPerElementNormalsByMatrix(
     MeshConcept auto& mesh,
     Matrix33<MScalar> mat,
@@ -153,7 +153,7 @@ void multiplyPerElementNormalsByMatrix(
  * removed from the matrix.
  * @param[in,out] log: The logger used to log the performed operations.
  */
-template<uint ELEM_ID, typename MScalar, LoggerConcept LogType = NullLogger>
+template<ElemId ELEM_ID, typename MScalar, LoggerConcept LogType = NullLogger>
 void multiplyPerElementNormalsByMatrix(
     MeshConcept auto&        mesh,
     const Matrix44<MScalar>& mat,

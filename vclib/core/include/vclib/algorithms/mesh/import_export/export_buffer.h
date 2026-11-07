@@ -601,7 +601,7 @@ void wireframeVertexIndicesToBuffer(
  *
  * @ingroup export_buffer
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void elementSelectionToBuffer(const MeshType& mesh, auto* buffer)
 {
     using IndexType = typename MeshType::IndexType;
@@ -729,7 +729,7 @@ void edgeSelectionToBuffer(const MeshType& mesh, auto* buffer)
  *
  * @ingroup export_buffer
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void elementNormalsToBuffer(
     const MeshType&              mesh,
     auto*                        buffer,
@@ -941,7 +941,7 @@ void edgeNormalsToBuffer(
  *
  * @ingroup export_buffer
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void elementColorsToBuffer(
     const MeshType&       mesh,
     auto*                 buffer,
@@ -992,7 +992,7 @@ void elementColorsToBuffer(
  *
  * @ingroup export_buffer
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void elementColorsToBuffer(
     const MeshType& mesh,
     auto*           buffer,
@@ -1335,7 +1335,7 @@ void edgeColorsToBuffer(
  *
  * @ingroup export_buffer
  */
-template<uint ELEM_ID, MeshConcept MeshType>
+template<ElemId ELEM_ID, MeshConcept MeshType>
 void elementQualityToBuffer(const MeshType& mesh, auto* buffer)
 {
     using IndexType = typename MeshType::IndexType;
@@ -2046,7 +2046,7 @@ void vertexAdjacentVerticesToBuffer(
  *
  * @ingroup export_buffer
  */
-template<uint ELEM_ID, FaceMeshConcept MeshType>
+template<ElemId ELEM_ID, FaceMeshConcept MeshType>
 void elementAdjacentFacesToBuffer(
     const MeshType&              mesh,
     auto*                        buffer,
@@ -2233,7 +2233,7 @@ void edgeAdjacentFacesToBuffer(
  *
  * @ingroup export_buffer
  */
-template<uint ELEM_ID, EdgeMeshConcept MeshType>
+template<ElemId ELEM_ID, EdgeMeshConcept MeshType>
 void elementAdjacentEdgesToBuffer(
     const MeshType&              mesh,
     auto*                        buffer,

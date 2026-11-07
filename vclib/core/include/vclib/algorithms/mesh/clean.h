@@ -134,7 +134,7 @@ void deleteElementsWithDeletedVertices(
     typename MeshType::IndexType& deletedCount)
 {
     if constexpr (comp::HasVertexReferences<typename Cont::ElementType>) {
-        constexpr uint ELEM_ID = Cont::ElementType::ELEMENT_ID;
+        constexpr ElemId ELEM_ID = Cont::ElementType::ELEMENT_ID;
         deletedCount +=
             deleteElementsIf<MeshType, ELEM_ID>(m, [](auto el) {
                 for (auto v : el.vertices()) {

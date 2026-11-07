@@ -13,11 +13,11 @@ def update_element_enum(element):
         return
 
     text = text.replace(
-        '        ELEMENT_COUNT,',
-        f'        {element.name_upper},\n        ELEMENT_COUNT,', 1)
+        '    ELEMENT_COUNT,',
+        f'    {element.name_upper},\n    ELEMENT_COUNT,', 1)
 
     m = re.search(
-        r'ELEMENT_ENUM_STRINGS\[ElemId::ELEMENT_COUNT\] = \{\n.*?\n\};',
+        r'ELEMENT_ENUM_STRINGS\[static_cast<uint>\(ElemId::ELEMENT_COUNT\)\] = \{\n.*?\n\};',
         text, re.S)
     block = m.group(0)
     new_block = block[:-len('};')] + f'    "{element.upper_camel}",\n' + '};'

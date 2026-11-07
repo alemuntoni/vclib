@@ -46,7 +46,7 @@ using VclVector = vcl::Vector<ScalarType, -1>;
 
 // utility functions
 
-template<vcl::uint ELEM_ID>
+template<vcl::ElemId ELEM_ID>
 void randomSelection(auto& tm)
 {
     std::random_device              rd;
@@ -59,7 +59,7 @@ void randomSelection(auto& tm)
     }
 }
 
-template<vcl::uint ELEM_ID>
+template<vcl::ElemId ELEM_ID>
 void randomColor(auto& tm)
 {
     std::random_device              rd;
@@ -73,7 +73,7 @@ void randomColor(auto& tm)
     }
 }
 
-template<vcl::uint ELEM_ID>
+template<vcl::ElemId ELEM_ID>
 void randomQuality(auto& tm)
 {
     std::random_device               rd;
