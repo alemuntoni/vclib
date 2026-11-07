@@ -16,14 +16,28 @@ namespace vcl {
 namespace comp {
 
 /**
- * @brief The WedgeProxy class represents a proxy (view) of a single wedge (corner)
- * of a Face element.
+ * @brief The WedgeProxy class represents a proxy (view) of a single wedge
+ * (corner) of a Face element.
  *
- * It provides object-oriented access to all attributes associated with this wedge/corner:
+ * It provides object-oriented access to all attributes associated with this
+ * wedge/corner:
  * - Topological vertex and vertex index
  * - Color (if HasWedgeColors<FaceType>)
  * - TexCoord (if HasWedgeTexCoords<FaceType>)
  * - Normal (if HasWedgeNormals<FaceType>)
+ *
+ * ### Dual Index Spaces: Local Corner Index vs. Global Vertex Index
+ *
+ * - **Local Corner Index (`uint`)**:
+ *   Returned by `index()`. This is the 0-based position `mIndex` of this
+ *   wedge/corner within the parent face's local Wedges ContainerComponent (`0
+ *   <= index() < parentFace().vertexCount()`). It is always a `uint` (e.g. 0,
+ *   1, or 2 for a triangle corner).
+ * - **Global Vertex Index (`IndexType`)**:
+ *   Returned by `vertexIndex()`. This is the global index of the topological
+ *   vertex in the mesh's `VertexContainer`
+ *   (`parentFace().vertexIndex(index())`). It is typed as `IndexType` (32 or 64
+ *   bit).
  *
  * It automatically propagates constness from the parent Face.
  *
@@ -48,7 +62,8 @@ public:
     WedgeProxy(FaceType face, uint index) : mFace(face), mIndex(index) {}
 
     /**
-     * @brief Returns the local corner index of this wedge in the face (0, 1, 2...).
+     * @brief Returns the 0-based local corner/position index of this wedge in the face (uint).
+     * @return The local corner index (0 <= index() < parentFace().vertexCount()).
      */
     uint index() const { return mIndex; }
 
@@ -66,7 +81,8 @@ public:
     }
 
     /**
-     * @brief Returns the index of the vertex associated with this wedge corner.
+     * @brief Returns the global index in the VertexContainer of the vertex associated with this wedge corner.
+     * @return The global vertex index (IndexType).
      */
     IndexType vertexIndex() const
     {

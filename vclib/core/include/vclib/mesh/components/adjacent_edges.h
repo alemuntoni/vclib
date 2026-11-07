@@ -26,9 +26,35 @@ namespace vcl::comp {
  * It is a random access container having static or dynamic size, depending on
  * the value of N (a negative number means dynamic).
  *
+ * ### Dual Index Spaces: Global Edge Indices vs. Local Adjacency Positions
+ *
+ * It is essential to distinguish between the two indexing spaces in this
+ * component:
+ *
+ * 1. **Global Edge Index (`IndexType`)**:
+ *    - The global index or ID of an edge inside the mesh's `EdgeContainer`
+ *      (`m.edge(ei)`).
+ *    - Typed as `IndexType` (32 or 64 bit).
+ *    - Sentinel value: `NULL_INDEX` (`vcl::NULL_INDEX<IndexType>`). Indicates
+ *      that there is no adjacent edge at this slot.
+ *    - Returned by `adjEdgeIndex(uint i)` and `adjEdgeIndexMod(int i)`.
+ *    - Passed to search functions like `containsAdjEdge(IndexType ei)` and
+ *     `indexOfAdjEdge(IndexType ei)`.
+ *
+ * 2. **Local Adjacency Position (`uint`)**:
+ *    - The 0-based position or slot `i` within this element's adjacency list
+ *      (`0 <= i < adjEdgeCount()`).
+ *    - Always typed as `uint` (`uint32_t`).
+ *    - Sentinel value: `vcl::UINT_NULL` (`0xFFFFFFFF`), indicating that the
+ *      queried edge was not found in this element's adjacency list.
+ *    - Passed as the position `uint i` to `adjEdge(uint i)`, `adjEdgeIndex(uint
+ *      i)`, and `setAdjEdge(uint i, IndexType ei)`.
+ *    - Returned by `indexOfAdjEdge(IndexType ei)`.
+ *
  * @tparam N: The size of the container, representing the number of storable
  * adjacent edges. If negative, the container is dynamic.
- * @tparam Index: The unsigned integral type used to store indices (default uint).
+ * @tparam Index: The unsigned integral type used to store indices (default
+ * uint).
  * @tparam TTVC: If true, the container size will be tied to the vertex count of
  * the element (e.g. on polygon faces).
  * @tparam OPT: If true, the component is optional.
@@ -36,10 +62,10 @@ namespace vcl::comp {
  * @ingroup components
  */
 template<
-    int                    N    = -1,
+    int                    N     = -1,
     std::unsigned_integral Index = uint,
-    bool                   TTVC = false,
-    bool                   OPT  = false>
+    bool                   TTVC  = false,
+    bool                   OPT   = false>
 class AdjacentEdges :
         public ContainerReferencesComponent<
             CompId::ADJACENT_EDGES,
@@ -61,7 +87,8 @@ public:
     using IndexType = Index;
 
     /**
-     * @brief Static size of the container. If negative, the container is dynamic.
+     * @brief Static size of the container. If negative, the container is
+     * dynamic.
      */
     static constexpr int ADJ_EDGE_COUNT = N;
 
@@ -77,10 +104,7 @@ public:
      * @brief Returns the number of adjacent edges of this element.
      * @return The number of adjacent edges.
      */
-    uint adjEdgeCount(this const auto& self)
-    {
-        return Base::refCount(self);
-    }
+    uint adjEdgeCount(this const auto& self) { return Base::refCount(self); }
 
     /**
      * @brief Returns a proxy to the i-th adjacent edge of this element.
@@ -93,9 +117,12 @@ public:
     }
 
     /**
-     * @brief Returns the index in the edge container of the i-th adjacent edge.
-     * @param[in] i: The position in this container.
-     * @return The index of the adjacent edge.
+     * @brief Returns the global index in the EdgeContainer of the i-th adjacent
+     * edge.
+     * @param[in] i: The 0-based local position in this adjacency container (0
+     * <= i < adjEdgeCount()).
+     * @return The global index (IndexType) of the adjacent edge, or NULL_INDEX
+     * if no adjacent edge exists.
      */
     IndexType adjEdgeIndex(this const auto& self, uint i)
     {
@@ -103,8 +130,8 @@ public:
     }
 
     /**
-     * @brief Returns a proxy to the i-th adjacent edge using modular arithmetic.
-     * Supports negative indices.
+     * @brief Returns a proxy to the i-th adjacent edge using modular
+     * arithmetic. Supports negative indices.
      * @param[in] i: The position modulo adjEdgeCount().
      * @return A proxy to the adjacent edge.
      */
@@ -114,8 +141,8 @@ public:
     }
 
     /**
-     * @brief Returns the index of the i-th adjacent edge using modular arithmetic.
-     * Supports negative indices.
+     * @brief Returns the index of the i-th adjacent edge using modular
+     * arithmetic. Supports negative indices.
      * @param[in] i: The position modulo adjEdgeCount().
      * @return The index of the adjacent edge.
      */
@@ -157,7 +184,8 @@ public:
     }
 
     /**
-     * @brief Sets the i-th adjacent edge from an ElementProxy or pointer using modular arithmetic.
+     * @brief Sets the i-th adjacent edge from an ElementProxy or pointer using
+     * modular arithmetic.
      * @param[in] i: The position modulo adjEdgeCount().
      * @param[in] e: The adjacent edge proxy or pointer.
      */
@@ -212,9 +240,12 @@ public:
     }
 
     /**
-     * @brief Finds the position in this container of the given edge index.
-     * @param[in] ei: The edge index to search for.
-     * @return The 0-based position, or UINT_NULL if not found.
+     * @brief Finds the 0-based local position in this adjacency container of
+     * the given global edge index.
+     * @param[in] ei: The global edge index (IndexType) to search for in
+     * EdgeContainer.
+     * @return The 0-based local position (uint) in this container, or UINT_NULL
+     * if not found.
      */
     uint indexOfAdjEdge(this const auto& self, IndexType ei)
     {
@@ -222,7 +253,8 @@ public:
     }
 
     /**
-     * @brief Finds the position in this container of the given edge proxy or pointer.
+     * @brief Finds the position in this container of the given edge proxy or
+     * pointer.
      * @param[in] e: The edge proxy or pointer to search for.
      * @return The 0-based position, or UINT_NULL if not found.
      */
@@ -261,8 +293,8 @@ public:
      * @param[in] e: The edge proxy or pointer to append.
      */
     template<typename Elem>
-    void pushAdjEdge(this auto&& self, const Elem& e)
-        requires (N < 0 && !TTVC && !std::unsigned_integral<std::remove_cvref_t<Elem>>)
+    void pushAdjEdge(this auto&& self, const Elem& e) requires (
+        N < 0 && !TTVC && !std::unsigned_integral<std::remove_cvref_t<Elem>>)
     {
         Base::pushRef(self, e);
     }
@@ -273,7 +305,8 @@ public:
      * @param[in] i: The position to insert at.
      * @param[in] ei: The edge index to insert.
      */
-    void insertAdjEdge(this auto&& self, uint i, IndexType ei) requires (N < 0 && !TTVC)
+    void insertAdjEdge(this auto&& self, uint i, IndexType ei)
+        requires (N < 0 && !TTVC)
     {
         Base::insertRef(self, i, ei);
     }
@@ -285,8 +318,8 @@ public:
      * @param[in] e: The edge proxy or pointer to insert.
      */
     template<typename Elem>
-    void insertAdjEdge(this auto&& self, uint i, const Elem& e)
-        requires (N < 0 && !TTVC && !std::unsigned_integral<std::remove_cvref_t<Elem>>)
+    void insertAdjEdge(this auto&& self, uint i, const Elem& e) requires (
+        N < 0 && !TTVC && !std::unsigned_integral<std::remove_cvref_t<Elem>>)
     {
         Base::insertRef(self, i, e);
     }
@@ -325,10 +358,7 @@ public:
      * @brief Returns a lightweight view over the adjacent edge indices.
      * @return A View object exposing begin() and end() over the indices.
      */
-    auto adjEdgeIndices(this auto&& self)
-    {
-        return Base::refIndices(self);
-    }
+    auto adjEdgeIndices(this auto&& self) { return Base::refIndices(self); }
 
 protected:
     template<typename OtherElement>
@@ -347,14 +377,16 @@ template<typename T>
 concept HasAdjacentEdges = HasComponent<CompId::ADJACENT_EDGES, T>;
 
 /**
- * @brief Concept that checks whether a type T has an optional AdjacentEdges component.
+ * @brief Concept that checks whether a type T has an optional AdjacentEdges
+ * component.
  */
 template<typename T>
 concept HasOptionalAdjacentEdges =
     HasAdjacentEdges<T> && HasOptionalComponent<CompId::ADJACENT_EDGES, T>;
 
 /**
- * @brief Concept that checks whether a type T has a static-size AdjacentEdges component.
+ * @brief Concept that checks whether a type T has a static-size AdjacentEdges
+ * component.
  */
 template<typename T>
 concept HasStaticAdjacentEdges =
@@ -381,14 +413,17 @@ void AdjacentEdges<N, Index, TTVC, OPT>::importFrom(
                     if constexpr (N == OTHER_N) {
                         for (uint i = 0; i < N; ++i) {
                             self.setAdjEdge(
-                                i, static_cast<IndexType>(other.adjEdgeIndex(i)));
+                                i,
+                                static_cast<IndexType>(other.adjEdgeIndex(i)));
                         }
                     }
                     else if constexpr (OTHER_N < 0) {
                         if (other.adjEdgeCount() == N) {
                             for (uint i = 0; i < N; ++i) {
                                 self.setAdjEdge(
-                                    i, static_cast<IndexType>(other.adjEdgeIndex(i)));
+                                    i,
+                                    static_cast<IndexType>(
+                                        other.adjEdgeIndex(i)));
                             }
                         }
                     }
@@ -404,7 +439,8 @@ void AdjacentEdges<N, Index, TTVC, OPT>::importFrom(
                     if (self.adjEdgeCount() == other.adjEdgeCount()) {
                         for (uint i = 0; i < self.adjEdgeCount(); ++i) {
                             self.setAdjEdge(
-                                i, static_cast<IndexType>(other.adjEdgeIndex(i)));
+                                i,
+                                static_cast<IndexType>(other.adjEdgeIndex(i)));
                         }
                     }
                 }

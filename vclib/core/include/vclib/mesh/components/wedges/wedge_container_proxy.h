@@ -28,15 +28,16 @@ namespace vcl::comp {
  *
  * It provides:
  * 1. Range iteration over WedgeProxy (for auto w : f.wedges())
- * 2. Component views for direct column access (f.wedges().colors(), f.wedges().normals(), etc.)
+ * 2. Component views for direct column access (f.wedges().colors(),
+ *    f.wedges().normals(), etc.)
  *
  * @tparam FaceType: The type of the parent Face (mutable or const).
  *
  * @ingroup elements
  */
 template<typename FaceType>
-class WedgeContainerProxy
-    : public std::ranges::view_interface<WedgeContainerProxy<FaceType>>
+class WedgeContainerProxy :
+        public std::ranges::view_interface<WedgeContainerProxy<FaceType>>
 {
     FaceType mFace;
 
@@ -54,7 +55,9 @@ public:
     bool empty() const { return size() == 0; }
 
     /**
-     * @brief Access the i-th wedge proxy.
+     * @brief Access the i-th wedge proxy by its local corner position.
+     * @param[in] i: The 0-based local corner index (uint, 0 <= i < size()).
+     * @return A WedgeProxy for the i-th corner.
      */
     decltype(auto) operator[](this auto&& self, uint i)
     {
@@ -62,7 +65,10 @@ public:
     }
 
     /**
-     * @brief Bounds-checked access to the i-th wedge proxy.
+     * @brief Bounds-checked access to the i-th wedge proxy by its local corner
+     * position.
+     * @param[in] i: The 0-based local corner index (uint, 0 <= i < size()).
+     * @return A WedgeProxy for the i-th corner.
      */
     decltype(auto) at(this auto&& self, uint i)
     {
@@ -71,6 +77,7 @@ public:
     }
 
     decltype(auto) front(this auto&& self) { return self[0]; }
+
     decltype(auto) back(this auto&& self) { return self[self.size() - 1]; }
 
     /* Range Iteration over WedgeProxy */
@@ -90,10 +97,10 @@ public:
     /**
      * @brief View of the face's wedge colors.
      */
-    auto colors(this auto&& self)
-        requires HasWedgeColors<FaceType>
+    auto colors(this auto&& self) requires HasWedgeColors<FaceType>
     {
-        using Comp = ComponentTypeT<CompId::WEDGE_COLORS, typename FaceType::Components>;
+        using Comp =
+            ComponentTypeT<CompId::WEDGE_COLORS, typename FaceType::Components>;
         auto&& d = Comp::wedgeData(self.mFace);
         return vcl::View(d.begin(), d.end());
     }
@@ -101,10 +108,11 @@ public:
     /**
      * @brief View of the face's wedge texture coordinates.
      */
-    auto texCoords(this auto&& self)
-        requires HasWedgeTexCoords<FaceType>
+    auto texCoords(this auto&& self) requires HasWedgeTexCoords<FaceType>
     {
-        using Comp = ComponentTypeT<CompId::WEDGE_TEX_COORDS, typename FaceType::Components>;
+        using Comp = ComponentTypeT<
+            CompId::WEDGE_TEX_COORDS,
+            typename FaceType::Components>;
         auto&& d = Comp::wedgeData(self.mFace);
         return vcl::View(d.begin(), d.end());
     }
@@ -112,30 +120,28 @@ public:
     /**
      * @brief View of the face's wedge normals.
      */
-    auto normals(this auto&& self)
-        requires HasWedgeNormals<FaceType>
+    auto normals(this auto&& self) requires HasWedgeNormals<FaceType>
     {
-        using Comp = ComponentTypeT<CompId::WEDGE_NORMALS, typename FaceType::Components>;
+        using Comp = ComponentTypeT<
+            CompId::WEDGE_NORMALS,
+            typename FaceType::Components>;
         auto&& d = Comp::wedgeData(self.mFace);
         return vcl::View(d.begin(), d.end());
     }
 
     /* Availability checks */
 
-    bool isColorsAvailable() const
-        requires HasWedgeColors<FaceType>
+    bool isColorsAvailable() const requires HasWedgeColors<FaceType>
     {
         return mFace.template isComponentAvailable<CompId::WEDGE_COLORS>();
     }
 
-    bool isTexCoordsAvailable() const
-        requires HasWedgeTexCoords<FaceType>
+    bool isTexCoordsAvailable() const requires HasWedgeTexCoords<FaceType>
     {
         return mFace.template isComponentAvailable<CompId::WEDGE_TEX_COORDS>();
     }
 
-    bool isNormalsAvailable() const
-        requires HasWedgeNormals<FaceType>
+    bool isNormalsAvailable() const requires HasWedgeNormals<FaceType>
     {
         return mFace.template isComponentAvailable<CompId::WEDGE_NORMALS>();
     }

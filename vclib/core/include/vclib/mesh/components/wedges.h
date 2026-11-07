@@ -31,30 +31,49 @@ namespace vcl::comp {
  * @brief The Wedges component represents a collection of per-wedge attributes
  * associated to the vertices/corners of an Element (typically Face).
  *
- * It wraps a container of attributes (e.g. Color, TexCoord, Normal) whose size
- * matches the vertex count of the face (e.g. 3 for triangles, dynamic for polygons).
+ * It is a ContainerComponent that wraps a container of attributes (e.g. Color,
+ * TexCoord, Normal) whose size matches the vertex count of the face (e.g. 3 for
+ * triangles, dynamic for polygons).
  *
  * For dynamic polygons (N < 0), Wedges is automatically marked as
  * TIED_TO_VERTEX_COUNT = true, so resizing the polygon's vertices automatically
  * resizes the wedge buffers.
  *
- * Access to individual wedges is provided via Face::wedge(i) (returning WedgeProxy)
- * or Face::wedges() (returning WedgeContainerProxy).
+ * ### Indexing in Wedges: Local Corner Positions vs. Global Vertex Indices
  *
- * @tparam Comp: The base component type (e.g. Color, TexCoordf, Normal3f) or raw value type.
- * @tparam N: The number of wedges per element (default 3; negative for dynamic/polygonal faces).
- * @tparam OPT: True if the component is optional (defaults to Comp::IS_OPTIONAL if Comp is a Component).
+ * As a ContainerComponent:
+ * - **Local Corner Position (`uint`)**:
+ *   Accessing wedges is always indexed by a 0-based local corner position `uint
+ *   i` (`0 <= i < f.vertexCount()`). Calling `f.wedge(uint i)` returns a
+ *   `WedgeProxy` bound to corner `i`. In addition, `wedge.index()` returns this
+ *   local `uint` position.
+ * - **Global Vertex Index (`IndexType`)**:
+ *   Each wedge corner corresponds to a topological vertex of the face. Calling
+ *   `wedge.vertexIndex()` delegates to `f.vertexIndex(i)` and returns the
+ *   global index (`IndexType`) of the corresponding vertex in the mesh's
+ *   `VertexContainer`.
+ *
+ * Access to individual wedges is provided via Face::wedge(uint i) (returning
+ * WedgeProxy) or Face::wedges() (returning WedgeContainerProxy).
+ *
+ * @tparam Comp: The base component type (e.g. Color, TexCoordf, Normal3f) or
+ * raw value type.
+ * @tparam N: The number of wedges per element (default 3; negative for
+ * dynamic/polygonal faces).
+ * @tparam OPT: True if the component is optional (defaults to Comp::IS_OPTIONAL
+ * if Comp is a Component).
  *
  * @ingroup components
  */
 template<typename Comp, int N = 3, bool OPT = IsCompOptional<Comp>::value>
 requires WedgeableComponent<Comp>
-class Wedges : public ContainerComponent<
-    WedgeTraits<Comp>::COMP_ID,
-    typename WedgeTraits<Comp>::ValueType,
-    N,
-    (N < 0),
-    OPT>
+class Wedges :
+        public ContainerComponent<
+            WedgeTraits<Comp>::COMP_ID,
+            typename WedgeTraits<Comp>::ValueType,
+            N,
+            (N < 0),
+            OPT>
 {
     using Base = ContainerComponent<
         WedgeTraits<Comp>::COMP_ID,
@@ -79,7 +98,8 @@ private:
     friend class WedgeContainerProxy;
 
     /**
-     * @brief Internal static accessor for friend proxies to retrieve the vector of wedges.
+     * @brief Internal static accessor for friend proxies to retrieve the vector
+     * of wedges.
      */
     static decltype(auto) wedgeData(auto&& self)
     {
@@ -102,7 +122,7 @@ void Wedges<Comp, N, OPT>::importFrom(
     bool)
 {
     static constexpr uint COMP_ID = Base::COMPONENT_ID;
-    using ValueType = typename Base::ValueType;
+    using ValueType               = typename Base::ValueType;
 
     if constexpr (HasComponent<COMP_ID, OtherElement>) {
         if (other.template isComponentAvailable<COMP_ID>()) {
@@ -172,15 +192,15 @@ template<typename Point = Point3f, int N = 3, bool OPT = false>
 using WedgeNormals = WedgesNormals<Point, N, OPT>;
 
 // Triangle wedge aliases (N = 3)
-using TriangleWedgesColors             = WedgesColors<3, false>;
-using OptionalTriangleWedgesColors     = WedgesColors<3, true>;
-using TriangleWedgeColors              = TriangleWedgesColors;
-using OptionalTriangleWedgeColors      = OptionalTriangleWedgesColors;
+using TriangleWedgesColors         = WedgesColors<3, false>;
+using OptionalTriangleWedgesColors = WedgesColors<3, true>;
+using TriangleWedgeColors          = TriangleWedgesColors;
+using OptionalTriangleWedgeColors  = OptionalTriangleWedgesColors;
 
 template<typename Scalar = float, bool OPT = false>
-using TriangleWedgeTexCoords           = WedgesTexCoords<Scalar, 3, OPT>;
+using TriangleWedgeTexCoords = WedgesTexCoords<Scalar, 3, OPT>;
 template<typename Scalar = float>
-using OptionalTriangleWedgeTexCoords   = TriangleWedgeTexCoords<Scalar, true>;
+using OptionalTriangleWedgeTexCoords = TriangleWedgeTexCoords<Scalar, true>;
 
 using TriangleWedgesTexCoordsf         = WedgesTexCoords<float, 3, false>;
 using OptionalTriangleWedgesTexCoordsf = WedgesTexCoords<float, 3, true>;
@@ -191,43 +211,43 @@ using OptionalTriangleWedgeTexCoordsf  = OptionalTriangleWedgesTexCoordsf;
 using TriangleWedgeTexCoordsd          = TriangleWedgesTexCoordsd;
 using OptionalTriangleWedgeTexCoordsd  = OptionalTriangleWedgesTexCoordsd;
 
-using TriangleWedgesNormals3f          = WedgesNormals<Point3f, 3, false>;
-using OptionalTriangleWedgesNormals3f  = WedgesNormals<Point3f, 3, true>;
-using TriangleWedgesNormals3d          = WedgesNormals<Point3d, 3, false>;
-using OptionalTriangleWedgesNormals3d  = WedgesNormals<Point3d, 3, true>;
-using TriangleWedgeNormals3f           = TriangleWedgesNormals3f;
-using OptionalTriangleWedgeNormals3f   = OptionalTriangleWedgesNormals3f;
-using TriangleWedgeNormals3d           = TriangleWedgesNormals3d;
-using OptionalTriangleWedgeNormals3d   = OptionalTriangleWedgesNormals3d;
+using TriangleWedgesNormals3f         = WedgesNormals<Point3f, 3, false>;
+using OptionalTriangleWedgesNormals3f = WedgesNormals<Point3f, 3, true>;
+using TriangleWedgesNormals3d         = WedgesNormals<Point3d, 3, false>;
+using OptionalTriangleWedgesNormals3d = WedgesNormals<Point3d, 3, true>;
+using TriangleWedgeNormals3f          = TriangleWedgesNormals3f;
+using OptionalTriangleWedgeNormals3f  = OptionalTriangleWedgesNormals3f;
+using TriangleWedgeNormals3d          = TriangleWedgesNormals3d;
+using OptionalTriangleWedgeNormals3d  = OptionalTriangleWedgesNormals3d;
 
 // Polygon wedge aliases (N = -1)
-using PolygonWedgesColors              = WedgesColors<-1, false>;
-using OptionalPolygonWedgesColors      = WedgesColors<-1, true>;
-using PolygonWedgeColors               = PolygonWedgesColors;
-using OptionalPolygonWedgeColors       = OptionalPolygonWedgesColors;
+using PolygonWedgesColors         = WedgesColors<-1, false>;
+using OptionalPolygonWedgesColors = WedgesColors<-1, true>;
+using PolygonWedgeColors          = PolygonWedgesColors;
+using OptionalPolygonWedgeColors  = OptionalPolygonWedgesColors;
 
 template<typename Scalar = float, bool OPT = false>
-using PolygonWedgeTexCoords            = WedgesTexCoords<Scalar, -1, OPT>;
+using PolygonWedgeTexCoords = WedgesTexCoords<Scalar, -1, OPT>;
 template<typename Scalar = float>
-using OptionalPolygonWedgeTexCoords    = PolygonWedgeTexCoords<Scalar, true>;
+using OptionalPolygonWedgeTexCoords = PolygonWedgeTexCoords<Scalar, true>;
 
-using PolygonWedgesTexCoordsf          = WedgesTexCoords<float, -1, false>;
-using OptionalPolygonWedgesTexCoordsf  = WedgesTexCoords<float, -1, true>;
-using PolygonWedgesTexCoordsd          = WedgesTexCoords<double, -1, false>;
-using OptionalPolygonWedgesTexCoordsd  = WedgesTexCoords<double, -1, true>;
-using PolygonWedgeTexCoordsf           = PolygonWedgesTexCoordsf;
-using OptionalPolygonWedgeTexCoordsf   = OptionalPolygonWedgesTexCoordsf;
-using PolygonWedgeTexCoordsd           = PolygonWedgesTexCoordsd;
-using OptionalPolygonWedgeTexCoordsd   = OptionalPolygonWedgesTexCoordsd;
+using PolygonWedgesTexCoordsf         = WedgesTexCoords<float, -1, false>;
+using OptionalPolygonWedgesTexCoordsf = WedgesTexCoords<float, -1, true>;
+using PolygonWedgesTexCoordsd         = WedgesTexCoords<double, -1, false>;
+using OptionalPolygonWedgesTexCoordsd = WedgesTexCoords<double, -1, true>;
+using PolygonWedgeTexCoordsf          = PolygonWedgesTexCoordsf;
+using OptionalPolygonWedgeTexCoordsf  = OptionalPolygonWedgesTexCoordsf;
+using PolygonWedgeTexCoordsd          = PolygonWedgesTexCoordsd;
+using OptionalPolygonWedgeTexCoordsd  = OptionalPolygonWedgesTexCoordsd;
 
-using PolygonWedgesNormals3f           = WedgesNormals<Point3f, -1, false>;
-using OptionalPolygonWedgesNormals3f   = WedgesNormals<Point3f, -1, true>;
-using PolygonWedgesNormals3d           = WedgesNormals<Point3d, -1, false>;
-using OptionalPolygonWedgesNormals3d   = WedgesNormals<Point3d, -1, true>;
-using PolygonWedgeNormals3f            = PolygonWedgesNormals3f;
-using OptionalPolygonWedgeNormals3f    = OptionalPolygonWedgesNormals3f;
-using PolygonWedgeNormals3d            = PolygonWedgesNormals3d;
-using OptionalPolygonWedgeNormals3d    = OptionalPolygonWedgesNormals3d;
+using PolygonWedgesNormals3f         = WedgesNormals<Point3f, -1, false>;
+using OptionalPolygonWedgesNormals3f = WedgesNormals<Point3f, -1, true>;
+using PolygonWedgesNormals3d         = WedgesNormals<Point3d, -1, false>;
+using OptionalPolygonWedgesNormals3d = WedgesNormals<Point3d, -1, true>;
+using PolygonWedgeNormals3f          = PolygonWedgesNormals3f;
+using OptionalPolygonWedgeNormals3f  = OptionalPolygonWedgesNormals3f;
+using PolygonWedgeNormals3d          = PolygonWedgesNormals3d;
+using OptionalPolygonWedgeNormals3d  = OptionalPolygonWedgesNormals3d;
 
 } // namespace vcl::comp
 

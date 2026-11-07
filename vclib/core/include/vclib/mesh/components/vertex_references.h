@@ -45,8 +45,34 @@ namespace vcl::comp {
  * @code{.cpp}
  * uint n = f.vertexCount();
  * auto v = f.vertex(0);
- * uint vi = f.vertexIndex(0);
+ * auto vi = f.vertexIndex(0); // Returns IndexType
  * @endcode
+ *
+ * ### Dual Index Spaces: Global Vertex Indices vs. Local Corner Positions
+ *
+ * It is essential to distinguish between the two indexing spaces in this
+ * component:
+ *
+ * 1. **Global Vertex Index (`IndexType`)**:
+ *    - The global index or ID of a vertex inside the mesh's `VertexContainer`
+ *      (`m.vertex(vi)`).
+ *    - Typed as `IndexType` (32 or 64 bit).
+ *    - Sentinel value: `NULL_INDEX` (`vcl::NULL_INDEX<IndexType>`).
+ *    - Returned by `vertexIndex(uint i)` and `vertexIndexMod(int i)`.
+ *    - Passed to search functions like `containsVertex(IndexType vi)`,
+ *      `indexOfVertex(IndexType vi)`, and `indexOfEdge(IndexType vi1, IndexType
+ *      vi2)`.
+ *
+ * 2. **Local Corner / Vertex Position (`uint`)**:
+ *    - The 0-based position or slot `i` within this element's vertex list
+ *      (`0 <= i < vertexCount()`, e.g. 0, 1, 2 for a triangle face; 0 to $k-1$
+ * for a polygon).
+ *    - Always typed as `uint` (`uint32_t`).
+ *    - Sentinel value: `vcl::UINT_NULL` (`0xFFFFFFFF`), indicating "not found".
+ *    - Passed as the position `uint i` to `vertex(uint i)`, `vertexIndex(uint
+ * i)`, and `setVertex(uint i, IndexType vi)`.
+ *    - Returned by `indexOfVertex(IndexType vi)` and `indexOfEdge(IndexType
+ * vi1, IndexType vi2)`.
  *
  * @note This component is usually the main component of an Element, and
  * therefore is automatically enabled in the Element's container and cannot be
@@ -119,10 +145,10 @@ public:
     }
 
     /**
-     * @brief Returns the index in the vertex container of the i-th vertex of
+     * @brief Returns the global index in the VertexContainer of the i-th vertex of
      * the element.
-     * @param[in] i: the position of the required vertex in this container.
-     * @return The index of the i-th vertex of the element.
+     * @param[in] i: the 0-based local corner/position of the required vertex in this container (0 <= i < vertexCount()).
+     * @return The global index (IndexType) of the i-th vertex of the element.
      */
     IndexType vertexIndex(this auto&& self, uint i)
     {
@@ -312,12 +338,11 @@ public:
     }
 
     /**
-     * @brief Returns the position in this container of the vertex with the
-     * given index. If not found, returns UINT_NULL.
+     * @brief Returns the 0-based local corner/position in this container of the vertex with the
+     * given global index. If not found, returns UINT_NULL.
      *
-     * @param[in] vi: the index of the vertex to search.
-     * @return the position in this container of the vertex, or UINT_NULL if not
-     * found.
+     * @param[in] vi: the global index (IndexType) of the vertex to search.
+     * @return The 0-based local position (uint) in this container, or UINT_NULL if not found.
      */
     uint indexOfVertex(this auto&& self, IndexType vi)
     {
@@ -345,17 +370,17 @@ public:
     }
 
     /**
-     * @brief Returns the index of the edge composed of the two vertices with
-     * the given indices in this element.
+     * @brief Returns the 0-based local index of the edge composed of the two vertices with
+     * the given global indices in this element.
      *
-     * The order of the two vertices is not important. The index of the edge
-     * corresponds to the index of the first vertex found in the container
+     * The order of the two vertices is not important. The local index of the edge
+     * corresponds to the local position of the first vertex found in the container
      * (i.e. edge i connects vertex i and vertex (i+1)%n). If the edge is not
      * found, returns UINT_NULL.
      *
-     * @param[in] vi1: the index of the first vertex of the edge.
-     * @param[in] vi2: the index of the second vertex of the edge.
-     * @return the index of the edge, or UINT_NULL if not found.
+     * @param[in] vi1: the global index (IndexType) of the first vertex of the edge.
+     * @param[in] vi2: the global index (IndexType) of the second vertex of the edge.
+     * @return The 0-based local edge position (uint), or UINT_NULL if not found.
      */
     uint indexOfEdge(this auto&& self, IndexType vi1, IndexType vi2)
     {

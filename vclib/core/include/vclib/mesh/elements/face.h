@@ -76,7 +76,7 @@ public:
 
     /**
      * @brief Returns a proxy to the i-th wedge (corner) of the face.
-     * @param[in] i: The index of the wedge (0 <= i < vertexCount()).
+     * @param[in] i: The 0-based local corner index (0 <= i < vertexCount()).
      * @return A WedgeProxy for the i-th corner.
      */
     decltype(auto) wedge(this auto&& self, uint i)

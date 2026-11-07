@@ -22,6 +22,26 @@ namespace vcl::comp {
  * for derived components, without polluting the ElementProxy interface with
  * generic methods that would cause collisions in multiple inheritance.
  *
+ * ### ContainerComponent vs ElementContainer Indexing
+ *
+ * Classes deriving from ContainerComponent (such as VertexReferences,
+ * AdjacentFaces, AdjacentEdges, AdjacentVertices, and Wedges) store collections
+ * of items per mesh element. In this context, it is crucial to distinguish:
+ *
+ * - **Local Container Positions (`uint`)**:
+ *   Indices used to access, insert, or erase items in this container (e.g.,
+ *   `pos` in `insert(pos, ...)` or `erase(pos)`) represent the 0-based offset
+ *   or position within this local collection. They are always typed as `uint`
+ *   (`uint32_t`) with `vcl::UINT_NULL` as the invalid/not-found sentinel value.
+ *
+ * - **Global Element Indices (`IndexType`)**:
+ *   When the stored items `T` are references to other mesh elements (as in
+ *   ContainerReferencesComponent), the *values* stored inside this container
+ *   are global indices pointing to elements in the mesh's `ElementContainer`
+ *   (e.g. `VertexContainer`). These global indices are typed as `IndexType` (32
+ *   or 64 bit) with `vcl::NULL_INDEX<IndexType>` as the invalid/null sentinel
+ *   value.
+ *
  * @tparam COMP_ID: The unique identifier of the component.
  * @tparam T: The type of the elements stored in the container.
  * @tparam N: The size of the container. If N >= 0, static size. If N < 0,
@@ -35,7 +55,7 @@ template<
     typename T,
     int  N,
     bool TTVC,
-    bool OPT = false,
+    bool OPT           = false,
     typename Container = vcl::Vector<T, N>>
 class ContainerComponent : public Component<COMP_ID, Container, OPT>
 {
@@ -45,8 +65,8 @@ public:
     static constexpr bool TIED_TO_VERTEX_COUNT = TTVC;
 
 protected:
-    using ValueType                            = T;
-    using ContainerType                        = Container;
+    using ValueType     = T;
+    using ContainerType = Container;
 
     static decltype(auto) container(auto&& self)
     {

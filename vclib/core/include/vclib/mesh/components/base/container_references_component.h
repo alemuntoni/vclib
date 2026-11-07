@@ -31,6 +31,34 @@ namespace vcl::comp {
  * providing a uniform, cache-friendly implementation of updateReferences for
  * mesh compaction.
  *
+ * ### Dual Index Spaces: Global Element Indices vs. Local Container Positions
+ *
+ * Components inheriting from ContainerReferencesComponent manage topological
+ * relationships by operating in two distinct index spaces:
+ *
+ * 1. **Global Element Index (`IndexType`)**:
+ *    - Represents the ID/location of a referenced element within the mesh's
+ *      corresponding `ElementContainer` (`REF_ELEM_ID`, e.g. `VertexContainer`
+ *      or `FaceContainer`).
+ *    - Configurable as 32-bit (`uint32_t`) or 64-bit (`uint64_t`).
+ *    - The sentinel representing a null, missing, or unassigned reference (e.g.
+ *      a boundary edge with no adjacent face) is `NULL_INDEX`
+ *      (`vcl::NULL_INDEX<IndexType>`).
+ *    - Returned by `refIndex(self, uint i)` and accepted by `setRef(self, uint
+ *      i, IndexType idx)` and `indexOfRef(self, IndexType idx)`.
+ *
+ * 2. **Local Container Position (`uint`)**:
+ *    - Represents the 0-based offset/slot `i` within this element's local
+ *      reference container (`0 <= i < refCount(self)`), e.g. corner 0, 1, 2 of
+ *      a triangle face.
+ *    - Always typed as `uint` (`uint32_t`) because local topological
+ *      cardinalities (e.g. face degree, vertex valence) are small and do not
+ *      scale with total mesh size.
+ *    - The sentinel representing an invalid position or an element not found in
+ *      this container is `vcl::UINT_NULL` (`0xFFFFFFFF`).
+ *    - Passed to `refIndex(self, uint i)` and returned by `indexOfRef(self,
+ * IndexType idx)`.
+ *
  * @tparam COMP_ID: The unique identifier of the component.
  * @tparam Index: The unsigned integral type used to store indices (default
  * uint).
@@ -57,8 +85,13 @@ class ContainerReferencesComponent :
             OPT,
             ReferenceVector<Index, N>>
 {
-    using Base =
-        ContainerComponent<COMP_ID, Index, N, TTVC, OPT, ReferenceVector<Index, N>>;
+    using Base = ContainerComponent<
+        COMP_ID,
+        Index,
+        N,
+        TTVC,
+        OPT,
+        ReferenceVector<Index, N>>;
 
 public:
     using IndexType = Index;
@@ -122,7 +155,8 @@ protected:
     // --- Generic Static Reference / Adjacency Helpers ---
 
     /**
-     * @brief Returns the number of referenced elements stored in this component.
+     * @brief Returns the number of referenced elements stored in this
+     * component.
      * @param[in] self: The component / element proxy object.
      * @return The number of referenced elements.
      */
@@ -132,10 +166,12 @@ protected:
     }
 
     /**
-     * @brief Returns the index of the i-th referenced element.
+     * @brief Returns the global element index of the i-th referenced element.
      * @param[in] self: The component / element proxy object.
-     * @param[in] i: The position in this container.
-     * @return The index in the target element container.
+     * @param[in] i: The 0-based local position in this reference container (0
+     * <= i < refCount()).
+     * @return The global index (IndexType) in the target ElementContainer, or
+     * NULL_INDEX if unassigned.
      */
     static IndexType refIndex(const auto& self, uint i)
     {
@@ -158,8 +194,8 @@ protected:
     }
 
     /**
-     * @brief Returns the index of the i-th referenced element using modular arithmetic.
-     * Supports negative indices.
+     * @brief Returns the index of the i-th referenced element using modular
+     * arithmetic. Supports negative indices.
      * @param[in] self: The component / element proxy object.
      * @param[in] i: The position in this container modulo refCount().
      * @return The index in the target element container.
@@ -172,8 +208,8 @@ protected:
     }
 
     /**
-     * @brief Returns a proxy to the i-th referenced element using modular arithmetic.
-     * Supports negative indices.
+     * @brief Returns a proxy to the i-th referenced element using modular
+     * arithmetic. Supports negative indices.
      * @param[in] self: The component / element proxy object.
      * @param[in] i: The position in this container modulo refCount().
      * @return A proxy to the referenced element.
@@ -198,7 +234,8 @@ protected:
     }
 
     /**
-     * @brief Sets the reference at position i to the given element proxy or pointer.
+     * @brief Sets the reference at position i to the given element proxy or
+     * pointer.
      * @param[in] self: The component / element proxy object.
      * @param[in] i: The position in this container.
      * @param[in] e: The referenced element proxy or pointer.
@@ -253,7 +290,8 @@ protected:
     }
 
     /**
-     * @brief Sets all stored references from an input range of indices, proxies, or pointers.
+     * @brief Sets all stored references from an input range of indices,
+     * proxies, or pointers.
      * @param[in] self: The component / element proxy object.
      * @param[in] rng: The input range.
      */
@@ -273,7 +311,8 @@ protected:
     }
 
     /**
-     * @brief Sets all stored references from a parameter pack of indices, proxies, or pointers.
+     * @brief Sets all stored references from a parameter pack of indices,
+     * proxies, or pointers.
      * @param[in] self: The component / element proxy object.
      * @param[in] args: The references to set.
      */
@@ -289,7 +328,8 @@ protected:
     }
 
     /**
-     * @brief Checks if this container contains the given referenced element index.
+     * @brief Checks if this container contains the given referenced element
+     * index.
      * @param[in] self: The component / element proxy object.
      * @param[in] idx: The index to check.
      * @return true if found, false otherwise.
@@ -300,7 +340,8 @@ protected:
     }
 
     /**
-     * @brief Checks if this container contains the given referenced element proxy or pointer.
+     * @brief Checks if this container contains the given referenced element
+     * proxy or pointer.
      * @param[in] self: The component / element proxy object.
      * @param[in] e: The element proxy or pointer to check.
      * @return true if found, false otherwise.
@@ -324,10 +365,13 @@ protected:
     }
 
     /**
-     * @brief Finds the position in this reference container of the given element index.
+     * @brief Finds the local position in this reference container of the given
+     * global element index.
      * @param[in] self: The component / element proxy object.
-     * @param[in] idx: The index to search for.
-     * @return The 0-based position in this container, or UINT_NULL if not found.
+     * @param[in] idx: The global element index (IndexType) to search for in the
+     * target ElementContainer.
+     * @return The 0-based local position (uint) in this container, or UINT_NULL
+     * if not found.
      */
     static uint indexOfRef(const auto& self, IndexType idx)
     {
@@ -335,10 +379,12 @@ protected:
     }
 
     /**
-     * @brief Finds the position in this reference container of the given element proxy or pointer.
+     * @brief Finds the position in this reference container of the given
+     * element proxy or pointer.
      * @param[in] self: The component / element proxy object.
      * @param[in] e: The element proxy or pointer to search for.
-     * @return The 0-based position in this container, or UINT_NULL if not found.
+     * @return The 0-based position in this container, or UINT_NULL if not
+     * found.
      */
     template<typename Elem>
     static uint indexOfRef(const auto& self, const Elem& e)
@@ -387,8 +433,8 @@ protected:
      * @param[in] e: The element proxy or pointer to append.
      */
     template<typename Elem>
-    static void pushRef(auto&& self, const Elem& e)
-        requires (N < 0 && !TTVC && !std::unsigned_integral<std::remove_cvref_t<Elem>>)
+    static void pushRef(auto&& self, const Elem& e) requires (
+        N < 0 && !TTVC && !std::unsigned_integral<std::remove_cvref_t<Elem>>)
     {
         if constexpr (requires { e.index(); }) {
             pushRef(self, e.index());
@@ -413,7 +459,8 @@ protected:
      * @param[in] i: The position to insert at.
      * @param[in] idx: The index to insert.
      */
-    static void insertRef(auto&& self, uint i, IndexType idx) requires (N < 0 && !TTVC)
+    static void insertRef(auto&& self, uint i, IndexType idx)
+        requires (N < 0 && !TTVC)
     {
         Base::container(self).insert(i, idx);
     }
@@ -426,8 +473,8 @@ protected:
      * @param[in] e: The element proxy or pointer to insert.
      */
     template<typename Elem>
-    static void insertRef(auto&& self, uint i, const Elem& e)
-        requires (N < 0 && !TTVC && !std::unsigned_integral<std::remove_cvref_t<Elem>>)
+    static void insertRef(auto&& self, uint i, const Elem& e) requires (
+        N < 0 && !TTVC && !std::unsigned_integral<std::remove_cvref_t<Elem>>)
     {
         if constexpr (requires { e.index(); }) {
             insertRef(self, i, e.index());
@@ -467,21 +514,23 @@ protected:
     }
 
     /**
-     * @brief Returns a lightweight view over the indices stored in this container.
+     * @brief Returns a lightweight view over the indices stored in this
+     * container.
      * @param[in] self: The component / element proxy object.
      * @return A View object exposing begin() and end() over the indices.
      */
     static auto refIndices(auto&& self)
     {
         return vcl::View(
-            Base::container(self).begin(),
-            Base::container(self).end());
+            Base::container(self).begin(), Base::container(self).end());
     }
 
     /**
-     * @brief Returns a lazy range of element proxies for all referenced elements.
+     * @brief Returns a lazy range of element proxies for all referenced
+     * elements.
      * @param[in] self: The component / element proxy object.
-     * @return A transformed range yielding ElementProxy / ConstElementProxy objects.
+     * @return A transformed range yielding ElementProxy / ConstElementProxy
+     * objects.
      */
     static decltype(auto) refElements(auto&& self)
     {
@@ -490,8 +539,6 @@ protected:
                    return m.template element<REF_ELEM_ID>(idx);
                });
     }
-
-
 };
 
 } // namespace vcl::comp
