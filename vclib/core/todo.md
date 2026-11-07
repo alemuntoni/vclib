@@ -3,7 +3,7 @@
 - General:
   - [ ] Enumerations should be declared as enum classes
   - [x] Fix scripts to add a mesh element
-    - [ ] Add documentation on how to add a new mesh element using scripts
+    - [x] Add documentation on how to add a new mesh element using scripts (`scripts/generate_mesh_element/README.md`)
   - [x] Remove usage of "vcl::" inside vcl namespace where it can be avoided
   - [x] 'friend class Type' should be 'friend Type'
   - [x] implement swap functions in this way (but keep swap member function): https://stackoverflow.com/a/5695855/5851101
