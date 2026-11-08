@@ -191,6 +191,29 @@ public:
         return mContainer && mContainer->template isComponentAvailable<COMP_ID>();
     }
 
+    /**
+     * @brief Returns a reference to the value of the component with COMP_ID.
+     *
+     * Only attribute components (such as POSITION, NORMAL, COLOR, QUALITY,
+     * TEX_COORD, TANGENT, PRINCIPAL_CURVATURE, MATERIAL_INDEX) can be accessed
+     * through this function. Structural, topological, and TTVC components
+     * (like VERTEX_REFERENCES, ADJACENT_*, BIT_FLAGS, WEDGES) are excluded
+     * at compile time to protect container invariants.
+     *
+     * Constness is propagated automatically from the ElementProxy / Container.
+     */
+    template<CompId COMP_ID>
+    decltype(auto) componentValue(this auto&& self)
+        requires (comp::HasComponent<COMP_ID, Components> &&
+                  comp::IsAttributeComponent<COMP_ID>)
+    {
+        assert(self.isValid());
+        assert(
+            self.template isComponentAvailable<COMP_ID>() &&
+            "Component is not available in this element!");
+        return self.parentContainer().template vector<COMP_ID>()[self.index()];
+    }
+
     VCL_ALL_ELEMENT_COMPONENT_METHODS
 
     /**

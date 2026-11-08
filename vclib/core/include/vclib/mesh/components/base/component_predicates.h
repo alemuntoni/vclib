@@ -263,6 +263,26 @@ constexpr auto defaultValue()
     }
 }
 
+/**
+ * @brief Concept that checks whether a CompId corresponds to a standard
+ * data attribute component (non-structural, non-reference, non-TTVC).
+ *
+ * These components can be safely accessed as raw values on ElementProxy
+ * via componentValue<COMP_ID>() and on ElementContainerProxy via
+ * component<COMP_ID>() without risking container invariants or
+ * desynchronizing Tied-To-Vertex-Count (TTVC) dynamic arrays.
+ */
+template<CompId COMP_ID>
+concept IsAttributeComponent =
+    COMP_ID == CompId::POSITION ||
+    COMP_ID == CompId::NORMAL ||
+    COMP_ID == CompId::COLOR ||
+    COMP_ID == CompId::QUALITY ||
+    COMP_ID == CompId::TEX_COORD ||
+    COMP_ID == CompId::TANGENT ||
+    COMP_ID == CompId::PRINCIPAL_CURVATURE ||
+    COMP_ID == CompId::MATERIAL_INDEX;
+
 } // namespace vcl::comp
 
 #endif // VCL_MESH_COMPONENTS_BASE_COMPONENT_PREDICATES_H

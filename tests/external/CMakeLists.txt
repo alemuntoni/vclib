@@ -19,5 +19,5 @@ if(TARGET vclib-3rd-embree)
 endif()
 
 if(TARGET vclib-3rd-boost AND TARGET vclib-3rd-cgal AND TARGET vclib-3rd-libigl)
-    #add_subdirectory(020-igl-booleans)
+    add_subdirectory(020-igl-booleans)
 endif()

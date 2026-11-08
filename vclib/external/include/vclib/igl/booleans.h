@@ -267,9 +267,9 @@ void transferFaceComponents(
                                  uint        m0Faces,
                                  const auto& placeHolder) {
         // avoid compile errors for meshes without the component COMP_ID
-        if constexpr (MeshType::template hasPerElementComponent<F, COMP_ID>()) {
+        if constexpr (MeshType::template hasElementComponent<F, COMP_ID>()) {
             if (index < (int) m0Faces) {
-                if (vcl::isPerElementComponentAvailable<F, COMP_ID>(m0))
+                if (m0.template isElementComponentAvailable<F, COMP_ID>())
                     f.template componentValue<COMP_ID>() =
                         m0.face(index).template componentValue<COMP_ID>();
                 else
@@ -277,7 +277,7 @@ void transferFaceComponents(
             }
             else {
                 int m1Idx = index - m0Faces;
-                if (vcl::isPerElementComponentAvailable<F, COMP_ID>(m1))
+                if (m1.template isElementComponentAvailable<F, COMP_ID>())
                     f.template componentValue<COMP_ID>() =
                         m1.face(m1Idx).template componentValue<COMP_ID>();
                 else
@@ -287,22 +287,22 @@ void transferFaceComponents(
     };
 
     bool transferNormals =
-        vcl::isPerFaceNormalAvailable(m0) || vcl::isPerFaceNormalAvailable(m1);
+        m0.isFaceNormalAvailable() || m1.isFaceNormalAvailable();
     bool transferColors =
-        vcl::isPerFaceColorAvailable(m0) || vcl::isPerFaceColorAvailable(m1);
-    bool transferQuality = vcl::isPerFaceQualityAvailable(m0) ||
-                           vcl::isPerFaceQualityAvailable(m1);
+        m0.isFaceColorAvailable() || m1.isFaceColorAvailable();
+    bool transferQuality = m0.isFaceQualityAvailable() ||
+                           m1.isFaceQualityAvailable();
 
     if (transferNormals || transferColors || transferQuality) {
         if (transferNormals)
-            enableIfPerFaceNormalOptional(out);
+            enableIfFaceNormalsOptional(out);
         if (transferColors)
-            enableIfPerFaceColorOptional(out);
+            enableIfFaceColorsOptional(out);
         if (transferQuality)
-            enableIfPerFaceQualityOptional(out);
+            enableIfFaceQualitiesOptional(out);
 
         uint m0Faces = m0.faceContainerSize();
-        for (uint i = 0; auto& f : out.faces()) {
+        for (uint i = 0; auto f : out.faces()) {
             if (transferNormals)
                 transferComponent.template operator()<CompId::NORMAL>(
                     f, indices[i], m0Faces, normalPlaceHolder);
@@ -331,26 +331,26 @@ void transferVertexComponents(
     auto                   qualityPlaceHolder)
 {
     constexpr ElemId V = vcl::ElemId::VERTEX;
-    using ScalarType = typename MeshType::VertexType::PositionType::ScalarType;
+    using ScalarType = ScalarType<MeshType>;
 
     // Determine which vertex components need to be transferred to the output
     // mesh based on their availability in the input meshes.
-    bool transferNormals = vcl::isPerVertexNormalAvailable(m0) ||
-                           vcl::isPerVertexNormalAvailable(m1);
-    bool transferColors = vcl::isPerVertexColorAvailable(m0) ||
-                          vcl::isPerVertexColorAvailable(m1);
-    bool transferQuality = vcl::isPerVertexQualityAvailable(m0) ||
-                           vcl::isPerVertexQualityAvailable(m1);
+    bool transferNormals = m0.isVertexNormalAvailable() ||
+                           m1.isVertexNormalAvailable();
+    bool transferColors = m0.isVertexColorAvailable() ||
+                          m1.isVertexColorAvailable();
+    bool transferQuality = m0.isVertexQualityAvailable() ||
+                           m1.isVertexQualityAvailable();
 
     if (!transferNormals && !transferColors && !transferQuality)
         return;
 
     if (transferNormals)
-        enableIfPerVertexNormalOptional(out);
+        enableIfVertexNormalsOptional(out);
     if (transferColors)
-        enableIfPerVertexColorOptional(out);
+        enableIfVertexColorsOptional(out);
     if (transferQuality)
-        enableIfPerVertexQualityOptional(out);
+        enableIfVertexQualitiesOptional(out);
 
     uint m0Triangles = F0.rows();
 
@@ -373,19 +373,19 @@ void transferVertexComponents(
                                    const Eigen::Vector3i&  birthTri,
                                    const auto&             bcoords,
                                    const auto&             placeHolder) {
-        if constexpr (MeshType::template hasPerElementComponent<V, COMP_ID>()) {
+        if constexpr (MeshType::template hasElementComponent<V, COMP_ID>()) {
             auto c0 = placeHolder;
             auto c1 = placeHolder;
             auto c2 = placeHolder;
 
-            if (fromM0 && vcl::isPerElementComponentAvailable<V, COMP_ID>(m0)) {
+            if (fromM0 && m0.template isElementComponentAvailable<V, COMP_ID>()) {
                 c0 = m0.vertex(birthTri[0]).template componentValue<COMP_ID>();
                 c1 = m0.vertex(birthTri[1]).template componentValue<COMP_ID>();
                 c2 = m0.vertex(birthTri[2]).template componentValue<COMP_ID>();
             }
             else if (
                 !fromM0 &&
-                vcl::isPerElementComponentAvailable<V, COMP_ID>(m1)) {
+                m1.template isElementComponentAvailable<V, COMP_ID>()) {
                 c0 = m1.vertex(birthTri[0]).template componentValue<COMP_ID>();
                 c1 = m1.vertex(birthTri[1]).template componentValue<COMP_ID>();
                 c2 = m1.vertex(birthTri[2]).template componentValue<COMP_ID>();
@@ -469,7 +469,7 @@ void transferVertexComponents(
                                  const std::vector<AccumType>& accum,
                                  int                           incCount,
                                  int                           vIdx) {
-        if constexpr (MeshType::template hasPerElementComponent<V, COMP_ID>()) {
+        if constexpr (MeshType::template hasElementComponent<V, COMP_ID>()) {
             if constexpr (COMP_ID == CompId::COLOR) {
                 auto clampV = [](float v) {
                     return static_cast<uint8_t>(std::clamp(v, 0.0f, 255.0f));
@@ -543,7 +543,7 @@ MeshType meshBoolean(const MeshType& m0, const MeshType& m1, MeshBoolean op)
 {
     // TODO: allow to use non-compact meshes
 
-    using ScalarType = MeshType::VertexType::PositionType::ScalarType;
+    using ScalarType = ScalarType<MeshType>;
 
     using EigenMatrixX3m = Eigen::Matrix<ScalarType, Eigen::Dynamic, 3>;
 
@@ -621,8 +621,8 @@ MeshType meshBoolean(const MeshType& m0, const MeshType& m1, MeshBoolean op)
 
     auto out = vcl::meshFromMatrices<MeshType>(VR, FR);
 
-    using FNormalType = typename MeshType::FaceType::NormalType;
-    using VNormalType = typename MeshType::VertexType::NormalType;
+    using FNormalType = FaceType<MeshType>::NormalType;
+    using VNormalType = VertexType<MeshType>::NormalType;
 
     detail::transferFaceComponents(
         m0, m1, indices, out, FNormalType(), Color::Gray, 0.0);

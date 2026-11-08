@@ -196,6 +196,14 @@ public:
     }
 
     /**
+     * @brief Returns a ComponentView over the material indices of the elements.
+     */
+    auto materialIndices() const requires comp::HasMaterialIndex<Container>
+    {
+        return component<CompId::MATERIAL_INDEX>();
+    }
+
+    /**
      * @brief Returns a ComponentView over the tangents of the elements.
      */
     auto tangents() const requires comp::HasTangent<Container>
@@ -203,14 +211,17 @@ public:
         return component<CompId::TANGENT>();
     }
 
-private:
     /**
      * @brief Generic access to a ComponentView for a specific COMP_ID.
-     * Prevents access to CompId::BIT_FLAGS to preserve container invariants.
+     *
+     * Available for attribute components (IsAttributeComponent) or static
+     * vertex references.
      */
     template<CompId COMP_ID>
     requires comp::HasComponent<COMP_ID, Container> &&
-             (COMP_ID != CompId::BIT_FLAGS)
+             (comp::IsAttributeComponent<COMP_ID> ||
+              (COMP_ID == CompId::VERTEX_REFERENCES &&
+               comp::HasStaticVertexReferences<Container>))
     auto component() const
     {
         assert(mContainer != nullptr);

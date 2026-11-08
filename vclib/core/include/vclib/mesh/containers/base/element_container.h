@@ -1421,6 +1421,10 @@ private:
     template<typename>
     friend class ElementContainerProxy;
 
+    // to allow ElementProxy to access component vectors for componentValue
+    template<ElemId, typename, typename>
+    friend class vcl::ElementProxy;
+
     // to access a specific component vector
     template<CompId, typename>
     friend class ComponentIterator;

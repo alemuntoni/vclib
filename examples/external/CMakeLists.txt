@@ -12,6 +12,7 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 set(EXTERNAL_EXAMPLE_DIRS 
     "010-embree"
     "011-best-heightfield-orientation"
+    "020-igl-booleans"
     )
 
 # Automatically find and add all external examples.
