@@ -10,13 +10,16 @@
 
 #include "type_mapping.h"
 
-#include <vclib/mesh/requirements.h>
+#include <vclib/mesh.h>
 
 #include <vcg/complex/complex.h>
 
 namespace vcl::vc {
 
 namespace detail {
+
+template<typename T>
+concept ElementOrMeshConcept = vcl::ElementConcept<T> || vcl::MeshConcept<T>;
 
 // all the custom components of these types will be imported
 using SupportedCustomComponentTypes = TypeWrapper<
@@ -53,7 +56,7 @@ void addCustomComponentsIfTypeMatches(MeshType& mesh, auto& p)
 {
     if (p._type == std::type_index(typeid(T))) {
         if constexpr (ELEM_ID < vcl::ElemId::ELEMENT_COUNT) {
-            mesh.template addPerElementCustomComponent<
+            mesh.template addElementCustomComponent<
                 ELEM_ID,
                 typename TypeMapping<T>::type>(p._name);
         }
@@ -151,12 +154,12 @@ void importMeshFromVCGMesh(
     const VCGMeshType& vcgMesh,
     bool               enableOptionalComponents = true)
 {
-    using PositionType = MeshType::VertexType::PositionType;
+    using PositionType = PositionType<MeshType>;
 
     mesh.reserveVertices(vcgMesh.VN());
 
     // add custom components that can be imported
-    if (HasPerVertexCustomComponents<MeshType>) {
+    if (HasVertexCustomComponents<MeshType>) {
         // for each supported type, apply the lampda function that adds the
         // custom components of the type T that are in the vcgMesh
         vcl::ForEachType<detail::SupportedCustomComponentTypes>::apply(
@@ -174,56 +177,56 @@ void importMeshFromVCGMesh(
                 vcgMesh.vert[i].P()[1],
                 vcgMesh.vert[i].P()[2]));
 
-            auto& vertex = mesh.vertex(vi);
+            auto vertex = mesh.vertex(vi);
 
             // flags
             vertex.importFlagsFromVCGFormat(vcgMesh.vert[i].Flags());
 
             // normal
-            if constexpr (HasPerVertexNormal<MeshType>) {
-                using NormalType = MeshType::VertexType::NormalType;
+            if constexpr (HasVertexNormals<MeshType>) {
+                using NormalType = VertexType<MeshType>::NormalType;
                 if (vcg::tri::HasPerVertexNormal(vcgMesh)) {
                     if (enableOptionalComponents) {
-                        vcl::enableIfPerVertexNormalOptional(mesh);
+                        vcl::enableIfVertexNormalsOptional(mesh);
                     }
-                    if (isPerVertexNormalAvailable(mesh)) {
+                    if (mesh.isVertexNormalAvailable()) {
                         detail::importNormal(vertex, vcgMesh.vert[i]);
                     }
                 }
             }
 
             // color
-            if constexpr (HasPerVertexColor<MeshType>) {
+            if constexpr (HasVertexColors<MeshType>) {
                 if (vcg::tri::HasPerVertexColor(vcgMesh)) {
                     if (enableOptionalComponents) {
-                        vcl::enableIfPerVertexColorOptional(mesh);
+                        vcl::enableIfVertexColorsOptional(mesh);
                     }
-                    if (isPerVertexColorAvailable(mesh)) {
+                    if (mesh.isVertexColorAvailable()) {
                         detail::importColor(vertex, vcgMesh.vert[i]);
                     }
                 }
             }
 
             // quality
-            if constexpr (HasPerVertexQuality<MeshType>) {
+            if constexpr (HasVertexQualities<MeshType>) {
                 if (vcg::tri::HasPerVertexQuality(vcgMesh)) {
                     if (enableOptionalComponents) {
-                        vcl::enableIfPerVertexQualityOptional(mesh);
+                        vcl::enableIfVertexQualitiesOptional(mesh);
                     }
-                    if (isPerVertexQualityAvailable(mesh)) {
+                    if (mesh.isVertexQualityAvailable()) {
                         vertex.quality() = vcgMesh.vert[i].Q();
                     }
                 }
             }
 
             // texcoord
-            if constexpr (HasPerVertexTexCoord<MeshType>) {
-                using TexCoordType = MeshType::VertexType::TexCoordType;
+            if constexpr (HasVertexTexCoords<MeshType>) {
+                using TexCoordType = VertexType<MeshType>::TexCoordType;
                 if (vcg::tri::HasPerVertexTexCoord(vcgMesh)) {
                     if (enableOptionalComponents) {
-                        vcl::enableIfPerVertexTexCoordOptional(mesh);
+                        vcl::enableIfVertexTexCoordsOptional(mesh);
                     }
-                    if (isPerVertexTexCoordAvailable(mesh)) {
+                    if (mesh.isVertexTexCoordAvailable()) {
                         vertex.texCoord() = TexCoordType(
                             vcgMesh.vert[i].T().U(), vcgMesh.vert[i].T().V());
                     }
@@ -231,7 +234,7 @@ void importMeshFromVCGMesh(
             }
 
             // custom components
-            if constexpr (HasPerVertexCustomComponents<MeshType>) {
+            if constexpr (HasVertexCustomComponents<MeshType>) {
                 // for each supported type, apply the lampda function that adds
                 // the custom components of the type T that are in the vcgMesh
                 vcl::ForEachType<detail::SupportedCustomComponentTypes>::apply(
@@ -246,10 +249,10 @@ void importMeshFromVCGMesh(
 
     // faces
     if constexpr (HasFaces<MeshType>) {
-        using FaceType = MeshType::FaceType;
+        using FaceType = FaceType<MeshType>;
 
         // add custom components that can be imported
-        if (HasPerFaceCustomComponents<MeshType>) {
+        if (HasFaceCustomComponents<MeshType>) {
             // for each supported type, apply the lampda function that adds the
             // custom components of the type T that are in the vcgMesh
             vcl::ForEachType<detail::SupportedCustomComponentTypes>::apply(
@@ -264,7 +267,7 @@ void importMeshFromVCGMesh(
             if (!vcgMesh.face[i].IsD()) {
                 uint fi = mesh.addFace();
 
-                auto& face = mesh.face(fi);
+                auto face = mesh.face(fi);
 
                 if constexpr (FaceType::VERTEX_COUNT < 0) {
                     face.resizeVertices(3);
@@ -278,71 +281,71 @@ void importMeshFromVCGMesh(
                 face.importFlagsFromVCGFormat(vcgMesh.face[i].Flags());
 
                 // normal
-                if constexpr (HasPerFaceNormal<MeshType>) {
-                    using NormalType = MeshType::FaceType::NormalType;
+                if constexpr (HasFaceNormals<MeshType>) {
+                    using NormalType = FaceType::NormalType;
                     if (vcg::tri::HasPerFaceNormal(vcgMesh)) {
                         if (enableOptionalComponents) {
-                            vcl::enableIfPerFaceNormalOptional(mesh);
+                            vcl::enableIfFaceNormalsOptional(mesh);
                         }
-                        if (isPerFaceNormalAvailable(mesh)) {
+                        if (mesh.isFaceNormalAvailable()) {
                             detail::importNormal(face, vcgMesh.face[i]);
                         }
                     }
                 }
 
                 // color
-                if constexpr (HasPerFaceColor<MeshType>) {
+                if constexpr (HasFaceColors<MeshType>) {
                     if (vcg::tri::HasPerFaceColor(vcgMesh)) {
                         if (enableOptionalComponents) {
-                            vcl::enableIfPerFaceColorOptional(mesh);
+                            vcl::enableIfFaceColorsOptional(mesh);
                         }
-                        if (isPerFaceColorAvailable(mesh)) {
+                        if (mesh.isFaceColorAvailable()) {
                             detail::importColor(face, vcgMesh.face[i]);
                         }
                     }
                 }
 
                 // quality
-                if constexpr (HasPerFaceQuality<MeshType>) {
+                if constexpr (HasFaceQualities<MeshType>) {
                     if (vcg::tri::HasPerFaceQuality(vcgMesh)) {
                         if (enableOptionalComponents) {
-                            vcl::enableIfPerFaceQualityOptional(mesh);
+                            vcl::enableIfFaceQualitiesOptional(mesh);
                         }
-                        if (isPerFaceQualityAvailable(mesh)) {
+                        if (mesh.isFaceQualityAvailable()) {
                             face.quality() = vcgMesh.face[i].Q();
                         }
                     }
                 }
 
                 // wedge texcoords
-                if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
-                    using WTType = MeshType::FaceType::WedgeTexCoordType;
+                if constexpr (HasFaceWedgeTexCoords<MeshType>) {
                     if (vcg::tri::HasPerWedgeTexCoord(vcgMesh)) {
                         if (enableOptionalComponents) {
-                            vcl::enableIfPerFaceWedgeTexCoordsOptional(mesh);
+                            vcl::enableIfFaceWedgeTexCoordsOptional(mesh);
                         }
-                        if (isPerFaceWedgeTexCoordsAvailable(mesh)) {
-                            if constexpr (HasPerFaceMaterialIndex<MeshType>) {
+                        if (mesh.isFaceWedgeTexCoordsAvailable()) {
+                            if constexpr (HasFaceMaterialIndices<MeshType>) {
                                 if (enableOptionalComponents) {
-                                    vcl::enableIfPerFaceMaterialIndexOptional(
+                                    vcl::enableIfFaceMaterialIndicesOptional(
                                         mesh);
                                 }
-                                if (isPerFaceMaterialIndexAvailable(mesh)) {
+                                if (mesh.isFaceMaterialIndexAvailable()) {
                                     face.materialIndex() =
                                         vcgMesh.face[i].WT(0).N();
                                 }
                             }
                             for (uint j = 0; j < 3; ++j) {
-                                face.wedgeTexCoord(j) = WTType(
-                                    vcgMesh.face[i].WT(j).U(),
-                                    vcgMesh.face[i].WT(j).V());
+                                face.wedge(j).texCoord().u() =
+                                    vcgMesh.face[i].WT(j).U();
+                                face.wedge(j).texCoord().v() =
+                                    vcgMesh.face[i].WT(j).V();
                             }
                         }
                     }
                 }
 
                 // custom components
-                if constexpr (HasPerVertexCustomComponents<MeshType>) {
+                if constexpr (HasVertexCustomComponents<MeshType>) {
                     // for each supported type, apply the lampda function that
                     // adds the custom components of the type T that are in the
                     // vcgMesh

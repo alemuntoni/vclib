@@ -26,8 +26,8 @@ TEMPLATE_TEST_CASE(
     "",
     vcl::TriMesh,
     vcl::TriMeshf,
-    vcl::TriMeshIndexed,
-    vcl::TriMeshIndexedf)
+    vcl::TriMesh64,
+    vcl::TriMesh64f)
 {
     using TriMesh = TestType;
 
@@ -51,7 +51,7 @@ TEMPLATE_TEST_CASE(
             const auto& vcgf = vcgMesh.face[fi];
             for (unsigned int vi = 0; vi < 3; ++vi) {
                 REQUIRE(
-                    tm.index(f.vertex(vi)) ==
+                    f.vertexIndex(vi) ==
                     vcg::tri::Index(vcgMesh, vcgf.V(vi)));
             }
         }
@@ -82,9 +82,9 @@ TEMPLATE_TEST_CASE(
 
         TriMesh tm = vcl::vc::meshFromVCGMesh<TriMesh>(vcgMesh);
 
-        REQUIRE(tm.hasPerVertexCustomComponent("perVertex"));
+        REQUIRE(tm.hasVertexCustomComponent("perVertex"));
         REQUIRE(
-            tm.template isPerVertexCustomComponentOfType<float>("perVertex"));
+            tm.template isVertexCustomComponentOfType<float>("perVertex"));
 
         for (const auto& v : tm.vertices()) {
             REQUIRE(
@@ -105,8 +105,8 @@ TEMPLATE_TEST_CASE(
 
         TriMesh tm = vcl::vc::meshFromVCGMesh<TriMesh>(vcgMesh);
 
-        REQUIRE(tm.hasPerVertexCustomComponent("perVertex"));
-        REQUIRE(tm.template isPerVertexCustomComponentOfType<vcl::Point3f>(
+        REQUIRE(tm.hasVertexCustomComponent("perVertex"));
+        REQUIRE(tm.template isVertexCustomComponentOfType<vcl::Point3f>(
             "perVertex"));
 
         for (const auto& v : tm.vertices()) {
@@ -141,8 +141,8 @@ TEMPLATE_TEST_CASE(
 
         TriMesh tm = vcl::vc::meshFromVCGMesh<TriMesh>(vcgMesh);
 
-        REQUIRE(tm.hasPerFaceCustomComponent("perFace"));
-        REQUIRE(tm.template isPerFaceCustomComponentOfType<double>("perFace"));
+        REQUIRE(tm.hasFaceCustomComponent("perFace"));
+        REQUIRE(tm.template isFaceCustomComponentOfType<double>("perFace"));
 
         for (const auto& f : tm.faces()) {
             REQUIRE(
@@ -164,8 +164,8 @@ TEMPLATE_TEST_CASE(
 
         TriMesh tm = vcl::vc::meshFromVCGMesh<TriMesh>(vcgMesh);
 
-        REQUIRE(tm.hasPerFaceCustomComponent("perFace"));
-        REQUIRE(tm.template isPerFaceCustomComponentOfType<vcl::Point3f>(
+        REQUIRE(tm.hasFaceCustomComponent("perFace"));
+        REQUIRE(tm.template isFaceCustomComponentOfType<vcl::Point3f>(
             "perFace"));
 
         for (const auto& f : tm.faces()) {
@@ -198,8 +198,8 @@ TEMPLATE_TEST_CASE(
     "",
     vcl::PolyMesh,
     vcl::PolyMeshf,
-    vcl::PolyMeshIndexed,
-    vcl::PolyMeshIndexedf)
+    vcl::PolyMesh64,
+    vcl::PolyMesh64f)
 {
     using PolyMesh = TestType;
 
@@ -223,7 +223,7 @@ TEMPLATE_TEST_CASE(
         REQUIRE(f.vertexCount() == 3);
         for (unsigned int vi = 0; vi < 3; ++vi) {
             REQUIRE(
-                pm.index(f.vertex(vi)) == vcg::tri::Index(vcgMesh, vcgf.V(vi)));
+                f.vertexIndex(vi) == vcg::tri::Index(vcgMesh, vcgf.V(vi)));
         }
     }
 }
@@ -233,8 +233,8 @@ TEMPLATE_TEST_CASE(
     "",
     vcl::TriMesh,
     vcl::TriMeshf,
-    vcl::TriMeshIndexed,
-    vcl::TriMeshIndexedf)
+    vcl::TriMesh64,
+    vcl::TriMesh64f)
 {
     using TriMesh = TestType;
 
@@ -253,7 +253,7 @@ TEMPLATE_TEST_CASE(
             const auto& vcgf = vcgMesh.face[fi];
             for (unsigned int vi = 0; vi < 3; ++vi) {
                 REQUIRE(
-                    tm.index(f.vertex(vi)) ==
+                    f.vertexIndex(vi) ==
                     vcg::tri::Index(vcgMesh, vcgf.V(vi)));
             }
         }

@@ -30,8 +30,8 @@ void exportMeshToVCGMesh(const MeshType& mesh, VCGMeshType& vcgMesh)
         vcgMesh.vert[vi].Flags() = v.exportFlagsToVCGFormat();
 
         // normal
-        if constexpr (HasPerVertexNormal<MeshType>) {
-            if (isPerVertexNormalAvailable(mesh)) {
+        if constexpr (HasVertexNormals<MeshType>) {
+            if (mesh.isVertexNormalAvailable()) {
                 if (vcg::tri::HasPerVertexNormal(vcgMesh)) {
                     vcgMesh.vert[vi].N().X() = v.normal().x();
                     vcgMesh.vert[vi].N().Y() = v.normal().y();
@@ -41,8 +41,8 @@ void exportMeshToVCGMesh(const MeshType& mesh, VCGMeshType& vcgMesh)
         }
 
         // color
-        if constexpr (HasPerVertexColor<MeshType>) {
-            if (isPerVertexColorAvailable(mesh)) {
+        if constexpr (HasVertexColors<MeshType>) {
+            if (mesh.isVertexColorAvailable()) {
                 if (vcg::tri::HasPerVertexColor(vcgMesh)) {
                     vcgMesh.vert[vi].C()[0] = v.color().red();
                     vcgMesh.vert[vi].C()[1] = v.color().green();
@@ -53,8 +53,8 @@ void exportMeshToVCGMesh(const MeshType& mesh, VCGMeshType& vcgMesh)
         }
 
         // quality
-        if constexpr (HasPerVertexQuality<MeshType>) {
-            if (isPerVertexQualityAvailable(mesh)) {
+        if constexpr (HasVertexQualities<MeshType>) {
+            if (mesh.isVertexQualityAvailable()) {
                 if (vcg::tri::HasPerVertexQuality(vcgMesh)) {
                     vcgMesh.vert[vi].Q() = v.quality();
                 }
@@ -62,8 +62,8 @@ void exportMeshToVCGMesh(const MeshType& mesh, VCGMeshType& vcgMesh)
         }
 
         // texcoord
-        if constexpr (HasPerVertexTexCoord<MeshType>) {
-            if (isPerVertexTexCoordAvailable(mesh)) {
+        if constexpr (HasVertexTexCoords<MeshType>) {
+            if (mesh.isVertexTexCoordAvailable()) {
                 if (vcg::tri::HasPerVertexTexCoord(vcgMesh)) {
                     vcgMesh.vert[vi].T().U() = v.texCoord().u();
                     vcgMesh.vert[vi].T().V() = v.texCoord().v();
@@ -81,16 +81,16 @@ void exportMeshToVCGMesh(const MeshType& mesh, VCGMeshType& vcgMesh)
 
         uint fi = 0;
         for (const auto& f : mesh.faces()) {
-            vcgMesh.face[fi].V(0) = &vcgMesh.vert[mesh.index(f.vertex(0))];
-            vcgMesh.face[fi].V(1) = &vcgMesh.vert[mesh.index(f.vertex(1))];
-            vcgMesh.face[fi].V(2) = &vcgMesh.vert[mesh.index(f.vertex(2))];
+            vcgMesh.face[fi].V(0) = &vcgMesh.vert[f.vertexIndex(0)];
+            vcgMesh.face[fi].V(1) = &vcgMesh.vert[f.vertexIndex(1)];
+            vcgMesh.face[fi].V(2) = &vcgMesh.vert[f.vertexIndex(2)];
 
             // flags
             vcgMesh.face[fi].Flags() = f.exportFlagsToVCGFormat();
 
             // normal
-            if constexpr (HasPerFaceNormal<MeshType>) {
-                if (isPerFaceNormalAvailable(mesh)) {
+            if constexpr (HasFaceNormals<MeshType>) {
+                if (mesh.isFaceNormalAvailable()) {
                     if (vcg::tri::HasPerFaceNormal(vcgMesh)) {
                         vcgMesh.face[fi].N().X() = f.normal().x();
                         vcgMesh.face[fi].N().Y() = f.normal().y();
@@ -100,8 +100,8 @@ void exportMeshToVCGMesh(const MeshType& mesh, VCGMeshType& vcgMesh)
             }
 
             // color
-            if constexpr (HasPerFaceColor<MeshType>) {
-                if (isPerFaceColorAvailable(mesh)) {
+            if constexpr (HasFaceColors<MeshType>) {
+                if (mesh.isFaceColorAvailable()) {
                     if (vcg::tri::HasPerFaceColor(vcgMesh)) {
                         vcgMesh.face[fi].C()[0] = f.color().red();
                         vcgMesh.face[fi].C()[1] = f.color().green();
@@ -112,8 +112,8 @@ void exportMeshToVCGMesh(const MeshType& mesh, VCGMeshType& vcgMesh)
             }
 
             // quality
-            if constexpr (HasPerFaceQuality<MeshType>) {
-                if (isPerFaceQualityAvailable(mesh)) {
+            if constexpr (HasFaceQualities<MeshType>) {
+                if (mesh.isFaceQualityAvailable()) {
                     if (vcg::tri::HasPerFaceQuality(vcgMesh)) {
                         vcgMesh.face[fi].Q() = f.quality();
                     }
@@ -121,24 +121,24 @@ void exportMeshToVCGMesh(const MeshType& mesh, VCGMeshType& vcgMesh)
             }
 
             // wedge texcoords
-            if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
-                if (isPerFaceWedgeTexCoordsAvailable(mesh)) {
+            if constexpr (HasFaceWedgeTexCoords<MeshType>) {
+                if (mesh.isFaceWedgeTexCoordsAvailable()) {
                     if (vcg::tri::HasPerWedgeTexCoord(vcgMesh)) {
                         uint ti = 0;
-                        if constexpr (HasPerFaceMaterialIndex<MeshType>) {
-                            if (isPerFaceMaterialIndexAvailable(mesh)) {
+                        if constexpr (HasFaceMaterialIndices<MeshType>) {
+                            if (mesh.isFaceMaterialIndexAvailable()) {
                                 ti = f.materialIndex();
                             }
                         }
 
-                        vcgMesh.face[fi].WT(0).U() = f.wedgeTexCoord(0).u();
-                        vcgMesh.face[fi].WT(0).V() = f.wedgeTexCoord(0).v();
+                        vcgMesh.face[fi].WT(0).U() = f.wedge(0).texCoord().u();
+                        vcgMesh.face[fi].WT(0).V() = f.wedge(0).texCoord().v();
                         vcgMesh.face[fi].WT(0).N() = ti;
-                        vcgMesh.face[fi].WT(1).U() = f.wedgeTexCoord(1).u();
-                        vcgMesh.face[fi].WT(1).V() = f.wedgeTexCoord(1).v();
+                        vcgMesh.face[fi].WT(1).U() = f.wedge(1).texCoord().u();
+                        vcgMesh.face[fi].WT(1).V() = f.wedge(1).texCoord().v();
                         vcgMesh.face[fi].WT(1).N() = ti;
-                        vcgMesh.face[fi].WT(2).U() = f.wedgeTexCoord(2).u();
-                        vcgMesh.face[fi].WT(2).V() = f.wedgeTexCoord(2).v();
+                        vcgMesh.face[fi].WT(2).U() = f.wedge(2).texCoord().u();
+                        vcgMesh.face[fi].WT(2).V() = f.wedge(2).texCoord().v();
                         vcgMesh.face[fi].WT(2).N() = ti;
                     }
                 }
