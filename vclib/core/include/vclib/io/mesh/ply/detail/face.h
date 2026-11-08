@@ -24,11 +24,11 @@ void writePlyFaceIndices(
     std::ostream&            file,
     PlyProperty              p,
     const MeshType&          m,
-    const std::vector<uint>& vIndices,
+    const std::vector<IndexType<MeshType>>& vIndices,
     const FaceType&          f,
     FileType                 format)
 {
-    uint fsize = f.vertexCount();
+    IndexType<MeshType> fsize = f.vertexCount();
     io::writeProperty(file, fsize, p.listSizeType, format);
     for (auto vi : f.vertexIndices()) {
         io::writeProperty(file, vIndices[vi], p.type, format);
@@ -36,7 +36,7 @@ void writePlyFaceIndices(
 }
 
 template<FaceMeshConcept MeshType, FaceConcept FaceType>
-void setPlyFaceIndices(FaceType& f, MeshType& m, const std::vector<uint>& vids)
+void setPlyFaceIndices(FaceType& f, MeshType& m, const std::vector<IndexType<MeshType>>& vids)
 {
     bool splitFace = false;
     // we have a polygonal mesh
@@ -70,7 +70,7 @@ template<FaceMeshConcept MeshType, FaceConcept FaceType, typename Scalar>
 void setPlyFaceWedgeTexCoords(
     FaceType&                                     f,
     MeshType&                                     m,
-    const std::vector<uint>&                      vids,
+    const std::vector<IndexType<MeshType>>&      vids,
     const std::vector<std::pair<Scalar, Scalar>>& wedges)
 {
     bool splitFace = false;
@@ -115,14 +115,15 @@ void readPlyFaceProperty(
     bool        vcgGenerated = false,
     std::endian end          = std::endian::little)
 {
+    using IndexType = IndexType<MeshType>;
     bool              hasBeenRead = false;
-    std::vector<uint> vids; // contains the vertex ids of the actual face
+    std::vector<IndexType> vids; // contains the vertex ids of the actual face
     if (p.name == ply::vertex_indices) { // loading vertex indices
         uint fSize = io::readPrimitiveType<uint>(file, p.listSizeType, end);
         loadedInfo.updateMeshType(fSize);
         vids.resize(fSize);
         for (uint i = 0; i < fSize; ++i) {
-            vids[i] = io::readPrimitiveType<size_t>(file, p.type, end);
+            vids[i] = io::readPrimitiveType<IndexType>(file, p.type, end);
         }
         hasBeenRead = true;
         // will manage the case of loading a polygon in a triangle mesh
@@ -285,6 +286,8 @@ void writePlyFaces(
     const PlyHeader& header,
     const MeshType&  mesh)
 {
+    using IndexType = IndexType<MeshType>;
+
     FileType format;
     if (header.format() == ply::ASCII) {
         format.isBinary = false;
@@ -294,7 +297,7 @@ void writePlyFaces(
     }
 
     // indices of vertices that do not consider deleted vertices
-    std::vector<uint> vIndices = mesh.vertexCompactIndices();
+    std::vector<IndexType> vIndices = mesh.vertexCompactIndices();
 
     for (const auto& f : mesh.faces()) {
         for (const PlyProperty& p : header.faceProperties()) {
