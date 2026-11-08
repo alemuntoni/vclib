@@ -24,14 +24,22 @@ if(CAN_BUILD_VCLIB_RENDER_EXAMPLES)
     add_subdirectory(common)
 
     # Automatically find and add all render examples.
-    # For each directory, we check if it's a valid example by looking for a main.cpp file.
-    # If a requirements.cmake is present, we include it to read EXAMPLE_REQUIRED_TARGETS
-    # and ensure all required targets are available before adding the subdirectory.
-    file(
-        GLOB RENDER_EXAMPLE_DIRS
-        RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/*"
+    # For each directory, we check if it's a valid example by looking for a 
+    # main.cpp file. If a requirements.cmake is present, we include it to read 
+    # EXAMPLE_REQUIRED_TARGETS and ensure all required targets are available 
+    # before adding the subdirectory.
+    set(RENDER_EXAMPLE_DIRS
+        "00-hello-triangle-bgfx-glfw"
+        "00-hello-triangle-bgfx-headless"
+        "00-hello-triangle-bgfx-qt"
+        "00-hello-triangle-opengl2-glfw"
+        "00-hello-triangle-opengl2-qt"
     )
+    # file(
+    #     GLOB RENDER_EXAMPLE_DIRS
+    #     RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+    #     "${CMAKE_CURRENT_SOURCE_DIR}/*"
+    # )
     foreach(dir IN LISTS RENDER_EXAMPLE_DIRS)
         if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${dir}")
             if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${dir}/main.cpp")
@@ -46,7 +54,7 @@ if(CAN_BUILD_VCLIB_RENDER_EXAMPLES)
                     )
                 endif()
 
-                # Verify if all the required targets (e.g., 3rd party libraries) exist
+                # Verify if required targets (e.g., 3rd party libraries) exist
                 set(REQUIREMENTS_MET TRUE)
                 set(UNMET_REQ_PRINT "")
                 foreach(req IN LISTS EXAMPLE_REQUIRED_TARGETS)
@@ -70,9 +78,9 @@ if(CAN_BUILD_VCLIB_RENDER_EXAMPLES)
         endif()
     endforeach()
 
-    add_subdirectory(core)
+    #add_subdirectory(core)
 
     if(VCLIB_BUILD_MODULE_EXTERNAL)
-        add_subdirectory(external)
+        #add_subdirectory(external)
     endif()
 endif()

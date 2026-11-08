@@ -25,6 +25,7 @@ if(VCLIB_RENDER_BACKEND STREQUAL "bgfx")
     list(APPEND HEADERS ${HEADERS_BGFX})
 
     file(GLOB_RECURSE SOURCES_BGFX CONFIGURE_DEPENDS "src/vclib/bgfx/*.cpp")
+    list(FILTER SOURCES_BGFX EXCLUDE REGEX ".*drawable_axis_bgfx.cpp$")
     list(APPEND SOURCES ${SOURCES_BGFX})
 
     if(APPLE)
@@ -117,17 +118,25 @@ if(TARGET vclib-3rd-imgui)
     list(APPEND HEADERS ${HEADERS_IMGUI})
 
     file(GLOB_RECURSE SOURCES_IMGUI CONFIGURE_DEPENDS "src/vclib/imgui/*.cpp")
+    list(FILTER SOURCES_IMGUI EXCLUDE REGEX ".*mesh_viewer.cpp$")
     list(APPEND SOURCES ${SOURCES_IMGUI})
 endif()
 
 if(TARGET vclib-3rd-qt)
     file(GLOB_RECURSE HEADERS_QT CONFIGURE_DEPENDS "include/vclib/qt/*.h")
+    list(FILTER HEADERS_QT EXCLUDE REGEX ".*/qt/gui/.*")
+    list(FILTER HEADERS_QT EXCLUDE REGEX ".*/qt/mesh_viewer.*")
+    list(FILTER HEADERS_QT EXCLUDE REGEX ".*/qt/undo_redo_actions.*")
     list(APPEND HEADERS ${HEADERS_QT})
 
     file(GLOB_RECURSE SOURCES_QT CONFIGURE_DEPENDS "src/vclib/qt/*.cpp")
+    list(FILTER SOURCES_QT EXCLUDE REGEX ".*/qt/gui/.*")
+    list(FILTER SOURCES_QT EXCLUDE REGEX ".*/qt/mesh_viewer.*")
     list(APPEND SOURCES ${SOURCES_QT})
 
     file(GLOB_RECURSE FORMS_QT CONFIGURE_DEPENDS "src/vclib/qt/*.ui")
+    list(FILTER FORMS_QT EXCLUDE REGEX ".*/qt/gui/.*")
+    list(FILTER FORMS_QT EXCLUDE REGEX ".*/qt/mesh_viewer.*")
     list(APPEND FORMS ${FORMS_QT})
 
     source_group(
