@@ -47,8 +47,8 @@ namespace vcl {
  * AMeshType m;
  * MeshInfo info(m); // compute the default MeshInfo object from the Mesh
  *
- * info.setPerVertexPosition(true, MeshInfo::FLOAT); // force to store vertex
- *                                                   // positions using floats
+ * info.setVertexPosition(true, MeshInfo::FLOAT); // force to store vertex
+ *                                                // positions using floats
  * info.setVertexColors(false); // do not store vertex colors
  *
  * vcl::save(m, "meshfile.ply", info);
@@ -71,7 +71,7 @@ public:
      * file.
      *
      * @note: MESH is not an element, but it is used since some components can
-     * be stored per mesh.
+     * be stored at the mesh level.
      */
     enum Element { VERTEX, FACE, EDGE, MESH, NUM_ELEMENTS };
 
@@ -116,17 +116,16 @@ private:
     // Tell if elements are present in the file
     std::bitset<NUM_ELEMENTS> mElements = {false};
 
-    // Tell if per element components are present in the file
-    std::array<std::bitset<NUM_COMPONENTS>, NUM_ELEMENTS> mPerElemComponents = {
+    // Tell if element components are present in the file
+    std::array<std::bitset<NUM_COMPONENTS>, NUM_ELEMENTS> mElemComponents = {
         false};
 
     // Tell the data type for each component of each element
-    Eigen::Matrix<DataType, NUM_ELEMENTS, NUM_COMPONENTS>
-        mPerElemComponentsType;
+    Eigen::Matrix<DataType, NUM_ELEMENTS, NUM_COMPONENTS> mElemComponentsType;
 
-    // Store name and type of per element custom components
+    // Store name and type of element custom components
     std::array<std::vector<CustomComponent>, NUM_ELEMENTS>
-        mPerElemCustomComponents;
+        mElemCustomComponents;
 
     // Mesh Type
     MeshType mType = MeshType::UNKNOWN;
@@ -138,7 +137,7 @@ public:
      * All the Elements/Components are disabled, their type is set to
      * DataType::NONE and the Mesh Type is set to MeshType::POLYGON_MESH.
      */
-    MeshInfo() { mPerElemComponentsType.fill(PrimitiveType::NONE); }
+    MeshInfo() { mElemComponentsType.fill(PrimitiveType::NONE); }
 
     /**
      * @brief Sets the current status of the MeshInfo object from the input
@@ -288,11 +287,11 @@ public:
     void clear()
     {
         mElements.reset();
-        for (auto& comp : mPerElemComponents)
+        for (auto& comp : mElemComponents)
             comp.reset();
-        mPerElemComponentsType.fill(PrimitiveType::NONE);
+        mElemComponentsType.fill(PrimitiveType::NONE);
 
-        for (auto& v : mPerElemCustomComponents)
+        for (auto& v : mElemCustomComponents)
             v.clear();
 
         mType = MeshType::UNKNOWN;
@@ -339,7 +338,7 @@ public:
 
     bool hasPerElementComponent(Element el, Component comp) const
     {
-        return mPerElemComponents[el][comp];
+        return mElemComponents[el][comp];
     }
 
     /**
@@ -566,9 +565,9 @@ public:
     void setPerElementComponent(Element el, Component c, bool b, DataType t)
     {
         mElements[el]             = b;
-        mPerElemComponents[el][c] = b;
+        mElemComponents[el][c] = b;
         if (b)
-            mPerElemComponentsType(el, c) = t;
+            mElemComponentsType(el, c) = t;
     }
 
     void setVertices(bool b = true) { setElement(VERTEX, b); }
@@ -711,14 +710,14 @@ public:
     {
         setPerElementComponent(
             el, CUSTOM_COMPONENTS, true, PrimitiveType::NONE);
-        mPerElemCustomComponents[el].emplace_back(name, t);
+        mElemCustomComponents[el].emplace_back(name, t);
     }
 
     void clearPerElementCustomComponents(Element el)
     {
         setPerElementComponent(
             el, CUSTOM_COMPONENTS, false, PrimitiveType::NONE);
-        mPerElemCustomComponents[el].clear();
+        mElemCustomComponents[el].clear();
     }
 
     void addPerVertexCustomComponent(const std::string& name, DataType t)
@@ -758,7 +757,7 @@ public:
 
     DataType perElementComponentType(Element el, Component comp) const
     {
-        return mPerElemComponentsType(el, comp);
+        return mElemComponentsType(el, comp);
     }
 
     DataType perVertexPositionType() const
@@ -854,22 +853,22 @@ public:
     const std::vector<CustomComponent>& perElementCustomComponents(
         Element el) const
     {
-        return mPerElemCustomComponents[el];
+        return mElemCustomComponents[el];
     }
 
     const std::vector<CustomComponent>& perVertexCustomComponents() const
     {
-        return mPerElemCustomComponents[VERTEX];
+        return mElemCustomComponents[VERTEX];
     }
 
     const std::vector<CustomComponent>& perFaceCustomComponents() const
     {
-        return mPerElemCustomComponents[FACE];
+        return mElemCustomComponents[FACE];
     }
 
     const std::vector<CustomComponent>& perEdgeCustomComponents() const
     {
-        return mPerElemCustomComponents[EDGE];
+        return mElemCustomComponents[EDGE];
     }
 
     /**
@@ -889,12 +888,12 @@ public:
         for (uint i = 0; i < NUM_ELEMENTS; ++i) {
             res.mElements[i] = mElements[i] && info.mElements[i];
             for (uint j = 0; j < NUM_COMPONENTS; ++j) {
-                res.mPerElemComponents[i][j] =
-                    mPerElemComponents[i][j] && info.mPerElemComponents[i][j];
+                res.mElemComponents[i][j] =
+                    mElemComponents[i][j] && info.mElemComponents[i][j];
 
-                if (res.mPerElemComponents[i][j]) {
-                    res.mPerElemComponentsType(i, j) =
-                        mPerElemComponentsType(i, j);
+                if (res.mElemComponents[i][j]) {
+                    res.mElemComponentsType(i, j) =
+                        mElemComponentsType(i, j);
                 }
             }
         }
@@ -902,7 +901,7 @@ public:
         if (mType == info.mType) {
             res.mType = mType;
         }
-        res.mPerElemCustomComponents = mPerElemCustomComponents;
+        res.mElemCustomComponents = mElemCustomComponents;
 
         return res;
     }

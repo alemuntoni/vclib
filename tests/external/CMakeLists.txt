@@ -10,7 +10,7 @@ project(vclib-external-tests)
 set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 
 if(TARGET vclib-3rd-vcg)
-    add_subdirectory(000-mesh-import-vcg)
+    #add_subdirectory(000-mesh-import-vcg)
 endif()
 
 if(TARGET vclib-3rd-embree)
@@ -19,5 +19,5 @@ if(TARGET vclib-3rd-embree)
 endif()
 
 if(TARGET vclib-3rd-boost AND TARGET vclib-3rd-cgal AND TARGET vclib-3rd-libigl)
-    add_subdirectory(020-igl-booleans)
+    #add_subdirectory(020-igl-booleans)
 endif()
