@@ -83,13 +83,10 @@ if(VCLIB_RENDER_BACKEND STREQUAL "bgfx")
         )
         list(APPEND HEADERS ${HEADERS_BGFX_IMGUI})
 
-        # file(
-        #     GLOB_RECURSE SOURCES_BGFX_IMGUI
-        #     CONFIGURE_DEPENDS
-        #     "src/vclib/bgfx_imgui/*.cpp"
-        # )
-        set(SOURCES_BGFX_IMGUI
-            src/vclib/bgfx_imgui/imgui_impl_bgfx.cpp
+        file(
+            GLOB_RECURSE SOURCES_BGFX_IMGUI
+            CONFIGURE_DEPENDS
+            "src/vclib/bgfx_imgui/*.cpp"
         )
         list(APPEND SOURCES ${SOURCES_BGFX_IMGUI})
 
@@ -112,16 +109,10 @@ if(VCLIB_RENDER_BACKEND STREQUAL "opengl2")
     )
     list(APPEND HEADERS ${HEADERS_OPENGL2})
 
-    # file(
-    #     GLOB_RECURSE SOURCES_OPENGL2
-    #     CONFIGURE_DEPENDS
-    #     "src/vclib/opengl2/*.cpp"
-    # )
-    set(SOURCES_OPENGL2
-        src/vclib/opengl2/drawable/draw_objects2.cpp
-        src/vclib/opengl2/drawable/draw_objects3.cpp
-        src/vclib/opengl2/gizmos/directional_light_gizmo_opengl2.cpp
-        src/vclib/opengl2/gizmos/trackball_gizmo_opengl2.cpp
+    file(
+        GLOB_RECURSE SOURCES_OPENGL2
+        CONFIGURE_DEPENDS
+        "src/vclib/opengl2/*.cpp"
     )
     list(APPEND SOURCES ${SOURCES_OPENGL2})
 endif()
@@ -130,11 +121,7 @@ if(TARGET vclib-3rd-glfw)
     file(GLOB_RECURSE HEADERS_GLFW CONFIGURE_DEPENDS "include/vclib/glfw/*.h")
     list(APPEND HEADERS ${HEADERS_GLFW})
 
-    # file(GLOB_RECURSE SOURCES_GLFW CONFIGURE_DEPENDS "src/vclib/glfw/*.cpp")
-    set(SOURCES_GLFW
-        src/vclib/glfw/detail/window_manager_native.cpp
-        src/vclib/glfw/input.cpp
-    )
+    file(GLOB_RECURSE SOURCES_GLFW CONFIGURE_DEPENDS "src/vclib/glfw/*.cpp")
     list(APPEND SOURCES ${SOURCES_GLFW})
 
     if(TARGET vclib-3rd-imgui)
@@ -145,12 +132,11 @@ if(TARGET vclib-3rd-glfw)
         )
         list(APPEND HEADERS ${HEADERS_GLFW_IMGUI})
 
-        # file(
-        #     GLOB_RECURSE SOURCES_GLFW_IMGUI
-        #     CONFIGURE_DEPENDS
-        #     "src/vclib/glfw_imgui/*.cpp"
-        # )
-        set(SOURCES_GLFW_IMGUI)
+        file(
+            GLOB_RECURSE SOURCES_GLFW_IMGUI
+            CONFIGURE_DEPENDS
+            "src/vclib/glfw_imgui/*.cpp"
+        )
         list(APPEND SOURCES ${SOURCES_GLFW_IMGUI})
     endif()
 endif()
@@ -168,9 +154,6 @@ endif()
 
 if(TARGET vclib-3rd-qt)
     file(GLOB_RECURSE HEADERS_QT CONFIGURE_DEPENDS "include/vclib/qt/*.h")
-    list(FILTER HEADERS_QT EXCLUDE REGEX ".*/qt/gui/.*")
-    list(FILTER HEADERS_QT EXCLUDE REGEX ".*/qt/mesh_viewer.*")
-    list(FILTER HEADERS_QT EXCLUDE REGEX ".*/qt/undo_redo_actions.*")
     list(APPEND HEADERS ${HEADERS_QT})
 
     # file(GLOB_RECURSE SOURCES_QT CONFIGURE_DEPENDS "src/vclib/qt/*.cpp")
@@ -239,13 +222,10 @@ if(TARGET vclib-3rd-qt)
         )
         list(APPEND HEADERS ${HEADERS_QT_IMGUI})
 
-        # file(
-        #     GLOB_RECURSE SOURCES_QT_IMGUI
-        #     CONFIGURE_DEPENDS
-        #     "src/vclib/qt_imgui/*.cpp"
-        # )
-        set(SOURCES_QT_IMGUI
-            src/vclib/qt_imgui/imgui_impl_qt.cpp
+        file(
+            GLOB_RECURSE SOURCES_QT_IMGUI
+            CONFIGURE_DEPENDS
+            "src/vclib/qt_imgui/*.cpp"
         )
         list(APPEND SOURCES ${SOURCES_QT_IMGUI})
     endif()

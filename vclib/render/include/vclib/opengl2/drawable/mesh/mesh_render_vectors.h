@@ -287,7 +287,7 @@ private:
 
     void setVertexMaterialIndicesBuffer(const MeshType& mesh) // override
     {
-        if (vcl::isPerVertexMaterialIndexAvailable(mesh)) {
+        if (mesh.isVertexMaterialIndexAvailable()) {
             uint nt = Base::numTris();
 
             mVTexIds.resize(nt);

@@ -8,8 +8,8 @@
 #ifndef VCL_RENDER_DRAWABLE_MESH_MESH_RENDER_DATA_H
 #define VCL_RENDER_DRAWABLE_MESH_MESH_RENDER_DATA_H
 
-#include <vclib/render/drawable/mesh/mesh_render_info.h>
-#include <vclib/render/drawable/mesh/mesh_render_settings.h>
+#include "mesh_render_info.h"
+#include "mesh_render_settings.h"
 
 #include <vclib/algorithms/mesh.h>
 #include <vclib/mesh.h>
@@ -458,7 +458,7 @@ protected:
     void fillTriangleIndices(const FaceMeshConcept auto& mesh, auto* buffer)
     {
         using MeshType = std::decay_t<decltype(mesh)>;
-        using FaceType = MeshType::FaceType;
+        using FaceType = ConstFaceType<MeshType>;
 
         triangulatedFaceVertexIndicesToBuffer(
             mesh, buffer, mIndexMap, MatrixStorageType::ROW_MAJOR, mNumTris);
@@ -473,18 +473,18 @@ protected:
         // comparator of faces
         // ordering first by per-vertex material index (if available),
         // then by per-face material index (if available)
-        auto faceComp = [&](const FaceType& f1, const FaceType& f2) {
-            if constexpr (HasPerVertexMaterialIndex<MeshType>) {
-                if (isPerVertexMaterialIndexAvailable(mesh)) {
-                    uint id1 = f1.vertex(0)->materialIndex();
-                    uint id2 = f2.vertex(0)->materialIndex();
+        auto faceComp = [&](FaceType f1, FaceType f2) {
+            if constexpr (HasVertexMaterialIndices<MeshType>) {
+                if (mesh.isVertexMaterialIndexAvailable()) {
+                    uint id1 = f1.vertex(0).materialIndex();
+                    uint id2 = f2.vertex(0).materialIndex();
                     if (id1 != id2) { // do not return true if equal
                         return id1 < id2;
                     }
                 }
             }
-            if constexpr (HasPerFaceMaterialIndex<MeshType>) {
-                if (isPerFaceMaterialIndexAvailable(mesh)) {
+            if constexpr (HasFaceMaterialIndices<MeshType>) {
+                if (mesh.isFaceMaterialIndexAvailable()) {
                     uint id1 = f1.materialIndex();
                     uint id2 = f2.materialIndex();
                     if (id1 != id2) { // do not return true if equal
@@ -990,8 +990,8 @@ private:
             mVertsToDuplicate.clear();
             mFacesToReassign.clear();
 
-            if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
-                if (mesh.isPerFaceWedgeTexCoordsEnabled()) {
+            if constexpr (HasFaceWedgeTexCoords<MeshType>) {
+                if (mesh.isFaceWedgeTexCoordsAvailable()) {
                     verticesToDuplicateByWedgeTexCoordsCount(
                         mesh,
                         mVertWedgeMap,
@@ -1033,8 +1033,8 @@ private:
             self.setVertexSelectionBuffer(mesh);
         }
 
-        if constexpr (HasPerVertexNormal<MeshType>) {
-            if (isPerVertexNormalAvailable(mesh)) {
+        if constexpr (HasVertexNormals<MeshType>) {
+            if (mesh.isVertexNormalAvailable()) {
                 if (btu[toUnderlying(VERT_NORMALS)]) {
                     // vertex buffer (normals)
                     self.setVertexNormalsBuffer(mesh);
@@ -1042,8 +1042,8 @@ private:
             }
         }
 
-        if constexpr (HasPerVertexColor<MeshType>) {
-            if (isPerVertexColorAvailable(mesh)) {
+        if constexpr (HasVertexColors<MeshType>) {
+            if (mesh.isVertexColorAvailable()) {
                 if (btu[toUnderlying(VERT_COLORS)]) {
                     // vertex buffer (colors)
                     self.setVertexColorsBuffer(mesh);
@@ -1051,8 +1051,8 @@ private:
             }
         }
 
-        if constexpr (HasPerVertexTexCoord<MeshType>) {
-            if (isPerVertexTexCoordAvailable(mesh)) {
+        if constexpr (HasVertexTexCoords<MeshType>) {
+            if (mesh.isVertexTexCoordAvailable()) {
                 if (btu[toUnderlying(VERT_TEXCOORDS)]) {
                     // vertex buffer (UVs)
                     self.setVertexTexCoordsBuffer(mesh);
@@ -1060,8 +1060,8 @@ private:
             }
         }
 
-        if constexpr (HasPerVertexTangent<MeshType>) {
-            if (isPerVertexTangentAvailable(mesh)) {
+        if constexpr (HasVertexTangents<MeshType>) {
+            if (mesh.isVertexTangentAvailable()) {
                 if (btu[toUnderlying(VERT_TANGENT)]) {
                     // vertex buffer (tangent)
                     self.setVertexTangentsBuffer(mesh);
@@ -1089,8 +1089,8 @@ private:
                 self.setTriangleSelectionBuffer(mesh);
             }
 
-            if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
-                if (isPerFaceWedgeTexCoordsAvailable(mesh)) {
+            if constexpr (HasFaceWedgeTexCoords<MeshType>) {
+                if (mesh.isFaceWedgeTexCoordsAvailable()) {
                     if (btu[toUnderlying(WEDGE_TEXCOORDS)]) {
                         // vertex wedges buffer (duplicated vertices)
                         self.setWedgeTexCoordsBuffer(mesh);
@@ -1098,8 +1098,8 @@ private:
                 }
             }
 
-            if constexpr (HasPerFaceNormal<MeshType>) {
-                if (isPerFaceNormalAvailable(mesh)) {
+            if constexpr (HasFaceNormals<MeshType>) {
+                if (mesh.isFaceNormalAvailable()) {
                     if (btu[toUnderlying(TRI_NORMALS)]) {
                         // triangle normal buffer
                         self.setTriangleNormalsBuffer(mesh);
@@ -1107,8 +1107,8 @@ private:
                 }
             }
 
-            if constexpr (HasPerFaceColor<MeshType>) {
-                if (isPerFaceColorAvailable(mesh)) {
+            if constexpr (HasFaceColors<MeshType>) {
+                if (mesh.isFaceColorAvailable()) {
                     if (btu[toUnderlying(TRI_COLORS)]) {
                         // triangle color buffer
                         self.setTriangleColorsBuffer(mesh);
@@ -1118,8 +1118,8 @@ private:
 
             // material indices are stored per face (each face has its own
             // material index)
-            if constexpr (HasPerVertexMaterialIndex<MeshType>) {
-                if (isPerVertexMaterialIndexAvailable(mesh)) {
+            if constexpr (HasVertexMaterialIndices<MeshType>) {
+                if (mesh.isVertexMaterialIndexAvailable()) {
                     if (btu[toUnderlying(VERT_TEXCOORDS)]) {
                         // triangle vertex material indices buffer
                         self.setVertexMaterialIndicesBuffer(mesh);
@@ -1127,8 +1127,8 @@ private:
                 }
             }
 
-            if constexpr (HasPerFaceMaterialIndex<MeshType>) {
-                if (isPerFaceMaterialIndexAvailable(mesh)) {
+            if constexpr (HasFaceMaterialIndices<MeshType>) {
+                if (mesh.isFaceMaterialIndexAvailable()) {
                     if (btu[toUnderlying(WEDGE_TEXCOORDS)]) {
                         // triangle material indices buffer
                         self.setFaceMaterialIndicesBuffer(mesh);
@@ -1157,8 +1157,8 @@ private:
                 self.setEdgeIndicesBuffer(mesh);
             }
 
-            if constexpr (HasPerEdgeNormal<MeshType>) {
-                if (isPerEdgeNormalAvailable(mesh)) {
+            if constexpr (HasEdgeNormals<MeshType>) {
+                if (mesh.isEdgeNormalAvailable()) {
                     if (btu[toUnderlying(EDGE_NORMALS)]) {
                         // edge normal buffer
                         self.setEdgeNormalsBuffer(mesh);
@@ -1166,8 +1166,8 @@ private:
                 }
             }
 
-            if constexpr (HasPerEdgeColor<MeshType>) {
-                if (isPerEdgeColorAvailable(mesh)) {
+            if constexpr (HasEdgeColors<MeshType>) {
+                if (mesh.isEdgeColorAvailable()) {
                     if (btu[toUnderlying(EDGE_COLORS)]) {
                         // edge color buffer
                         self.setEdgeColorsBuffer(mesh);
@@ -1224,9 +1224,9 @@ private:
         for (uint i = 0; i < mIndexMap.triangleCount(); ++i) {
             uint fIndex = mIndexMap.polygon(i);
 
-            if constexpr (HasPerVertexMaterialIndex<MeshType>) {
-                if (isPerVertexMaterialIndexAvailable(mesh)) {
-                    uint mId = mesh.face(fIndex).vertex(0)->materialIndex();
+            if constexpr (HasVertexMaterialIndices<MeshType>) {
+                if (mesh.isVertexMaterialIndexAvailable()) {
+                    uint mId = mesh.face(fIndex).vertex(0).materialIndex();
                     if (mId != currentVertMatID && n != 0) {
                         if (currentVertMatID != UINT_NULL) {
                             mMaterialChunks.push_back(
@@ -1238,8 +1238,8 @@ private:
                     }
                 }
             }
-            if constexpr (HasPerFaceMaterialIndex<MeshType>) {
-                if (isPerFaceMaterialIndexAvailable(mesh)) {
+            if constexpr (HasFaceMaterialIndices<MeshType>) {
+                if (mesh.isFaceMaterialIndexAvailable()) {
                     uint mId = mesh.face(fIndex).materialIndex();
                     if (mId != currentFaceMatID && n != 0) {
                         if (currentFaceMatID != UINT_NULL) {
