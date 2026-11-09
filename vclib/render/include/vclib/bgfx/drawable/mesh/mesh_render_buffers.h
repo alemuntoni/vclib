@@ -913,7 +913,7 @@ private:
 
     void setMeshAdditionalData(const MeshType& mesh) // override
     {
-        if constexpr (HasColor<MeshType>) {
+        if constexpr (HasMeshColor<MeshType>) {
             mMeshColor = mesh.color();
         }
     }

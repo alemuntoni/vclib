@@ -485,8 +485,7 @@ public:
                 !mFaceSelection.cpuBackup().empty()) {
                 const auto& cpuBackup = mFaceSelection.cpuBackup();
 
-                const bool isMappingTrivial =
-                    indexMap.triangleCount() == m.faceCount();
+                const bool isMappingTrivial = indexMap.isMappingTrivial();
 
                 uint numSelectedFaces = 0;
                 // For each face, check if its first triangle is selected

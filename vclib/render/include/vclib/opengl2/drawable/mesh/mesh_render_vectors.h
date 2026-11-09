@@ -376,7 +376,7 @@ private:
 
     void setMeshAdditionalData(const MeshType& m) // override
     {
-        if constexpr (vcl::HasColor<MeshType>) {
+        if constexpr (vcl::HasMeshColor<MeshType>) {
             mMeshColor[0] = m.color().redF();
             mMeshColor[1] = m.color().greenF();
             mMeshColor[2] = m.color().blueF();

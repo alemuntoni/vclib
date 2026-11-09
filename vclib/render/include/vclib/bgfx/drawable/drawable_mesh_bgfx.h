@@ -123,8 +123,13 @@ public:
             if (params.mode.primitive == SelectionPrimitive::FACE)
                 return;
 
+        vcl::Matrix44f model = vcl::Matrix44f::Identity();
+        if constexpr (HasTransformMatrix<MeshType>) {
+            model = MeshType::transformMatrix().template cast<float>();
+        }
+
         mMRB.computeSelection(
-            params, this->transformMatrix().template cast<float>());
+            params, model);
     }
 
     vcl::BitVector<true> vertexSelectionBitVector() const override

@@ -813,7 +813,7 @@ public:
                 }
             }
 
-            if constexpr (vcl::HasColor<MeshType>) {
+            if constexpr (vcl::HasMeshColor<MeshType>) {
                 setPointsCapability(MRI::Points::COLOR_MESH);
             }
 
@@ -832,7 +832,7 @@ public:
                     setWireframeCapability(MRI::Wireframe::SHADING_NONE);
                     setWireframeCapability(MRI::Wireframe::COLOR_USER);
 
-                    if constexpr (vcl::HasColor<MeshType>) {
+                    if constexpr (vcl::HasMeshColor<MeshType>) {
                         setSurfaceCapability(MRI::Surface::COLOR_MESH);
                         setWireframeCapability(MRI::Wireframe::COLOR_MESH);
                     }

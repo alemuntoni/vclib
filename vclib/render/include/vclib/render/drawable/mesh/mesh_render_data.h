@@ -67,10 +67,10 @@ class MeshRenderData
 public:
     struct TriangleMaterialChunk
     {
-        uint startIndex     = 0; // start index in the triangle index buffer
-        uint indexCount     = 0; // num indices in the triangle index buffer
-        uint vertMaterialId = 0; // material id associated to the vertices
-        uint faceMaterialId = 0; // material id associated to the faces
+        uint   startIndex     = 0; // start index in the triangle index buffer
+        uint   indexCount     = 0; // num indices in the triangle index buffer
+        ushort vertMaterialId = USHORT_NULL; // material id associated to verts
+        ushort faceMaterialId = USHORT_NULL; // material id associated to faces
     };
 
 private:
@@ -270,7 +270,7 @@ public:
      * @param[in] chunkNumber: the triangle chunk number
      * @return the material index for the given triangle chunk
      */
-    uint materialIndex(const MeshRenderSettings& mrs, uint chunkNumber) const
+    ushort materialIndex(const MeshRenderSettings& mrs, uint chunkNumber) const
     {
         using enum MeshRenderInfo::Surface;
 
@@ -505,7 +505,7 @@ protected:
         permuteFaceVertexIndicesByFunctionToBuffer(
             mesh, buffer, faceComp, mIndexMap);
 
-        fillChuncks(mesh);
+        fillChunks(mesh);
     }
 
     /**
@@ -1156,6 +1156,9 @@ private:
                 // edge index buffer
                 self.setEdgeIndicesBuffer(mesh);
             }
+            if (btu[toUnderlying(EDGE_SELECTION)]) {
+                self.setEdgeSelectionBuffer(mesh);
+            }
 
             if constexpr (HasEdgeNormals<MeshType>) {
                 if (mesh.isEdgeNormalAvailable()) {
@@ -1171,9 +1174,6 @@ private:
                     if (btu[toUnderlying(EDGE_COLORS)]) {
                         // edge color buffer
                         self.setEdgeColorsBuffer(mesh);
-                    }
-                    if (btu[toUnderlying(EDGE_SELECTION)]) {
-                        self.setEdgeSelectionBuffer(mesh);
                     }
                 }
             }
@@ -1209,55 +1209,57 @@ private:
         }
     }
 
-    void fillChuncks(const FaceMeshConcept auto& mesh)
+    void fillChunks(const FaceMeshConcept auto& mesh)
     {
         using MeshType = std::decay_t<decltype(mesh)>;
 
         mMaterialChunks.clear();
+        if (mIndexMap.triangleCount() == 0)
+            return;
 
         uint first = 0;
         uint n     = 0;
 
-        uint currentVertMatID = UINT_NULL;
-        uint currentFaceMatID = UINT_NULL;
+        ushort currentVertMatID = USHORT_NULL;
+        ushort currentFaceMatID = USHORT_NULL;
 
         for (uint i = 0; i < mIndexMap.triangleCount(); ++i) {
             uint fIndex = mIndexMap.polygon(i);
 
+            ushort vMatId = USHORT_NULL;
             if constexpr (HasVertexMaterialIndices<MeshType>) {
                 if (mesh.isVertexMaterialIndexAvailable()) {
-                    uint mId = mesh.face(fIndex).vertex(0).materialIndex();
-                    if (mId != currentVertMatID && n != 0) {
-                        if (currentVertMatID != UINT_NULL) {
-                            mMaterialChunks.push_back(
-                                {first, n, currentVertMatID, currentFaceMatID});
-                            first += n;
-                            n = 0;
-                        }
-                        currentVertMatID = mId;
-                    }
+                    vMatId = mesh.face(fIndex).vertex(0).materialIndex();
                 }
             }
+
+            ushort fMatId = USHORT_NULL;
             if constexpr (HasFaceMaterialIndices<MeshType>) {
                 if (mesh.isFaceMaterialIndexAvailable()) {
-                    uint mId = mesh.face(fIndex).materialIndex();
-                    if (mId != currentFaceMatID && n != 0) {
-                        if (currentFaceMatID != UINT_NULL) {
-                            mMaterialChunks.push_back(
-                                {first, n, currentVertMatID, currentFaceMatID});
-                            first += n;
-                            n = 0;
-                        }
-                        currentFaceMatID = mId;
-                    }
+                    fMatId = mesh.face(fIndex).materialIndex();
                 }
+            }
+
+            if (i == 0) {
+                currentVertMatID = vMatId;
+                currentFaceMatID = fMatId;
+            }
+            else if (vMatId != currentVertMatID || fMatId != currentFaceMatID) {
+                mMaterialChunks.push_back(
+                    {first, n, currentVertMatID, currentFaceMatID});
+                first += n;
+                n                = 0;
+                currentVertMatID = vMatId;
+                currentFaceMatID = fMatId;
             }
 
             n++;
         }
 
-        mMaterialChunks.push_back(
-            {first, n, currentVertMatID, currentFaceMatID});
+        if (n > 0) {
+            mMaterialChunks.push_back(
+                {first, n, currentVertMatID, currentFaceMatID});
+        }
     }
 };
 
