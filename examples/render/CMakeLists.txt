@@ -71,9 +71,9 @@ if(CAN_BUILD_VCLIB_RENDER_EXAMPLES)
         endif()
     endforeach()
 
-    #add_subdirectory(core)
+    add_subdirectory(core)
 
     if(VCLIB_BUILD_MODULE_EXTERNAL)
-        #add_subdirectory(external)
+        add_subdirectory(external)
     endif()
 endif()
