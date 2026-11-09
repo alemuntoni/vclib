@@ -19,84 +19,88 @@ namespace vcl::bind {
 template<ElementConcept ElementType, typename... Options>
 void initAdjacentFaces(pybind11::class_<ElementType, Options...>& c)
 {
-    using FaceType = ElementType::AdjacentFaceType;
-
-    // the actual type of the AdjacentFaces component
-    using CompType = RemoveRef<
-        decltype(ElementType().template component<CompId::ADJACENT_FACES>())>;
+    using FaceType =
+        std::remove_cvref_t<decltype(std::declval<ElementType&>().adjFace(0))>;
 
     namespace py = pybind11;
 
     static const int  N    = ElementType::ADJ_FACE_COUNT;
-    static const bool TTVC = CompType::TIED_TO_VERTEX_COUNT;
-
-    c.def("adj_face_count", &ElementType::adjFaceCount);
-
-    c.def(
-        "adj_face",
-        [](ElementType& e, uint i) { return e.adjFace(i); },
-        py::return_value_policy::reference);
-    c.def(
-        "adj_face_mod",
-        [](ElementType& e, int i) { return e.adjFaceMod(i); },
-        py::return_value_policy::reference);
+    static const bool TTVC =
+        comp::ComponentTypeT<CompId::ADJACENT_FACES, ElementType>::
+            TIED_TO_VERTEX_COUNT;
 
     c.def(
-        "set_adj_face",
-        py::overload_cast<uint, FaceType*>(&ElementType::setAdjFace));
-    c.def(
-        "set_adj_face",
-        py::overload_cast<uint, uint>(&ElementType::setAdjFace));
-    c.def(
-        "set_adj_face_mod",
-        py::overload_cast<int, FaceType*>(&ElementType::setAdjFaceMod));
-    c.def(
-        "set_adj_face_mod",
-        py::overload_cast<int, uint>(&ElementType::setAdjFaceMod));
+        "adj_face_count", [](const ElementType& e) { return e.adjFaceCount(); });
+
+    c.def("adj_face", [](ElementType& e, uint i) -> FaceType {
+        return e.adjFace(i);
+    });
+    c.def("adj_face_mod", [](ElementType& e, int i) -> FaceType {
+        return e.adjFaceMod(i);
+    });
+
+    c.def("set_adj_face", [](ElementType& e, uint i, const FaceType& f) {
+        e.setAdjFace(i, f);
+    });
+    c.def("set_adj_face", [](ElementType& e, uint i, uint fi) {
+        e.setAdjFace(i, fi);
+    });
+    c.def("set_adj_face_mod", [](ElementType& e, int i, const FaceType& f) {
+        e.setAdjFaceMod(i, f);
+    });
+    c.def("set_adj_face_mod", [](ElementType& e, int i, uint fi) {
+        e.setAdjFaceMod(i, fi);
+    });
 
     c.def("set_adj_faces", [](ElementType& e, const std::vector<uint>& v) {
         e.setAdjFaces(v);
     });
 
-    c.def("set_adj_faces", [](ElementType& e, const std::vector<FaceType*>& v) {
+    c.def("set_adj_faces", [](ElementType& e, const std::vector<FaceType>& v) {
         e.setAdjFaces(v);
     });
 
-    c.def(
-        "contains_adj_face",
-        py::overload_cast<const FaceType*>(
-            &ElementType::containsAdjFace, py::const_));
-    c.def(
-        "contains_adj_face",
-        py::overload_cast<uint>(&ElementType::containsAdjFace, py::const_));
+    c.def("contains_adj_face", [](const ElementType& e, const FaceType& f) {
+        return e.containsAdjFace(f);
+    });
+    c.def("contains_adj_face", [](const ElementType& e, uint fi) {
+        return e.containsAdjFace(fi);
+    });
 
-    c.def(
-        "index_of_adj_face",
-        py::overload_cast<const FaceType*>(
-            &ElementType::indexOfAdjFace, py::const_));
-    c.def(
-        "index_of_adj_face",
-        py::overload_cast<uint>(&ElementType::indexOfAdjFace, py::const_));
+    c.def("index_of_adj_face", [](const ElementType& e, const FaceType& f) {
+        return e.indexOfAdjFace(f);
+    });
+    c.def("index_of_adj_face", [](const ElementType& e, uint fi) {
+        return e.indexOfAdjFace(fi);
+    });
 
     if constexpr (N < 0 && !TTVC) {
-        c.def("resize_adj_faces", &ElementType::resizeAdjFaces);
-        c.def(
-            "push_adj_face",
-            py::overload_cast<FaceType*>(&ElementType::pushAdjFace));
-        c.def(
-            "push_adj_face",
-            py::overload_cast<uint>(&ElementType::pushAdjFace));
+        c.def("resize_adj_faces", [](ElementType& e, uint n) {
+            e.resizeAdjFaces(n);
+        });
+        c.def("push_adj_face", [](ElementType& e, const FaceType& f) {
+            e.pushAdjFace(f);
+        });
+        c.def("push_adj_face", [](ElementType& e, uint fi) {
+            e.pushAdjFace(fi);
+        });
         c.def(
             "insert_adj_face",
-            py::overload_cast<uint, FaceType*>(&ElementType::insertAdjFace));
-        c.def(
-            "insert_adj_face",
-            py::overload_cast<uint, uint>(&ElementType::insertAdjFace));
-        c.def("erase_adj_face", &ElementType::eraseAdjFace);
-        c.def("clear_adj_faces", &ElementType::clearAdjFaces);
+            [](ElementType& e, uint i, const FaceType& f) {
+                e.insertAdjFace(i, f);
+            });
+        c.def("insert_adj_face", [](ElementType& e, uint i, uint fi) {
+            e.insertAdjFace(i, fi);
+        });
+        c.def("erase_adj_face", [](ElementType& e, uint i) {
+            e.eraseAdjFace(i);
+        });
+        c.def("clear_adj_faces", [](ElementType& e) {
+            e.clearAdjFaces();
+        });
     }
 
-    using AdjFaceView = decltype(ElementType().adjFaces());
+    using AdjFaceView = decltype(std::declval<ElementType&>().adjFaces());
 
     if (!registeredTypes.contains(typeid(AdjFaceView))) {
         // inner class that allows to iterate over adj faces
@@ -110,9 +114,10 @@ void initAdjacentFaces(pybind11::class_<ElementType, Options...>& c)
         registeredTypes.insert(typeid(AdjFaceView));
     }
 
-    c.def("adj_faces", py::overload_cast<>(&ElementType::adjFaces));
+    c.def("adj_faces", [](ElementType& e) { return e.adjFaces(); });
 
-    using AdjFaceIndexView = decltype(ElementType().adjFaceIndices());
+    using AdjFaceIndexView =
+        decltype(std::declval<const ElementType&>().adjFaceIndices());
 
     if (!registeredTypes.contains(typeid(AdjFaceIndexView))) {
         // inner class that allows to iterate over adj face indices
@@ -126,9 +131,9 @@ void initAdjacentFaces(pybind11::class_<ElementType, Options...>& c)
         registeredTypes.insert(typeid(AdjFaceIndexView));
     }
 
-    c.def(
-        "adj_face_indices",
-        py::overload_cast<>(&ElementType::adjFaceIndices, py::const_));
+    c.def("adj_face_indices", [](const ElementType& e) {
+        return e.adjFaceIndices();
+    });
 }
 
 } // namespace vcl::bind

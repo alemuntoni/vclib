@@ -8,7 +8,7 @@
 // #include <vclib/bindings/core/algorithms.h>
 #include <vclib/bindings/core/base.h>
 #include <vclib/bindings/core/io.h>
-// #include <vclib/bindings/core/meshes.h>
+#include <vclib/bindings/core/meshes.h>
 #include <vclib/bindings/core/space.h>
 
 #include <vclib/base.h>
@@ -28,7 +28,7 @@ PYBIND11_MODULE(core, m)
 
     initSpace(m);
 
-    // initMeshes(m);
+    initMeshes(m);
 
     // initAlgorithms(m);
 

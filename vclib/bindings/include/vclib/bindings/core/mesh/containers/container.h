@@ -8,6 +8,8 @@
 #ifndef VCL_BINDINGS_CORE_MESH_CONTAINERS_CONTAINER_H
 #define VCL_BINDINGS_CORE_MESH_CONTAINERS_CONTAINER_H
 
+#include <vclib/bindings/utils.h>
+
 #include <vclib/mesh.h>
 
 #include <pybind11/pybind11.h>
@@ -22,23 +24,21 @@ void addOptionalComponentFunctions(
     const std::string&                      name,
     const std::string&                      compName)
 {
-    if constexpr (mesh::HasPerElementOptionalComponent<
-                      MeshType,
+    if constexpr (MeshType::template hasElementOptionalComponent<
                       ELEM_ID,
-                      COMP_ID>) {
+                      COMP_ID>()) {
         c.def(
             ("is_per_" + name + "_" + compName + "_enabled").c_str(),
             [](const MeshType& t) {
                 return t
-                    .template isPerElementComponentEnabled<ELEM_ID, COMP_ID>();
+                    .template isElementComponentAvailable<ELEM_ID, COMP_ID>();
             });
         c.def(("enable_per_" + name + "_" + compName).c_str(), [](MeshType& t) {
-            return t.template enablePerElementComponent<ELEM_ID, COMP_ID>();
+            t.template enableElementComponent<ELEM_ID, COMP_ID>();
         });
         c.def(
             ("disable_per_" + name + "_" + compName).c_str(), [](MeshType& t) {
-                return t
-                    .template disablePerElementComponent<ELEM_ID, COMP_ID>();
+                t.template disableElementComponent<ELEM_ID, COMP_ID>();
             });
     }
 }
@@ -61,63 +61,75 @@ void initContainer(
     if (namePlural.empty())
         namePlural = name + "s";
 
-    c.def("index", [](MeshType& t, const Element& e) -> uint {
-        return t.index(e);
+    c.def("index", [](MeshType&, const Element& e) -> uint {
+        return e.index();
     });
 
     c.def(
         name.c_str(),
-        [](MeshType& t, uint i) -> Element& {
+        [](MeshType& t, uint i) -> Element {
             return t.template element<ELEM_ID>(i);
-        },
-        py::return_value_policy::reference);
+        });
 
-    c.def((name + "_count").c_str(), &MeshType::template count<ELEM_ID>);
-    c.def(
-        (name + "_container_size").c_str(),
-        &MeshType::template containerSize<ELEM_ID>);
-    c.def(
-        ("deleted_" + name + "_count").c_str(),
-        &MeshType::template deletedCount<ELEM_ID>);
+    c.def((name + "_count").c_str(), [](const MeshType& t) {
+        return t.template count<ELEM_ID>();
+    });
+    c.def((name + "_container_size").c_str(), [](const MeshType& t) {
+        return t.template containerSize<ELEM_ID>();
+    });
+    c.def(("deleted_" + name + "_count").c_str(), [](const MeshType& t) {
+        return t.template deletedCount<ELEM_ID>();
+    });
 
-    c.def(
-        ("add_" + name).c_str(),
-        py::overload_cast<>(&MeshType::template add<ELEM_ID>));
+    c.def(("add_" + name).c_str(), [](MeshType& t) {
+        return t.template add<ELEM_ID>();
+    });
 
-    c.def(
-        ("add_" + namePlural).c_str(),
-        py::overload_cast<uint>(&MeshType::template add<ELEM_ID>));
+    c.def(("add_" + namePlural).c_str(), [](MeshType& t, uint n) {
+        return t.template add<ELEM_ID>(n);
+    });
 
-    c.def(
-        ("clear_" + namePlural).c_str(),
-        &MeshType::template clearElements<ELEM_ID>);
-    c.def(
-        ("resize_" + namePlural).c_str(), &MeshType::template resize<ELEM_ID>);
-    c.def(
-        ("reserve_" + namePlural).c_str(),
-        &MeshType::template reserve<ELEM_ID>);
+    c.def(("clear_" + namePlural).c_str(), [](MeshType& t) {
+        t.template clearElements<ELEM_ID>();
+    });
+    c.def(("resize_" + namePlural).c_str(), [](MeshType& t, uint n) {
+        t.template resize<ELEM_ID>(n);
+    });
+    c.def(("reserve_" + namePlural).c_str(), [](MeshType& t, uint n) {
+        t.template reserve<ELEM_ID>(n);
+    });
 
-    c.def(
-        ("compact_" + namePlural).c_str(),
-        &MeshType::template compactElements<ELEM_ID>);
+    c.def(("compact_" + namePlural).c_str(), [](MeshType& t) {
+        return t.template compactElements<ELEM_ID>();
+    });
 
-    c.def(
-        ("delete_" + name).c_str(),
-        py::overload_cast<uint>(&MeshType::template deleteElement<ELEM_ID>));
+    c.def(("delete_" + name).c_str(), [](MeshType& t, uint i) {
+        t.template deleteElement<ELEM_ID>(i);
+    });
+    c.def(("delete_" + name).c_str(), [](MeshType& t, const Element& e) {
+        t.template deleteElement<ELEM_ID>(e.index());
+    });
 
-    using ElemView = decltype(MeshType().template elements<ELEM_ID>());
+    using ElemView =
+        decltype(std::declval<MeshType&>().template elements<ELEM_ID>(true));
 
-    // inner class that allows to iterate over elements
-    pybind11::class_<ElemView> v(c, ("_" + capitalName + "Range").c_str());
+    if (!registeredTypes.contains(typeid(ElemView))) {
+        // inner class that allows to iterate over elements
+        pybind11::class_<ElemView> v(c, ("_" + capitalName + "Range").c_str());
 
-    v.def(
-        "__iter__",
-        [](ElemView& t) { return py::make_iterator(t.begin(), t.end()); },
-        py::keep_alive<0, 1>());
+        v.def(
+            "__iter__",
+            [](ElemView& t) { return py::make_iterator(t.begin(), t.end()); },
+            py::keep_alive<0, 1>());
+
+        registeredTypes.insert(typeid(ElemView));
+    }
 
     c.def(
         namePlural.c_str(),
-        py::overload_cast<bool>(&MeshType::template elements<ELEM_ID>),
+        [](MeshType& t, bool jumpDeleted) {
+            return t.template elements<ELEM_ID>(jumpDeleted);
+        },
         py::arg("jump_deleted") = true);
 
     // optional components

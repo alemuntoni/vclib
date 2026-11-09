@@ -95,6 +95,22 @@ public:
     const ContainerType& parentContainer() const { return *mContainer; }
 
     /**
+     * @brief Returns a reference to the enclosing parent mesh.
+     */
+    decltype(auto) parentMesh(this auto&& self)
+        requires (!std::is_void_v<ParentMeshType>)
+    {
+        assert(self.isValid() && "Element proxy is invalid");
+        using SelfType = std::remove_reference_t<decltype(self)>;
+        if constexpr (std::is_const_v<SelfType> || std::is_const_v<ContainerType>) {
+            return std::as_const(*self.mContainer).parentMesh();
+        }
+        else {
+            return self.mContainer->parentMesh();
+        }
+    }
+
+    /**
      * @brief Returns the index of this element in the container.
      */
     IndexType index() const { return mIndex; }

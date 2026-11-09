@@ -19,7 +19,7 @@ namespace vcl::bind {
 template<MeshConcept MeshType, typename... Options>
 void initVertex(pybind11::class_<MeshType, Options...>& ct)
 {
-    using VertexType = MeshType::VertexType;
+    using VertexType = vcl::VertexType<MeshType>;
 
     // Create the class
     pybind11::class_<VertexType> c(ct, "Vertex");

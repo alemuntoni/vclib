@@ -19,84 +19,88 @@ namespace vcl::bind {
 template<ElementConcept ElementType, typename... Options>
 void initAdjacentEdges(pybind11::class_<ElementType, Options...>& c)
 {
-    using EdgeType = ElementType::AdjacentEdgeType;
-
-    // the actual type of the AdjacentEdges component
-    using CompType = RemoveRef<
-        decltype(ElementType().template component<CompId::ADJACENT_EDGES>())>;
+    using EdgeType =
+        std::remove_cvref_t<decltype(std::declval<ElementType&>().adjEdge(0))>;
 
     namespace py = pybind11;
 
     static const int  N    = ElementType::ADJ_EDGE_COUNT;
-    static const bool TTVC = CompType::TIED_TO_VERTEX_COUNT;
-
-    c.def("adj_edge_count", &ElementType::adjEdgeCount);
-
-    c.def(
-        "adj_edge",
-        [](ElementType& e, uint i) { return e.adjEdge(i); },
-        py::return_value_policy::reference);
-    c.def(
-        "adj_edge_mod",
-        [](ElementType& e, int i) { return e.adjEdgeMod(i); },
-        py::return_value_policy::reference);
+    static const bool TTVC =
+        comp::ComponentTypeT<CompId::ADJACENT_EDGES, ElementType>::
+            TIED_TO_VERTEX_COUNT;
 
     c.def(
-        "set_adj_edge",
-        py::overload_cast<uint, EdgeType*>(&ElementType::setAdjEdge));
-    c.def(
-        "set_adj_edge",
-        py::overload_cast<uint, uint>(&ElementType::setAdjEdge));
-    c.def(
-        "set_adj_edge_mod",
-        py::overload_cast<int, EdgeType*>(&ElementType::setAdjEdgeMod));
-    c.def(
-        "set_adj_edge_mod",
-        py::overload_cast<int, uint>(&ElementType::setAdjEdgeMod));
+        "adj_edge_count", [](const ElementType& e) { return e.adjEdgeCount(); });
+
+    c.def("adj_edge", [](ElementType& e, uint i) -> EdgeType {
+        return e.adjEdge(i);
+    });
+    c.def("adj_edge_mod", [](ElementType& e, int i) -> EdgeType {
+        return e.adjEdgeMod(i);
+    });
+
+    c.def("set_adj_edge", [](ElementType& e, uint i, const EdgeType& ed) {
+        e.setAdjEdge(i, ed);
+    });
+    c.def("set_adj_edge", [](ElementType& e, uint i, uint ei) {
+        e.setAdjEdge(i, ei);
+    });
+    c.def("set_adj_edge_mod", [](ElementType& e, int i, const EdgeType& ed) {
+        e.setAdjEdgeMod(i, ed);
+    });
+    c.def("set_adj_edge_mod", [](ElementType& e, int i, uint ei) {
+        e.setAdjEdgeMod(i, ei);
+    });
 
     c.def("set_adj_edges", [](ElementType& e, const std::vector<uint>& v) {
         e.setAdjEdges(v);
     });
 
-    c.def("set_adj_edges", [](ElementType& e, const std::vector<EdgeType*>& v) {
+    c.def("set_adj_edges", [](ElementType& e, const std::vector<EdgeType>& v) {
         e.setAdjEdges(v);
     });
 
-    c.def(
-        "contains_adj_edge",
-        py::overload_cast<const EdgeType*>(
-            &ElementType::containsAdjEdge, py::const_));
-    c.def(
-        "contains_adj_edge",
-        py::overload_cast<uint>(&ElementType::containsAdjEdge, py::const_));
+    c.def("contains_adj_edge", [](const ElementType& e, const EdgeType& ed) {
+        return e.containsAdjEdge(ed);
+    });
+    c.def("contains_adj_edge", [](const ElementType& e, uint ei) {
+        return e.containsAdjEdge(ei);
+    });
 
-    c.def(
-        "index_of_adj_edge",
-        py::overload_cast<const EdgeType*>(
-            &ElementType::indexOfAdjEdge, py::const_));
-    c.def(
-        "index_of_adj_edge",
-        py::overload_cast<uint>(&ElementType::indexOfAdjEdge, py::const_));
+    c.def("index_of_adj_edge", [](const ElementType& e, const EdgeType& ed) {
+        return e.indexOfAdjEdge(ed);
+    });
+    c.def("index_of_adj_edge", [](const ElementType& e, uint ei) {
+        return e.indexOfAdjEdge(ei);
+    });
 
     if constexpr (N < 0 && !TTVC) {
-        c.def("resize_adj_edges", &ElementType::resizeAdjEdges);
-        c.def(
-            "push_adj_edge",
-            py::overload_cast<EdgeType*>(&ElementType::pushAdjEdge));
-        c.def(
-            "push_adj_edge",
-            py::overload_cast<uint>(&ElementType::pushAdjEdge));
+        c.def("resize_adj_edges", [](ElementType& e, uint n) {
+            e.resizeAdjEdges(n);
+        });
+        c.def("push_adj_edge", [](ElementType& e, const EdgeType& ed) {
+            e.pushAdjEdge(ed);
+        });
+        c.def("push_adj_edge", [](ElementType& e, uint ei) {
+            e.pushAdjEdge(ei);
+        });
         c.def(
             "insert_adj_edge",
-            py::overload_cast<uint, EdgeType*>(&ElementType::insertAdjEdge));
-        c.def(
-            "insert_adj_edge",
-            py::overload_cast<uint, uint>(&ElementType::insertAdjEdge));
-        c.def("erase_adj_edge", &ElementType::eraseAdjEdge);
-        c.def("clear_adj_edges", &ElementType::clearAdjEdges);
+            [](ElementType& e, uint i, const EdgeType& ed) {
+                e.insertAdjEdge(i, ed);
+            });
+        c.def("insert_adj_edge", [](ElementType& e, uint i, uint ei) {
+            e.insertAdjEdge(i, ei);
+        });
+        c.def("erase_adj_edge", [](ElementType& e, uint i) {
+            e.eraseAdjEdge(i);
+        });
+        c.def("clear_adj_edges", [](ElementType& e) {
+            e.clearAdjEdges();
+        });
     }
 
-    using AdjEdgeView = decltype(ElementType().adjEdges());
+    using AdjEdgeView = decltype(std::declval<ElementType&>().adjEdges());
 
     if (!registeredTypes.contains(typeid(AdjEdgeView))) {
         // inner class that allows to iterate over adj edges
@@ -110,9 +114,10 @@ void initAdjacentEdges(pybind11::class_<ElementType, Options...>& c)
         registeredTypes.insert(typeid(AdjEdgeView));
     }
 
-    c.def("adj_edges", py::overload_cast<>(&ElementType::adjEdges));
+    c.def("adj_edges", [](ElementType& e) { return e.adjEdges(); });
 
-    using AdjEdgeIndexView = decltype(ElementType().adjEdgeIndices());
+    using AdjEdgeIndexView =
+        decltype(std::declval<const ElementType&>().adjEdgeIndices());
 
     if (!registeredTypes.contains(typeid(AdjEdgeIndexView))) {
         // inner class that allows to iterate over adj edge indices
@@ -126,9 +131,9 @@ void initAdjacentEdges(pybind11::class_<ElementType, Options...>& c)
         registeredTypes.insert(typeid(AdjEdgeIndexView));
     }
 
-    c.def(
-        "adj_edge_indices",
-        py::overload_cast<>(&ElementType::adjEdgeIndices, py::const_));
+    c.def("adj_edge_indices", [](const ElementType& e) {
+        return e.adjEdgeIndices();
+    });
 }
 
 } // namespace vcl::bind

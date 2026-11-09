@@ -16,10 +16,10 @@
 
 namespace vcl::bind {
 
-template<MeshConcept MeshType, typename... Options>
+template<FaceMeshConcept MeshType, typename... Options>
 void initFace(pybind11::class_<MeshType, Options...>& ct)
 {
-    using FaceType = MeshType::FaceType;
+    using FaceType = vcl::FaceType<MeshType>;
 
     // Create the class
     pybind11::class_<FaceType> c(ct, "Face");

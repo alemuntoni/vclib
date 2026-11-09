@@ -26,6 +26,9 @@
 
 namespace vcl::bind {
 
+template<typename T>
+concept ElementOrMeshConcept = ElementConcept<T> || MeshConcept<T>;
+
 template<ElementOrMeshConcept ElementType, typename... Options>
 void initComponents(pybind11::class_<ElementType, Options...>& c)
 {
@@ -33,9 +36,16 @@ void initComponents(pybind11::class_<ElementType, Options...>& c)
     using enum py::return_value_policy;
 
     if constexpr (!MeshConcept<ElementType>) {
-        c.def("index", &ElementType::index);
+        c.def("index", [](const ElementType& e) { return e.index(); });
 
-        c.def("parent_mesh", [](ElementType& v) { return v.parentMesh(); });
+        if constexpr (requires(ElementType e) { e.parentMesh(); }) {
+            c.def(
+                "parent_mesh",
+                [](ElementType& v) -> auto& {
+                    return v.parentMesh();
+                },
+                reference);
+        }
     }
 
     if constexpr (comp::HasAdjacentEdges<ElementType>) {
@@ -59,42 +69,51 @@ void initComponents(pybind11::class_<ElementType, Options...>& c)
         initBitFlags(c);
     }
 
-    if constexpr (comp::HasBoundingBox<ElementType>) {
+    if constexpr (HasBoundingBox<ElementType>) {
         c.def(
             "bounding_box",
-            py::overload_cast<>(&ElementType::boundingBox),
+            [](ElementType& v) -> auto& { return v.boundingBox(); },
             reference);
         c.def("set_bounding_box", [](ElementType& v, const Box3d& b) {
             v.boundingBox() = b;
         });
     }
-    if constexpr (comp::HasColor<ElementType>) {
-        c.def("color", py::overload_cast<>(&ElementType::color), reference);
+    if constexpr (comp::HasColor<ElementType> || HasMeshColor<ElementType>) {
+        c.def(
+            "color",
+            [](ElementType& v) -> auto& { return v.color(); },
+            reference);
         c.def(
             "set_color", [](ElementType& v, const Color& c) { v.color() = c; });
     }
     if constexpr (comp::HasPosition<ElementType>) {
         c.def(
-            "position", py::overload_cast<>(&ElementType::position), reference);
+            "position",
+            [](ElementType& v) -> auto& { return v.position(); },
+            reference);
         c.def("set_position", [](ElementType& v, const Point3d& p) {
             v.position() = p;
         });
     }
     if constexpr (comp::HasMaterialIndex<ElementType>) {
-        c.def(
-            "material_index", py::overload_cast<>(&ElementType::materialIndex));
+        c.def("material_index", [](const ElementType& v) {
+            return v.materialIndex();
+        });
         c.def("set_material_index", [](ElementType& v, ushort mi) {
             v.materialIndex() = mi;
         });
     }
-    if constexpr (comp::HasName<ElementType>) {
-        c.def("name", py::overload_cast<>(&ElementType::name));
+    if constexpr (HasName<ElementType>) {
+        c.def("name", [](const ElementType& v) { return v.name(); });
         c.def("set_name", [](ElementType& v, const std::string& n) {
             v.name() = n;
         });
     }
     if constexpr (comp::HasNormal<ElementType>) {
-        c.def("normal", py::overload_cast<>(&ElementType::normal), reference);
+        c.def(
+            "normal",
+            [](ElementType& v) -> auto& { return v.normal(); },
+            reference);
         c.def("set_normal", [](ElementType& v, const Point3d& p) {
             v.normal() = p;
         });
@@ -102,7 +121,7 @@ void initComponents(pybind11::class_<ElementType, Options...>& c)
     if constexpr (comp::HasPrincipalCurvature<ElementType>) {
         c.def(
             "principal_curvature",
-            py::overload_cast<>(&ElementType::principalCurvature),
+            [](ElementType& v) -> auto& { return v.principalCurvature(); },
             reference);
         c.def(
             "set_principal_curvature",
@@ -112,27 +131,27 @@ void initComponents(pybind11::class_<ElementType, Options...>& c)
     }
 
     if constexpr (comp::HasQuality<ElementType>) {
-        c.def("quality", py::overload_cast<>(&ElementType::quality));
+        c.def("quality", [](const ElementType& v) { return v.quality(); });
         c.def("set_quality", [](ElementType& v, double q) { v.quality() = q; });
     }
     if constexpr (comp::HasTexCoord<ElementType>) {
         c.def(
             "tex_coord",
-            py::overload_cast<>(&ElementType::texCoord),
+            [](ElementType& v) -> auto& { return v.texCoord(); },
             reference);
         c.def("set_tex_coord", [](ElementType& v, const TexCoordd& t) {
             v.texCoord() = t;
         });
     }
 
-    if constexpr (comp::HasMaterials<ElementType>) {
+    if constexpr (HasMaterials<ElementType>) {
         initMaterials(c);
     }
 
-    if constexpr (comp::HasTransformMatrix<ElementType>) {
+    if constexpr (HasTransformMatrix<ElementType>) {
         c.def(
             "transform_matrix",
-            py::overload_cast<>(&ElementType::transformMatrix),
+            [](ElementType& v) -> auto& { return v.transformMatrix(); },
             reference);
         c.def("set_transform_matrix", [](ElementType& v, const Matrix44d& m) {
             v.transformMatrix() = m;

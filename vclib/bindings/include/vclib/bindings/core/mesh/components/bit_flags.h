@@ -21,17 +21,17 @@ void initCommonFlags(pybind11::class_<ElementType, Options...>& c)
 {
     namespace py = pybind11;
 
-    c.def("deleted", &ElementType::deleted);
-    c.def("selected", py::overload_cast<>(&ElementType::selected, py::const_));
+    c.def("deleted", [](const ElementType& e) { return e.deleted(); });
+    c.def("selected", [](const ElementType& e) { return e.selected(); });
     c.def("set_selected", [](ElementType& e, bool s) { e.selected() = s; });
-    c.def("on_border", py::overload_cast<>(&ElementType::onBorder, py::const_));
-    c.def("visited", py::overload_cast<>(&ElementType::visited, py::const_));
+    c.def("on_border", [](const ElementType& e) { return e.onBorder(); });
+    c.def("visited", [](const ElementType& e) { return e.visited(); });
     c.def("set_visited", [](ElementType& e, bool v) { e.visited() = v; });
-    c.def("user_bit", [](ElementType& e, uint i) { return e.userBit(i); });
+    c.def("user_bit", [](const ElementType& e, uint i) { return e.userBit(i); });
     c.def("set_user_bit", [](ElementType& e, uint i, bool b) {
         e.userBit(i) = b;
     });
-    c.def("reset_bit_flags", &ElementType::resetBitFlags);
+    c.def("reset_bit_flags", [](ElementType& e) { e.resetBitFlags(); });
 }
 
 } // namespace detail
@@ -40,6 +40,8 @@ template<ElementConcept ElementType, typename... Options>
 void initBitFlags(pybind11::class_<ElementType, Options...>& c)
 {
     namespace py = pybind11;
+
+    detail::initCommonFlags(c);
 
     c.def("set_on_border", [](ElementType& e, bool b) { e.onBorder() = b; });
 }

@@ -19,39 +19,51 @@ namespace vcl::bind {
 template<ElementConcept ElementType, typename... Options>
 void initWedgeColors(pybind11::class_<ElementType, Options...>& c)
 {
-    using WedgeColorType = ElementType::WedgeColorType;
+    using WedgeColorType = Color;
 
     namespace py = pybind11;
 
-    static const int N = ElementType::WEDGE_COLOR_COUNT;
-
     c.def(
         "wedge_color",
-        [](ElementType& e, uint i) { return e.wedgeColor(i); },
+        [](ElementType& e, uint i) -> auto& {
+            return e.wedge(i).color();
+        },
         py::return_value_policy::reference);
     c.def(
         "wedge_color_mod",
-        [](ElementType& e, int i) { return e.wedgeColorMod(i); },
+        [](ElementType& e, int i) -> auto& {
+            const int n = e.vertexCount();
+            return e.wedge(((i % n) + n) % n).color();
+        },
         py::return_value_policy::reference);
 
-    c.def("set_wedge_color", &ElementType::setWedgeColor);
+    c.def(
+        "set_wedge_color",
+        [](ElementType& e, uint i, const WedgeColorType& w) {
+            e.wedge(i).color() = w;
+        });
 
     c.def(
         "set_wedge_color_mod",
         [](ElementType& e, int i, const WedgeColorType& w) {
-            e.wedgeColorMod(i) = w;
+            const int n = e.vertexCount();
+            e.wedge(((i % n) + n) % n).color() = w;
         });
 
     c.def(
         "set_wedge_colors",
         [](ElementType& e, const std::vector<WedgeColorType>& v) {
-            e.setWedgeColors(v);
+            for (uint i = 0; i < std::min<uint>(e.vertexCount(), v.size());
+                 ++i) {
+                e.wedge(i).color() = v[i];
+            }
         });
 
-    using WedgeColorsView = decltype(ElementType().wedgeColors());
+    using WedgeColorsView =
+        decltype(std::declval<ElementType&>().wedges().colors());
 
     if (!registeredTypes.contains(typeid(WedgeColorsView))) {
-        // inner class that allows to iterate over wedge tex coords
+        // inner class that allows to iterate over wedge colors
         pybind11::class_<WedgeColorsView> v(c, "_WedgeColorsRange");
         v.def(
             "__iter__",
@@ -62,7 +74,7 @@ void initWedgeColors(pybind11::class_<ElementType, Options...>& c)
         registeredTypes.insert(typeid(WedgeColorsView));
     }
 
-    c.def("wedge_colors", py::overload_cast<>(&ElementType::wedgeColors));
+    c.def("wedge_colors", [](ElementType& e) { return e.wedges().colors(); });
 }
 
 } // namespace vcl::bind

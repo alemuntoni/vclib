@@ -19,38 +19,34 @@ namespace vcl::bind {
 template<ElementConcept ElementType, typename... Options>
 void initAdjacentVertices(pybind11::class_<ElementType, Options...>& c)
 {
-    using VertexType = ElementType::AdjacentVertexType;
-
-    // the actual type of the AdjacentVertices component
-    using CompType = RemoveRef<
-        decltype(ElementType()
-                     .template component<CompId::ADJACENT_VERTICES>())>;
+    using VertexType =
+        std::remove_cvref_t<decltype(std::declval<ElementType&>().adjVertex(0))>;
 
     namespace py = pybind11;
 
-    c.def("adj_vertex_count", &ElementType::adjVertexCount);
+    c.def(
+        "adj_vertex_count",
+        [](const ElementType& e) { return e.adjVertexCount(); });
 
-    c.def(
-        "adj_vertex",
-        [](ElementType& e, uint i) { return e.adjVertex(i); },
-        py::return_value_policy::reference);
-    c.def(
-        "adj_vertex_mod",
-        [](ElementType& e, int i) { return e.adjVertexMod(i); },
-        py::return_value_policy::reference);
+    c.def("adj_vertex", [](ElementType& e, uint i) -> VertexType {
+        return e.adjVertex(i);
+    });
+    c.def("adj_vertex_mod", [](ElementType& e, int i) -> VertexType {
+        return e.adjVertexMod(i);
+    });
 
-    c.def(
-        "set_adj_vertex",
-        py::overload_cast<uint, VertexType*>(&ElementType::setAdjVertex));
-    c.def(
-        "set_adj_vertex",
-        py::overload_cast<uint, uint>(&ElementType::setAdjVertex));
-    c.def(
-        "set_adj_vertex_mod",
-        py::overload_cast<int, VertexType*>(&ElementType::setAdjVertexMod));
-    c.def(
-        "set_adj_vertex_mod",
-        py::overload_cast<int, uint>(&ElementType::setAdjVertexMod));
+    c.def("set_adj_vertex", [](ElementType& e, uint i, const VertexType& v) {
+        e.setAdjVertex(i, v);
+    });
+    c.def("set_adj_vertex", [](ElementType& e, uint i, uint vi) {
+        e.setAdjVertex(i, vi);
+    });
+    c.def("set_adj_vertex_mod", [](ElementType& e, int i, const VertexType& v) {
+        e.setAdjVertexMod(i, v);
+    });
+    c.def("set_adj_vertex_mod", [](ElementType& e, int i, uint vi) {
+        e.setAdjVertexMod(i, vi);
+    });
 
     c.def("set_adj_vertices", [](ElementType& e, const std::vector<uint>& v) {
         e.setAdjVertices(v);
@@ -58,43 +54,49 @@ void initAdjacentVertices(pybind11::class_<ElementType, Options...>& c)
 
     c.def(
         "set_adj_vertices",
-        [](ElementType& e, const std::vector<VertexType*>& v) {
+        [](ElementType& e, const std::vector<VertexType>& v) {
             e.setAdjVertices(v);
         });
 
-    c.def(
-        "contains_adj_vertex",
-        py::overload_cast<const VertexType*>(
-            &ElementType::containsAdjVertex, py::const_));
-    c.def(
-        "contains_adj_vertex",
-        py::overload_cast<uint>(&ElementType::containsAdjVertex, py::const_));
+    c.def("contains_adj_vertex", [](const ElementType& e, const VertexType& v) {
+        return e.containsAdjVertex(v);
+    });
+    c.def("contains_adj_vertex", [](const ElementType& e, uint vi) {
+        return e.containsAdjVertex(vi);
+    });
 
-    c.def(
-        "index_of_adj_vertex",
-        py::overload_cast<const VertexType*>(
-            &ElementType::indexOfAdjVertex, py::const_));
-    c.def(
-        "index_of_adj_vertex",
-        py::overload_cast<uint>(&ElementType::indexOfAdjVertex, py::const_));
+    c.def("index_of_adj_vertex", [](const ElementType& e, const VertexType& v) {
+        return e.indexOfAdjVertex(v);
+    });
+    c.def("index_of_adj_vertex", [](const ElementType& e, uint vi) {
+        return e.indexOfAdjVertex(vi);
+    });
 
-    c.def("resize_adj_vertices", &ElementType::resizeAdjVertices);
-    c.def(
-        "push_adj_vertex",
-        py::overload_cast<VertexType*>(&ElementType::pushAdjVertex));
-    c.def(
-        "push_adj_vertex",
-        py::overload_cast<uint>(&ElementType::pushAdjVertex));
+    c.def("resize_adj_vertices", [](ElementType& e, uint n) {
+        e.resizeAdjVertices(n);
+    });
+    c.def("push_adj_vertex", [](ElementType& e, const VertexType& v) {
+        e.pushAdjVertex(v);
+    });
+    c.def("push_adj_vertex", [](ElementType& e, uint vi) {
+        e.pushAdjVertex(vi);
+    });
     c.def(
         "insert_adj_vertex",
-        py::overload_cast<uint, VertexType*>(&ElementType::insertAdjVertex));
-    c.def(
-        "insert_adj_vertex",
-        py::overload_cast<uint, uint>(&ElementType::insertAdjVertex));
-    c.def("erase_adj_vertex", &ElementType::eraseAdjVertex);
-    c.def("clear_adj_vertices", &ElementType::clearAdjVertices);
+        [](ElementType& e, uint i, const VertexType& v) {
+            e.insertAdjVertex(i, v);
+        });
+    c.def("insert_adj_vertex", [](ElementType& e, uint i, uint vi) {
+        e.insertAdjVertex(i, vi);
+    });
+    c.def("erase_adj_vertex", [](ElementType& e, uint i) {
+        e.eraseAdjVertex(i);
+    });
+    c.def("clear_adj_vertices", [](ElementType& e) {
+        e.clearAdjVertices();
+    });
 
-    using AdjVertexView = decltype(ElementType().adjVertices());
+    using AdjVertexView = decltype(std::declval<ElementType&>().adjVertices());
 
     if (!registeredTypes.contains(typeid(AdjVertexView))) {
         // inner class that allows to iterate over adj vertices
@@ -109,9 +111,10 @@ void initAdjacentVertices(pybind11::class_<ElementType, Options...>& c)
         registeredTypes.insert(typeid(AdjVertexView));
     }
 
-    c.def("adj_vertices", py::overload_cast<>(&ElementType::adjVertices));
+    c.def("adj_vertices", [](ElementType& e) { return e.adjVertices(); });
 
-    using AdjVertexIndexView = decltype(ElementType().adjVertexIndices());
+    using AdjVertexIndexView =
+        decltype(std::declval<const ElementType&>().adjVertexIndices());
 
     if (!registeredTypes.contains(typeid(AdjVertexIndexView))) {
         // inner class that allows to iterate over adj vertex indices
@@ -126,9 +129,9 @@ void initAdjacentVertices(pybind11::class_<ElementType, Options...>& c)
         registeredTypes.insert(typeid(AdjVertexIndexView));
     }
 
-    c.def(
-        "adj_vertex_indices",
-        py::overload_cast<>(&ElementType::adjVertexIndices, py::const_));
+    c.def("adj_vertex_indices", [](const ElementType& e) {
+        return e.adjVertexIndices();
+    });
 }
 
 } // namespace vcl::bind

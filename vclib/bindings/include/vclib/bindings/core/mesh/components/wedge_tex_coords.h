@@ -19,36 +19,48 @@ namespace vcl::bind {
 template<ElementConcept ElementType, typename... Options>
 void initWedgeTexCoords(pybind11::class_<ElementType, Options...>& c)
 {
-    using WedgeTexCoordType = ElementType::WedgeTexCoordType;
+    using WedgeTexCoordType = TexCoordd;
 
     namespace py = pybind11;
 
-    static const int N = ElementType::WEDGE_TEX_COORD_COUNT;
-
     c.def(
         "wedge_tex_coord",
-        [](ElementType& e, uint i) { return e.wedgeTexCoord(i); },
+        [](ElementType& e, uint i) -> auto& {
+            return e.wedge(i).texCoord();
+        },
         py::return_value_policy::reference);
     c.def(
         "wedge_tex_coord_mod",
-        [](ElementType& e, int i) { return e.wedgeTexCoordMod(i); },
+        [](ElementType& e, int i) -> auto& {
+            const int n = e.vertexCount();
+            return e.wedge(((i % n) + n) % n).texCoord();
+        },
         py::return_value_policy::reference);
 
-    c.def("set_wedge_tex_coord", &ElementType::setWedgeTexCoord);
+    c.def(
+        "set_wedge_tex_coord",
+        [](ElementType& e, uint i, const WedgeTexCoordType& w) {
+            e.wedge(i).texCoord() = w;
+        });
 
     c.def(
         "set_wedge_tex_coord_mod",
         [](ElementType& e, int i, const WedgeTexCoordType& w) {
-            e.wedgeTexCoordMod(i) = w;
+            const int n = e.vertexCount();
+            e.wedge(((i % n) + n) % n).texCoord() = w;
         });
 
     c.def(
         "set_wedge_tex_coords",
         [](ElementType& e, const std::vector<WedgeTexCoordType>& v) {
-            e.setWedgeTexCoords(v);
+            for (uint i = 0; i < std::min<uint>(e.vertexCount(), v.size());
+                 ++i) {
+                e.wedge(i).texCoord() = v[i];
+            }
         });
 
-    using WedgeTexCoordsView = decltype(ElementType().wedgeTexCoords());
+    using WedgeTexCoordsView =
+        decltype(std::declval<ElementType&>().wedges().texCoords());
 
     if (!registeredTypes.contains(typeid(WedgeTexCoordsView))) {
         // inner class that allows to iterate over wedge tex coords
@@ -62,8 +74,9 @@ void initWedgeTexCoords(pybind11::class_<ElementType, Options...>& c)
         registeredTypes.insert(typeid(WedgeTexCoordsView));
     }
 
-    c.def(
-        "wedge_tex_coords", py::overload_cast<>(&ElementType::wedgeTexCoords));
+    c.def("wedge_tex_coords", [](ElementType& e) {
+        return e.wedges().texCoords();
+    });
 }
 
 } // namespace vcl::bind
