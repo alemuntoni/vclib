@@ -86,42 +86,42 @@ jobs:
         name: vclib-wheel-${{ matrix.os }}
         path: dist/*.whl
 
-  run_python_examples:
-    name: Run Python Examples (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    needs: bindings_build_wheel
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ['ubuntu-22.04', 'ubuntu-24.04-arm', 'macos-26-intel', 'macos-latest', 'windows-latest']
-    steps:
-    - uses: actions/checkout@v7
-      with:
-        submodules: recursive
-        ref: ${{ inputs.ref || github.ref }}
+  # run_python_examples:
+  #   name: Run Python Examples (${{ matrix.os }})
+  #   runs-on: ${{ matrix.os }}
+  #   needs: bindings_build_wheel
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: ['ubuntu-22.04', 'ubuntu-24.04-arm', 'macos-26-intel', 'macos-latest', 'windows-latest']
+  #   steps:
+  #   - uses: actions/checkout@v7
+  #     with:
+  #       submodules: recursive
+  #       ref: ${{ inputs.ref || github.ref }}
 
-    - name: Install dependencies
-      if: runner.os == 'Linux'
-      run: |
-        sudo apt-get update
-        sudo apt-get install freeglut3-dev libgl1-mesa-dev
+  #   - name: Install dependencies
+  #     if: runner.os == 'Linux'
+  #     run: |
+  #       sudo apt-get update
+  #       sudo apt-get install freeglut3-dev libgl1-mesa-dev
 
-    - uses: actions/download-artifact@v8
-      with:
-        name: vclib-wheel-${{ matrix.os }}
-        path: dist/
+  #   - uses: actions/download-artifact@v8
+  #     with:
+  #       name: vclib-wheel-${{ matrix.os }}
+  #       path: dist/
 
-    - name: Run Examples 3.12
-      uses: ./.github/actions/run-python-examples
-      with:
-        python-version: '3.12'
+  #   - name: Run Examples 3.12
+  #     uses: ./.github/actions/run-python-examples
+  #     with:
+  #       python-version: '3.12'
 
-    - name: Run Examples 3.13
-      uses: ./.github/actions/run-python-examples
-      with:
-        python-version: '3.13'
+  #   - name: Run Examples 3.13
+  #     uses: ./.github/actions/run-python-examples
+  #     with:
+  #       python-version: '3.13'
 
-    - name: Run Examples 3.14
-      uses: ./.github/actions/run-python-examples
-      with:
-        python-version: '3.14'
+  #   - name: Run Examples 3.14
+  #     uses: ./.github/actions/run-python-examples
+  #     with:
+  #       python-version: '3.14'

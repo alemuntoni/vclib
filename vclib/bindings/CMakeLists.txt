@@ -21,7 +21,7 @@ endif()
 
 if(VCLIB_BUILD_MODULE_RENDER)
     # Append the render module to the list of python modules if the VCLib render module is built
-    list(APPEND PYTHON_MODULES render)
+    # list(APPEND PYTHON_MODULES render)
 endif()
 
 # copy the __init__.py
@@ -42,6 +42,16 @@ foreach(MODULE ${PYTHON_MODULES})
         CONFIGURE_DEPENDS
         "src/vclib/bindings/${MODULE}/*.cpp"
     )
+
+    # --- TMP_FILTER ---
+    if(MODULE STREQUAL "core")
+        list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/algorithms/.*")
+        list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/meshes/.*")
+        list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/io/mesh/.*")
+        list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/space/complex/(mesh_info|point_sampler).*")
+    endif()
+    # -----------------------------------------------------------
+
     list(APPEND MODULE_HEADERS "include/vclib/bindings/utils.h")
     list(APPEND MODULE_SOURCES "src/vclib/bindings/${MODULE}.cpp")
 

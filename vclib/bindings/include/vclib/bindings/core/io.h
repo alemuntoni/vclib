@@ -18,7 +18,7 @@ namespace vcl::bind {
 void initIO(pybind11::module& m)
 {
     initFileFormat(m);
-    initIOMesh(m);
+    //initIOMesh(m);
 }
 
 } // namespace vcl::bind

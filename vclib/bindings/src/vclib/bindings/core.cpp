@@ -5,10 +5,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at https://mozilla.org/MPL/2.0/.
 
-#include <vclib/bindings/core/algorithms.h>
+// #include <vclib/bindings/core/algorithms.h>
 #include <vclib/bindings/core/base.h>
 #include <vclib/bindings/core/io.h>
-#include <vclib/bindings/core/meshes.h>
+// #include <vclib/bindings/core/meshes.h>
 #include <vclib/bindings/core/space.h>
 
 #include <vclib/base.h>
@@ -28,9 +28,9 @@ PYBIND11_MODULE(core, m)
 
     initSpace(m);
 
-    initMeshes(m);
+    // initMeshes(m);
 
-    initAlgorithms(m);
+    // initAlgorithms(m);
 
     initIO(m);
 }
