@@ -11,10 +11,7 @@ set(VCLIB_RENDER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "include/vclib/render/*.h")
 
-# file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/vclib/render/*.cpp")
-set(SOURCES
-    src/vclib/render/drawable/drawable_object_vector.cpp
-)
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/vclib/render/*.cpp")
 
 file(GLOB_RECURSE ASSETS CONFIGURE_DEPENDS "assets/*")
 
@@ -119,10 +116,7 @@ if(TARGET vclib-3rd-imgui)
     file(GLOB_RECURSE HEADERS_IMGUI CONFIGURE_DEPENDS "include/vclib/imgui/*.h")
     list(APPEND HEADERS ${HEADERS_IMGUI})
 
-    # file(GLOB_RECURSE SOURCES_IMGUI CONFIGURE_DEPENDS "src/vclib/imgui/*.cpp")
-    set(SOURCES_IMGUI
-        #src/vclib/imgui/mesh_viewer.cpp
-    )
+    file(GLOB_RECURSE SOURCES_IMGUI CONFIGURE_DEPENDS "src/vclib/imgui/*.cpp")
     list(APPEND SOURCES ${SOURCES_IMGUI})
 endif()
 
@@ -130,56 +124,10 @@ if(TARGET vclib-3rd-qt)
     file(GLOB_RECURSE HEADERS_QT CONFIGURE_DEPENDS "include/vclib/qt/*.h")
     list(APPEND HEADERS ${HEADERS_QT})
 
-    # file(GLOB_RECURSE SOURCES_QT CONFIGURE_DEPENDS "src/vclib/qt/*.cpp")
-    set(SOURCES_QT
-        src/vclib/qt/gui/clickable_label.cpp
-        src/vclib/qt/gui/color_push_button.cpp
-        # src/vclib/qt/gui/dialog_directories.cpp
-        # src/vclib/qt/gui/drawable_object_item.cpp
-        # src/vclib/qt/gui/drawable_object_vector_tree.cpp
-        # src/vclib/qt/gui/editor_settings_frames/bounding_box_editor_settings_frame.cpp
-        # src/vclib/qt/gui/editor_settings_frames/edit_mode_settings_frame.cpp
-        # src/vclib/qt/gui/editor_settings_frames/selection_editor_settings_frame.cpp
-        # src/vclib/qt/gui/editor_settings_frames/show_normals_editor_settings_frame.cpp
-        # src/vclib/qt/gui/mesh_render_settings_frame/edges_frame.cpp
-        # src/vclib/qt/gui/mesh_render_settings_frame/generic_mesh_render_settings_frame.cpp
-        # src/vclib/qt/gui/mesh_render_settings_frame/points_frame.cpp
-        # src/vclib/qt/gui/mesh_render_settings_frame/surface_frame.cpp
-        # src/vclib/qt/gui/mesh_render_settings_frame/wireframe_frame.cpp
-        # src/vclib/qt/gui/mesh_render_settings_frame.cpp
-        # src/vclib/qt/gui/range_slider.cpp
-        # src/vclib/qt/gui/screen_shot_dialog.cpp
-        # src/vclib/qt/gui/settings_dialog/input_bindings_widget.cpp
-        # src/vclib/qt/gui/settings_dialog/shortcuts_settings_tab.cpp
-        # src/vclib/qt/gui/settings_dialog.cpp
-        # src/vclib/qt/gui/shortcut_button.cpp
-        # src/vclib/qt/gui/text_edit_logger.cpp
-        # src/vclib/qt/gui/toolbar_frames/generic_editor_frame.cpp
-        # src/vclib/qt/gui/viewer_settings_frame.cpp
-        src/vclib/qt/input.cpp
-        # src/vclib/qt/mesh_viewer.cpp
-    )
+    file(GLOB_RECURSE SOURCES_QT CONFIGURE_DEPENDS "src/vclib/qt/*.cpp")
     list(APPEND SOURCES ${SOURCES_QT})
 
-    # file(GLOB_RECURSE FORMS_QT CONFIGURE_DEPENDS "src/vclib/qt/*.ui")
-    set(FORMS_QT
-        # src/vclib/qt/gui/drawable_object_vector_tree.ui
-        # src/vclib/qt/gui/editor_settings_frames/bounding_box_editor_settings_frame.ui
-        # src/vclib/qt/gui/editor_settings_frames/edit_mode_settings_frame.ui
-        # src/vclib/qt/gui/editor_settings_frames/selection_editor_settings_frame.ui
-        # src/vclib/qt/gui/editor_settings_frames/show_normals_editor_settings_frame.ui
-        # src/vclib/qt/gui/mesh_render_settings_frame/edges_frame.ui
-        # src/vclib/qt/gui/mesh_render_settings_frame/points_frame.ui
-        # src/vclib/qt/gui/mesh_render_settings_frame/surface_frame.ui
-        # src/vclib/qt/gui/mesh_render_settings_frame/wireframe_frame.ui
-        # src/vclib/qt/gui/mesh_render_settings_frame.ui
-        # src/vclib/qt/gui/settings_dialog/input_bindings_widget.ui
-        # src/vclib/qt/gui/settings_dialog.ui
-        # src/vclib/qt/gui/text_edit_logger.ui
-        # src/vclib/qt/gui/toolbar_frames/generic_editor_frame.ui
-        # src/vclib/qt/gui/viewer_settings_frame.ui
-        # src/vclib/qt/mesh_viewer.ui
-    )
+    file(GLOB_RECURSE FORMS_QT CONFIGURE_DEPENDS "src/vclib/qt/*.ui")
     list(APPEND FORMS ${FORMS_QT})
 
     source_group(
