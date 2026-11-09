@@ -43,14 +43,6 @@ foreach(MODULE ${PYTHON_MODULES})
         "src/vclib/bindings/${MODULE}/*.cpp"
     )
 
-    # --- TMP_FILTER ---
-    if(MODULE STREQUAL "core")
-        # list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/algorithms/.*")
-        # list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/meshes/.*")
-        list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/io/mesh/.*")
-    endif()
-    # -----------------------------------------------------------
-
     list(APPEND MODULE_HEADERS "include/vclib/bindings/utils.h")
     list(APPEND MODULE_SOURCES "src/vclib/bindings/${MODULE}.cpp")
 
