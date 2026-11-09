@@ -27,33 +27,7 @@ if(VCLIB_RENDER_BACKEND STREQUAL "bgfx")
     file(GLOB_RECURSE HEADERS_BGFX CONFIGURE_DEPENDS "include/vclib/bgfx/*.h")
     list(APPEND HEADERS ${HEADERS_BGFX})
 
-    # file(GLOB_RECURSE SOURCES_BGFX CONFIGURE_DEPENDS "src/vclib/bgfx/*.cpp")
-    set(SOURCES_BGFX
-        src/vclib/bgfx/context/callback.cpp
-        src/vclib/bgfx/context/font_manager.cpp
-        src/vclib/bgfx/context.cpp
-        #src/vclib/bgfx/drawable/drawable_axis_bgfx.cpp
-        src/vclib/bgfx/drawable/drawable_box3.cpp
-        src/vclib/bgfx/drawable/drawable_environment.cpp
-        src/vclib/bgfx/gizmos/directional_light_gizmo_bgfx.cpp
-        src/vclib/bgfx/gizmos/trackball_gizmo_bgfx.cpp
-        src/vclib/bgfx/panorama.cpp
-        src/vclib/bgfx/primitives/lines.cpp
-        src/vclib/bgfx/primitives/points.cpp
-        src/vclib/bgfx/programs/load_program.cpp
-        src/vclib/bgfx/read_from_gpu_buffer.cpp
-        src/vclib/bgfx/screenspace/primitives/screenspace_lines.cpp
-        src/vclib/bgfx/screenspace/primitives/screenspace_points.cpp
-        src/vclib/bgfx/system/native_window_handle.cpp
-        src/vclib/bgfx/text/embedded_fonts/droid_sans.cpp
-        src/vclib/bgfx/text/font/cube_atlas.cpp
-        src/vclib/bgfx/text/font/font_manager.cpp
-        src/vclib/bgfx/text/font/text_buffer_manager.cpp
-        src/vclib/bgfx/text/font/text_metrics.cpp
-        src/vclib/bgfx/text/font/utf8.cpp
-        src/vclib/bgfx/text/text_manager.cpp
-        src/vclib/bgfx/text/text_view.cpp
-    )
+    file(GLOB_RECURSE SOURCES_BGFX CONFIGURE_DEPENDS "src/vclib/bgfx/*.cpp")
     list(APPEND SOURCES ${SOURCES_BGFX})
 
     if(APPLE)

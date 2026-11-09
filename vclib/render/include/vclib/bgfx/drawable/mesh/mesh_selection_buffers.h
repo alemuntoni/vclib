@@ -463,7 +463,7 @@ public:
 
             vcl::BitSet<uint8_t, true> flags;
 
-            for (auto& v : m.vertices()) {
+            for (auto v : m.vertices()) {
                 const uint byteIdx = vidx / 8;
                 if (byteIdx < cpuBackup.bytes().size()) {
                     if (vidx % 8 == 0)
@@ -495,7 +495,7 @@ public:
                 vcl::BitSet<uint8_t, true> flags;
                 uint                       lastByteIdx = UINT_NULL;
 
-                for (auto& f : m.faces()) {
+                for (auto f : m.faces()) {
                     const uint faceIdx = f.index();
                     const uint firstTriIdx =
                         isMappingTrivial ? faceIdx :

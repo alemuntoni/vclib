@@ -139,7 +139,7 @@ public:
             return;
 
         uint vidx = 0;
-        for (auto& v : MeshType::vertices()) {
+        for (auto v : MeshType::vertices()) {
             if (vidx < bitVector.size()) {
                 v.selected() = bitVector[vidx++];
             }
@@ -167,7 +167,7 @@ public:
             const auto& indexMap         = mMRB.triPolyIndexMap();
             const bool  isMappingTrivial = indexMap.isMappingTrivial();
 
-            for (auto& f : MeshType::faces()) {
+            for (auto f : MeshType::faces()) {
                 const uint faceIdx     = f.index();
                 const uint firstTriIdx = isMappingTrivial ?
                                              faceIdx :
