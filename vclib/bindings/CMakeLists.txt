@@ -45,10 +45,9 @@ foreach(MODULE ${PYTHON_MODULES})
 
     # --- TMP_FILTER ---
     if(MODULE STREQUAL "core")
-        list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/algorithms/.*")
+        # list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/algorithms/.*")
         # list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/meshes/.*")
         list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/io/mesh/.*")
-        list(FILTER MODULE_SOURCES EXCLUDE REGEX "src/vclib/bindings/core/space/complex/(mesh_info|point_sampler).*")
     endif()
     # -----------------------------------------------------------
 

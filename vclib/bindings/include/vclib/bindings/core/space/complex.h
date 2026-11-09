@@ -8,8 +8,8 @@
 #ifndef VCL_BINDINGS_CORE_SPACE_COMPLEX_H
 #define VCL_BINDINGS_CORE_SPACE_COMPLEX_H
 
-//#include "complex/mesh_info.h"
-//#include "complex/point_sampler.h"
+#include "complex/mesh_info.h"
+#include "complex/point_sampler.h"
 #include "complex/tri_poly_index_bimap.h"
 
 #include <pybind11/pybind11.h>
@@ -23,8 +23,8 @@ inline void initComplex(pybind11::module& m)
     // py::module_ sm = m.def_submodule("complex", "Complex Spatial Data
     // Structures");
 
-    //initMeshInfo(m);
-    //initPointSampler(m);
+    initMeshInfo(m);
+    initPointSampler(m);
     initTriPolyIndexBimap(m);
 }
 

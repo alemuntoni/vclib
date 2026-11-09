@@ -22,39 +22,36 @@ void initFaceTopologyAlgorithms(pybind11::module& m)
 
     auto fAllFaces =
         []<FaceConcept FaceType>(pybind11::module& m, FaceType = FaceType()) {
-            m.def(
-                "is_face_manifold_on_edge",
-                [](const FaceType& f, uint edge) -> bool {
-                    return isFaceManifoldOnEdge(f, edge);
-                },
-                "face"_a,
-                "edge"_a);
+            if constexpr (comp::HasAdjacentFaces<FaceType>) {
+                m.def(
+                    "is_face_manifold_on_edge",
+                    [](const FaceType& f, uint edge) -> bool {
+                        return isFaceManifoldOnEdge(f, edge);
+                    },
+                    "face"_a,
+                    "edge"_a);
 
-            m.def(
-                "is_face_edge_on_border",
-                [](const FaceType& f, uint edge) -> bool {
-                    return isFaceEdgeOnBorder(f, edge);
-                },
-                "face"_a,
-                "edge"_a);
+                m.def(
+                    "is_face_edge_on_border",
+                    [](const FaceType& f, uint edge) -> bool {
+                        return isFaceEdgeOnBorder(f, edge);
+                    },
+                    "face"_a,
+                    "edge"_a);
 
-            // TODO: add other functions from face_topology.h
+                // TODO: add other functions from face_topology.h
 
-            m.def(
-                "flood_face_patch",
-                [](const FaceType& seed, pybind11::function selector) {
-                    // We pass a pointer to the python callback instead of a
-                    // reference. This forces pybind11 to use the 'reference'
-                    // policy by default, avoiding the copy of the non-copyable
-                    // Element object.
-                    auto cppSelector = [selector](const FaceType& f) -> bool {
-                        return selector(&f).template cast<bool>();
-                    };
-                    return floodFacePatch(seed, cppSelector);
-                },
-                "seed"_a,
-                "face_selector"_a,
-                py::return_value_policy::reference);
+                m.def(
+                    "flood_face_patch",
+                    [](const FaceType& seed, pybind11::function selector) {
+                        auto cppSelector = [selector](const FaceType& f) -> bool {
+                            return selector(f).template cast<bool>();
+                        };
+                        return floodFacePatch(seed, cppSelector);
+                    },
+                    "seed"_a,
+                    "face_selector"_a);
+            }
         };
 
     defForAllFaceTypes(m, fAllFaces);
