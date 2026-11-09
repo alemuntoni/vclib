@@ -11,7 +11,10 @@ set(VCLIB_RENDER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "include/vclib/render/*.h")
 
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/vclib/render/*.cpp")
+# file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/vclib/render/*.cpp")
+set(SOURCES
+    src/vclib/render/drawable/drawable_object_vector.cpp
+)
 
 file(GLOB_RECURSE ASSETS CONFIGURE_DEPENDS "assets/*")
 
@@ -24,8 +27,33 @@ if(VCLIB_RENDER_BACKEND STREQUAL "bgfx")
     file(GLOB_RECURSE HEADERS_BGFX CONFIGURE_DEPENDS "include/vclib/bgfx/*.h")
     list(APPEND HEADERS ${HEADERS_BGFX})
 
-    file(GLOB_RECURSE SOURCES_BGFX CONFIGURE_DEPENDS "src/vclib/bgfx/*.cpp")
-    list(FILTER SOURCES_BGFX EXCLUDE REGEX ".*drawable_axis_bgfx.cpp$")
+    # file(GLOB_RECURSE SOURCES_BGFX CONFIGURE_DEPENDS "src/vclib/bgfx/*.cpp")
+    set(SOURCES_BGFX
+        src/vclib/bgfx/context/callback.cpp
+        src/vclib/bgfx/context/font_manager.cpp
+        src/vclib/bgfx/context.cpp
+        #src/vclib/bgfx/drawable/drawable_axis_bgfx.cpp
+        src/vclib/bgfx/drawable/drawable_box3.cpp
+        src/vclib/bgfx/drawable/drawable_environment.cpp
+        src/vclib/bgfx/gizmos/directional_light_gizmo_bgfx.cpp
+        src/vclib/bgfx/gizmos/trackball_gizmo_bgfx.cpp
+        src/vclib/bgfx/panorama.cpp
+        src/vclib/bgfx/primitives/lines.cpp
+        src/vclib/bgfx/primitives/points.cpp
+        src/vclib/bgfx/programs/load_program.cpp
+        src/vclib/bgfx/read_from_gpu_buffer.cpp
+        src/vclib/bgfx/screenspace/primitives/screenspace_lines.cpp
+        src/vclib/bgfx/screenspace/primitives/screenspace_points.cpp
+        src/vclib/bgfx/system/native_window_handle.cpp
+        src/vclib/bgfx/text/embedded_fonts/droid_sans.cpp
+        src/vclib/bgfx/text/font/cube_atlas.cpp
+        src/vclib/bgfx/text/font/font_manager.cpp
+        src/vclib/bgfx/text/font/text_buffer_manager.cpp
+        src/vclib/bgfx/text/font/text_metrics.cpp
+        src/vclib/bgfx/text/font/utf8.cpp
+        src/vclib/bgfx/text/text_manager.cpp
+        src/vclib/bgfx/text/text_view.cpp
+    )
     list(APPEND SOURCES ${SOURCES_BGFX})
 
     if(APPLE)
@@ -55,10 +83,13 @@ if(VCLIB_RENDER_BACKEND STREQUAL "bgfx")
         )
         list(APPEND HEADERS ${HEADERS_BGFX_IMGUI})
 
-        file(
-            GLOB_RECURSE SOURCES_BGFX_IMGUI
-            CONFIGURE_DEPENDS
-            "src/vclib/bgfx_imgui/*.cpp"
+        # file(
+        #     GLOB_RECURSE SOURCES_BGFX_IMGUI
+        #     CONFIGURE_DEPENDS
+        #     "src/vclib/bgfx_imgui/*.cpp"
+        # )
+        set(SOURCES_BGFX_IMGUI
+            src/vclib/bgfx_imgui/imgui_impl_bgfx.cpp
         )
         list(APPEND SOURCES ${SOURCES_BGFX_IMGUI})
 
@@ -81,10 +112,16 @@ if(VCLIB_RENDER_BACKEND STREQUAL "opengl2")
     )
     list(APPEND HEADERS ${HEADERS_OPENGL2})
 
-    file(
-        GLOB_RECURSE SOURCES_OPENGL2
-        CONFIGURE_DEPENDS
-        "src/vclib/opengl2/*.cpp"
+    # file(
+    #     GLOB_RECURSE SOURCES_OPENGL2
+    #     CONFIGURE_DEPENDS
+    #     "src/vclib/opengl2/*.cpp"
+    # )
+    set(SOURCES_OPENGL2
+        src/vclib/opengl2/drawable/draw_objects2.cpp
+        src/vclib/opengl2/drawable/draw_objects3.cpp
+        src/vclib/opengl2/gizmos/directional_light_gizmo_opengl2.cpp
+        src/vclib/opengl2/gizmos/trackball_gizmo_opengl2.cpp
     )
     list(APPEND SOURCES ${SOURCES_OPENGL2})
 endif()
@@ -93,7 +130,11 @@ if(TARGET vclib-3rd-glfw)
     file(GLOB_RECURSE HEADERS_GLFW CONFIGURE_DEPENDS "include/vclib/glfw/*.h")
     list(APPEND HEADERS ${HEADERS_GLFW})
 
-    file(GLOB_RECURSE SOURCES_GLFW CONFIGURE_DEPENDS "src/vclib/glfw/*.cpp")
+    # file(GLOB_RECURSE SOURCES_GLFW CONFIGURE_DEPENDS "src/vclib/glfw/*.cpp")
+    set(SOURCES_GLFW
+        src/vclib/glfw/detail/window_manager_native.cpp
+        src/vclib/glfw/input.cpp
+    )
     list(APPEND SOURCES ${SOURCES_GLFW})
 
     if(TARGET vclib-3rd-imgui)
@@ -104,11 +145,12 @@ if(TARGET vclib-3rd-glfw)
         )
         list(APPEND HEADERS ${HEADERS_GLFW_IMGUI})
 
-        file(
-            GLOB_RECURSE SOURCES_GLFW_IMGUI
-            CONFIGURE_DEPENDS
-            "src/vclib/glfw_imgui/*.cpp"
-        )
+        # file(
+        #     GLOB_RECURSE SOURCES_GLFW_IMGUI
+        #     CONFIGURE_DEPENDS
+        #     "src/vclib/glfw_imgui/*.cpp"
+        # )
+        set(SOURCES_GLFW_IMGUI)
         list(APPEND SOURCES ${SOURCES_GLFW_IMGUI})
     endif()
 endif()
@@ -117,8 +159,10 @@ if(TARGET vclib-3rd-imgui)
     file(GLOB_RECURSE HEADERS_IMGUI CONFIGURE_DEPENDS "include/vclib/imgui/*.h")
     list(APPEND HEADERS ${HEADERS_IMGUI})
 
-    file(GLOB_RECURSE SOURCES_IMGUI CONFIGURE_DEPENDS "src/vclib/imgui/*.cpp")
-    list(FILTER SOURCES_IMGUI EXCLUDE REGEX ".*mesh_viewer.cpp$")
+    # file(GLOB_RECURSE SOURCES_IMGUI CONFIGURE_DEPENDS "src/vclib/imgui/*.cpp")
+    set(SOURCES_IMGUI
+        #src/vclib/imgui/mesh_viewer.cpp
+    )
     list(APPEND SOURCES ${SOURCES_IMGUI})
 endif()
 
@@ -129,14 +173,56 @@ if(TARGET vclib-3rd-qt)
     list(FILTER HEADERS_QT EXCLUDE REGEX ".*/qt/undo_redo_actions.*")
     list(APPEND HEADERS ${HEADERS_QT})
 
-    file(GLOB_RECURSE SOURCES_QT CONFIGURE_DEPENDS "src/vclib/qt/*.cpp")
-    list(FILTER SOURCES_QT EXCLUDE REGEX ".*/qt/gui/.*")
-    list(FILTER SOURCES_QT EXCLUDE REGEX ".*/qt/mesh_viewer.*")
+    # file(GLOB_RECURSE SOURCES_QT CONFIGURE_DEPENDS "src/vclib/qt/*.cpp")
+    set(SOURCES_QT
+        src/vclib/qt/gui/clickable_label.cpp
+        src/vclib/qt/gui/color_push_button.cpp
+        # src/vclib/qt/gui/dialog_directories.cpp
+        # src/vclib/qt/gui/drawable_object_item.cpp
+        # src/vclib/qt/gui/drawable_object_vector_tree.cpp
+        # src/vclib/qt/gui/editor_settings_frames/bounding_box_editor_settings_frame.cpp
+        # src/vclib/qt/gui/editor_settings_frames/edit_mode_settings_frame.cpp
+        # src/vclib/qt/gui/editor_settings_frames/selection_editor_settings_frame.cpp
+        # src/vclib/qt/gui/editor_settings_frames/show_normals_editor_settings_frame.cpp
+        # src/vclib/qt/gui/mesh_render_settings_frame/edges_frame.cpp
+        # src/vclib/qt/gui/mesh_render_settings_frame/generic_mesh_render_settings_frame.cpp
+        # src/vclib/qt/gui/mesh_render_settings_frame/points_frame.cpp
+        # src/vclib/qt/gui/mesh_render_settings_frame/surface_frame.cpp
+        # src/vclib/qt/gui/mesh_render_settings_frame/wireframe_frame.cpp
+        # src/vclib/qt/gui/mesh_render_settings_frame.cpp
+        # src/vclib/qt/gui/range_slider.cpp
+        # src/vclib/qt/gui/screen_shot_dialog.cpp
+        # src/vclib/qt/gui/settings_dialog/input_bindings_widget.cpp
+        # src/vclib/qt/gui/settings_dialog/shortcuts_settings_tab.cpp
+        # src/vclib/qt/gui/settings_dialog.cpp
+        # src/vclib/qt/gui/shortcut_button.cpp
+        # src/vclib/qt/gui/text_edit_logger.cpp
+        # src/vclib/qt/gui/toolbar_frames/generic_editor_frame.cpp
+        # src/vclib/qt/gui/viewer_settings_frame.cpp
+        src/vclib/qt/input.cpp
+        # src/vclib/qt/mesh_viewer.cpp
+    )
     list(APPEND SOURCES ${SOURCES_QT})
 
-    file(GLOB_RECURSE FORMS_QT CONFIGURE_DEPENDS "src/vclib/qt/*.ui")
-    list(FILTER FORMS_QT EXCLUDE REGEX ".*/qt/gui/.*")
-    list(FILTER FORMS_QT EXCLUDE REGEX ".*/qt/mesh_viewer.*")
+    # file(GLOB_RECURSE FORMS_QT CONFIGURE_DEPENDS "src/vclib/qt/*.ui")
+    set(FORMS_QT
+        # src/vclib/qt/gui/drawable_object_vector_tree.ui
+        # src/vclib/qt/gui/editor_settings_frames/bounding_box_editor_settings_frame.ui
+        # src/vclib/qt/gui/editor_settings_frames/edit_mode_settings_frame.ui
+        # src/vclib/qt/gui/editor_settings_frames/selection_editor_settings_frame.ui
+        # src/vclib/qt/gui/editor_settings_frames/show_normals_editor_settings_frame.ui
+        # src/vclib/qt/gui/mesh_render_settings_frame/edges_frame.ui
+        # src/vclib/qt/gui/mesh_render_settings_frame/points_frame.ui
+        # src/vclib/qt/gui/mesh_render_settings_frame/surface_frame.ui
+        # src/vclib/qt/gui/mesh_render_settings_frame/wireframe_frame.ui
+        # src/vclib/qt/gui/mesh_render_settings_frame.ui
+        # src/vclib/qt/gui/settings_dialog/input_bindings_widget.ui
+        # src/vclib/qt/gui/settings_dialog.ui
+        # src/vclib/qt/gui/text_edit_logger.ui
+        # src/vclib/qt/gui/toolbar_frames/generic_editor_frame.ui
+        # src/vclib/qt/gui/viewer_settings_frame.ui
+        # src/vclib/qt/mesh_viewer.ui
+    )
     list(APPEND FORMS ${FORMS_QT})
 
     source_group(
@@ -153,10 +239,13 @@ if(TARGET vclib-3rd-qt)
         )
         list(APPEND HEADERS ${HEADERS_QT_IMGUI})
 
-        file(
-            GLOB_RECURSE SOURCES_QT_IMGUI
-            CONFIGURE_DEPENDS
-            "src/vclib/qt_imgui/*.cpp"
+        # file(
+        #     GLOB_RECURSE SOURCES_QT_IMGUI
+        #     CONFIGURE_DEPENDS
+        #     "src/vclib/qt_imgui/*.cpp"
+        # )
+        set(SOURCES_QT_IMGUI
+            src/vclib/qt_imgui/imgui_impl_qt.cpp
         )
         list(APPEND SOURCES ${SOURCES_QT_IMGUI})
     endif()
