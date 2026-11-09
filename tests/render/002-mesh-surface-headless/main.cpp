@@ -112,10 +112,10 @@ TEST_CASE("Mesh Surface Color Modes")
             TEST_NAME, "color_vertex", [](vcl::HeadlessMeshViewer& mv) {
                 auto mesh = getDrawableMesh<vcl::TriMesh>("bimba.obj");
 
-                mesh.enablePerVertexColor(); // Enable per vertex color
+                mesh.enableVertexColor(); // Enable per vertex color
                 mesh.updateRenderSettingsCapabilities();
                 // Deterministically assign colors to vertices
-                for (auto& v : mesh.vertices()) {
+                for (auto v : mesh.vertices()) {
                     if (v.index() % 3 == 0)
                         v.color() = vcl::Color::Red;
                     else if (v.index() % 3 == 1)
@@ -138,11 +138,11 @@ TEST_CASE("Mesh Surface Color Modes")
         runRenderTest(TEST_NAME, "color_face", [](vcl::HeadlessMeshViewer& mv) {
             auto mesh = getDrawableMesh<vcl::TriMesh>("bunny_simplified.obj");
 
-            mesh.enablePerFaceColor();
+            mesh.enableFaceColor();
             mesh.updateRenderSettingsCapabilities();
 
             // Deterministically assign colors to faces
-            for (auto& f : mesh.faces()) {
+            for (auto f : mesh.faces()) {
                 if (f.index() % 3 == 0)
                     f.color() = vcl::Color::Cyan;
                 else if (f.index() % 3 == 1)
@@ -206,7 +206,7 @@ TEST_CASE("Mesh Surface Selection")
                 mesh.updateRenderSettingsCapabilities();
 
                 // Deterministically assign selection to faces
-                for (auto& f : mesh.faces()) {
+                for (auto f : mesh.faces()) {
                     if (f.index() % 5 == 0)
                         f.selected() = true;
                 }
@@ -232,7 +232,7 @@ TEST_CASE("Mesh Surface Selection")
                 mesh.updateRenderSettingsCapabilities();
 
                 // Deterministically assign selection to faces
-                for (auto& f : mesh.faces()) {
+                for (auto f : mesh.faces()) {
                     if (f.index() % 3 == 0)
                         f.selected() = true;
                 }
