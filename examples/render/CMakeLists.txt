@@ -34,6 +34,13 @@ if(CAN_BUILD_VCLIB_RENDER_EXAMPLES)
         "00-hello-triangle-bgfx-qt"
         "00-hello-triangle-opengl2-glfw"
         "00-hello-triangle-opengl2-qt"
+        "01-hello-triangle-imgui-bgfx-common"
+        "01-hello-triangle-imgui-bgfx-glfw"
+        "01-hello-triangle-imgui-bgfx-qt"
+        "01-hello-triangle-imgui-common"
+        "01-hello-triangle-imgui-opengl2-common"
+        "01-hello-triangle-imgui-opengl2-glfw"
+        "01-hello-triangle-imgui-opengl2-qt"
     )
     # file(
     #     GLOB RENDER_EXAMPLE_DIRS
