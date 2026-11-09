@@ -380,9 +380,9 @@ protected:
         else {
             using enum Material::AlphaMode;
 
-            uint materialId = mMRB.materialIndex(mMRS, chunkNumber);
+            ushort materialId = mMRB.materialIndex(mMRS, chunkNumber);
 
-            if (materialId == UINT_NULL) {
+            if (materialId == USHORT_NULL) {
                 // fallback to default material
                 MaterialUniforms::set(DEFAULT_MATERIAL);
             }
