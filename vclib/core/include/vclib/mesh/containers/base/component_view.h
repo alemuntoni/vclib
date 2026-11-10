@@ -127,6 +127,11 @@ public:
     }
 
     bool empty() const { return size() == 0; }
+
+    bool isCompact() const
+    {
+        return mContainer && mContainer->isCompact();
+    }
 };
 
 } // namespace vcl::mesh

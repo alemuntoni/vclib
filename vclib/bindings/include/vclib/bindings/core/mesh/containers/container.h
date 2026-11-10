@@ -8,6 +8,8 @@
 #ifndef VCL_BINDINGS_CORE_MESH_CONTAINERS_CONTAINER_H
 #define VCL_BINDINGS_CORE_MESH_CONTAINERS_CONTAINER_H
 
+#include "component_view.h"
+
 #include <vclib/bindings/utils.h>
 
 #include <vclib/mesh.h>
@@ -140,6 +142,69 @@ void initContainer(
         });
 
         v.def("__bool__", [](const ElemView& t) { return !t.empty(); });
+        v.def("is_compact", [](const ElemView& t) { return t.isCompact(); });
+
+        using Container = typename ElemView::ContainerType;
+
+        if constexpr (comp::HasPosition<Container>) {
+            initComponentView<CompId::POSITION, Container>(
+                c, "_" + capitalName + "PositionsView");
+            v.def("positions", [](ElemView& self) { return self.positions(); });
+        }
+
+        if constexpr (comp::HasNormal<Container>) {
+            initComponentView<CompId::NORMAL, Container>(
+                c, "_" + capitalName + "NormalsView");
+            v.def("normals", [](ElemView& self) { return self.normals(); });
+        }
+
+        if constexpr (comp::HasColor<Container>) {
+            initComponentView<CompId::COLOR, Container>(
+                c, "_" + capitalName + "ColorsView");
+            v.def("colors", [](ElemView& self) { return self.colors(); });
+        }
+
+        if constexpr (comp::HasQuality<Container>) {
+            initComponentView<CompId::QUALITY, Container>(
+                c, "_" + capitalName + "QualitiesView");
+            v.def("qualities", [](ElemView& self) { return self.qualities(); });
+        }
+
+        if constexpr (comp::HasTexCoord<Container>) {
+            initComponentView<CompId::TEX_COORD, Container>(
+                c, "_" + capitalName + "TexCoordsView");
+            v.def("tex_coords", [](ElemView& self) { return self.texCoords(); });
+        }
+
+        if constexpr (comp::HasTangent<Container>) {
+            initComponentView<CompId::TANGENT, Container>(
+                c, "_" + capitalName + "TangentsView");
+            v.def("tangents", [](ElemView& self) { return self.tangents(); });
+        }
+
+        if constexpr (comp::HasPrincipalCurvature<Container>) {
+            initComponentView<CompId::PRINCIPAL_CURVATURE, Container>(
+                c, "_" + capitalName + "PrincipalCurvaturesView");
+            v.def("principal_curvatures", [](ElemView& self) {
+                return self.principalCurvatures();
+            });
+        }
+
+        if constexpr (comp::HasMaterialIndex<Container>) {
+            initComponentView<CompId::MATERIAL_INDEX, Container>(
+                c, "_" + capitalName + "MaterialIndicesView");
+            v.def("material_indices", [](ElemView& self) {
+                return self.materialIndices();
+            });
+        }
+
+        if constexpr (comp::HasStaticVertexReferences<Container>) {
+            initComponentView<CompId::VERTEX_REFERENCES, Container>(
+                c, "_" + capitalName + "VertexIndicesView");
+            v.def("vertex_indices", [](ElemView& self) {
+                return self.vertexIndices();
+            });
+        }
 
         registeredTypes.insert(typeid(ElemView));
     }
