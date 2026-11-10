@@ -33,6 +33,9 @@ void initAdjacentEdges(pybind11::class_<ElementType, Options...>& c)
         "adj_edge_count", [](const ElementType& e) { return e.adjEdgeCount(); });
 
     c.def("adj_edge", [](ElementType& e, uint i) -> EdgeType {
+        if (i >= e.adjEdgeCount()) {
+            throw py::index_error();
+        }
         return e.adjEdge(i);
     });
     c.def("adj_edge_mod", [](ElementType& e, int i) -> EdgeType {
@@ -50,16 +53,31 @@ void initAdjacentEdges(pybind11::class_<ElementType, Options...>& c)
     });
 
     c.def("set_adj_edge", [](ElementType& e, uint i, const EdgeType& ed) {
+        if (i >= e.adjEdgeCount()) {
+            throw py::index_error();
+        }
         e.setAdjEdge(i, ed);
     });
     c.def("set_adj_edge", [](ElementType& e, uint i, uint ei) {
+        if (i >= e.adjEdgeCount()) {
+            throw py::index_error();
+        }
         e.setAdjEdge(i, ei);
+    });
+    c.def("set_adj_edge", [](ElementType& e, uint i, py::none) {
+        if (i >= e.adjEdgeCount()) {
+            throw py::index_error();
+        }
+        e.setAdjEdge(i, EdgeType::NULL_INDEX);
     });
     c.def("set_adj_edge_mod", [](ElementType& e, int i, const EdgeType& ed) {
         e.setAdjEdgeMod(i, ed);
     });
     c.def("set_adj_edge_mod", [](ElementType& e, int i, uint ei) {
         e.setAdjEdgeMod(i, ei);
+    });
+    c.def("set_adj_edge_mod", [](ElementType& e, int i, py::none) {
+        e.setAdjEdgeMod(i, EdgeType::NULL_INDEX);
     });
 
     c.def("set_adj_edges", [](ElementType& e, const std::vector<uint>& v) {

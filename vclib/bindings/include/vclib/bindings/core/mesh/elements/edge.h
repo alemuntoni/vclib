@@ -8,6 +8,8 @@
 #ifndef VCL_BINDINGS_CORE_MESH_ELEMENTS_EDGE_H
 #define VCL_BINDINGS_CORE_MESH_ELEMENTS_EDGE_H
 
+#include "element.h"
+
 #include <vclib/mesh.h>
 
 #include <vclib/bindings/core/mesh/components.h>
@@ -24,6 +26,7 @@ void initEdge(pybind11::class_<MeshType, Options...>& ct)
     // Create the class
     pybind11::class_<EdgeType> c(ct, "Edge");
 
+    initElement(c);
     initComponents(c);
 }
 

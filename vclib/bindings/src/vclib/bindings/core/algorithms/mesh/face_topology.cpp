@@ -39,7 +39,51 @@ void initFaceTopologyAlgorithms(pybind11::module& m)
                     "face"_a,
                     "edge"_a);
 
-                // TODO: add other functions from face_topology.h
+                m.def(
+                    "check_flip_edge",
+                    [](const FaceType& f, uint edge) -> bool {
+                        return checkFlipEdge(f, edge);
+                    },
+                    "face"_a,
+                    "edge"_a);
+
+                m.def(
+                    "edge_adjacent_face_count",
+                    [](const FaceType& f, uint edge) -> uint {
+                        return edgeAdjacentFaceCount(f, edge);
+                    },
+                    "face"_a,
+                    "edge"_a);
+
+                m.def(
+                    "face_on_border_edge_count",
+                    [](const FaceType& f) -> uint {
+                        return faceOnBorderEdgeCount(f);
+                    },
+                    "face"_a);
+
+                m.def(
+                    "face_dihedral_angle_on_edge",
+                    [](const FaceType& f, uint edge) {
+                        return faceDihedralAngleOnEdge(f, edge);
+                    },
+                    "face"_a,
+                    "edge"_a);
+
+                m.def(
+                    "detach_adjacent_faces_on_edge",
+                    [](FaceType f, uint edge) {
+                        detachAdjacentFacesOnEdge(f, edge);
+                    },
+                    "face"_a,
+                    "edge"_a);
+
+                m.def(
+                    "detach_face",
+                    [](FaceType f) {
+                        detachFace(f);
+                    },
+                    "face"_a);
 
                 m.def(
                     "flood_face_patch",

@@ -29,6 +29,9 @@ void initAdjacentVertices(pybind11::class_<ElementType, Options...>& c)
         [](const ElementType& e) { return e.adjVertexCount(); });
 
     c.def("adj_vertex", [](ElementType& e, uint i) -> VertexType {
+        if (i >= e.adjVertexCount()) {
+            throw py::index_error();
+        }
         return e.adjVertex(i);
     });
     c.def("adj_vertex_mod", [](ElementType& e, int i) -> VertexType {
@@ -46,16 +49,31 @@ void initAdjacentVertices(pybind11::class_<ElementType, Options...>& c)
     });
 
     c.def("set_adj_vertex", [](ElementType& e, uint i, const VertexType& v) {
+        if (i >= e.adjVertexCount()) {
+            throw py::index_error();
+        }
         e.setAdjVertex(i, v);
     });
     c.def("set_adj_vertex", [](ElementType& e, uint i, uint vi) {
+        if (i >= e.adjVertexCount()) {
+            throw py::index_error();
+        }
         e.setAdjVertex(i, vi);
+    });
+    c.def("set_adj_vertex", [](ElementType& e, uint i, py::none) {
+        if (i >= e.adjVertexCount()) {
+            throw py::index_error();
+        }
+        e.setAdjVertex(i, VertexType::NULL_INDEX);
     });
     c.def("set_adj_vertex_mod", [](ElementType& e, int i, const VertexType& v) {
         e.setAdjVertexMod(i, v);
     });
     c.def("set_adj_vertex_mod", [](ElementType& e, int i, uint vi) {
         e.setAdjVertexMod(i, vi);
+    });
+    c.def("set_adj_vertex_mod", [](ElementType& e, int i, py::none) {
+        e.setAdjVertexMod(i, VertexType::NULL_INDEX);
     });
 
     c.def("set_adj_vertices", [](ElementType& e, const std::vector<uint>& v) {

@@ -373,11 +373,10 @@ concept ElementConcept = requires (T&& obj) {
 
 namespace std {
 
-template<vcl::ElemId ELEM_ID, typename ContainerType, typename Comps>
-struct hash<vcl::ElementProxy<ELEM_ID, ContainerType, Comps>>
+template<vcl::ElementConcept Element>
+struct hash<Element>
 {
-    std::size_t operator()(
-        const vcl::ElementProxy<ELEM_ID, ContainerType, Comps>& ep) const
+    std::size_t operator()(const Element& ep) const
     {
         if (!ep.isValid()) {
             return 0;

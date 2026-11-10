@@ -33,19 +33,6 @@ void initComponents(pybind11::class_<ElementType, Options...>& c)
     namespace py = pybind11;
     using enum py::return_value_policy;
 
-    if constexpr (!MeshConcept<ElementType>) {
-        c.def("index", [](const ElementType& e) { return e.index(); });
-
-        if constexpr (requires(ElementType e) { e.parentMesh(); }) {
-            c.def(
-                "parent_mesh",
-                [](ElementType& v) -> auto& {
-                    return v.parentMesh();
-                },
-                reference);
-        }
-    }
-
     if constexpr (comp::HasAdjacentEdges<ElementType>) {
         initAdjacentEdges(c);
     }

@@ -281,8 +281,8 @@ bool checkFlipEdge(const FaceType& f, uint edge)
     auto f_v2  = f.vertexMod(edge + 2);
     auto of_v2 = of.vertexMod(oe + 2);
 
-    MeshPos<FaceType> pos(f, f_v2);
-    MeshPos<FaceType> startPos = pos;
+    MeshPos pos(f, f_v2);
+    MeshPos startPos = pos;
     // loop in the one ring of f_v2
     do {
         pos.nextEdgeAdjacentToV();
@@ -474,7 +474,7 @@ void detachAdjacentFacesOnEdge(FaceType f, uint edge)
         if (nextFace == prevFace) { // manifold case
             uint en = nextFace.indexOfAdjFace(f);
             assert(en != UINT_NULL);
-            nextFace.setAdjFace(en, nullptr);
+            nextFace.setAdjFace(en, FaceType::NULL_INDEX);
         }
         else { // non manifold case
             // the prev face does not have to point to f anymore, but to
@@ -516,7 +516,7 @@ void detachFace(FaceType f) requires comp::HasAdjacentFaces<FaceType>
             "Face has no Adjacent Faces component.");
     }
 
-    using VertexType = FaceType::VertexType;
+    using VertexType = vcl::VertexType<FaceType>;
 
     for (uint e = 0; e < f.vertexCount(); ++e) {
         detachAdjacentFacesOnEdge(f, e);
@@ -525,7 +525,7 @@ void detachFace(FaceType f) requires comp::HasAdjacentFaces<FaceType>
         if constexpr (comp::HasAdjacentFaces<VertexType>) {
             if (f.vertex(e).isAdjacentFacesAvailable()) {
                 VertexType v    = f.vertex(e);
-                uint       vpos = v->indexOfAdjFace(f);
+                uint       vpos = v.indexOfAdjFace(f);
                 if (vpos != UINT_NULL) {  // may happen if vertex adj faces are
                                           // not initialized / updated
                     v.eraseAdjFace(vpos); // the vertex v has not anymore the

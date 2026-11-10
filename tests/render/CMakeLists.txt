@@ -11,7 +11,7 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR ${VCLIB_COMPILE_WARNINGS_AS_ERRORS})
 
 add_subdirectory(common)
 
-#add_subdirectory(000-static-asserts)
+add_subdirectory(000-static-asserts)
 
 if(TARGET vclib-3rd-bgfx)
     add_subdirectory(001-hello-triangle-headless)

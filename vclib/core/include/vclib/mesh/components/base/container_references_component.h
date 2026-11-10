@@ -234,11 +234,10 @@ protected:
     }
 
     /**
-     * @brief Sets the reference at position i to the given element proxy or
-     * pointer.
+     * @brief Sets the reference at position i to the given element proxy.
      * @param[in] self: The component / element proxy object.
      * @param[in] i: The position in this container.
-     * @param[in] e: The referenced element proxy or pointer.
+     * @param[in] e: The referenced element proxy.
      */
     template<typename Elem>
     static void setRef(auto&& self, uint i, const Elem& e)
@@ -247,14 +246,6 @@ protected:
         assert(i < refCount(self));
         if constexpr (requires { e.index(); }) {
             Base::container(self)[i] = e.index();
-        }
-        else if constexpr (std::is_pointer_v<std::decay_t<Elem>>) {
-            if (e != nullptr) {
-                Base::container(self)[i] = e->index();
-            }
-            else {
-                Base::container(self)[i] = NULL_INDEX;
-            }
         }
         else {
             Base::container(self)[i] = static_cast<IndexType>(e);
@@ -278,7 +269,7 @@ protected:
      * @brief Sets the reference at position i using modular arithmetic.
      * @param[in] self: The component / element proxy object.
      * @param[in] i: The position in this container modulo refCount().
-     * @param[in] e: The referenced element proxy or pointer.
+     * @param[in] e: The referenced element proxy.
      */
     template<typename Elem>
     static void setRefMod(auto&& self, int i, const Elem& e)
@@ -290,8 +281,8 @@ protected:
     }
 
     /**
-     * @brief Sets all stored references from an input range of indices,
-     * proxies, or pointers.
+     * @brief Sets all stored references from an input range of indices or
+     * proxies.
      * @param[in] self: The component / element proxy object.
      * @param[in] rng: The input range.
      */
@@ -311,8 +302,8 @@ protected:
     }
 
     /**
-     * @brief Sets all stored references from a parameter pack of indices,
-     * proxies, or pointers.
+     * @brief Sets all stored references from a parameter pack of indices or
+     * proxies.
      * @param[in] self: The component / element proxy object.
      * @param[in] args: The references to set.
      */
@@ -341,9 +332,9 @@ protected:
 
     /**
      * @brief Checks if this container contains the given referenced element
-     * proxy or pointer.
+     * proxy.
      * @param[in] self: The component / element proxy object.
-     * @param[in] e: The element proxy or pointer to check.
+     * @param[in] e: The element proxy to check.
      * @return true if found, false otherwise.
      */
     template<typename Elem>
@@ -352,12 +343,6 @@ protected:
     {
         if constexpr (requires { e.index(); }) {
             return containsRef(self, e.index());
-        }
-        else if constexpr (std::is_pointer_v<std::decay_t<Elem>>) {
-            if (e != nullptr) {
-                return containsRef(self, e->index());
-            }
-            return containsRef(self, NULL_INDEX);
         }
         else {
             return containsRef(self, static_cast<IndexType>(e));
@@ -380,9 +365,9 @@ protected:
 
     /**
      * @brief Finds the position in this reference container of the given
-     * element proxy or pointer.
+     * element proxy.
      * @param[in] self: The component / element proxy object.
-     * @param[in] e: The element proxy or pointer to search for.
+     * @param[in] e: The element proxy to search for.
      * @return The 0-based position in this container, or UINT_NULL if not
      * found.
      */
@@ -392,12 +377,6 @@ protected:
     {
         if constexpr (requires { e.index(); }) {
             return indexOfRef(self, e.index());
-        }
-        else if constexpr (std::is_pointer_v<std::decay_t<Elem>>) {
-            if (e != nullptr) {
-                return indexOfRef(self, e->index());
-            }
-            return indexOfRef(self, NULL_INDEX);
         }
         else {
             return indexOfRef(self, static_cast<IndexType>(e));
@@ -427,10 +406,10 @@ protected:
     }
 
     /**
-     * @brief Appends a referenced element proxy or pointer to the container.
+     * @brief Appends a referenced element proxy to the container.
      * @note Available only for dynamic, non-TTVC containers.
      * @param[in] self: The component / element proxy object.
-     * @param[in] e: The element proxy or pointer to append.
+     * @param[in] e: The element proxy to append.
      */
     template<typename Elem>
     static void pushRef(auto&& self, const Elem& e) requires (
@@ -438,14 +417,6 @@ protected:
     {
         if constexpr (requires { e.index(); }) {
             pushRef(self, e.index());
-        }
-        else if constexpr (std::is_pointer_v<std::decay_t<Elem>>) {
-            if (e != nullptr) {
-                pushRef(self, e->index());
-            }
-            else {
-                pushRef(self, NULL_INDEX);
-            }
         }
         else {
             pushRef(self, static_cast<IndexType>(e));
@@ -466,11 +437,11 @@ protected:
     }
 
     /**
-     * @brief Inserts a referenced element proxy or pointer at position i.
+     * @brief Inserts a referenced element proxy at position i.
      * @note Available only for dynamic, non-TTVC containers.
      * @param[in] self: The component / element proxy object.
      * @param[in] i: The position to insert at.
-     * @param[in] e: The element proxy or pointer to insert.
+     * @param[in] e: The element proxy to insert.
      */
     template<typename Elem>
     static void insertRef(auto&& self, uint i, const Elem& e) requires (
@@ -478,14 +449,6 @@ protected:
     {
         if constexpr (requires { e.index(); }) {
             insertRef(self, i, e.index());
-        }
-        else if constexpr (std::is_pointer_v<std::decay_t<Elem>>) {
-            if (e != nullptr) {
-                insertRef(self, i, e->index());
-            }
-            else {
-                insertRef(self, i, NULL_INDEX);
-            }
         }
         else {
             insertRef(self, i, static_cast<IndexType>(e));

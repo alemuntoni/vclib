@@ -33,6 +33,9 @@ void initAdjacentFaces(pybind11::class_<ElementType, Options...>& c)
         "adj_face_count", [](const ElementType& e) { return e.adjFaceCount(); });
 
     c.def("adj_face", [](ElementType& e, uint i) -> FaceType {
+        if (i >= e.adjFaceCount()) {
+            throw py::index_error();
+        }
         return e.adjFace(i);
     });
     c.def("adj_face_mod", [](ElementType& e, int i) -> FaceType {
@@ -50,16 +53,31 @@ void initAdjacentFaces(pybind11::class_<ElementType, Options...>& c)
     });
 
     c.def("set_adj_face", [](ElementType& e, uint i, const FaceType& f) {
+        if (i >= e.adjFaceCount()) {
+            throw py::index_error();
+        }
         e.setAdjFace(i, f);
     });
     c.def("set_adj_face", [](ElementType& e, uint i, uint fi) {
+        if (i >= e.adjFaceCount()) {
+            throw py::index_error();
+        }
         e.setAdjFace(i, fi);
+    });
+    c.def("set_adj_face", [](ElementType& e, uint i, py::none) {
+        if (i >= e.adjFaceCount()) {
+            throw py::index_error();
+        }
+        e.setAdjFace(i, FaceType::NULL_INDEX);
     });
     c.def("set_adj_face_mod", [](ElementType& e, int i, const FaceType& f) {
         e.setAdjFaceMod(i, f);
     });
     c.def("set_adj_face_mod", [](ElementType& e, int i, uint fi) {
         e.setAdjFaceMod(i, fi);
+    });
+    c.def("set_adj_face_mod", [](ElementType& e, int i, py::none) {
+        e.setAdjFaceMod(i, FaceType::NULL_INDEX);
     });
 
     c.def("set_adj_faces", [](ElementType& e, const std::vector<uint>& v) {

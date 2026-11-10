@@ -291,7 +291,6 @@ void readObjFace(
         }
     }
     else { // split needed
-        // TODO
         addTriangleFacesFromPolygon(m, f, vids);
     }
 

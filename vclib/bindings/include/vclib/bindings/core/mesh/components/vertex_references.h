@@ -29,6 +29,9 @@ void initVertexReferences(pybind11::class_<ElementType, Options...>& c)
     c.def("vertex_count", [](const ElementType& e) { return e.vertexCount(); });
 
     c.def("vertex", [](ElementType& e, uint i) -> VertexType {
+        if (i >= e.vertexCount()) {
+            throw py::index_error();
+        }
         return e.vertex(i);
     });
     c.def("vertex_mod", [](ElementType& e, int i) -> VertexType {
@@ -46,9 +49,15 @@ void initVertexReferences(pybind11::class_<ElementType, Options...>& c)
     });
 
     c.def("set_vertex", [](ElementType& e, uint i, const VertexType& v) {
+        if (i >= e.vertexCount()) {
+            throw py::index_error();
+        }
         e.setVertex(i, v);
     });
     c.def("set_vertex", [](ElementType& e, uint i, uint vi) {
+        if (i >= e.vertexCount()) {
+            throw py::index_error();
+        }
         e.setVertex(i, vi);
     });
     c.def("set_vertex_mod", [](ElementType& e, int i, const VertexType& v) {

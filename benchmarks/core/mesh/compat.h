@@ -14,6 +14,7 @@
 
 #include "grid.h"
 #include "types.h"
+#include "vclib/algorithms/mesh/import_export/import_matrix.h"
 
 namespace bench {
 
@@ -87,21 +88,9 @@ bool hasWedgeTexCoords(const Mesh& m)
 template<typename Mesh>
 void buildGridMesh(Mesh& m, vcl::uint rows, vcl::uint cols)
 {
-    // TODO: replace with vcl::meshFromMatrices once import_export is ported
     auto grid = makeGridMatrices(rows, cols);
 
-    m.clear();
-    m.resizeVertices(grid.vertices.rows());
-    for (int i = 0; i < grid.vertices.rows(); ++i) {
-        m.vertex(i).position() = {
-            grid.vertices(i, 0), grid.vertices(i, 1), grid.vertices(i, 2)};
-    }
-
-    m.resizeFaces(grid.faces.rows());
-    for (int i = 0; i < grid.faces.rows(); ++i) {
-        m.face(i).setVertices(
-            grid.faces(i, 0), grid.faces(i, 1), grid.faces(i, 2));
-    }
+    vcl::meshFromMatrices(m, grid.vertices, grid.faces);
 }
 
 } // namespace bench

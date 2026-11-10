@@ -8,6 +8,7 @@
 #ifndef VCL_BINDINGS_CORE_MESH_ELEMENTS_FACE_H
 #define VCL_BINDINGS_CORE_MESH_ELEMENTS_FACE_H
 
+#include "element.h"
 #include "wedge.h"
 
 #include <vclib/mesh.h>
@@ -26,6 +27,7 @@ void initFace(pybind11::class_<MeshType, Options...>& ct)
     // Create the class
     pybind11::class_<FaceType> c(ct, "Face");
 
+    initElement(c);
     initWedge(c);
     initComponents(c);
 }

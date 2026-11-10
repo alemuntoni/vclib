@@ -164,7 +164,6 @@ TEMPLATE_TEST_CASE(
         REQUIRE(tm.materialCount() == 2);
         REQUIRE(tm.isFaceMaterialIndexAvailable());
         REQUIRE(tm.isFaceWedgeTexCoordsAvailable());
-        // TODO
         for (const auto& f : tm.faces()) {
             // first two faces have material index 0, the other two have index 1
             REQUIRE(f.materialIndex() == f.index() / 2);

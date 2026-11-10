@@ -87,11 +87,19 @@ void initWedge(pybind11::class_<FaceType, Options...>& c)
             return self.size();
         });
 
-        wcp.def("__getitem__", [](WedgeContainerType& self, uint i) {
-            if (i >= self.size()) {
+        wcp.def("__getitem__", [](WedgeContainerType& self, int i) {
+            int s = static_cast<int>(self.size());
+            if (i < 0) {
+                i += s;
+            }
+            if (i < 0 || i >= s) {
                 throw py::index_error();
             }
-            return self[i];
+            return self[static_cast<uint>(i)];
+        });
+
+        wcp.def("__bool__", [](const WedgeContainerType& self) {
+            return !self.empty();
         });
 
         wcp.def(
@@ -106,6 +114,22 @@ void initWedge(pybind11::class_<FaceType, Options...>& c)
                 decltype(std::declval<FaceType&>().wedges().colors());
             if (!registeredTypes.contains(typeid(WedgeColorsView))) {
                 pybind11::class_<WedgeColorsView> cv(c, "_WedgeColorsRange");
+                cv.def("__len__", [](const WedgeColorsView& v) {
+                    return v.size();
+                });
+                cv.def("__getitem__", [](WedgeColorsView& v, int i) {
+                    int s = static_cast<int>(v.size());
+                    if (i < 0) {
+                        i += s;
+                    }
+                    if (i < 0 || i >= s) {
+                        throw py::index_error();
+                    }
+                    return v[static_cast<uint>(i)];
+                });
+                cv.def("__bool__", [](const WedgeColorsView& v) {
+                    return !v.empty();
+                });
                 cv.def(
                     "__iter__",
                     [](WedgeColorsView& v) {
@@ -128,6 +152,22 @@ void initWedge(pybind11::class_<FaceType, Options...>& c)
             if (!registeredTypes.contains(typeid(WedgeTexCoordsView))) {
                 pybind11::class_<WedgeTexCoordsView> tv(
                     c, "_WedgeTexCoordsRange");
+                tv.def("__len__", [](const WedgeTexCoordsView& v) {
+                    return v.size();
+                });
+                tv.def("__getitem__", [](WedgeTexCoordsView& v, int i) {
+                    int s = static_cast<int>(v.size());
+                    if (i < 0) {
+                        i += s;
+                    }
+                    if (i < 0 || i >= s) {
+                        throw py::index_error();
+                    }
+                    return v[static_cast<uint>(i)];
+                });
+                tv.def("__bool__", [](const WedgeTexCoordsView& v) {
+                    return !v.empty();
+                });
                 tv.def(
                     "__iter__",
                     [](WedgeTexCoordsView& v) {
@@ -150,6 +190,22 @@ void initWedge(pybind11::class_<FaceType, Options...>& c)
                 decltype(std::declval<FaceType&>().wedges().normals());
             if (!registeredTypes.contains(typeid(WedgeNormalsView))) {
                 pybind11::class_<WedgeNormalsView> nv(c, "_WedgeNormalsRange");
+                nv.def("__len__", [](const WedgeNormalsView& v) {
+                    return v.size();
+                });
+                nv.def("__getitem__", [](WedgeNormalsView& v, int i) {
+                    int s = static_cast<int>(v.size());
+                    if (i < 0) {
+                        i += s;
+                    }
+                    if (i < 0 || i >= s) {
+                        throw py::index_error();
+                    }
+                    return v[static_cast<uint>(i)];
+                });
+                nv.def("__bool__", [](const WedgeNormalsView& v) {
+                    return !v.empty();
+                });
                 nv.def(
                     "__iter__",
                     [](WedgeNormalsView& v) {
