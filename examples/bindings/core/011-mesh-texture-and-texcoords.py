@@ -73,8 +73,14 @@ def mesh_texture_and_texcoords():
             if mesh_wedge_texcoords.is_per_face_material_index_enabled():
                 print(f"     material_id: {face.material_index()}")
             for i in range(face.vertex_count()):
-                tex_coord = face.wedge_tex_coord(i)
+                tex_coord = face.wedge(i).tex_coord()
                 print(f"     Wedge {i}: ({tex_coord.u()}, {tex_coord.v()})")
+
+            # Iteration over wedges
+            print("   Iterating through face.wedges():")
+            for w in face.wedges():
+                tc = w.tex_coord()
+                print(f"     Corner {w.index()} (vertex {w.vertex_index()}): ({tc.u()}, {tc.v()})")
 
     else:
         print("   - Mesh does not have wedge texture coordinates")
@@ -115,14 +121,14 @@ def mesh_texture_and_texcoords():
     # Add faces with wedge texture coordinates
     custom_mesh.add_faces(2)
     custom_mesh.face(0).set_vertices([0, 1, 2])
-    custom_mesh.face(0).set_wedge_tex_coord(0, [0.0, 0.0])
-    custom_mesh.face(0).set_wedge_tex_coord(1, [1.0, 0.0])
-    custom_mesh.face(0).set_wedge_tex_coord(2, [1.0, 1.0])
+    custom_mesh.face(0).wedge(0).set_tex_coord([0.0, 0.0])
+    custom_mesh.face(0).wedge(1).set_tex_coord([1.0, 0.0])
+    custom_mesh.face(0).wedge(2).set_tex_coord([1.0, 1.0])
 
     custom_mesh.face(1).set_vertices([0, 2, 3])
-    custom_mesh.face(1).set_wedge_tex_coord(0, [0.0, 0.0])
-    custom_mesh.face(1).set_wedge_tex_coord(1, [1.0, 1.0])
-    custom_mesh.face(1).set_wedge_tex_coord(2, [0.0, 1.0])
+    custom_mesh.face(1).wedge(0).set_tex_coord([0.0, 0.0])
+    custom_mesh.face(1).wedge(1).set_tex_coord([1.0, 1.0])
+    custom_mesh.face(1).wedge(2).set_tex_coord([0.0, 1.0])
 
     # Add material from the previously loaded mesh
     custom_mesh.push_material(mesh_wedge_texcoords.material(0))

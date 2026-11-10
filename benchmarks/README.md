@@ -17,7 +17,7 @@ out/build/vclib-core-benchmarks/benchmarks/core/mesh/vclib-core-benchmark-mesh \
     --mesh-type trimesh64 --grid 1000 1000 --json report.json
 ```
 
-| CLI name (v2) | C++ type | Scalar | Reference representation |
+| CLI name | C++ type | Scalar | Reference representation |
 |---------------|----------|--------|--------------------------|
 | `trimesh` (default) | `vcl::TriMesh` | double | 32-bit indices |
 | `trimeshf` | `vcl::TriMeshf` | float | 32-bit indices |

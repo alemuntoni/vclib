@@ -16,8 +16,6 @@
 #include "components/polygon_bit_flags.h"
 #include "components/triangle_bit_flags.h"
 #include "components/vertex_references.h"
-#include "components/wedge_colors.h"
-#include "components/wedge_tex_coords.h"
 
 #include <vclib/mesh.h>
 #include <vclib/space/core.h>
@@ -160,13 +158,6 @@ void initComponents(pybind11::class_<ElementType, Options...>& c)
 
     if constexpr (comp::HasVertexReferences<ElementType>) {
         initVertexReferences(c);
-    }
-
-    if constexpr (comp::HasWedgeColors<ElementType>) {
-        initWedgeColors(c);
-    }
-    if constexpr (comp::HasWedgeTexCoords<ElementType>) {
-        initWedgeTexCoords(c);
     }
 }
 

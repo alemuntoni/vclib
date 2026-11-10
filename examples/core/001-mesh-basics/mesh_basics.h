@@ -94,11 +94,11 @@ auto meshBasics()
 
     // Check if color component is available
     std::println(
-        "Per-vertex color available: {}", mesh.isVertexColorAvailable());
+        "Vertex color available: {}", mesh.isVertexColorAvailable());
 
     // Enable vertex color component
     mesh.enableVertexColor();
-    std::println("Enabled per-vertex color");
+    std::println("Enabled vertex color");
     std::println("Vertex color available: {}", mesh.isVertexColorAvailable());
 
     // Set vertex colors

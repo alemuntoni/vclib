@@ -86,6 +86,19 @@ public:
     }
 
     /**
+     * @brief Returns a proxy to the modularized i-th wedge (corner) of the
+     * face.
+     * @param[in] i: The modularized corner index (modularized on vertexCount()).
+     * @return A WedgeProxy for the modularized corner.
+     */
+    decltype(auto) wedgeMod(this auto&& self, int i)
+    {
+        const int n = self.vertexCount();
+        assert(n > 0);
+        return self.wedge(((i % n) + n) % n);
+    }
+
+    /**
      * @brief Returns the container proxy for all wedges of the face.
      * Allows iterating over wedges (for auto w : f.wedges()) or direct
      * column container access (for auto& n : f.wedges().normals()).

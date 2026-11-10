@@ -26,30 +26,6 @@ struct MeshMatrices
 };
 
 /**
- * @brief Fills the given mesh with the vertices and triangles contained in the
- * given matrices.
- *
- * TODO: replace with vcl::meshFromMatrices once import_export is ported to
- * Mesh V2.
- */
-template<typename MeshType, typename VMatrix, typename FMatrix>
-inline void buildMesh(MeshType& m, const VMatrix& V, const FMatrix& F)
-{
-    m.clear();
-    m.resizeVertices(V.rows());
-    for (int i = 0; i < V.rows(); ++i) {
-        m.vertex(i).position() = {V(i, 0), V(i, 1), V(i, 2)};
-    }
-
-    m.resizeFaces(F.rows());
-    for (int i = 0; i < F.rows(); ++i) {
-        m.face(i).setVertex(0, F(i, 0));
-        m.face(i).setVertex(1, F(i, 1));
-        m.face(i).setVertex(2, F(i, 2));
-    }
-}
-
-/**
  * @brief Generates a regular triangulated grid as Eigen matrices.
  *
  * @param rows Number of vertex rows.
