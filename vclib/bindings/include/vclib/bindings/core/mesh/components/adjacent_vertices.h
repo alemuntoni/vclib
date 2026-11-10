@@ -35,6 +35,16 @@ void initAdjacentVertices(pybind11::class_<ElementType, Options...>& c)
         return e.adjVertexMod(i);
     });
 
+    c.def("adj_vertex_index", [](const ElementType& e, uint i) {
+        if (i >= e.adjVertexCount()) {
+            throw py::index_error();
+        }
+        return e.adjVertexIndex(i);
+    });
+    c.def("adj_vertex_index_mod", [](const ElementType& e, int i) {
+        return e.adjVertexIndexMod(i);
+    });
+
     c.def("set_adj_vertex", [](ElementType& e, uint i, const VertexType& v) {
         e.setAdjVertex(i, v);
     });
@@ -108,6 +118,19 @@ void initAdjacentVertices(pybind11::class_<ElementType, Options...>& c)
             },
             py::keep_alive<0, 1>());
 
+        v.def("__len__", [](const AdjVertexView& v) { return v.size(); });
+        v.def("__getitem__", [](AdjVertexView& v, int i) {
+            int s = static_cast<int>(v.size());
+            if (i < 0) {
+                i += s;
+            }
+            if (i < 0 || i >= s) {
+                throw py::index_error();
+            }
+            return v[static_cast<uint>(i)];
+        });
+        v.def("__bool__", [](const AdjVertexView& v) { return !v.empty(); });
+
         registeredTypes.insert(typeid(AdjVertexView));
     }
 
@@ -125,6 +148,19 @@ void initAdjacentVertices(pybind11::class_<ElementType, Options...>& c)
                 return py::make_iterator(v.begin(), v.end());
             },
             py::keep_alive<0, 1>());
+
+        vi.def("__len__", [](const AdjVertexIndexView& v) { return v.size(); });
+        vi.def("__getitem__", [](AdjVertexIndexView& v, int i) {
+            int s = static_cast<int>(v.size());
+            if (i < 0) {
+                i += s;
+            }
+            if (i < 0 || i >= s) {
+                throw py::index_error();
+            }
+            return v[static_cast<uint>(i)];
+        });
+        vi.def("__bool__", [](const AdjVertexIndexView& v) { return !v.empty(); });
 
         registeredTypes.insert(typeid(AdjVertexIndexView));
     }

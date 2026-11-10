@@ -39,6 +39,16 @@ void initAdjacentFaces(pybind11::class_<ElementType, Options...>& c)
         return e.adjFaceMod(i);
     });
 
+    c.def("adj_face_index", [](const ElementType& e, uint i) {
+        if (i >= e.adjFaceCount()) {
+            throw py::index_error();
+        }
+        return e.adjFaceIndex(i);
+    });
+    c.def("adj_face_index_mod", [](const ElementType& e, int i) {
+        return e.adjFaceIndexMod(i);
+    });
+
     c.def("set_adj_face", [](ElementType& e, uint i, const FaceType& f) {
         e.setAdjFace(i, f);
     });
@@ -111,6 +121,20 @@ void initAdjacentFaces(pybind11::class_<ElementType, Options...>& c)
                 return py::make_iterator(v.begin(), v.end());
             },
             py::keep_alive<0, 1>());
+
+        v.def("__len__", [](const AdjFaceView& v) { return v.size(); });
+        v.def("__getitem__", [](AdjFaceView& v, int i) {
+            int s = static_cast<int>(v.size());
+            if (i < 0) {
+                i += s;
+            }
+            if (i < 0 || i >= s) {
+                throw py::index_error();
+            }
+            return v[static_cast<uint>(i)];
+        });
+        v.def("__bool__", [](const AdjFaceView& v) { return !v.empty(); });
+
         registeredTypes.insert(typeid(AdjFaceView));
     }
 
@@ -128,6 +152,20 @@ void initAdjacentFaces(pybind11::class_<ElementType, Options...>& c)
                 return py::make_iterator(v.begin(), v.end());
             },
             py::keep_alive<0, 1>());
+
+        vi.def("__len__", [](const AdjFaceIndexView& v) { return v.size(); });
+        vi.def("__getitem__", [](AdjFaceIndexView& v, int i) {
+            int s = static_cast<int>(v.size());
+            if (i < 0) {
+                i += s;
+            }
+            if (i < 0 || i >= s) {
+                throw py::index_error();
+            }
+            return v[static_cast<uint>(i)];
+        });
+        vi.def("__bool__", [](const AdjFaceIndexView& v) { return !v.empty(); });
+
         registeredTypes.insert(typeid(AdjFaceIndexView));
     }
 

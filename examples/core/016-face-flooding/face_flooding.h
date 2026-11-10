@@ -8,7 +8,6 @@
 #ifndef FACE_FLOODING_H
 #define FACE_FLOODING_H
 
-#include "vclib/meshes/tri_mesh.h"
 #include <vclib/algorithms.h>
 #include <vclib/io.h>
 #include <vclib/meshes.h>
@@ -38,7 +37,7 @@ inline auto faceFlooding()
     vcl::updateBoundingBox(m);
 
     // Initialize face colors
-    //vcl::setPerFaceColor(m, vcl::Color::LightGray);
+    vcl::setPerFaceColor(m, vcl::Color::LightGray);
 
     std::cout << "Mesh loaded: " << m.faceCount() << " faces\n";
 

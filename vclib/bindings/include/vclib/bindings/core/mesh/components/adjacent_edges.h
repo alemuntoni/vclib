@@ -39,6 +39,16 @@ void initAdjacentEdges(pybind11::class_<ElementType, Options...>& c)
         return e.adjEdgeMod(i);
     });
 
+    c.def("adj_edge_index", [](const ElementType& e, uint i) {
+        if (i >= e.adjEdgeCount()) {
+            throw py::index_error();
+        }
+        return e.adjEdgeIndex(i);
+    });
+    c.def("adj_edge_index_mod", [](const ElementType& e, int i) {
+        return e.adjEdgeIndexMod(i);
+    });
+
     c.def("set_adj_edge", [](ElementType& e, uint i, const EdgeType& ed) {
         e.setAdjEdge(i, ed);
     });
@@ -111,6 +121,20 @@ void initAdjacentEdges(pybind11::class_<ElementType, Options...>& c)
                 return py::make_iterator(v.begin(), v.end());
             },
             py::keep_alive<0, 1>());
+
+        v.def("__len__", [](const AdjEdgeView& v) { return v.size(); });
+        v.def("__getitem__", [](AdjEdgeView& v, int i) {
+            int s = static_cast<int>(v.size());
+            if (i < 0) {
+                i += s;
+            }
+            if (i < 0 || i >= s) {
+                throw py::index_error();
+            }
+            return v[static_cast<uint>(i)];
+        });
+        v.def("__bool__", [](const AdjEdgeView& v) { return !v.empty(); });
+
         registeredTypes.insert(typeid(AdjEdgeView));
     }
 
@@ -128,6 +152,20 @@ void initAdjacentEdges(pybind11::class_<ElementType, Options...>& c)
                 return py::make_iterator(v.begin(), v.end());
             },
             py::keep_alive<0, 1>());
+
+        vi.def("__len__", [](const AdjEdgeIndexView& v) { return v.size(); });
+        vi.def("__getitem__", [](AdjEdgeIndexView& v, int i) {
+            int s = static_cast<int>(v.size());
+            if (i < 0) {
+                i += s;
+            }
+            if (i < 0 || i >= s) {
+                throw py::index_error();
+            }
+            return v[static_cast<uint>(i)];
+        });
+        vi.def("__bool__", [](const AdjEdgeIndexView& v) { return !v.empty(); });
+
         registeredTypes.insert(typeid(AdjEdgeIndexView));
     }
 

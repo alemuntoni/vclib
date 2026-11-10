@@ -35,6 +35,16 @@ void initVertexReferences(pybind11::class_<ElementType, Options...>& c)
         return e.vertexMod(i);
     });
 
+    c.def("vertex_index", [](const ElementType& e, uint i) {
+        if (i >= e.vertexCount()) {
+            throw py::index_error();
+        }
+        return e.vertexIndex(i);
+    });
+    c.def("vertex_index_mod", [](const ElementType& e, int i) {
+        return e.vertexIndexMod(i);
+    });
+
     c.def("set_vertex", [](ElementType& e, uint i, const VertexType& v) {
         e.setVertex(i, v);
     });
@@ -114,6 +124,19 @@ void initVertexReferences(pybind11::class_<ElementType, Options...>& c)
             [](VertexView& v) { return py::make_iterator(v.begin(), v.end()); },
             py::keep_alive<0, 1>());
 
+        v.def("__len__", [](const VertexView& v) { return v.size(); });
+        v.def("__getitem__", [](VertexView& v, int i) {
+            int s = static_cast<int>(v.size());
+            if (i < 0) {
+                i += s;
+            }
+            if (i < 0 || i >= s) {
+                throw py::index_error();
+            }
+            return v[static_cast<uint>(i)];
+        });
+        v.def("__bool__", [](const VertexView& v) { return !v.empty(); });
+
         registeredTypes.insert(typeid(VertexView));
     }
 
@@ -131,6 +154,19 @@ void initVertexReferences(pybind11::class_<ElementType, Options...>& c)
                 return py::make_iterator(v.begin(), v.end());
             },
             py::keep_alive<0, 1>());
+
+        vi.def("__len__", [](const VertexIndexView& v) { return v.size(); });
+        vi.def("__getitem__", [](VertexIndexView& v, int i) {
+            int s = static_cast<int>(v.size());
+            if (i < 0) {
+                i += s;
+            }
+            if (i < 0 || i >= s) {
+                throw py::index_error();
+            }
+            return v[static_cast<uint>(i)];
+        });
+        vi.def("__bool__", [](const VertexIndexView& v) { return !v.empty(); });
 
         registeredTypes.insert(typeid(VertexIndexView));
     }

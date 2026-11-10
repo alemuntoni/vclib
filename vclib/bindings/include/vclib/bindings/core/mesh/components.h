@@ -132,6 +132,22 @@ void initComponents(pybind11::class_<ElementType, Options...>& c)
         c.def("quality", [](const ElementType& v) { return v.quality(); });
         c.def("set_quality", [](ElementType& v, double q) { v.quality() = q; });
     }
+    if constexpr (comp::HasTangent<ElementType>) {
+        c.def(
+            "tangent",
+            [](ElementType& v) -> auto& { return v.tangent(); },
+            reference);
+        c.def("set_tangent", [](ElementType& v, const Point3d& p) {
+            v.tangent() = p;
+        });
+        c.def("tangent_right_handed", [](const ElementType& v) {
+            return v.tangentRightHanded();
+        });
+        c.def("set_tangent_right_handed", [](ElementType& v, bool rh) {
+            v.tangentRightHanded() = rh;
+        });
+        c.def("bitangent", [](ElementType& v) { return v.bitangent(); });
+    }
     if constexpr (comp::HasTexCoord<ElementType>) {
         c.def(
             "tex_coord",

@@ -103,6 +103,10 @@ void initContainer(
         return t.template compactElements<ELEM_ID>();
     });
 
+    c.def(("compact_" + name + "_indices").c_str(), [](const MeshType& t) {
+        return t.template compactIndices<ELEM_ID>();
+    });
+
     c.def(("delete_" + name).c_str(), [](MeshType& t, uint i) {
         t.template deleteElement<ELEM_ID>(i);
     });
@@ -121,6 +125,21 @@ void initContainer(
             "__iter__",
             [](ElemView& t) { return py::make_iterator(t.begin(), t.end()); },
             py::keep_alive<0, 1>());
+
+        v.def("__len__", [](const ElemView& t) { return t.size(); });
+
+        v.def("__getitem__", [](ElemView& t, int i) {
+            int s = static_cast<int>(t.size());
+            if (i < 0) {
+                i += s;
+            }
+            if (i < 0 || i >= s) {
+                throw py::index_error();
+            }
+            return t[static_cast<uint>(i)];
+        });
+
+        v.def("__bool__", [](const ElemView& t) { return !t.empty(); });
 
         registeredTypes.insert(typeid(ElemView));
     }
@@ -158,11 +177,17 @@ void initContainer(
     detail::addOptionalComponentFunctions<ELEM_ID, CompId::QUALITY>(
         c, name, "quality");
 
+    detail::addOptionalComponentFunctions<ELEM_ID, CompId::TANGENT>(
+        c, name, "tangent");
+
     detail::addOptionalComponentFunctions<ELEM_ID, CompId::TEX_COORD>(
         c, name, "tex_coord");
 
     detail::addOptionalComponentFunctions<ELEM_ID, CompId::WEDGE_COLORS>(
         c, name, "wedge_colors");
+
+    detail::addOptionalComponentFunctions<ELEM_ID, CompId::WEDGE_NORMALS>(
+        c, name, "wedge_normals");
 
     detail::addOptionalComponentFunctions<ELEM_ID, CompId::WEDGE_TEX_COORDS>(
         c, name, "wedge_tex_coords");
