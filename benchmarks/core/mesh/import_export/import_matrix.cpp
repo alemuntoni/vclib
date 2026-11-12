@@ -128,7 +128,7 @@ BENCH(
 BENCH(
     "import_export/import_matrix/vertex_normals_from_matrix",
     []<typename Mesh>(bench::State<Mesh>& s) {
-        if constexpr (!vcl::HasVertexNormals<Mesh>) {
+        if constexpr (!vcl::HasVertexNormal<Mesh>) {
             return s.skip("the mesh type has no vertex normals");
         }
         else {
@@ -148,7 +148,7 @@ BENCH(
     "import_export/import_matrix/face_normals_from_matrix",
     []<typename Mesh>(bench::State<Mesh>& s) {
         if constexpr (
-            !vcl::FaceMeshConcept<Mesh> || !vcl::HasFaceNormals<Mesh>) {
+            !vcl::FaceMeshConcept<Mesh> || !vcl::HasFaceNormal<Mesh>) {
             return s.skip("the mesh has no face normals");
         }
         else {
@@ -168,7 +168,7 @@ BENCH(
     "import_export/import_matrix/edge_normals_from_matrix",
     []<typename Mesh>(bench::State<Mesh>& s) {
         if constexpr (
-            !vcl::EdgeMeshConcept<Mesh> || !vcl::HasEdgeNormals<Mesh>) {
+            !vcl::EdgeMeshConcept<Mesh> || !vcl::HasEdgeNormal<Mesh>) {
             return s.skip("the mesh has no edge normals");
         }
         else {
@@ -189,7 +189,7 @@ BENCH(
 BENCH(
     "import_export/import_matrix/vertex_colors_from_matrix",
     []<typename Mesh>(bench::State<Mesh>& s) {
-        if constexpr (!vcl::HasVertexColors<Mesh>) {
+        if constexpr (!vcl::HasVertexColor<Mesh>) {
             return s.skip("the mesh type has no vertex colors");
         }
         else {
@@ -206,7 +206,7 @@ BENCH(
 BENCH(
     "import_export/import_matrix/vertex_colors_from_range",
     []<typename Mesh>(bench::State<Mesh>& s) {
-        if constexpr (!vcl::HasVertexColors<Mesh>) {
+        if constexpr (!vcl::HasVertexColor<Mesh>) {
             return s.skip("the mesh type has no vertex colors");
         }
         else {
@@ -227,7 +227,7 @@ BENCH(
     "import_export/import_matrix/face_colors_from_matrix",
     []<typename Mesh>(bench::State<Mesh>& s) {
         if constexpr (
-            !vcl::FaceMeshConcept<Mesh> || !vcl::HasFaceColors<Mesh>) {
+            !vcl::FaceMeshConcept<Mesh> || !vcl::HasFaceColor<Mesh>) {
             return s.skip("the mesh has no face colors");
         }
         else {
@@ -245,7 +245,7 @@ BENCH(
     "import_export/import_matrix/face_colors_from_range",
     []<typename Mesh>(bench::State<Mesh>& s) {
         if constexpr (
-            !vcl::FaceMeshConcept<Mesh> || !vcl::HasFaceColors<Mesh>) {
+            !vcl::FaceMeshConcept<Mesh> || !vcl::HasFaceColor<Mesh>) {
             return s.skip("the mesh has no face colors");
         }
         else {
@@ -266,7 +266,7 @@ BENCH(
     "import_export/import_matrix/edge_colors_from_matrix",
     []<typename Mesh>(bench::State<Mesh>& s) {
         if constexpr (
-            !vcl::EdgeMeshConcept<Mesh> || !vcl::HasEdgeColors<Mesh>) {
+            !vcl::EdgeMeshConcept<Mesh> || !vcl::HasEdgeColor<Mesh>) {
             return s.skip("the mesh has no edge colors");
         }
         else {
@@ -284,7 +284,7 @@ BENCH(
     "import_export/import_matrix/edge_colors_from_range",
     []<typename Mesh>(bench::State<Mesh>& s) {
         if constexpr (
-            !vcl::EdgeMeshConcept<Mesh> || !vcl::HasEdgeColors<Mesh>) {
+            !vcl::EdgeMeshConcept<Mesh> || !vcl::HasEdgeColor<Mesh>) {
             return s.skip("the mesh has no edge colors");
         }
         else {
@@ -305,7 +305,7 @@ BENCH(
 BENCH(
     "import_export/import_matrix/vertex_quality_from_range",
     []<typename Mesh>(bench::State<Mesh>& s) {
-        if constexpr (!vcl::HasVertexQualities<Mesh>) {
+        if constexpr (!vcl::HasVertexQuality<Mesh>) {
             return s.skip("the mesh type has no vertex quality component");
         }
         else {
@@ -321,7 +321,7 @@ BENCH(
     "import_export/import_matrix/face_quality_from_range",
     []<typename Mesh>(bench::State<Mesh>& s) {
         if constexpr (
-            !vcl::FaceMeshConcept<Mesh> || !vcl::HasFaceQualities<Mesh>) {
+            !vcl::FaceMeshConcept<Mesh> || !vcl::HasFaceQuality<Mesh>) {
             return s.skip("the mesh has no face quality component");
         }
         else {
@@ -337,7 +337,7 @@ BENCH(
     "import_export/import_matrix/edge_quality_from_range",
     []<typename Mesh>(bench::State<Mesh>& s) {
         if constexpr (
-            !vcl::EdgeMeshConcept<Mesh> || !vcl::HasEdgeQualities<Mesh>) {
+            !vcl::EdgeMeshConcept<Mesh> || !vcl::HasEdgeQuality<Mesh>) {
             return s.skip("the mesh has no edge quality component");
         }
         else {
@@ -353,7 +353,7 @@ BENCH(
 BENCH(
     "import_export/import_matrix/vertex_tex_coords_from_matrix",
     []<typename Mesh>(bench::State<Mesh>& s) {
-        if constexpr (!vcl::HasVertexTexCoords<Mesh>) {
+        if constexpr (!vcl::HasVertexTexCoord<Mesh>) {
             return s.skip("the mesh type has no vertex texcoords");
         }
         else {
@@ -393,7 +393,7 @@ BENCH(
 BENCH(
     "import_export/import_matrix/vertex_material_indices_from_range",
     []<typename Mesh>(bench::State<Mesh>& s) {
-        if constexpr (!vcl::HasVertexMaterialIndices<Mesh>) {
+        if constexpr (!vcl::HasVertexMaterialIndex<Mesh>) {
             return s.skip("the mesh type has no vertex material indices");
         }
         else {
@@ -413,7 +413,7 @@ BENCH(
     []<typename Mesh>(bench::State<Mesh>& s) {
         if constexpr (
             !vcl::FaceMeshConcept<Mesh> ||
-            !vcl::HasFaceMaterialIndices<Mesh>) {
+            !vcl::HasFaceMaterialIndex<Mesh>) {
             return s.skip("the mesh has no face material indices");
         }
         else {

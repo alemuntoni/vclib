@@ -39,11 +39,11 @@ void enableTopologyComponents(Mesh& m)
 template<typename Mesh>
 void enableQualityComponents(Mesh& m)
 {
-    if constexpr (vcl::HasVertexOptionalQualities<Mesh>) {
+    if constexpr (vcl::HasVertexOptionalQuality<Mesh>) {
         m.enableVertexQuality();
     }
     if constexpr (
-        vcl::FaceMeshConcept<Mesh> && vcl::HasFaceOptionalQualities<Mesh>) {
+        vcl::FaceMeshConcept<Mesh> && vcl::HasFaceOptionalQuality<Mesh>) {
         m.enableFaceQuality();
     }
 }
@@ -62,13 +62,13 @@ void enableCurvatureComponents(Mesh& m)
 template<typename Mesh>
 void initQuality(Mesh& m)
 {
-    if constexpr (vcl::HasVertexQualities<Mesh>) {
+    if constexpr (vcl::HasVertexQuality<Mesh>) {
         using QType = vcl::VertexType<Mesh>::QualityType;
         for (auto&& v : m.vertices()) {
             v.quality() = static_cast<QType>(v.index() + 1);
         }
     }
-    if constexpr (vcl::FaceMeshConcept<Mesh> && vcl::HasFaceQualities<Mesh>) {
+    if constexpr (vcl::FaceMeshConcept<Mesh> && vcl::HasFaceQuality<Mesh>) {
         using QType = vcl::FaceType<Mesh>::QualityType;
         for (auto&& f : m.faces()) {
             f.quality() = static_cast<QType>(f.index() + 1);
