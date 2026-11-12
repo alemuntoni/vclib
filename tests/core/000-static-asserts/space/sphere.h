@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void sphereStaticAsserts()
+inline void sphereStaticAsserts()
 {
     using namespace vcl;
 

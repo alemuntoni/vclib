@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void arrayStaticAsserts()
+inline void arrayStaticAsserts()
 {
     using namespace vcl;
 

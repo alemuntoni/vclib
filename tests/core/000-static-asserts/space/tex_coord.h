@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void texCoordStaticAsserts()
+inline void texCoordStaticAsserts()
 {
     using namespace vcl;
 

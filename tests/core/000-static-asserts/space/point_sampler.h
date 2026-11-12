@@ -11,7 +11,7 @@
 #include <vclib/mesh.h>
 #include <vclib/space.h>
 
-void pointSamplerStaticAsserts()
+inline void pointSamplerStaticAsserts()
 {
     using namespace vcl;
 

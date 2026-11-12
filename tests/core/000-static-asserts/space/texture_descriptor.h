@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void textureDescriptorStaticAsserts()
+inline void textureDescriptorStaticAsserts()
 {
     using namespace vcl;
 

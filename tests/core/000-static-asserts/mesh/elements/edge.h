@@ -10,7 +10,7 @@
 
 #include <vclib/meshes.h>
 
-void edgeStaticAsserts()
+inline void edgeStaticAsserts()
 {
     using namespace vcl;
 

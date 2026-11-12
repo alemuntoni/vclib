@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void colorStaticAsserts()
+inline void colorStaticAsserts()
 {
     using namespace vcl;
 

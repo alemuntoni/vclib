@@ -5,12 +5,12 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at https://mozilla.org/MPL/2.0/.
 
-#ifndef PER_FACE_H
-#define PER_FACE_H
+#ifndef FACE_COMPONENTS_H
+#define FACE_COMPONENTS_H
 
 #include <vclib/meshes.h>
 
-void perFaceStaticAsserts()
+inline void faceComponentsStaticAsserts()
 {
     using namespace vcl;
 
@@ -131,22 +131,6 @@ void perFaceStaticAsserts()
         HasFaceNormal<PolyMesh&&>,
         "PolyMesh&& does not satisfy the HasFaceNormal");
 
-    // static_assert(
-    //     HasFacePrincipalCurvatures<TriMesh>,
-    //     "TriMesh does not satisfy the HasFacePrincipalCurvatures");
-    // static_assert(
-    //     HasFacePrincipalCurvatures<const TriMesh>,
-    //     "const TriMesh does not satisfy the HasFacePrincipalCurvatures");
-    // static_assert(
-    //     HasFacePrincipalCurvatures<TriMesh&>,
-    //     "TriMesh& does not satisfy the HasFacePrincipalCurvatures");
-    // static_assert(
-    //     HasFacePrincipalCurvatures<const TriMesh&>,
-    //     "const TriMesh& does not satisfy the HasFacePrincipalCurvatures");
-    // static_assert(
-    //     HasFacePrincipalCurvatures<TriMesh&&>,
-    //     "TriMesh&& does not satisfy the HasFacePrincipalCurvatures");
-
     static_assert(
         HasFaceQuality<TriMesh>,
         "TriMesh does not satisfy the HasFaceQuality");
@@ -196,4 +180,4 @@ void perFaceStaticAsserts()
         "TriMesh&& does not satisfy the HasFaceWedgeTexCoords");
 }
 
-#endif // PER_FACE_H
+#endif // FACE_COMPONENTS_H

@@ -10,7 +10,7 @@
 
 #include <vclib/space.h>
 
-void triangleStaticAsserts()
+inline void triangleStaticAsserts()
 {
     using namespace vcl;
 

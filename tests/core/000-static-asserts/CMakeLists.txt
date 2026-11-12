@@ -20,10 +20,10 @@ set(HEADERS
     mesh/containers.h
     mesh/elements.h
     mesh/mesh_concept.h
-    mesh/per_edge.h
-    mesh/per_face.h
-    mesh/per_mesh.h
-    mesh/per_vertex.h
+    mesh/edge_components.h
+    mesh/face_components.h
+    mesh/mesh_components.h
+    mesh/vertex_components.h
     mesh/components/adjacent_edges.h
     mesh/components/adjacent_faces.h
     mesh/components/adjacent_vertices.h

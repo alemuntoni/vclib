@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void segmentStaticAsserts()
+inline void segmentStaticAsserts()
 {
     using namespace vcl;
 

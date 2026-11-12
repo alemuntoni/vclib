@@ -10,9 +10,6 @@ class ComponentInfo:
     upper_camel: str  # e.g. AdjacentFaces
     comp_id: str  # CompId value, e.g. ADJACENT_FACES
     optional: bool = False  # it can be an optional component (disabled at runtime)
-    # Names used for the mesh concepts and contracts, e.g. Qualities in
-    # HasVertexQualities, requireVertexQualities, ...
-    plural: Optional[str] = None
     # 'generic' -> HasElementComponent, 'adjacency' -> HasElementAdjacentX,
     # 'custom' -> HasElementCustomComponents
     kind: Optional[str] = None
@@ -23,31 +20,27 @@ class ComponentInfo:
 
 _LIST = [
     ComponentInfo('adjacent_edges', 'AdjacentEdges', 'ADJACENT_EDGES', True,
-                  'AdjacentEdges', 'adjacency', 'Adjacencies: AdjacentEdges'),
+                  'adjacency', 'Adjacencies: AdjacentEdges'),
     ComponentInfo('adjacent_faces', 'AdjacentFaces', 'ADJACENT_FACES', True,
-                  'AdjacentFaces', 'adjacency', 'Adjacencies: AdjacentFaces'),
+                  'adjacency', 'Adjacencies: AdjacentFaces'),
     ComponentInfo('adjacent_vertices', 'AdjacentVertices', 'ADJACENT_VERTICES',
-                  True, 'AdjacentVertices', 'adjacency',
-                  'Adjacencies: AdjacentVertices'),
+                  True, 'adjacency', 'Adjacencies: AdjacentVertices'),
     ComponentInfo('bit_flags', 'BitFlags', 'BIT_FLAGS'),
-    ComponentInfo('color', 'Color', 'COLOR', True, 'Colors', 'generic',
-                  'Colors'),
+    ComponentInfo('color', 'Color', 'COLOR', True, 'generic', 'Colors'),
     ComponentInfo('custom_components', 'CustomComponents', 'CUSTOM_COMPONENTS',
-                  False, 'CustomComponents', 'custom', 'Custom Components'),
+                  False, 'custom', 'Custom Components'),
     ComponentInfo('material_index', 'MaterialIndex', 'MATERIAL_INDEX', True,
-                  'MaterialIndices', 'generic', 'Material Index'),
-    ComponentInfo('normal', 'Normal', 'NORMAL', True, 'Normals', 'generic',
-                  'Normals'),
+                  'generic', 'Material Index'),
+    ComponentInfo('normal', 'Normal', 'NORMAL', True, 'generic', 'Normals'),
     ComponentInfo('position', 'Position', 'POSITION'),
     ComponentInfo('principal_curvature', 'PrincipalCurvature',
-                  'PRINCIPAL_CURVATURE', True, 'PrincipalCurvatures', 'generic',
+                  'PRINCIPAL_CURVATURE', True, 'generic',
                   'Principal Curvatures'),
-    ComponentInfo('quality', 'Quality', 'QUALITY', True, 'Qualities',
-                  'generic', 'Qualities'),
-    ComponentInfo('tangent', 'Tangent', 'TANGENT', True, 'Tangents', 'generic',
-                  'Tangents'),
-    ComponentInfo('tex_coord', 'TexCoord', 'TEX_COORD', True, 'TexCoords',
-                  'generic', 'TexCoords'),
+    ComponentInfo('quality', 'Quality', 'QUALITY', True, 'generic',
+                  'Qualities'),
+    ComponentInfo('tangent', 'Tangent', 'TANGENT', True, 'generic', 'Tangents'),
+    ComponentInfo('tex_coord', 'TexCoord', 'TEX_COORD', True, 'generic',
+                  'TexCoords'),
     ComponentInfo('vertex_references', 'VertexReferences', 'VERTEX_REFERENCES'),
 ]
 

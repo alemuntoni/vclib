@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void boxStaticAsserts()
+inline void boxStaticAsserts()
 {
     using namespace vcl;
 

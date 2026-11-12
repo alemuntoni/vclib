@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void pointStaticAsserts()
+inline void pointStaticAsserts()
 {
     using namespace vcl;
 

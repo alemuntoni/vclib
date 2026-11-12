@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void matrixStaticAsserts()
+inline void matrixStaticAsserts()
 {
     using namespace vcl;
 

@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void principalCurvatureStaticAsserts()
+inline void principalCurvatureStaticAsserts()
 {
     using namespace vcl;
 

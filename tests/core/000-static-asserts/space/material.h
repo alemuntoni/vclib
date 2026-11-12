@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void materialStaticAsserts()
+inline void materialStaticAsserts()
 {
     using namespace vcl;
 

@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void polygonStaticAsserts()
+inline void polygonStaticAsserts()
 {
     using namespace vcl;
 

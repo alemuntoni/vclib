@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void bitSetStaticAsserts()
+inline void bitSetStaticAsserts()
 {
     using namespace vcl;
 

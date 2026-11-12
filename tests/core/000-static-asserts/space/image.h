@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void imageStaticAsserts()
+inline void imageStaticAsserts()
 {
     using namespace vcl;
 

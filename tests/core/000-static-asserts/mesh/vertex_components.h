@@ -5,12 +5,12 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at https://mozilla.org/MPL/2.0/.
 
-#ifndef PER_VERTEX_H
-#define PER_VERTEX_H
+#ifndef VERTEX_COMPONENTS_H
+#define VERTEX_COMPONENTS_H
 
 #include <vclib/meshes.h>
 
-void perVertexStaticAsserts()
+inline void vertexComponentsStaticAsserts()
 {
     using namespace vcl;
 
@@ -171,4 +171,4 @@ void perVertexStaticAsserts()
         "TriMesh&& does not satisfy the HasVertexCustomComponents");
 }
 
-#endif // PER_VERTEX_H
+#endif // VERTEX_COMPONENTS_H

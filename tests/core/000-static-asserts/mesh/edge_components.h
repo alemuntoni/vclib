@@ -5,12 +5,12 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at https://mozilla.org/MPL/2.0/.
 
-#ifndef PER_EDGE_H
-#define PER_EDGE_H
+#ifndef EDGE_COMPONENTS_H
+#define EDGE_COMPONENTS_H
 
 #include <vclib/meshes.h>
 
-void perEdgeStaticAsserts()
+inline void edgeComponentsStaticAsserts()
 {
     using namespace vcl;
 
@@ -135,4 +135,4 @@ void perEdgeStaticAsserts()
         "TriEdgeMesh&& does not satisfy the HasEdgeQuality");
 }
 
-#endif // PER_EDGE_H
+#endif // EDGE_COMPONENTS_H

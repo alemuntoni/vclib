@@ -10,7 +10,7 @@
 
 #include <vclib/space/core.h>
 
-void planeStaticAsserts()
+inline void planeStaticAsserts()
 {
     using namespace vcl;
 

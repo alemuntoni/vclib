@@ -5,12 +5,12 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at https://mozilla.org/MPL/2.0/.
 
-#ifndef PER_MESH_H
-#define PER_MESH_H
+#ifndef MESH_COMPONENTS_H
+#define MESH_COMPONENTS_H
 
 #include <vclib/meshes.h>
 
-void perMeshStaticAsserts()
+inline void meshComponentsStaticAsserts()
 {
     using namespace vcl;
 
@@ -93,4 +93,4 @@ void perMeshStaticAsserts()
         "TriMesh&& does not satisfy the HasTransformMatrix");
 }
 
-#endif // PER_MESH_H
+#endif // MESH_COMPONENTS_H

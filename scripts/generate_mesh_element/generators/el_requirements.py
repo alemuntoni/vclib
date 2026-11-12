@@ -6,7 +6,7 @@ from .components import MESH_CONCEPTS_ORDER, MESH_CONCEPTS_TITLES, COMPONENTS
 
 def _concept_name(element, comp, optional):
     prefix = f'Has{element.upper_camel}'
-    return f'{prefix}{"Optional" if optional else ""}{comp.plural}'
+    return f'{prefix}{"Optional" if optional else ""}{comp.upper_camel}'
 
 
 def _mesh_concepts_block(element, comp):
@@ -15,10 +15,10 @@ def _mesh_concepts_block(element, comp):
     name = _concept_name(element, comp, False)
     oname = _concept_name(element, comp, True)
     if comp.kind == 'adjacency':
-        generic = f'HasElement{comp.plural}<M, {eid}>'
-        optional = f'HasElementOptional{comp.plural}<M, {eid}>'
+        generic = f'HasElement{comp.upper_camel}<M, {eid}>'
+        optional = f'HasElementOptional{comp.upper_camel}<M, {eid}>'
     elif comp.kind == 'custom':
-        generic = f'HasElement{comp.plural}<M, {eid}>'
+        generic = f'HasElement{comp.upper_camel}<M, {eid}>'
         optional = None
     else:
         generic = f'HasElementComponent<M, {eid}, {cid}>'
@@ -87,7 +87,7 @@ def _update_mesh_concepts_base(element):
 def _contracts_functions(element, comp):
     eid = f'ElemId::{element.name_upper}'
     cid = f'CompId::{comp.comp_id}'
-    name = comp.plural
+    name = comp.upper_camel
     prefix = element.upper_camel
     out = ''
     if comp.kind != 'custom':
@@ -128,7 +128,7 @@ def _update_contracts(element):
     for comp in element.components:
         if comp.kind is None:
             continue
-        fn = f'require{element.upper_camel}{comp.plural}'
+        fn = f'require{element.upper_camel}{comp.upper_camel}'
         if re.search(rf'\b{fn}\(', text):
             continue
         marker = f'/* --- {comp.contracts_section} --- */'
