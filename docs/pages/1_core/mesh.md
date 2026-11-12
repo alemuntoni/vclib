@@ -4,7 +4,45 @@ The Mesh data structure of the VCLib core module is a generic data structure tha
 
 To explain how Mesh customization is possible, we first need to define the entities involved that compose a VCLib Mesh, and to do that we analyze the TriMesh example:
 
-![trimesh](trimesh.svg "TriMesh")
+```mermaid
+flowchart TB
+    subgraph TM["<b>TriMesh</b>"]
+        direction TB
+        subgraph VC["<b>VertexContainer</b>"]
+            direction LR
+            V0["Vertex 0"] ~~~ V1["Vertex 1"] ~~~ Vdots["..."] ~~~ VN["Vertex n"]
+        end
+        subgraph FC["<b>FaceContainer</b>"]
+            direction LR
+            F0["Face 0"] ~~~ F1["Face 1"] ~~~ Fdots["..."] ~~~ FM["Face m"]
+        end
+        subgraph MC["<b>Mesh Components</b>"]
+            direction LR
+            subgraph BB["BoundingBox"]
+                BBD["vcl::Box3"]
+            end
+            subgraph NM["Name"]
+                NMD["std::string"]
+            end
+            subgraph TMX["TransformMatrix"]
+                TMXD["vcl::Matrix44"]
+            end
+            MCdots["..."]
+        end
+    end
+
+    classDef mesh fill:#dae8fc,stroke:#6c8ebf,stroke-width:2px,color:#000
+    classDef container fill:#f8cecc,stroke:#b85450,stroke-width:2px,color:#000
+    classDef element fill:#d5e8d4,stroke:#82b366,stroke-width:2px,color:#000
+    classDef comp fill:#fff2cc,stroke:#d6b656,stroke-width:2px,color:#000
+    classDef data fill:#ffe6cc,stroke:#d79b00,stroke-width:1.5px,color:#000
+
+    class TM mesh
+    class VC,FC container
+    class V0,V1,Vdots,VN,F0,F1,Fdots,FM element
+    class MC,BB,NM,TMX,MCdots comp
+    class BBD,NMD,TMXD data
+```
 
 In this simplified scheme of the TriMesh, there are several entities involved:
 
@@ -16,7 +54,33 @@ In this simplified scheme of the TriMesh, there are several entities involved:
 The overall Mesh data structure is composed of two Containers of Vertex and Face Elements, and some other Components that store some data. 
 Looking the Elements in detail, we see that each Element is composed of Components: for example, a Vertex could be organized as follows:
 
-![trimesh vertex](trimesh_vertex.svg "A Vertex Element")
+```mermaid
+flowchart TB
+    subgraph V["<b>Vertex</b>"]
+        direction LR
+        subgraph Pos["Position"]
+            PosD["vcl::Point3"]
+        end
+        subgraph Flg["BitFlags"]
+            FlgD["vcl::BitSet"]
+        end
+        subgraph Nrm["Normal"]
+            NrmD["vcl::Point3"]
+        end
+        subgraph Clr["Color"]
+            ClrD["vcl::Color"]
+        end
+        Vdots["..."]
+    end
+
+    classDef element fill:#d5e8d4,stroke:#82b366,stroke-width:2px,color:#000
+    classDef comp fill:#fff2cc,stroke:#d6b656,stroke-width:2px,color:#000
+    classDef data fill:#ffe6cc,stroke:#d79b00,stroke-width:1.5px,color:#000
+
+    class V element
+    class Pos,Flg,Nrm,Clr,Vdots comp
+    class PosD,FlgD,NrmD,ClrD data
+```
 
 In this case, the Vertex Element has for example the Position, Flags, Normal and Color components, each one of them exposes its data trough appropriate member functions.
 
@@ -50,7 +114,46 @@ The Components of an Element can be of two categories:
   - Persistent: the data of the Component is always available;
   - Optional: the data of the Component can be enabled and disabled at runtime, allowing to avoid memory usage for components that are not needed in some contexts.
 
-For example, the Vertex Element of the vcl::TriMesh class has some persistent components (Position, Flags, Normal, the components that are used more often), and some optional (Color, Adjacent Faces, Adjacent Vertices, Texture Coordinates, the ones that are used only on some contexts). The Container of the Elements stores the arrays of the persistent components, and the arrays of the optional components only when they are enabled. For example, assuming that we enable only the Adjacent Faces of the Vertex Element, the Vertex Container will store the arrays of Flags, Positions, Normals and Adjacent Faces, but not the ones of the other optional components.
+For example, the Vertex Element of the vcl::TriMesh class has some persistent components (Position, Flags, Normal, the components that are used more often), and some optional (Color, Adjacent Faces, Adjacent Vertices, Texture Coordinates, the ones that are used only on some contexts). The Container of the Elements stores the arrays of the persistent components, and the arrays of the optional components only when they are enabled. For example, assuming that we enable only the Adjacent Faces of the Vertex Element, the Vertex Container will store the arrays of Flags, Positions, Normals and Adjacent Faces, but not the ones of the other optional components:
+
+```mermaid
+flowchart LR
+    VP["<b>Vertex(i) Proxy</b><br/>mParent = &VertexContainer<br/>mIndex = i"]
+
+    subgraph VC["<b>VertexContainer (Structure of Arrays)</b>"]
+        direction TB
+        subgraph PC["<b>Persistent Components</b>"]
+            direction TB
+            BF["<b>BitFlags</b>: [ f₀ | ... | <b>fᵢ</b> | ... | fₙ ]"]
+            POS["<b>Position</b>: [ p₀ | ... | <b>pᵢ</b> | ... | pₙ ]"]
+            NRM["<b>Normal</b>: [ n₀ | ... | <b>nᵢ</b> | ... | nₙ ]"]
+        end
+        subgraph OC["<b>Optional Components</b>"]
+            direction TB
+            AF["<b>AdjacentFaces (enabled)</b>: [ af₀ | ... | <b>afᵢ</b> | ... | afₙ ]"]
+            CLR["<b>Color (disabled)</b>: [ ]"]
+            AV["<b>AdjacentVertices (disabled)</b>: [ ]"]
+            TC["<b>TexCoord (disabled)</b>: [ ]"]
+        end
+    end
+
+    VP -->|"v.flags()"| BF
+    VP -->|"v.position()"| POS
+    VP -->|"v.normal()"| NRM
+    VP -->|"v.adjFaces()"| AF
+
+    classDef container fill:#f8cecc,stroke:#b85450,stroke-width:2px,color:#000
+    classDef element fill:#d5e8d4,stroke:#82b366,stroke-width:2px,color:#000
+    classDef comp fill:#fff2cc,stroke:#d6b656,stroke-width:1.5px,color:#000
+    classDef enabled fill:#ffe6cc,stroke:#d79b00,stroke-width:1.5px,color:#000
+    classDef disabled fill:#f5f5f5,stroke:#999999,stroke-dasharray: 5 5,color:#666
+
+    class VC container
+    class VP element
+    class PC,OC comp
+    class BF,POS,NRM,AF enabled
+    class CLR,AV,TC disabled
+```
 
 For the user, the usage of persistent or optional components is the same. The only thing that the user must check is wether a Component is Optional, and in that case, enable that component before using it. Every VCLib Container provides a list of member functions for all the Components that may be Optional for certain Elements (note: these member functions are available *only when the component is actually optional*). These member functions are:
 
