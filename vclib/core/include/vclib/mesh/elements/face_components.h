@@ -16,9 +16,7 @@
 #include "../components/material_index.h"
 #include "../components/normal.h"
 #include "../components/polygon_bit_flags.h"
-#include "../components/principal_curvature.h"
 #include "../components/quality.h"
-#include "../components/tangent.h"
 #include "../components/triangle_bit_flags.h"
 #include "../components/vertex_references.h"
 #include "../components/wedges.h"
@@ -60,17 +58,9 @@ concept HasNormal = comp::HasNormal<T>;
 template<typename T>
 concept HasOptionalNormal = comp::HasOptionalNormal<T>;
 template<typename T>
-concept HasPrincipalCurvature = comp::HasPrincipalCurvature<T>;
-template<typename T>
-concept HasOptionalPrincipalCurvature = comp::HasOptionalPrincipalCurvature<T>;
-template<typename T>
 concept HasQuality = comp::HasQuality<T>;
 template<typename T>
 concept HasOptionalQuality = comp::HasOptionalQuality<T>;
-template<typename T>
-concept HasTangent = comp::HasTangent<T>;
-template<typename T>
-concept HasOptionalTangent = comp::HasOptionalTangent<T>;
 template<typename T>
 concept HasVertexReferences = comp::HasVertexReferences<T>;
 template<typename T>
@@ -175,18 +165,6 @@ using OptionalNormal3  = comp::OptionalNormal3<ScalarType>;
 using OptionalNormal3f = comp::OptionalNormal3f;
 using OptionalNormal3d = comp::OptionalNormal3d;
 
-/* Port PrincipalCurvature classes into face namespace */
-template<typename ScalarType, bool OPT = false>
-using PrincipalCurvature = comp::PrincipalCurvature<ScalarType, OPT>;
-
-template<typename ScalarType>
-using OptionalPrincipalCurvature = comp::PrincipalCurvature<ScalarType, true>;
-
-using PrincipalCurvaturef         = comp::PrincipalCurvaturef<false>;
-using PrincipalCurvatured         = comp::PrincipalCurvatured<false>;
-using OptionalPrincipalCurvaturef = comp::PrincipalCurvaturef<true>;
-using OptionalPrincipalCurvatured = comp::PrincipalCurvatured<true>;
-
 /* Port Quality classes into face namespace */
 
 template<typename ScalarType, bool OPT = false>
@@ -199,21 +177,6 @@ using Qualityf         = comp::Qualityf<false>;
 using Qualityd         = comp::Qualityd<false>;
 using OptionalQualityf = comp::Qualityf<true>;
 using OptionalQualityd = comp::Qualityd<true>;
-
-/* Port Tangent classes into face namespace */
-
-template<typename ScalarType, int N, bool OPT = false>
-using Tangent = comp::Tangent<Point<ScalarType, N>, OPT>;
-
-template<typename ScalarType, bool OPT = false>
-using Tangent3 = comp::Tangent3<ScalarType, OPT>;
-
-using Tangent3f         = comp::Tangent3f;
-using Tangent3d         = comp::Tangent3d;
-template<typename ScalarType>
-using OptionalTangent3  = comp::OptionalTangent3<ScalarType>;
-using OptionalTangent3f = comp::OptionalTangent3f;
-using OptionalTangent3d = comp::OptionalTangent3d;
 
 /* Port VertexReferences class into face namespace */
 template<int N, std::unsigned_integral Index = uint>

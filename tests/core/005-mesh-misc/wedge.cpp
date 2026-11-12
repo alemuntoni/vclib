@@ -8,10 +8,6 @@
 #include "types.h"
 
 #include <catch2/catch_test_macros.hpp>
-#include <vclib/mesh/requirements.h>
-#include <vclib/mesh/traits.h>
-
-#include <vclib/mesh/elements/face_components.h>
 
 // Wedge mesh types for tests:
 using WedgeFaceComponents = FaceComponents<

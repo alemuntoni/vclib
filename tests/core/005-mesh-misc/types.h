@@ -8,26 +8,13 @@
 #ifndef TEST_TYPES_H
 #define TEST_TYPES_H
 
+#include <vclib/mesh.h>
+#include <vclib/space/core.h>
+
 #include <array>
 #include <limits>
 #include <string>
 #include <vector>
-
-#include <vclib/space/core.h>
-
-#include <vclib/mesh/components/bit_flags.h>
-#include <vclib/mesh/components/custom_components.h>
-#include <vclib/mesh/components/normal.h>
-#include <vclib/mesh/components/position.h>
-#include <vclib/mesh/components/vertex_references.h>
-#include <vclib/mesh/containers/edge_container.h>
-#include <vclib/mesh/containers/face_container.h>
-#include <vclib/mesh/containers/vertex_container.h>
-#include <vclib/mesh/elements/edge.h>
-#include <vclib/mesh/mesh.h>
-#include <vclib/mesh/mesh_components.h>
-#include <vclib/mesh/requirements.h>
-#include <vclib/mesh/traits.h>
 
 using namespace vcl;
 
@@ -86,7 +73,7 @@ using OptionalCurvatureVertexComponents = VertexComponents<
 using CurvatureFaceComponents = FaceComponents<
     face::BitFlags,
     face::TriangleVertexReferences<vcl::uint>,
-    face::OptionalPrincipalCurvaturef>;
+    comp::PrincipalCurvaturef<true>>;
 
 using CurvatureMesh = Mesh<
     mesh::VertexContainer<CurvatureVertexComponents>,
@@ -133,7 +120,7 @@ using TangentFaceComponents = FaceComponents<
     face::BitFlags,
     face::TriangleVertexReferences<vcl::uint>,
     face::Normal3f,
-    face::OptionalTangent3f>;
+    comp::Tangent3<float, true>>;
 
 using TangentMesh = Mesh<
     mesh::VertexContainer<TangentVertexComponents>,

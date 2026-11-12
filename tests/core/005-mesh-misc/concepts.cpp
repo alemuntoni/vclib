@@ -8,8 +8,6 @@
 #include "types.h"
 
 #include <catch2/catch_test_macros.hpp>
-#include <vclib/mesh/requirements.h>
-#include <vclib/mesh/traits.h>
 
 TEST_CASE("Concepts - Component Concepts")
 {
@@ -110,9 +108,6 @@ TEST_CASE("Concepts - Component Concepts")
         vert::HasOptionalPrincipalCurvature<OptionalCurvatureVertexComponents>);
     static_assert(
         vert::HasOptionalPrincipalCurvature<OptionalCurvatureMesh::Vertex>);
-    static_assert(face::HasPrincipalCurvature<CurvatureMesh::Face>);
-    static_assert(face::HasOptionalPrincipalCurvature<CurvatureMesh::Face>);
-    static_assert(!face::HasPrincipalCurvature<MyMesh::Face>);
     static_assert(vcl::PrincipalCurvatureConcept<vcl::PrincipalCurvaturef>);
     static_assert(vcl::PrincipalCurvatureConcept<vcl::PrincipalCurvatured>);
 
@@ -139,9 +134,6 @@ TEST_CASE("Concepts - Component Concepts")
     static_assert(!vert::HasOptionalTangent<TangentVertexComponents>);
     static_assert(vert::HasOptionalTangent<OptionalTangentVertexComponents>);
     static_assert(vert::HasOptionalTangent<OptionalTangentMesh::Vertex>);
-    static_assert(face::HasTangent<TangentMesh::Face>);
-    static_assert(face::HasOptionalTangent<TangentMesh::Face>);
-    static_assert(!face::HasTangent<MyMesh::Face>);
     static_assert(std::is_same_v<TangentMesh::Vertex::TangentType, Point3f>);
     static_assert(
         std::is_same_v<OptionalTangentMesh::Vertex::TangentType, Point3d>);
@@ -296,12 +288,10 @@ TEST_CASE("Concepts - Element Concepts")
 
     // HasPrincipalCurvature
     static_assert(HasPrincipalCurvature<CurvatureMesh::Vertex>);
-    static_assert(HasPrincipalCurvature<CurvatureMesh::Face>);
     static_assert(!HasPrincipalCurvature<MyMesh::Vertex>);
 
     // HasTangent
     static_assert(HasTangent<TangentMesh::Vertex>);
-    static_assert(HasTangent<TangentMesh::Face>);
     static_assert(!HasTangent<MyMesh::Vertex>);
 
     // HasMaterialIndex
@@ -419,17 +409,13 @@ TEST_CASE("Concepts - Mesh Concepts")
 
     // Curvatures
     static_assert(HasVertexPrincipalCurvature<CurvatureMesh>);
-    static_assert(HasFacePrincipalCurvature<CurvatureMesh>);
     static_assert(!HasVertexOptionalPrincipalCurvature<CurvatureMesh>);
-    static_assert(HasFaceOptionalPrincipalCurvature<CurvatureMesh>);
     static_assert(HasVertexOptionalPrincipalCurvature<OptionalCurvatureMesh>);
     static_assert(!HasVertexPrincipalCurvature<MyMesh>);
 
     // Tangents
     static_assert(HasVertexTangent<TangentMesh>);
-    static_assert(HasFaceTangent<TangentMesh>);
     static_assert(!HasVertexOptionalTangent<TangentMesh>);
-    static_assert(HasFaceOptionalTangent<TangentMesh>);
     static_assert(HasVertexOptionalTangent<OptionalTangentMesh>);
     static_assert(!HasVertexTangent<MyMesh>);
 

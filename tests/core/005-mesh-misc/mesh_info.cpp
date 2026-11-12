@@ -7,9 +7,9 @@
 
 #include "types.h"
 
-#include <catch2/catch_test_macros.hpp>
+#include <vclib/space/complex.h>
 
-#include <vclib/space/complex/mesh_info.h>
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Mesh Info - Mesh Info Default And Manual")
 {

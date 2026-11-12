@@ -7,9 +7,9 @@
 
 #include "types.h"
 
-#include <catch2/catch_test_macros.hpp>
+#include <vclib/space/core.h>
 
-#include <vclib/space/core/parallel_vectors_tuple.h>
+#include <catch2/catch_test_macros.hpp>
 
 #include <sstream>
 #include <string>

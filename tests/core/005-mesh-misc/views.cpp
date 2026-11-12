@@ -9,8 +9,6 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <vclib/mesh/views.h>
-
 #include <ranges>
 #include <vector>
 

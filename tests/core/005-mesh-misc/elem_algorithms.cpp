@@ -9,8 +9,6 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <vclib/mesh/elem_algorithms.h>
-
 #include <cmath>
 #include <vector>
 

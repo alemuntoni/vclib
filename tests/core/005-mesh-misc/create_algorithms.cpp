@@ -7,10 +7,10 @@
 
 #include "types.h"
 
-#include <catch2/catch_test_macros.hpp>
-
-#include <vclib/algorithms/mesh/create.h>
+#include <vclib/algorithms/mesh.h>
 #include <vclib/meshes.h>
+
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Create Algorithms - Create Tetrahedron")
 {

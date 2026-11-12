@@ -44,7 +44,7 @@ auto meshCustomComponents()
 
     // Add custom integer component for vertex processing flags
     mesh.addVertexCustomComponent<int>("processingFlag");
-    std::cout << "Added per-vertex custom component 'processingFlag'\n";
+    std::cout << "Added vertex custom component 'processingFlag'\n";
 
     // Check if component exists
     std::cout << "Has processingFlag component: "
@@ -75,7 +75,7 @@ auto meshCustomComponents()
 
     // Add custom Point3f component for storing original positions
     mesh.addVertexCustomComponent<vcl::Point3f>("originalPosition");
-    std::cout << "Added per-vertex custom component 'originalPosition'\n";
+    std::cout << "Added vertex custom component 'originalPosition'\n";
 
     // Store original positions before any transformation
     for (auto vertex : mesh.vertices()) {
@@ -85,7 +85,7 @@ auto meshCustomComponents()
 
     // Add custom double component for vertex quality/error metrics
     mesh.addVertexCustomComponent<double>("quality");
-    std::cout << "Added per-vertex custom component 'quality'\n";
+    std::cout << "Added vertex custom component 'quality'\n";
 
     // Calculate a simple quality metric (distance from centroid)
     auto centroid = vcl::barycenter(mesh);
@@ -111,7 +111,7 @@ auto meshCustomComponents()
 
     // Add custom component for face areas
     mesh.addFaceCustomComponent<double>("area");
-    std::cout << "Added per-face custom component 'area'\n";
+    std::cout << "Added face custom component 'area'\n";
 
     // Calculate and store face areas
     for (auto face : mesh.faces()) {
@@ -120,7 +120,7 @@ auto meshCustomComponents()
 
     // Add custom component for face material IDs
     mesh.addFaceCustomComponent<int>("materialID");
-    std::cout << "Added per-face custom component 'materialID'\n";
+    std::cout << "Added face custom component 'materialID'\n";
 
     // Assign material IDs based on face area
     auto faceAreaHandle =
@@ -137,7 +137,7 @@ auto meshCustomComponents()
         face.customComponent<int>("materialID") = materialID;
     }
 
-    // Count faces per material
+    // Count material assignments
     int material0Count = 0, material1Count = 0;
     for (const auto& face : mesh.faces()) {
         if (face.customComponent<int>("materialID") == 0) {
@@ -152,7 +152,7 @@ auto meshCustomComponents()
 
     // Add custom string component for face labels
     mesh.addFaceCustomComponent<std::string>("label");
-    std::cout << "Added per-face custom component 'label'\n";
+    std::cout << "Added face custom component 'label'\n";
 
     // Assign descriptive labels
     for (auto face : mesh.faces()) {
@@ -334,15 +334,15 @@ auto meshCustomComponents()
 
     std::cout << "1. VERTEX CUSTOM COMPONENTS:\n";
     std::cout
-        << "   - addPerVertexCustomComponent<T>(name): add typed component\n";
+        << "   - addVertexCustomComponent<T>(name): add typed component\n";
     std::cout
-        << "   - vertex.customComponent<T>(name): access component data\n";
+        << "   - vertex.customComponent<T>(name): access vertex component data\n";
     std::cout
-        << "   - perVertexCustomComponentVectorHandle<T>(): bulk access\n\n";
+        << "   - vertexCustomComponentVectorHandle<T>(): bulk access\n\n";
 
     std::cout << "2. FACE CUSTOM COMPONENTS:\n";
     std::cout
-        << "   - addPerFaceCustomComponent<T>(name): add typed component\n";
+        << "   - addFaceCustomComponent<T>(name): add typed component\n";
     std::cout << "   - face.customComponent<T>(name): access component data\n";
     std::cout
         << "   - Support for various types: int, double, string, Point3d\n\n";

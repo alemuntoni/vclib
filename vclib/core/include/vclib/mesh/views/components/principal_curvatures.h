@@ -61,8 +61,8 @@ struct PrincipalCurvaturesView :
 /**
  * @brief View adaptor that transforms a range of elements into a range of their principal curvatures.
  *
- * When applied directly to an ElementContainerProxy (e.g. `mesh.vertices() | views::principalCurvatures` or
- * `mesh.faces() | views::principalCurvatures`), it directly returns a contiguous ComponentView over the SoA buffer
+ * When applied directly to an ElementContainerProxy (e.g. `mesh.vertices() | views::principalCurvatures`),
+ * it directly returns a contiguous ComponentView over the SoA buffer
  * without proxy overhead.
  *
  * When applied to a filtered or transformed range (e.g. `mesh.vertices() | views::selected | views::principalCurvatures`),

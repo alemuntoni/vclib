@@ -34,15 +34,6 @@ template<typename M>
 concept HasEdgeOptionalColor =
     HasElementOptionalComponent<M, ElemId::EDGE, CompId::COLOR>;
 
-/* TexCoords */
-template<typename M>
-concept HasEdgeTexCoord =
-    HasElementComponent<M, ElemId::EDGE, CompId::TEX_COORD>;
-
-template<typename M>
-concept HasEdgeOptionalTexCoord =
-    HasElementOptionalComponent<M, ElemId::EDGE, CompId::TEX_COORD>;
-
 /* Adjacencies */
 template<typename M>
 concept HasEdgeAdjacentFaces =
@@ -60,14 +51,6 @@ template<typename M>
 concept HasEdgeOptionalAdjacentEdges =
     HasElementOptionalAdjacentEdges<M, ElemId::EDGE>;
 
-template<typename M>
-concept HasEdgeAdjacentVertices =
-    HasElementAdjacentVertices<M, ElemId::EDGE>;
-
-template<typename M>
-concept HasEdgeOptionalAdjacentVertices =
-    HasElementOptionalAdjacentVertices<M, ElemId::EDGE>;
-
 /* Quality */
 template<typename M>
 concept HasEdgeQuality =
@@ -76,33 +59,6 @@ concept HasEdgeQuality =
 template<typename M>
 concept HasEdgeOptionalQuality =
     HasElementOptionalComponent<M, ElemId::EDGE, CompId::QUALITY>;
-
-/* PrincipalCurvature */
-template<typename M>
-concept HasEdgePrincipalCurvature =
-    HasElementComponent<M, ElemId::EDGE, CompId::PRINCIPAL_CURVATURE>;
-
-template<typename M>
-concept HasEdgeOptionalPrincipalCurvature =
-    HasElementOptionalComponent<M, ElemId::EDGE, CompId::PRINCIPAL_CURVATURE>;
-
-/* Tangent */
-template<typename M>
-concept HasEdgeTangent =
-    HasElementComponent<M, ElemId::EDGE, CompId::TANGENT>;
-
-template<typename M>
-concept HasEdgeOptionalTangent =
-    HasElementOptionalComponent<M, ElemId::EDGE, CompId::TANGENT>;
-
-/* MaterialIndex */
-template<typename M>
-concept HasEdgeMaterialIndex =
-    HasElementComponent<M, ElemId::EDGE, CompId::MATERIAL_INDEX>;
-
-template<typename M>
-concept HasEdgeOptionalMaterialIndex =
-    HasElementOptionalComponent<M, ElemId::EDGE, CompId::MATERIAL_INDEX>;
 
 /* Custom Components */
 template<typename M>

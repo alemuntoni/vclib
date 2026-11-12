@@ -7,9 +7,9 @@
 
 #include "types.h"
 
-#include <catch2/catch_test_macros.hpp>
+#include <vclib/algorithms/mesh.h>
 
-#include <vclib/algorithms/mesh/update/normal.h>
+#include <catch2/catch_test_macros.hpp>
 
 #include <cmath>
 

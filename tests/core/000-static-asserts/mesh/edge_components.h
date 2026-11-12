@@ -55,22 +55,6 @@ inline void edgeComponentsStaticAsserts()
         "TriEdgeMesh does not satisfy the HasEdgeOptionalAdjacentFaces");
 
     static_assert(
-        !HasEdgeTexCoord<TriEdgeMesh>,
-        "TriEdgeMesh satisfies the HasEdgeTexCoord");
-
-    static_assert(
-        !HasEdgePrincipalCurvature<TriEdgeMesh>,
-        "TriEdgeMesh satisfies the HasEdgePrincipalCurvature");
-
-    static_assert(
-        !HasEdgeTangent<TriEdgeMesh>,
-        "TriEdgeMesh satisfies the HasEdgeTangent");
-
-    static_assert(
-        !HasEdgeMaterialIndex<TriEdgeMesh>,
-        "TriEdgeMesh satisfies the HasEdgeMaterialIndex");
-
-    static_assert(
         HasEdgeColor<TriEdgeMesh>,
         "TriEdgeMesh does not satisfy the HasEdgeColor");
     static_assert(

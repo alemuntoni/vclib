@@ -7,11 +7,11 @@
 
 #include "types.h"
 
-#include <catch2/catch_test_macros.hpp>
+#include <vclib/algorithms/mesh.h>
+#include <vclib/meshes.h>
+#include <vclib/space/complex.h>
 
-#include <vclib/algorithms/mesh/update/topology.h>
-#include <vclib/meshes/tri_mesh.h>
-#include <vclib/space/complex/mesh_pos.h>
+#include <catch2/catch_test_macros.hpp>
 
 #include <set>
 #include <type_traits>

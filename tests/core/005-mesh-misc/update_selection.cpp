@@ -7,13 +7,10 @@
 
 #include "types.h"
 
-#include <catch2/catch_test_macros.hpp>
-
-#include <vclib/algorithms/mesh/create.h>
-#include <vclib/algorithms/mesh/stat/selection.h>
-#include <vclib/algorithms/mesh/update/selection.h>
-#include <vclib/algorithms/mesh/update/topology.h>
+#include <vclib/algorithms/mesh.h>
 #include <vclib/meshes.h>
+
+#include <catch2/catch_test_macros.hpp>
 
 #include <numbers>
 

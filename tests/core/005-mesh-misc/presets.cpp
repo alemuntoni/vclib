@@ -5,10 +5,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at https://mozilla.org/MPL/2.0/.
 
-#include <catch2/catch_test_macros.hpp>
-
-#include <vclib/mesh/requirements.h>
+#include <vclib/mesh.h>
 #include <vclib/meshes.h>
+
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Presets")
 {

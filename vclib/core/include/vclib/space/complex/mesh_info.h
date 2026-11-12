@@ -267,9 +267,11 @@ public:
             setEdges();
             setEdgeVertexReferences();
             setEdgeBitFlags();
-            // if constexpr (HasPerEdgeColor<Mesh>)
-            //     if (isPerEdgeColorAvailable(m))
-            //         setEdgeColors(true, UCHAR);
+            if constexpr (HasEdgeColor<Mesh>) {
+                if (m.isEdgeColorAvailable()) {
+                    setEdgeColor(true, PrimitiveType::UCHAR);
+                }
+            }
         }
 
         if constexpr (HasMaterials<Mesh>) {

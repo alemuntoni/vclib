@@ -173,22 +173,6 @@ TEST_CASE("Import From - Face Import From")
     fqm2.enableElementComponent<ElemId::FACE, CompId::QUALITY>();
     fqm2.face(0).importFrom(fqm1.face(0));
     REQUIRE(fqm2.face(0).quality() == 12.5f);
-
-    // 5. Tangent importFrom on Face
-    TangentMesh ftm1;
-    ftm1.addVertices(3);
-    ftm1.addFace(0, 1, 2);
-    ftm1.enableElementComponent<ElemId::FACE, CompId::TANGENT>();
-    ftm1.face(0).tangent()            = Point3f(0.0f, 1.0f, 0.0f);
-    ftm1.face(0).tangentRightHanded() = false;
-
-    TangentMesh ftm2;
-    ftm2.addVertices(3);
-    ftm2.addFace(0, 1, 2);
-    ftm2.enableElementComponent<ElemId::FACE, CompId::TANGENT>();
-    ftm2.face(0).importFrom(ftm1.face(0));
-    REQUIRE(ftm2.face(0).tangent() == Point3f(0.0f, 1.0f, 0.0f));
-    REQUIRE(ftm2.face(0).tangentRightHanded() == false);
 }
 
 TEST_CASE("Import From - Mesh Import From Tri To Tri")

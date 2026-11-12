@@ -30,16 +30,16 @@ void addOptionalComponentFunctions(
                       ELEM_ID,
                       COMP_ID>()) {
         c.def(
-            ("is_per_" + name + "_" + compName + "_enabled").c_str(),
+            ("is_" + name + "_" + compName + "_enabled").c_str(),
             [](const MeshType& t) {
                 return t
                     .template isElementComponentAvailable<ELEM_ID, COMP_ID>();
             });
-        c.def(("enable_per_" + name + "_" + compName).c_str(), [](MeshType& t) {
+        c.def(("enable_" + name + "_" + compName).c_str(), [](MeshType& t) {
             t.template enableElementComponent<ELEM_ID, COMP_ID>();
         });
         c.def(
-            ("disable_per_" + name + "_" + compName).c_str(), [](MeshType& t) {
+            ("disable_" + name + "_" + compName).c_str(), [](MeshType& t) {
                 t.template disableElementComponent<ELEM_ID, COMP_ID>();
             });
     }

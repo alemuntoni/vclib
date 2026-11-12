@@ -144,24 +144,6 @@ template<typename M>
 concept HasFaceOptionalQuality =
     HasElementOptionalComponent<M, ElemId::FACE, CompId::QUALITY>;
 
-/* PrincipalCurvature */
-template<typename M>
-concept HasFacePrincipalCurvature =
-    HasElementComponent<M, ElemId::FACE, CompId::PRINCIPAL_CURVATURE>;
-
-template<typename M>
-concept HasFaceOptionalPrincipalCurvature =
-    HasElementOptionalComponent<M, ElemId::FACE, CompId::PRINCIPAL_CURVATURE>;
-
-/* Tangent */
-template<typename M>
-concept HasFaceTangent =
-    HasElementComponent<M, ElemId::FACE, CompId::TANGENT>;
-
-template<typename M>
-concept HasFaceOptionalTangent =
-    HasElementOptionalComponent<M, ElemId::FACE, CompId::TANGENT>;
-
 /* MaterialIndex */
 template<typename M>
 concept HasFaceMaterialIndex =

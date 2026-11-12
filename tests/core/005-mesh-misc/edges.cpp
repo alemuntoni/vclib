@@ -5,14 +5,12 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at https://mozilla.org/MPL/2.0/.
 
-#include <ranges>
-#include <vector>
-
-#include <vclib/mesh/views/elements/edge.h>
-
 #include "types.h"
 
 #include <catch2/catch_test_macros.hpp>
+
+#include <ranges>
+#include <vector>
 
 TEST_CASE("Edges - Edge Concepts")
 {

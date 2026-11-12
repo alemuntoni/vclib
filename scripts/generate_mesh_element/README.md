@@ -93,12 +93,10 @@ directory and to compare the result with the original:
 ```shell
 cp -r vclib/core/include/vclib/mesh /tmp/mesh
 python3 scripts/generate_mesh_element/generate_mesh_element.py edge -vn 2 \
-    -c adjacent_edges adjacent_faces adjacent_vertices color custom_components \
-       material_index normal principal_curvature quality tangent tex_coord \
+    -c adjacent_edges adjacent_faces color custom_components normal quality \
     --mesh_dir /tmp/mesh
 diff -r vclib/core/include/vclib/mesh /tmp/mesh
 ```
 
-The only differences expected are in the formatting, in the messages of some
-`static_assert` and in the container member functions of the components that
-`EdgeContainer` does not expose.
+The only differences expected are in the formatting and in the messages of some
+`static_assert`.
