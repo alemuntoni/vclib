@@ -15,4 +15,12 @@
 #include "mesh_components/name.h"
 #include "mesh_components/transform_matrix.h"
 
+/**
+ * @defgroup mesh_components Mesh Components
+ * @ingroup mesh
+ *
+ * @brief List of all the Mesh-level Component classes, along with their
+ * concepts and functions.
+ */
+
 #endif // VCL_MESH_MESH_COMPONENTS_H

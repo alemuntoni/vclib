@@ -28,16 +28,19 @@ The next sections will introduce some concepts that you should know before using
 
 ### Components
 
-As you may have already noticed, components can be part of both Elements and Meshes. In fact, Components in VCLib are implemented as generic as possible, in such a way that can be used in different contexts (the main reason behind this choice is to avoid code duplication).
+As you may have already noticed, components can be part of both Elements and Meshes:
 
-For example, the vcl::comp::Color component can be used by Elements, but also by the Mesh (it may be useful sometimes to assign a uniform color to the Mesh). The color component exposes the member functions `color()` and `color() const`, meaning that it will be possible to call these functions from all the Elements/Meshes that will have that component:
+  - **Element Components** (defined in the `vcl::comp` namespace and aliased in `vcl::vert`, `vcl::face`, and `vcl::edge`) describe the per-element attributes whose data is stored in the SoA arrays of the Element's Container, and expose their accessors on the Element proxies;
+  - **Mesh Components** (defined in the `vcl::mesh` namespace, e.g. vcl::mesh::BoundingBox3, vcl::mesh::Color, vcl::mesh::CustomComponents, vcl::mesh::Materials, vcl::mesh::Name, vcl::mesh::TransformMatrix) are inherited directly by the vcl::Mesh class and store mesh-wide data directly inside the Mesh instance.
+
+When an attribute makes sense both at the Element level and at the Mesh level, the corresponding Element and Mesh components share the same `vcl::CompId` and expose the same member function interface. For example, vcl::comp::Color (used by Elements) and vcl::mesh::Color (used by the Mesh to assign a uniform color) both expose the `color()` member function:
 
 ```cpp
-AMeshType m; // A Mesh type that has the Color component
+AMeshType m; // A Mesh type that has vcl::mesh::Color and vertices with vcl::vert::Color
 
 m.color() = vcl::Color::Red;
 
-auto v = m.vertex(0); // Get a vertex from the mesh
+auto v = m.vertex(0); // Get a vertex proxy from the mesh
 
 v.color() = vcl::Color::Green; // The Vertex Element of AMeshType has the Color component
 ```

@@ -62,7 +62,7 @@ struct MData
  * - Iterate over the stored materials and texture images.
  * - Clear all stored material and texture data.
  *
- * @ingroup components
+ * @ingroup mesh_components
  */
 class Materials : public comp::Component<CompId::MATERIALS, detail::MData>
 {
@@ -304,7 +304,7 @@ private:
  * has the Materials component (inherits from it).
  *
  * The concept is satisfied if T is a class that inherits from
- * vcl::comp::Materials, with any template arguments.
+ * vcl::mesh::Materials, with any template arguments.
  *
  * @tparam T: The type to be tested for conformity to the HasMaterials.
  *
