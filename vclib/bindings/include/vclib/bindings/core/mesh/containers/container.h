@@ -30,7 +30,7 @@ void addOptionalComponentFunctions(
                       ELEM_ID,
                       COMP_ID>()) {
         c.def(
-            ("is_" + name + "_" + compName + "_enabled").c_str(),
+            ("is_" + name + "_" + compName + "_available").c_str(),
             [](const MeshType& t) {
                 return t
                     .template isElementComponentAvailable<ELEM_ID, COMP_ID>();
