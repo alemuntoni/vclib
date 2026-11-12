@@ -181,7 +181,7 @@ MeshType intersection(
         return intersect(f, sphere);
     };
 
-    MeshType res = perFaceMeshFilter(m, faceSphereIntersectionFilter);
+    MeshType res = faceMeshFilter(m, faceSphereIntersectionFilter);
 
     IndexType i = 0;
     while (i < res.faceContainerSize()) {
