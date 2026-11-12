@@ -37,15 +37,15 @@ TEST_CASE("Mesh Info - Mesh Info Default And Manual")
     REQUIRE(!info.isPolygonMesh());
     REQUIRE(info.hasVertices());
     REQUIRE(info.hasVertexPosition());
-    REQUIRE(info.perVertexPositionType() == PrimitiveType::FLOAT);
+    REQUIRE(info.vertexPositionType() == PrimitiveType::FLOAT);
     REQUIRE(info.hasVertexNormal());
-    REQUIRE(info.perVertexNormalType() == PrimitiveType::FLOAT);
+    REQUIRE(info.vertexNormalType() == PrimitiveType::FLOAT);
     REQUIRE(info.hasVertexColor());
-    REQUIRE(info.perVertexColorType() == PrimitiveType::UCHAR);
+    REQUIRE(info.vertexColorType() == PrimitiveType::UCHAR);
     REQUIRE(info.hasFaces());
     REQUIRE(info.hasFaceVertexReferences());
     REQUIRE(info.hasFaceNormal());
-    REQUIRE(info.perFaceNormalType() == PrimitiveType::DOUBLE);
+    REQUIRE(info.faceNormalType() == PrimitiveType::DOUBLE);
     REQUIRE(!info.hasEdges());
 
     // Update mesh type
@@ -77,18 +77,18 @@ TEST_CASE("Mesh Info - Mesh Info From Mesh")
 
         REQUIRE(info.hasVertices());
         REQUIRE(info.hasVertexPosition());
-        REQUIRE(info.perVertexPositionType() == PrimitiveType::FLOAT);
+        REQUIRE(info.vertexPositionType() == PrimitiveType::FLOAT);
         REQUIRE(info.hasVertexBitFlags());
         REQUIRE(info.hasVertexNormal());
-        REQUIRE(info.perVertexNormalType() == PrimitiveType::FLOAT);
+        REQUIRE(info.vertexNormalType() == PrimitiveType::FLOAT);
         REQUIRE(info.hasVertexColor());
-        REQUIRE(info.perVertexColorType() == PrimitiveType::UCHAR);
+        REQUIRE(info.vertexColorType() == PrimitiveType::UCHAR);
 
         REQUIRE(info.hasFaces());
         REQUIRE(info.hasFaceVertexReferences());
         REQUIRE(info.hasFaceBitFlags());
         REQUIRE(info.hasFaceColor());
-        REQUIRE(info.perFaceColorType() == PrimitiveType::UCHAR);
+        REQUIRE(info.faceColorType() == PrimitiveType::UCHAR);
         REQUIRE(info.isTriangleMesh());
 
         REQUIRE(!info.hasEdges());
@@ -117,7 +117,7 @@ TEST_CASE("Mesh Info - Mesh Info From Mesh")
 
         REQUIRE(info.hasVertices());
         REQUIRE(info.hasVertexPosition());
-        REQUIRE(info.perVertexPositionType() == PrimitiveType::DOUBLE);
+        REQUIRE(info.vertexPositionType() == PrimitiveType::DOUBLE);
         REQUIRE(info.hasFaces());
         REQUIRE(info.isTriangleMesh());
     }
@@ -156,7 +156,7 @@ TEST_CASE("Mesh Info - Mesh Info From Mesh")
         REQUIRE(info.hasMaterials());
         REQUIRE(info.hasFaces());
         REQUIRE(info.hasFaceMaterialIndex());
-        REQUIRE(info.perFaceMaterialIndexType() == PrimitiveType::UINT);
+        REQUIRE(info.faceMaterialIndexType() == PrimitiveType::UINT);
     }
 
     // 7. CCMesh (Custom Components)
@@ -168,15 +168,15 @@ TEST_CASE("Mesh Info - Mesh Info From Mesh")
         MeshInfo info(ccm);
 
         REQUIRE(info.hasVertexCustomComponents());
-        REQUIRE(info.perVertexCustomComponents().size() == 1);
-        REQUIRE(info.perVertexCustomComponents()[0].name == "curvature");
+        REQUIRE(info.vertexCustomComponents().size() == 1);
+        REQUIRE(info.vertexCustomComponents()[0].name == "curvature");
         REQUIRE(
-            info.perVertexCustomComponents()[0].type == PrimitiveType::DOUBLE);
+            info.vertexCustomComponents()[0].type == PrimitiveType::DOUBLE);
 
         REQUIRE(info.hasFaceCustomComponents());
-        REQUIRE(info.perFaceCustomComponents().size() == 1);
-        REQUIRE(info.perFaceCustomComponents()[0].name == "cluster_id");
-        REQUIRE(info.perFaceCustomComponents()[0].type == PrimitiveType::INT);
+        REQUIRE(info.faceCustomComponents().size() == 1);
+        REQUIRE(info.faceCustomComponents()[0].name == "cluster_id");
+        REQUIRE(info.faceCustomComponents()[0].type == PrimitiveType::INT);
     }
 }
 
@@ -203,7 +203,7 @@ TEST_CASE("Mesh Info - Mesh Info Intersect")
     REQUIRE(inter.hasVertices());
     REQUIRE(inter.hasVertexPosition());
     REQUIRE(
-        inter.perVertexPositionType() ==
+        inter.vertexPositionType() ==
         PrimitiveType::FLOAT);            // Taken from info1
     REQUIRE(!inter.hasVertexNormal()); // Not in info2
     REQUIRE(!inter.hasVertexColor());  // Not in info1
