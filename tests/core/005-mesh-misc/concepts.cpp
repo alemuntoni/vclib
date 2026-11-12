@@ -374,30 +374,30 @@ TEST_CASE("Concepts - Mesh Concepts")
 
     // Element Components on Mesh
     // Normals
-    static_assert(HasVertexNormals<FullMesh>);
-    static_assert(HasVertexOptionalNormals<MyMesh>);
-    static_assert(!HasVertexNormals<SimpleMesh>);
-    static_assert(!HasFaceNormals<MyMesh>);
-    static_assert(HasFaceNormals<TangentMesh>);
+    static_assert(HasVertexNormal<FullMesh>);
+    static_assert(HasVertexOptionalNormal<MyMesh>);
+    static_assert(!HasVertexNormal<SimpleMesh>);
+    static_assert(!HasFaceNormal<MyMesh>);
+    static_assert(HasFaceNormal<TangentMesh>);
 
     // Colors
-    static_assert(HasVertexColors<MyMesh>);
-    static_assert(HasVertexOptionalColors<MyMesh>);
-    static_assert(HasFaceColors<MyMesh>);
-    static_assert(HasFaceOptionalColors<MyMesh>);
-    static_assert(HasVertexColors<FullMesh>);
-    static_assert(!HasVertexOptionalColors<FullMesh>);
-    static_assert(HasFaceColors<FullMesh>);
-    static_assert(!HasFaceOptionalColors<FullMesh>);
-    static_assert(!HasVertexColors<SimpleMesh>);
-    static_assert(HasFaceColors<SimpleMesh>);
-    static_assert(HasFaceOptionalColors<SimpleMesh>);
-    static_assert(!HasFaceColors<SimplePolyMesh>);
-    static_assert(!HasFaceColors<SimpleQuadMesh>);
-    static_assert(!HasFaceColors<MyEdgeMesh>);
-    static_assert(HasEdgeColors<MyEdgeMesh>);
-    static_assert(!HasEdgeOptionalColors<MyEdgeMesh>);
-    static_assert(!HasEdgeColors<MyMesh>);
+    static_assert(HasVertexColor<MyMesh>);
+    static_assert(HasVertexOptionalColor<MyMesh>);
+    static_assert(HasFaceColor<MyMesh>);
+    static_assert(HasFaceOptionalColor<MyMesh>);
+    static_assert(HasVertexColor<FullMesh>);
+    static_assert(!HasVertexOptionalColor<FullMesh>);
+    static_assert(HasFaceColor<FullMesh>);
+    static_assert(!HasFaceOptionalColor<FullMesh>);
+    static_assert(!HasVertexColor<SimpleMesh>);
+    static_assert(HasFaceColor<SimpleMesh>);
+    static_assert(HasFaceOptionalColor<SimpleMesh>);
+    static_assert(!HasFaceColor<SimplePolyMesh>);
+    static_assert(!HasFaceColor<SimpleQuadMesh>);
+    static_assert(!HasFaceColor<MyEdgeMesh>);
+    static_assert(HasEdgeColor<MyEdgeMesh>);
+    static_assert(!HasEdgeOptionalColor<MyEdgeMesh>);
+    static_assert(!HasEdgeColor<MyMesh>);
 
     // Adjacencies
     static_assert(HasVertexAdjacentFaces<AdjMesh>);
@@ -410,33 +410,33 @@ TEST_CASE("Concepts - Mesh Concepts")
     static_assert(!HasVertexAdjacentEdges<MyMesh>);
 
     // Qualities
-    static_assert(HasVertexQualities<QualityMesh>);
-    static_assert(HasFaceQualities<QualityMesh>);
-    static_assert(!HasVertexOptionalQualities<QualityMesh>);
-    static_assert(HasFaceOptionalQualities<QualityMesh>);
-    static_assert(HasVertexOptionalQualities<OptionalQualityMesh>);
-    static_assert(!HasVertexQualities<MyMesh>);
+    static_assert(HasVertexQuality<QualityMesh>);
+    static_assert(HasFaceQuality<QualityMesh>);
+    static_assert(!HasVertexOptionalQuality<QualityMesh>);
+    static_assert(HasFaceOptionalQuality<QualityMesh>);
+    static_assert(HasVertexOptionalQuality<OptionalQualityMesh>);
+    static_assert(!HasVertexQuality<MyMesh>);
 
     // Curvatures
-    static_assert(HasVertexPrincipalCurvatures<CurvatureMesh>);
-    static_assert(HasFacePrincipalCurvatures<CurvatureMesh>);
-    static_assert(!HasVertexOptionalPrincipalCurvatures<CurvatureMesh>);
-    static_assert(HasFaceOptionalPrincipalCurvatures<CurvatureMesh>);
-    static_assert(HasVertexOptionalPrincipalCurvatures<OptionalCurvatureMesh>);
-    static_assert(!HasVertexPrincipalCurvatures<MyMesh>);
+    static_assert(HasVertexPrincipalCurvature<CurvatureMesh>);
+    static_assert(HasFacePrincipalCurvature<CurvatureMesh>);
+    static_assert(!HasVertexOptionalPrincipalCurvature<CurvatureMesh>);
+    static_assert(HasFaceOptionalPrincipalCurvature<CurvatureMesh>);
+    static_assert(HasVertexOptionalPrincipalCurvature<OptionalCurvatureMesh>);
+    static_assert(!HasVertexPrincipalCurvature<MyMesh>);
 
     // Tangents
-    static_assert(HasVertexTangents<TangentMesh>);
-    static_assert(HasFaceTangents<TangentMesh>);
-    static_assert(!HasVertexOptionalTangents<TangentMesh>);
-    static_assert(HasFaceOptionalTangents<TangentMesh>);
-    static_assert(HasVertexOptionalTangents<OptionalTangentMesh>);
-    static_assert(!HasVertexTangents<MyMesh>);
+    static_assert(HasVertexTangent<TangentMesh>);
+    static_assert(HasFaceTangent<TangentMesh>);
+    static_assert(!HasVertexOptionalTangent<TangentMesh>);
+    static_assert(HasFaceOptionalTangent<TangentMesh>);
+    static_assert(HasVertexOptionalTangent<OptionalTangentMesh>);
+    static_assert(!HasVertexTangent<MyMesh>);
 
     // Material Index
-    static_assert(HasFaceMaterialIndices<MaterialMesh>);
-    static_assert(!HasFaceMaterialIndices<MyMesh>);
-    static_assert(HasFaceOptionalMaterialIndices<OptionalMaterialMesh>);
+    static_assert(HasFaceMaterialIndex<MaterialMesh>);
+    static_assert(!HasFaceMaterialIndex<MyMesh>);
+    static_assert(HasFaceOptionalMaterialIndex<OptionalMaterialMesh>);
 
     // Custom Components
     static_assert(HasVertexCustomComponents<CCMesh>);
@@ -607,7 +607,7 @@ TEST_CASE("Concepts - Contracts")
               .isElementComponentAvailable<ElemId::VERTEX, CompId::NORMAL>()));
     caught = false;
     try {
-        requireVertexNormals(optMesh);
+        requireVertexNormal(optMesh);
     }
     catch (const MissingComponentException&) {
         caught = true;
@@ -615,28 +615,28 @@ TEST_CASE("Concepts - Contracts")
     REQUIRE(caught);
 
     // Enable optional vertex normals
-    bool enabled = enableIfVertexNormalsOptional(optMesh);
+    bool enabled = enableIfVertexNormalOptional(optMesh);
     REQUIRE(enabled);
     REQUIRE((
         optMesh.isElementComponentAvailable<ElemId::VERTEX, CompId::NORMAL>()));
-    requireVertexNormals(optMesh); // succeeds without throwing
+    requireVertexNormal(optMesh); // succeeds without throwing
 
     // Optional face color starts disabled
     REQUIRE(
         (!optMesh.isElementComponentAvailable<ElemId::FACE, CompId::COLOR>()));
     caught = false;
     try {
-        requireFaceColors(optMesh);
+        requireFaceColor(optMesh);
     }
     catch (const MissingComponentException&) {
         caught = true;
     }
     REQUIRE(caught);
 
-    enableIfFaceColorsOptional(optMesh);
+    enableIfFaceColorOptional(optMesh);
     REQUIRE(
         (optMesh.isElementComponentAvailable<ElemId::FACE, CompId::COLOR>()));
-    requireFaceColors(optMesh);
+    requireFaceColor(optMesh);
 
     // Non-optional components on FullMesh are always available
     FullMesh fullMesh;
@@ -647,9 +647,9 @@ TEST_CASE("Concepts - Contracts")
         fullMesh.isElementComponentAvailable<ElemId::VERTEX, CompId::COLOR>()));
     REQUIRE(
         (fullMesh.isElementComponentAvailable<ElemId::FACE, CompId::COLOR>()));
-    requireVertexNormals(fullMesh);
-    requireVertexColors(fullMesh);
-    requireFaceColors(fullMesh);
+    requireVertexNormal(fullMesh);
+    requireVertexColor(fullMesh);
+    requireFaceColor(fullMesh);
 
     // MyEdgeMesh
     MyEdgeMesh edgeMesh = createSampleEdgeMesh();
@@ -658,10 +658,10 @@ TEST_CASE("Concepts - Contracts")
     REQUIRE((!edgeMesh.isElementComponentAvailable<
               ElemId::EDGE,
               CompId::QUALITY>())); // optional quality not enabled
-    enableIfEdgeQualitiesOptional(edgeMesh);
+    enableIfEdgeQualityOptional(edgeMesh);
     REQUIRE((
         edgeMesh.isElementComponentAvailable<ElemId::EDGE, CompId::QUALITY>()));
-    requireEdgeQualities(edgeMesh);
+    requireEdgeQuality(edgeMesh);
 
     // Generic requireElementComponent
     requireElementComponent<ElemId::VERTEX, CompId::NORMAL>(optMesh);

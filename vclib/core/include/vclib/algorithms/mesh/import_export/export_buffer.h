@@ -864,7 +864,7 @@ void triangulatedFaceNormalsToBuffer(
 {
     using namespace detail;
 
-    requireFaceNormals(mesh);
+    requireFaceNormal(mesh);
 
     const auto NUM_ROWS =
         numRows == MeshType::NULL_INDEX ? indexMap.triangleCount() : numRows;
@@ -1152,7 +1152,7 @@ void triangulatedFaceColorsToBuffer(
 {
     using namespace detail;
 
-    requireFaceColors(mesh);
+    requireFaceColor(mesh);
 
     const bool R_INT = representation == Color::Representation::INT_0_255;
 
@@ -1456,7 +1456,7 @@ void vertexTangentsToBuffer(
     using namespace detail;
     using IndexType = typename MeshType::IndexType;
 
-    requireVertexTangents(mesh);
+    requireVertexTangent(mesh);
 
     const auto NUM_ROWS =
         numRows == MeshType::NULL_INDEX ? mesh.vertexCount() : numRows;
@@ -1506,7 +1506,7 @@ void vertexTexCoordsToBuffer(
     using namespace detail;
     using IndexType = typename MeshType::IndexType;
 
-    requireVertexTexCoords(mesh);
+    requireVertexTexCoord(mesh);
 
     const auto NUM_ROWS =
         numRows == MeshType::NULL_INDEX ? mesh.vertexCount() : numRows;
@@ -1542,7 +1542,7 @@ void vertexMaterialIndicesToBuffer(const MeshType& mesh, auto* buffer)
 {
     using IndexType = typename MeshType::IndexType;
 
-    requireVertexMaterialIndices(mesh);
+    requireVertexMaterialIndex(mesh);
 
     for (IndexType i = 0; const auto& v : mesh.vertices()) {
         buffer[i] = v.materialIndex();
@@ -1580,7 +1580,7 @@ void vertexMaterialIndicesAsFaceMaterialIndicesToBuffer(
 {
     using IndexType = typename MeshType::IndexType;
 
-    requireVertexMaterialIndices(mesh);
+    requireVertexMaterialIndex(mesh);
 
     for (IndexType i = 0; const auto& f : mesh.faces()) {
         auto ti   = f.vertex(0).materialIndex();
@@ -1619,7 +1619,7 @@ void vertexMaterialIndicesAsTriangulatedFaceMaterialIndicesToBuffer(
     auto*                    buffer,
     const TriPolyIndexBiMap& indexMap)
 {
-    requireVertexMaterialIndices(mesh);
+    requireVertexMaterialIndex(mesh);
 
     for (const auto& f : mesh.faces()) {
         auto ti    = f.vertex(0).materialIndex();
@@ -1727,7 +1727,7 @@ void faceMaterialIndicesToBuffer(const MeshType& mesh, auto* buffer)
 {
     using IndexType = typename MeshType::IndexType;
 
-    requireFaceMaterialIndices(mesh);
+    requireFaceMaterialIndex(mesh);
 
     for (IndexType i = 0; const auto& f : mesh.faces()) {
         buffer[i] = f.materialIndex();
@@ -1762,7 +1762,7 @@ void triangulatedFaceMaterialIndicesToBuffer(
     auto*                    buffer,
     const TriPolyIndexBiMap& indexMap)
 {
-    requireFaceMaterialIndices(mesh);
+    requireFaceMaterialIndex(mesh);
 
     for (const auto& f : mesh.faces()) {
         auto first = indexMap.triangleBegin(f.index());
@@ -1920,7 +1920,7 @@ void faceMaterialIndicesAsDuplicatedVertexMaterialIndicesToBuffer(
 {
     using IndexType = typename MeshType::IndexType;
 
-    requireFaceMaterialIndices(mesh);
+    requireFaceMaterialIndex(mesh);
 
     const auto VERT_NUM = mesh.vertexCount() + facesToReassign.size();
 

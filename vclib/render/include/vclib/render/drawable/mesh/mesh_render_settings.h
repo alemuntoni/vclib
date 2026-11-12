@@ -800,13 +800,13 @@ public:
             setPointsCapability(MRI::Points::COLOR_USER);
             setPointsCapability(MRI::Points::SELECTION);
 
-            if constexpr (vcl::HasVertexNormals<MeshType>) {
+            if constexpr (vcl::HasVertexNormal<MeshType>) {
                 if (m.isVertexNormalAvailable()) {
                     setPointsCapability(MRI::Points::SHADING_VERT);
                 }
             }
 
-            if constexpr (vcl::HasVertexColors<MeshType>) {
+            if constexpr (vcl::HasVertexColor<MeshType>) {
                 mHasPerVertexColor = m.isVertexColorAvailable();
                 if (mHasPerVertexColor) {
                     setPointsCapability(MRI::Points::COLOR_VERTEX);
@@ -837,13 +837,13 @@ public:
                         setWireframeCapability(MRI::Wireframe::COLOR_MESH);
                     }
 
-                    if constexpr (vcl::HasFaceNormals<MeshType>) {
+                    if constexpr (vcl::HasFaceNormal<MeshType>) {
                         if (m.isFaceNormalAvailable()) {
                             setSurfaceCapability(MRI::Surface::SHADING_FLAT);
                         }
                     }
 
-                    if constexpr (vcl::HasVertexNormals<MeshType>) {
+                    if constexpr (vcl::HasVertexNormal<MeshType>) {
                         if (m.isVertexNormalAvailable()) {
                             setSurfaceCapability(MRI::Surface::SHADING_SMOOTH);
                             setWireframeCapability(
@@ -853,11 +853,11 @@ public:
 
                     // shading normal map check
                     if constexpr (
-                        vcl::HasVertexNormals<MeshType> &&
-                        vcl::HasVertexTangents<MeshType> &&
+                        vcl::HasVertexNormal<MeshType> &&
+                        vcl::HasVertexTangent<MeshType> &&
                         vcl::HasMaterials<MeshType>) {
                         bool hasTexCoords = false;
-                        if constexpr (vcl::HasVertexTexCoords<MeshType>) {
+                        if constexpr (vcl::HasVertexTexCoord<MeshType>) {
                             if (m.isVertexTexCoordAvailable()) {
                                 hasTexCoords = true;
                             }
@@ -883,12 +883,12 @@ public:
                         }
                     }
 
-                    if constexpr (vcl::HasFaceColors<MeshType>) {
+                    if constexpr (vcl::HasFaceColor<MeshType>) {
                         if (m.isFaceColorAvailable())
                             setSurfaceCapability(MRI::Surface::COLOR_FACE);
                     }
 
-                    if constexpr (vcl::HasVertexColors<MeshType>) {
+                    if constexpr (vcl::HasVertexColor<MeshType>) {
                         if (m.isVertexColorAvailable()) {
                             setSurfaceCapability(MRI::Surface::COLOR_VERTEX);
                             setWireframeCapability(
@@ -897,7 +897,7 @@ public:
                     }
 
                     if constexpr (vcl::HasMaterials<MeshType>) {
-                        if constexpr (vcl::HasVertexTexCoords<MeshType>) {
+                        if constexpr (vcl::HasVertexTexCoord<MeshType>) {
                             if (m.isVertexTexCoordAvailable() &&
                                 m.materialCount() > 0)
                                 setSurfaceCapability(
@@ -927,24 +927,24 @@ public:
                         setEdgesCapability(MRI::Edges::COLOR_MESH);
                     }
 
-                    if constexpr (vcl::HasVertexNormals<MeshType>) {
+                    if constexpr (vcl::HasVertexNormal<MeshType>) {
                         if (m.isVertexNormalAvailable()) {
                             setEdgesCapability(MRI::Edges::SHADING_SMOOTH);
                         }
                     }
 
-                    if constexpr (vcl::HasEdgeNormals<MeshType>) {
+                    if constexpr (vcl::HasEdgeNormal<MeshType>) {
                         if (m.isEdgeNormalAvailable()) {
                             setEdgesCapability(MRI::Edges::SHADING_FLAT);
                         }
                     }
 
-                    if constexpr (vcl::HasEdgeColors<MeshType>) {
+                    if constexpr (vcl::HasEdgeColor<MeshType>) {
                         if (m.isEdgeColorAvailable())
                             setEdgesCapability(MRI::Edges::COLOR_EDGE);
                     }
 
-                    if constexpr (vcl::HasVertexColors<MeshType>) {
+                    if constexpr (vcl::HasVertexColor<MeshType>) {
                         if (m.isVertexColorAvailable()) {
                             setEdgesCapability(MRI::Edges::COLOR_VERTEX);
                         }

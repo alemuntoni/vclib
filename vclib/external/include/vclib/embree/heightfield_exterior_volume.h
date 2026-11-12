@@ -394,7 +394,7 @@ auto findBestOrientationByHeightfieldExteriorVolume(
     log.startNewTask(
         0, 100, "Finding best orientation by heightfield exterior volume...");
 
-    requireFaceNormals(m);
+    requireFaceNormal(m);
 
     Box3<ScalarType> bbox = boundingBox(m);
 

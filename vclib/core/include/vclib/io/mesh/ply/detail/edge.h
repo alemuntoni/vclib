@@ -57,7 +57,7 @@ void readPlyEdgeProperty(
     }
     // loading one of the normal components
     else if (p.name >= ply::nx && p.name <= ply::nz) {
-        if constexpr (HasEdgeNormals<MeshType>) {
+        if constexpr (HasEdgeNormal<MeshType>) {
             if (mesh.isEdgeNormalAvailable()) {
                 using Scalar = EdgeType::NormalType::ScalarType;
                 int    a     = p.name - ply::nx;
@@ -68,7 +68,7 @@ void readPlyEdgeProperty(
     }
     // loading one of the color components
     else if (p.name >= ply::red && p.name <= ply::alpha) {
-        if constexpr (HasEdgeColors<MeshType>) {
+        if constexpr (HasEdgeColor<MeshType>) {
             if (mesh.isEdgeColorAvailable()) {
                 int           a = p.name - ply::red;
                 unsigned char c =
@@ -78,7 +78,7 @@ void readPlyEdgeProperty(
         }
     }
     else if (p.name == ply::quality) { // loading the quality component
-        if constexpr (HasEdgeQualities<MeshType>) {
+        if constexpr (HasEdgeQuality<MeshType>) {
             using QualityType = EdgeType::QualityType;
             if (mesh.isEdgeQualityAvailable()) {
                 QualityType s =
@@ -177,21 +177,21 @@ void writePlyEdges(
                 hasBeenWritten = true;
             }
             else if (p.name >= ply::nx && p.name <= ply::nz) {
-                if constexpr (HasEdgeNormals<MeshType>) {
+                if constexpr (HasEdgeNormal<MeshType>) {
                     io::writeProperty(
                         file, e.normal()[p.name - ply::nx], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             else if (p.name >= ply::red && p.name <= ply::alpha) {
-                if constexpr (HasEdgeColors<MeshType>) {
+                if constexpr (HasEdgeColor<MeshType>) {
                     io::writeProperty(
                         file, e.color()[p.name - ply::red], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             else if (p.name == ply::quality) {
-                if constexpr (HasEdgeQualities<MeshType>) {
+                if constexpr (HasEdgeQuality<MeshType>) {
                     io::writeProperty(file, e.quality(), p.type, format);
                     hasBeenWritten = true;
                 }

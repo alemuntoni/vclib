@@ -117,7 +117,7 @@ void saveStl(
 
             unsigned short attributes = 0;
 
-            if constexpr (HasFaceColors<MeshType>) {
+            if constexpr (HasFaceColor<MeshType>) {
                 if (meshInfo.hasFaceColor()) {
                     if (settings.magicsMode)
                         attributes = 32768 | f.color().bgr5();

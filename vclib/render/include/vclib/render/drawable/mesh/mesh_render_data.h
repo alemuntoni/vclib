@@ -474,7 +474,7 @@ protected:
         // ordering first by per-vertex material index (if available),
         // then by per-face material index (if available)
         auto faceComp = [&](FaceType f1, FaceType f2) {
-            if constexpr (HasVertexMaterialIndices<MeshType>) {
+            if constexpr (HasVertexMaterialIndex<MeshType>) {
                 if (mesh.isVertexMaterialIndexAvailable()) {
                     uint id1 = f1.vertex(0).materialIndex();
                     uint id2 = f2.vertex(0).materialIndex();
@@ -483,7 +483,7 @@ protected:
                     }
                 }
             }
-            if constexpr (HasFaceMaterialIndices<MeshType>) {
+            if constexpr (HasFaceMaterialIndex<MeshType>) {
                 if (mesh.isFaceMaterialIndexAvailable()) {
                     uint id1 = f1.materialIndex();
                     uint id2 = f2.materialIndex();
@@ -1033,7 +1033,7 @@ private:
             self.setVertexSelectionBuffer(mesh);
         }
 
-        if constexpr (HasVertexNormals<MeshType>) {
+        if constexpr (HasVertexNormal<MeshType>) {
             if (mesh.isVertexNormalAvailable()) {
                 if (btu[toUnderlying(VERT_NORMALS)]) {
                     // vertex buffer (normals)
@@ -1042,7 +1042,7 @@ private:
             }
         }
 
-        if constexpr (HasVertexColors<MeshType>) {
+        if constexpr (HasVertexColor<MeshType>) {
             if (mesh.isVertexColorAvailable()) {
                 if (btu[toUnderlying(VERT_COLORS)]) {
                     // vertex buffer (colors)
@@ -1051,7 +1051,7 @@ private:
             }
         }
 
-        if constexpr (HasVertexTexCoords<MeshType>) {
+        if constexpr (HasVertexTexCoord<MeshType>) {
             if (mesh.isVertexTexCoordAvailable()) {
                 if (btu[toUnderlying(VERT_TEXCOORDS)]) {
                     // vertex buffer (UVs)
@@ -1060,7 +1060,7 @@ private:
             }
         }
 
-        if constexpr (HasVertexTangents<MeshType>) {
+        if constexpr (HasVertexTangent<MeshType>) {
             if (mesh.isVertexTangentAvailable()) {
                 if (btu[toUnderlying(VERT_TANGENT)]) {
                     // vertex buffer (tangent)
@@ -1098,7 +1098,7 @@ private:
                 }
             }
 
-            if constexpr (HasFaceNormals<MeshType>) {
+            if constexpr (HasFaceNormal<MeshType>) {
                 if (mesh.isFaceNormalAvailable()) {
                     if (btu[toUnderlying(TRI_NORMALS)]) {
                         // triangle normal buffer
@@ -1107,7 +1107,7 @@ private:
                 }
             }
 
-            if constexpr (HasFaceColors<MeshType>) {
+            if constexpr (HasFaceColor<MeshType>) {
                 if (mesh.isFaceColorAvailable()) {
                     if (btu[toUnderlying(TRI_COLORS)]) {
                         // triangle color buffer
@@ -1118,7 +1118,7 @@ private:
 
             // material indices are stored per face (each face has its own
             // material index)
-            if constexpr (HasVertexMaterialIndices<MeshType>) {
+            if constexpr (HasVertexMaterialIndex<MeshType>) {
                 if (mesh.isVertexMaterialIndexAvailable()) {
                     if (btu[toUnderlying(VERT_TEXCOORDS)]) {
                         // triangle vertex material indices buffer
@@ -1127,7 +1127,7 @@ private:
                 }
             }
 
-            if constexpr (HasFaceMaterialIndices<MeshType>) {
+            if constexpr (HasFaceMaterialIndex<MeshType>) {
                 if (mesh.isFaceMaterialIndexAvailable()) {
                     if (btu[toUnderlying(WEDGE_TEXCOORDS)]) {
                         // triangle material indices buffer
@@ -1160,7 +1160,7 @@ private:
                 self.setEdgeSelectionBuffer(mesh);
             }
 
-            if constexpr (HasEdgeNormals<MeshType>) {
+            if constexpr (HasEdgeNormal<MeshType>) {
                 if (mesh.isEdgeNormalAvailable()) {
                     if (btu[toUnderlying(EDGE_NORMALS)]) {
                         // edge normal buffer
@@ -1169,7 +1169,7 @@ private:
                 }
             }
 
-            if constexpr (HasEdgeColors<MeshType>) {
+            if constexpr (HasEdgeColor<MeshType>) {
                 if (mesh.isEdgeColorAvailable()) {
                     if (btu[toUnderlying(EDGE_COLORS)]) {
                         // edge color buffer
@@ -1227,14 +1227,14 @@ private:
             uint fIndex = mIndexMap.polygon(i);
 
             ushort vMatId = USHORT_NULL;
-            if constexpr (HasVertexMaterialIndices<MeshType>) {
+            if constexpr (HasVertexMaterialIndex<MeshType>) {
                 if (mesh.isVertexMaterialIndexAvailable()) {
                     vMatId = mesh.face(fIndex).vertex(0).materialIndex();
                 }
             }
 
             ushort fMatId = USHORT_NULL;
-            if constexpr (HasFaceMaterialIndices<MeshType>) {
+            if constexpr (HasFaceMaterialIndex<MeshType>) {
                 if (mesh.isFaceMaterialIndexAvailable()) {
                     fMatId = mesh.face(fIndex).materialIndex();
                 }

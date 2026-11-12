@@ -29,7 +29,7 @@ struct ColorAvgInfo
 template<ElemId ELEM_ID, MeshConcept MeshType>
 void setElemColorFromVertexColor(MeshType& m)
 {
-    requireVertexColors(m);
+    requireVertexColor(m);
     requireElementComponent<ELEM_ID, CompId::VERTEX_REFERENCES>(m);
     requireElementComponent<ELEM_ID, CompId::COLOR>(m);
 
@@ -46,7 +46,7 @@ void setElemColorFromVertexColor(MeshType& m)
 template<ElemId ELEM_ID, MeshConcept MeshType>
 void setVertexColorFromElemColor(MeshType& m)
 {
-    requireVertexColors(m);
+    requireVertexColor(m);
     requireElementComponent<ELEM_ID, CompId::VERTEX_REFERENCES>(m);
     requireElementComponent<ELEM_ID, CompId::COLOR>(m);
 
@@ -109,7 +109,7 @@ void setVertexColor(
     Color     c            = Color::White,
     bool      onlySelected = false)
 {
-    requireVertexColors(m);
+    requireVertexColor(m);
 
     if (onlySelected) {
         std::ranges::fill(m.vertices() | views::selected | views::colors, c);
@@ -143,7 +143,7 @@ void setFaceColor(
     Color     c            = Color::White,
     bool      onlySelected = false)
 {
-    requireFaceColors(m);
+    requireFaceColor(m);
 
     if (onlySelected) {
         std::ranges::fill(m.faces() | views::selected | views::colors, c);
@@ -177,7 +177,7 @@ void setEdgeColor(
     Color     c            = Color::White,
     bool      onlySelected = false)
 {
-    requireEdgeColors(m);
+    requireEdgeColor(m);
 
     if (onlySelected) {
         std::ranges::fill(m.edges() | views::selected | views::colors, c);
@@ -284,8 +284,8 @@ void setVertexColorFromQuality(
     Q1              minQuality = 0.f,
     Q2              maxQuality = 0.f)
 {
-    requireVertexColors(m);
-    requireVertexQualities(m);
+    requireVertexColor(m);
+    requireVertexQuality(m);
 
     if (minQuality == maxQuality) {
         auto pair  = vertexQualityMinMax(m);
@@ -329,8 +329,8 @@ void setFaceColorFromQuality(
     Q1              minQuality = 0.f,
     Q2              maxQuality = 0.f)
 {
-    requireFaceColors(m);
-    requireFaceQualities(m);
+    requireFaceColor(m);
+    requireFaceQuality(m);
 
     if (minQuality == maxQuality) {
         auto pair = faceQualityMinMax(m);
@@ -420,7 +420,7 @@ void setVertexColorFromFaceBorderFlag(
     Color     internalColor = Color::White,
     Color     mixColor      = Color::Cyan)
 {
-    requireVertexColors(m);
+    requireVertexColor(m);
 
     const Color baseColor = Color::Green;
 
@@ -475,7 +475,7 @@ void setFaceColorFromConnectedComponents(
     MeshType&   m,
     const auto& connectedComponents)
 {
-    requireFaceColors(m);
+    requireFaceColor(m);
 
     std::vector<Color> vc = colorScattering(connectedComponents.size());
 
@@ -509,7 +509,7 @@ template<FaceMeshConcept MeshType>
     requires HasFaceAdjacentFaces<MeshType>
 void setFaceColorFromConnectedComponents(MeshType& m)
 {
-    requireFaceColors(m);
+    requireFaceColor(m);
     requireFaceAdjacentFaces(m);
 
     auto connComps = connectedComponents(m);
@@ -547,7 +547,7 @@ void setFaceColorScattering(
     uint      nColors        = 50,
     bool      checkFauxEdges = true)
 {
-    requireFaceColors(m);
+    requireFaceColor(m);
 
     Color baseColor = Color::Black;
     setFaceColor(m, baseColor);
@@ -601,7 +601,7 @@ void setVertexColorPerlinNoise(
     const PositionType<MeshType>& offset     = PositionType<MeshType>(0, 0, 0),
     bool                          onSelected = false)
 {
-    requireVertexColors(m);
+    requireVertexColor(m);
 
     PositionType<MeshType> p[3];
 
@@ -646,7 +646,7 @@ void setVertexPerlinColor(
     const Color&                  color2     = Color::White,
     bool                          onSelected = false)
 {
-    requireVertexColors(m);
+    requireVertexColor(m);
 
     for (auto v : m.vertices()) {
         if (!onSelected || v.selected()) {

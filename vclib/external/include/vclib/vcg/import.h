@@ -183,11 +183,11 @@ void importMeshFromVCGMesh(
             vertex.importFlagsFromVCGFormat(vcgMesh.vert[i].Flags());
 
             // normal
-            if constexpr (HasVertexNormals<MeshType>) {
+            if constexpr (HasVertexNormal<MeshType>) {
                 using NormalType = VertexType<MeshType>::NormalType;
                 if (vcg::tri::HasPerVertexNormal(vcgMesh)) {
                     if (enableOptionalComponents) {
-                        vcl::enableIfVertexNormalsOptional(mesh);
+                        vcl::enableIfVertexNormalOptional(mesh);
                     }
                     if (mesh.isVertexNormalAvailable()) {
                         detail::importNormal(vertex, vcgMesh.vert[i]);
@@ -196,10 +196,10 @@ void importMeshFromVCGMesh(
             }
 
             // color
-            if constexpr (HasVertexColors<MeshType>) {
+            if constexpr (HasVertexColor<MeshType>) {
                 if (vcg::tri::HasPerVertexColor(vcgMesh)) {
                     if (enableOptionalComponents) {
-                        vcl::enableIfVertexColorsOptional(mesh);
+                        vcl::enableIfVertexColorOptional(mesh);
                     }
                     if (mesh.isVertexColorAvailable()) {
                         detail::importColor(vertex, vcgMesh.vert[i]);
@@ -208,10 +208,10 @@ void importMeshFromVCGMesh(
             }
 
             // quality
-            if constexpr (HasVertexQualities<MeshType>) {
+            if constexpr (HasVertexQuality<MeshType>) {
                 if (vcg::tri::HasPerVertexQuality(vcgMesh)) {
                     if (enableOptionalComponents) {
-                        vcl::enableIfVertexQualitiesOptional(mesh);
+                        vcl::enableIfVertexQualityOptional(mesh);
                     }
                     if (mesh.isVertexQualityAvailable()) {
                         vertex.quality() = vcgMesh.vert[i].Q();
@@ -220,11 +220,11 @@ void importMeshFromVCGMesh(
             }
 
             // texcoord
-            if constexpr (HasVertexTexCoords<MeshType>) {
+            if constexpr (HasVertexTexCoord<MeshType>) {
                 using TexCoordType = VertexType<MeshType>::TexCoordType;
                 if (vcg::tri::HasPerVertexTexCoord(vcgMesh)) {
                     if (enableOptionalComponents) {
-                        vcl::enableIfVertexTexCoordsOptional(mesh);
+                        vcl::enableIfVertexTexCoordOptional(mesh);
                     }
                     if (mesh.isVertexTexCoordAvailable()) {
                         vertex.texCoord() = TexCoordType(
@@ -281,11 +281,11 @@ void importMeshFromVCGMesh(
                 face.importFlagsFromVCGFormat(vcgMesh.face[i].Flags());
 
                 // normal
-                if constexpr (HasFaceNormals<MeshType>) {
+                if constexpr (HasFaceNormal<MeshType>) {
                     using NormalType = FaceType::NormalType;
                     if (vcg::tri::HasPerFaceNormal(vcgMesh)) {
                         if (enableOptionalComponents) {
-                            vcl::enableIfFaceNormalsOptional(mesh);
+                            vcl::enableIfFaceNormalOptional(mesh);
                         }
                         if (mesh.isFaceNormalAvailable()) {
                             detail::importNormal(face, vcgMesh.face[i]);
@@ -294,10 +294,10 @@ void importMeshFromVCGMesh(
                 }
 
                 // color
-                if constexpr (HasFaceColors<MeshType>) {
+                if constexpr (HasFaceColor<MeshType>) {
                     if (vcg::tri::HasPerFaceColor(vcgMesh)) {
                         if (enableOptionalComponents) {
-                            vcl::enableIfFaceColorsOptional(mesh);
+                            vcl::enableIfFaceColorOptional(mesh);
                         }
                         if (mesh.isFaceColorAvailable()) {
                             detail::importColor(face, vcgMesh.face[i]);
@@ -306,10 +306,10 @@ void importMeshFromVCGMesh(
                 }
 
                 // quality
-                if constexpr (HasFaceQualities<MeshType>) {
+                if constexpr (HasFaceQuality<MeshType>) {
                     if (vcg::tri::HasPerFaceQuality(vcgMesh)) {
                         if (enableOptionalComponents) {
-                            vcl::enableIfFaceQualitiesOptional(mesh);
+                            vcl::enableIfFaceQualityOptional(mesh);
                         }
                         if (mesh.isFaceQualityAvailable()) {
                             face.quality() = vcgMesh.face[i].Q();
@@ -324,9 +324,9 @@ void importMeshFromVCGMesh(
                             vcl::enableIfFaceWedgeTexCoordsOptional(mesh);
                         }
                         if (mesh.isFaceWedgeTexCoordsAvailable()) {
-                            if constexpr (HasFaceMaterialIndices<MeshType>) {
+                            if constexpr (HasFaceMaterialIndex<MeshType>) {
                                 if (enableOptionalComponents) {
-                                    vcl::enableIfFaceMaterialIndicesOptional(
+                                    vcl::enableIfFaceMaterialIndexOptional(
                                         mesh);
                                 }
                                 if (mesh.isFaceMaterialIndexAvailable()) {

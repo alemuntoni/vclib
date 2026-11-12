@@ -478,7 +478,7 @@ auto verticesToDuplicateByWedgeTexCoordsCount(
     vcl::requireFaceWedgeTexCoords(mesh);
 
     bool hasMaterials = false;
-    if constexpr (HasFaceMaterialIndices<MeshType>) {
+    if constexpr (HasFaceMaterialIndex<MeshType>) {
         hasMaterials = mesh.isFaceMaterialIndexAvailable();
     }
 
@@ -511,7 +511,7 @@ auto verticesToDuplicateByWedgeTexCoordsCount(
 
             // check if the i-th wedge texcoord of the face already exists
             uint matIdx = 0;
-            if constexpr (HasFaceMaterialIndices<MeshType>) {
+            if constexpr (HasFaceMaterialIndex<MeshType>) {
                 if (hasMaterials) {
                     matIdx = f.materialIndex();
                 }

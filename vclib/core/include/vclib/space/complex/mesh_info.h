@@ -157,7 +157,7 @@ public:
             true,
             getType<typename VertexType<Mesh>::PositionType::ScalarType>());
         setVertexBitFlags();
-        if constexpr (HasVertexNormals<Mesh>) {
+        if constexpr (HasVertexNormal<Mesh>) {
             if (m.isVertexNormalAvailable()) {
                 setVertexNormal(
                     true,
@@ -165,7 +165,7 @@ public:
                         typename VertexType<Mesh>::NormalType::ScalarType>());
             }
         }
-        if constexpr (HasVertexTangents<Mesh>) {
+        if constexpr (HasVertexTangent<Mesh>) {
             if (m.isVertexTangentAvailable()) {
                 setVertexTangent(
                     true,
@@ -173,18 +173,18 @@ public:
                         typename VertexType<Mesh>::TangentType::ScalarType>());
             }
         }
-        if constexpr (HasVertexColors<Mesh>) {
+        if constexpr (HasVertexColor<Mesh>) {
             if (m.isVertexColorAvailable()) {
                 setVertexColor(true, PrimitiveType::UCHAR);
             }
         }
-        if constexpr (HasVertexQualities<Mesh>) {
+        if constexpr (HasVertexQuality<Mesh>) {
             if (m.isVertexQualityAvailable()) {
                 setVertexQuality(
                     true, getType<typename VertexType<Mesh>::QualityType>());
             }
         }
-        if constexpr (HasVertexTexCoords<Mesh>) {
+        if constexpr (HasVertexTexCoord<Mesh>) {
             if (m.isVertexTexCoordAvailable()) {
                 setVertexTexCoord(
                     true,
@@ -192,7 +192,7 @@ public:
                         typename VertexType<Mesh>::TexCoordType::ScalarType>());
             }
         }
-        if constexpr (HasVertexMaterialIndices<Mesh>) {
+        if constexpr (HasVertexMaterialIndex<Mesh>) {
             if (m.isVertexMaterialIndexAvailable()) {
                 setVertexMaterialIndex(true, PrimitiveType::UINT);
             }
@@ -220,7 +220,7 @@ public:
             else {
                 setPolygonMesh();
             }
-            if constexpr (HasFaceNormals<Mesh>) {
+            if constexpr (HasFaceNormal<Mesh>) {
                 if (m.isFaceNormalAvailable()) {
                     setFaceNormal(
                         true,
@@ -228,12 +228,12 @@ public:
                             typename FaceType<Mesh>::NormalType::ScalarType>());
                 }
             }
-            if constexpr (HasFaceColors<Mesh>) {
+            if constexpr (HasFaceColor<Mesh>) {
                 if (m.isFaceColorAvailable()) {
                     setFaceColor(true, PrimitiveType::UCHAR);
                 }
             }
-            if constexpr (HasFaceQualities<Mesh>) {
+            if constexpr (HasFaceQuality<Mesh>) {
                 if (m.isFaceQualityAvailable()) {
                     setFaceQuality(
                         true, getType<typename FaceType<Mesh>::QualityType>());
@@ -247,7 +247,7 @@ public:
                             WedgeType<FaceType<Mesh>>>::ScalarType>());
                 }
             }
-            if constexpr (HasFaceMaterialIndices<Mesh>) {
+            if constexpr (HasFaceMaterialIndex<Mesh>) {
                 if (m.isFaceMaterialIndexAvailable()) {
                     setFaceMaterialIndex(true, PrimitiveType::UINT);
                 }
@@ -1038,32 +1038,32 @@ void enableOptionalComponentsFromInfo(MeshInfo& info, MeshType& m)
 {
     if (info.hasVertices()) {
         if (info.hasVertexColor()) {
-            if (!enableIfVertexColorsOptional(m)) {
+            if (!enableIfVertexColorOptional(m)) {
                 info.setVertexColor(false);
             }
         }
         if (info.hasVertexNormal()) {
-            if (!enableIfVertexNormalsOptional(m)) {
+            if (!enableIfVertexNormalOptional(m)) {
                 info.setVertexNormal(false);
             }
         }
         if (info.hasVertexQuality()) {
-            if (!enableIfVertexQualitiesOptional(m)) {
+            if (!enableIfVertexQualityOptional(m)) {
                 info.setVertexQuality(false);
             }
         }
         if (info.hasVertexTangent()) {
-            if (!enableIfVertexTangentsOptional(m)) {
+            if (!enableIfVertexTangentOptional(m)) {
                 info.setVertexTangent(false);
             }
         }
         if (info.hasVertexTexCoord()) {
-            if (!enableIfVertexTexCoordsOptional(m)) {
+            if (!enableIfVertexTexCoordOptional(m)) {
                 info.setVertexTexCoord(false);
             }
         }
         if (info.hasVertexMaterialIndex()) {
-            if (!enableIfVertexMaterialIndicesOptional(m)) {
+            if (!enableIfVertexMaterialIndexOptional(m)) {
                 info.setVertexMaterialIndex(false);
             }
         }
@@ -1085,17 +1085,17 @@ void enableOptionalComponentsFromInfo(MeshInfo& info, MeshType& m)
     if constexpr (HasFaces<MeshType>) {
         if (info.hasFaces()) {
             if (info.hasFaceColor()) {
-                if (!enableIfFaceColorsOptional(m)) {
+                if (!enableIfFaceColorOptional(m)) {
                     info.setFaceColor(false);
                 }
             }
             if (info.hasFaceNormal()) {
-                if (!enableIfFaceNormalsOptional(m)) {
+                if (!enableIfFaceNormalOptional(m)) {
                     info.setFaceNormal(false);
                 }
             }
             if (info.hasFaceQuality()) {
-                if (!enableIfFaceQualitiesOptional(m)) {
+                if (!enableIfFaceQualityOptional(m)) {
                     info.setFaceQuality(false);
                 }
             }
@@ -1105,7 +1105,7 @@ void enableOptionalComponentsFromInfo(MeshInfo& info, MeshType& m)
                 }
             }
             if (info.hasFaceMaterialIndex()) {
-                if (!enableIfFaceMaterialIndicesOptional(m)) {
+                if (!enableIfFaceMaterialIndexOptional(m)) {
                     info.setFaceMaterialIndex(false);
                 }
             }
@@ -1131,17 +1131,17 @@ void enableOptionalComponentsFromInfo(MeshInfo& info, MeshType& m)
     if constexpr (HasEdges<MeshType>) {
         if (info.hasEdges()) {
             if (info.hasEdgeColor()) {
-                if (!enableIfEdgeColorsOptional(m)) {
+                if (!enableIfEdgeColorOptional(m)) {
                     info.setEdgeColor(false);
                 }
             }
             if (info.hasEdgeNormal()) {
-                if (!enableIfEdgeNormalsOptional(m)) {
+                if (!enableIfEdgeNormalOptional(m)) {
                     info.setEdgeNormal(false);
                 }
             }
             if (info.hasEdgeQuality()) {
-                if (!enableIfEdgeQualitiesOptional(m)) {
+                if (!enableIfEdgeQualityOptional(m)) {
                     info.setEdgeQuality(false);
                 }
             }

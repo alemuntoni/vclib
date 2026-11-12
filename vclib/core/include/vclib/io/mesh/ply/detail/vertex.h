@@ -48,7 +48,7 @@ void readPlyVertexProperty(
         }
     }
     else if (p.name >= ply::nx && p.name <= ply::nz) {
-        if constexpr (HasVertexNormals<MeshType>) {
+        if constexpr (HasVertexNormal<MeshType>) {
             if (mesh.isVertexNormalAvailable()) {
                 using Scalar = VertexType::NormalType::ScalarType;
                 int a        = p.name - ply::nx;
@@ -59,7 +59,7 @@ void readPlyVertexProperty(
         }
     }
     else if (p.name >= ply::red && p.name <= ply::alpha) {
-        if constexpr (HasVertexColors<MeshType>) {
+        if constexpr (HasVertexColor<MeshType>) {
             if (mesh.isVertexColorAvailable()) {
                 int a = p.name - ply::red;
                 v.color()[a] =
@@ -69,7 +69,7 @@ void readPlyVertexProperty(
         }
     }
     else if (p.name == ply::quality) {
-        if constexpr (HasVertexQualities<MeshType>) {
+        if constexpr (HasVertexQuality<MeshType>) {
             using QualityType = VertexType::QualityType;
             if (mesh.isVertexQualityAvailable()) {
                 v.quality() =
@@ -79,7 +79,7 @@ void readPlyVertexProperty(
         }
     }
     else if (p.name >= ply::texture_u && p.name <= ply::texture_v) {
-        if constexpr (HasVertexTexCoords<MeshType>) {
+        if constexpr (HasVertexTexCoord<MeshType>) {
             using Scalar = VertexType::TexCoordType::ScalarType;
             if (mesh.isVertexTexCoordAvailable()) {
                 int a = p.name - ply::texture_u;
@@ -90,7 +90,7 @@ void readPlyVertexProperty(
         }
     }
     else if (p.name == ply::material_index) {
-        if constexpr (HasVertexMaterialIndices<MeshType>) {
+        if constexpr (HasVertexMaterialIndex<MeshType>) {
             if (mesh.isVertexMaterialIndexAvailable()) {
                 v.materialIndex() =
                     io::readPrimitiveType<ushort>(file, p.type, end);
@@ -178,34 +178,34 @@ void writePlyVertices(
                 hasBeenWritten = true;
             }
             else if (p.name >= ply::nx && p.name <= ply::nz) {
-                if constexpr (HasVertexNormals<MeshType>) {
+                if constexpr (HasVertexNormal<MeshType>) {
                     io::writeProperty(
                         file, v.normal()[p.name - ply::nx], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             else if (p.name >= ply::red && p.name <= ply::alpha) {
-                if constexpr (HasVertexColors<MeshType>) {
+                if constexpr (HasVertexColor<MeshType>) {
                     io::writeProperty(
                         file, v.color()[p.name - ply::red], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             else if (p.name == ply::quality) {
-                if constexpr (HasVertexQualities<MeshType>) {
+                if constexpr (HasVertexQuality<MeshType>) {
                     io::writeProperty(file, v.quality(), p.type, format);
                     hasBeenWritten = true;
                 }
             }
             else if (p.name >= ply::texture_u && p.name <= ply::texture_v) {
-                if constexpr (HasVertexTexCoords<MeshType>) {
+                if constexpr (HasVertexTexCoord<MeshType>) {
                     const uint a = p.name - ply::texture_u;
                     io::writeProperty(file, v.texCoord()[a], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             else if (p.name == ply::material_index) {
-                if constexpr (HasVertexMaterialIndices<MeshType>) {
+                if constexpr (HasVertexMaterialIndex<MeshType>) {
                     io::writeProperty(file, v.materialIndex(), p.type, format);
                     hasBeenWritten = true;
                 }

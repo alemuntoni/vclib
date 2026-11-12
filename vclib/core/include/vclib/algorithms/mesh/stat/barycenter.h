@@ -90,7 +90,7 @@ auto weightedBarycenter(const MeshType& m, Range auto&& weights)
 template<MeshConcept MeshType>
 auto qualityWeightedBarycenter(const MeshType& m) -> PositionType<MeshType>
 {
-    requireVertexQualities(m);
+    requireVertexQuality(m);
 
     return weightedBarycenter(m, m.vertices() | views::quality);
 }

@@ -496,7 +496,7 @@ void appendDuplicateVertexNormalsToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requireVertexNormals(mesh);
+    requireVertexNormal(mesh);
 
     const IndexType NUM_ROWS = mesh.vertexCount() + vertsToDuplicate.size();
 
@@ -566,7 +566,7 @@ void appendDuplicateVertexColorsToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requireVertexColors(mesh);
+    requireVertexColor(mesh);
 
     const bool      R_INT = representation == Color::Representation::INT_0_255;
     const IndexType NUM_ROWS = mesh.vertexCount() + vertsToDuplicate.size();
@@ -635,7 +635,7 @@ void appendDuplicateVertexColorsToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requireVertexColors(mesh);
+    requireVertexColor(mesh);
 
     for (IndexType i = mesh.vertexCount(); const auto& v : vertsToDuplicate) {
         const auto& c = mesh.vertex(v).color();
@@ -699,7 +699,7 @@ void appendDuplicateVertexQualityToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requireVertexQualities(mesh);
+    requireVertexQuality(mesh);
 
     for (IndexType i = mesh.vertexCount(); const auto& v : vertsToDuplicate) {
         buffer[i] = mesh.vertex(v).quality();
@@ -763,7 +763,7 @@ void appendDuplicateVertexTexCoordsToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requireVertexTexCoords(mesh);
+    requireVertexTexCoord(mesh);
 
     const IndexType NUM_ROWS = mesh.vertexCount() + vertsToDuplicate.size();
 
@@ -839,7 +839,7 @@ void appendDuplicateVertexTangentsToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requireVertexTangents(mesh);
+    requireVertexTangent(mesh);
 
     const IndexType NUM_ROWS = mesh.vertexCount() + vertsToDuplicate.size();
     const uint      NUM_COLS = storeHandednessAsW ? 4 : 3;
@@ -911,7 +911,7 @@ void appendDuplicateVertexMaterialIndicesToBuffer(
     if (vertsToDuplicate.empty())
         return;
 
-    requireVertexMaterialIndices(mesh);
+    requireVertexMaterialIndex(mesh);
 
     for (IndexType i = mesh.vertexCount(); const auto& v : vertsToDuplicate) {
         buffer[i] = mesh.vertex(v).materialIndex();

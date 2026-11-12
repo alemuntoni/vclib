@@ -173,7 +173,7 @@ auto vertexRadiusFromQuality(
     double          radiusVariance,
     bool            invert = false)
 {
-    requireVertexQualities(m);
+    requireVertexQuality(m);
 
     using QualityType = VertexType<MeshType>::QualityType;
 

@@ -190,7 +190,7 @@ void smoothPerVertexNormalsPointCloud(
     uint                     neighborCount,
     uint                     iterCount)
 {
-    requireVertexNormals(m);
+    requireVertexNormal(m);
 
     using Scalar     = PointType::ScalarType;
     using NormalType = VertexType<MeshType>::NormalType;

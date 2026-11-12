@@ -138,7 +138,7 @@ public:
 
     bool hasVertexNormals() const override
     {
-        if constexpr (HasVertexNormals<MeshType>) {
+        if constexpr (HasVertexNormal<MeshType>) {
             return getMesh().isVertexNormalAvailable();
         }
         return false;
@@ -146,7 +146,7 @@ public:
 
     bool hasFaceNormals() const override
     {
-        if constexpr (HasFaceNormals<MeshType>) {
+        if constexpr (HasFaceNormal<MeshType>) {
             return getMesh().isFaceNormalAvailable();
         }
         return false;
@@ -154,7 +154,7 @@ public:
 
     Point3d vertexNormal(uint vertId) const override
     {
-        if constexpr (HasVertexNormals<MeshType>) {
+        if constexpr (HasVertexNormal<MeshType>) {
             return getMesh().vertex(vertId).normal().template cast<double>();
         }
         return Point3d();
@@ -162,7 +162,7 @@ public:
 
     Point3d faceNormal(uint faceId) const override
     {
-        if constexpr (HasFaceNormals<MeshType>) {
+        if constexpr (HasFaceNormal<MeshType>) {
             return getMesh().face(faceId).normal().template cast<double>();
         }
         return Point3d();

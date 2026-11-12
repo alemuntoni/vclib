@@ -400,11 +400,11 @@ bool populateGltfVNormals(
     unsigned int  stride,
     unsigned int  vertCount)
 {
-    if constexpr (HasVertexNormals<MeshType>) {
+    if constexpr (HasVertexNormal<MeshType>) {
         using NormalType = VertexType<MeshType>::NormalType;
 
         if (enableOptionalComponents)
-            enableIfVertexNormalsOptional(m);
+            enableIfVertexNormalOptional(m);
 
         if (m.isVertexNormalAvailable()) {
             for (unsigned int i = 0; i < vertCount; i++) {
@@ -433,11 +433,11 @@ bool populateGltfVTangents(
     unsigned int  stride,
     unsigned int  vertCount)
 {
-    if constexpr (HasVertexTangents<MeshType>) {
+    if constexpr (HasVertexTangent<MeshType>) {
         using TangentType = VertexType<MeshType>::TangentType;
 
         if (enableOptionalComponents)
-            enableIfVertexTangentsOptional(m);
+            enableIfVertexTangentOptional(m);
 
         if (m.isVertexTangentAvailable()) {
             for (unsigned int i = 0; i < vertCount; i++) {
@@ -470,9 +470,9 @@ bool populateGltfVColors(
     bool          colorWithAlpha)
 {
     unsigned int nElemns = colorWithAlpha ? 4 : 3;
-    if constexpr (HasVertexColors<MeshType>) {
+    if constexpr (HasVertexColor<MeshType>) {
         if (enableOptionalComponents)
-            enableIfVertexColorsOptional(m);
+            enableIfVertexColorOptional(m);
 
         if (m.isVertexColorAvailable()) {
             for (unsigned int i = 0; i < vertCount * nElemns; i += nElemns) {
@@ -516,11 +516,11 @@ bool populateGltfVTextCoords(
     unsigned int  stride,
     unsigned int  vertCount)
 {
-    if constexpr (HasVertexTexCoords<MeshType>) {
+    if constexpr (HasVertexTexCoord<MeshType>) {
         using TexCoordType = VertexType<MeshType>::TexCoordType;
 
         if (enableOptionalComponents)
-            enableIfVertexTexCoordsOptional(m);
+            enableIfVertexTexCoordOptional(m);
 
         if (m.isVertexTexCoordAvailable()) {
             for (unsigned int i = 0; i < vertCount; i++) {
@@ -916,9 +916,9 @@ void loadGltfMeshPrimitive(
         info.setVertexTangent();
     }
 
-    if constexpr (HasVertexMaterialIndices<MeshType>) {
+    if constexpr (HasVertexMaterialIndex<MeshType>) {
         if (settings.enableOptionalComponents) {
-            enableIfVertexMaterialIndicesOptional(m);
+            enableIfVertexMaterialIndexOptional(m);
         }
         if (m.isVertexMaterialIndexAvailable()) {
             uint vnum = m.vertexCount();

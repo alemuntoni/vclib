@@ -27,7 +27,7 @@ enum class PrincipalCurvatureAlgorithm { TAUBIN95, PCA };
 template<FaceMeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void updatePrincipalCurvatureTaubin95(MeshType& m, LogType& log = nullLogger)
 {
-    requireVertexPrincipalCurvatures(m);
+    requireVertexPrincipalCurvature(m);
     requireVertexAdjacentFaces(m);
     requireFaceAdjacentFaces(m);
 
@@ -350,7 +350,7 @@ void updatePrincipalCurvaturePCA(
 template<FaceMeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void updatePrincipalCurvature(MeshType& m, LogType& log = nullLogger)
 {
-    requireVertexPrincipalCurvatures(m);
+    requireVertexPrincipalCurvature(m);
 
     updatePrincipalCurvatureTaubin95(m, log);
 }
@@ -362,7 +362,7 @@ void updatePrincipalCurvature(
     LogType&                    log = nullLogger)
 {
     using enum PrincipalCurvatureAlgorithm;
-    requireVertexPrincipalCurvatures(m);
+    requireVertexPrincipalCurvature(m);
 
     double radius;
     switch (alg) {

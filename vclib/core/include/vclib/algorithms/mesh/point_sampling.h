@@ -597,7 +597,7 @@ auto vertexQualityWeightedPointSampling(
     uint            nSamples,
     RandomConfig    config = std::monostate())
 {
-    requireVertexQualities(m);
+    requireVertexQuality(m);
 
     using QualityType = VertexType<MeshType>::QualityType;
 
@@ -629,7 +629,7 @@ auto faceQualityWeightedPointSampling(
     uint            nSamples,
     RandomConfig    config = std::monostate())
 {
-    requireFaceQualities(m);
+    requireFaceQuality(m);
 
     using QualityType = FaceType<MeshType>::QualityType;
 
@@ -982,7 +982,7 @@ auto vertexQualityWeightedMontecarloPointSampling(
     double          variance,
     RandomConfig    config = std::monostate())
 {
-    requireVertexQualities(m);
+    requireVertexQuality(m);
 
     using QualityType = VertexType<MeshType>::QualityType;
 

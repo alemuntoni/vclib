@@ -198,7 +198,7 @@ void clearVertexNormals(MeshConcept auto& mesh, LogType& log = nullLogger)
 template<MeshConcept MeshType, LoggerConcept LogType = NullLogger>
 void clearReferencedVertexNormals(MeshType& mesh, LogType& log = nullLogger)
 {
-    requireVertexNormals(mesh);
+    requireVertexNormal(mesh);
 
     // function that is called for each container Cont of the mesh
     auto f = [&]<mesh::ElementContainerConcept Cont>() {
@@ -267,7 +267,7 @@ void normalizeReferencedVertexNormals(
     MeshType& mesh,
     LogType&  log = nullLogger)
 {
-    requireVertexNormals(mesh);
+    requireVertexNormal(mesh);
 
     // function that is called for each container Cont
     auto f = [&]<mesh::ElementContainerConcept Cont>() {
@@ -360,7 +360,7 @@ void updateFaceNormals(
     bool                  normalize = true,
     LogType&              log       = nullLogger)
 {
-    requireFaceNormals(mesh);
+    requireFaceNormal(mesh);
 
     using FaceType   = FaceType<decltype(mesh)>;
     using ScalarType = NormalType<FaceType>::ScalarType;
@@ -452,7 +452,7 @@ void updateVertexNormalsFromFaceNormals(
     bool                  normalize = true,
     LogType&              log       = nullLogger)
 {
-    requireFaceNormals(mesh);
+    requireFaceNormal(mesh);
 
     using VertexType = VertexType<decltype(mesh)>;
     using ScalarType = NormalType<VertexType>::ScalarType;

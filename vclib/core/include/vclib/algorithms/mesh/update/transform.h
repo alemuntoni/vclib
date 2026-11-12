@@ -24,13 +24,13 @@ void applyTransformMatrix(
     // TODO: automatize: for each element, check if it has normal and apply
     // the matrix to it
     if (updateNormals) {
-        if constexpr (HasVertexNormals<MeshType>) {
+        if constexpr (HasVertexNormal<MeshType>) {
             if (mesh.isVertexNormalAvailable()) {
                 multiplyNormalsByMatrix(
                     mesh.vertices() | vcl::views::normals, matrix);
             }
         }
-        if constexpr (HasFaceNormals<MeshType>) {
+        if constexpr (HasFaceNormal<MeshType>) {
             if (mesh.isFaceNormalAvailable()) {
                 multiplyNormalsByMatrix(
                     mesh.faces() | vcl::views::normals, matrix);
@@ -77,7 +77,7 @@ void rotate(
     }
 
     if (updateNormals) {
-        if constexpr (HasVertexNormals<MeshType>) {
+        if constexpr (HasVertexNormal<MeshType>) {
             if (mesh.isVertexNormalAvailable()) {
                 for (auto&& v : mesh.vertices()) {
                     v.normal() = m * v.normal();
@@ -85,7 +85,7 @@ void rotate(
             }
         }
 
-        if constexpr (HasFaceNormals<MeshType>) {
+        if constexpr (HasFaceNormal<MeshType>) {
             if (mesh.isFaceNormalAvailable()) {
                 for (auto&& f : mesh.faces()) {
                     f.normal() = m * f.normal();

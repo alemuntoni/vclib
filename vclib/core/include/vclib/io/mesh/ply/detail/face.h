@@ -164,7 +164,7 @@ void readPlyFaceProperty(
     }
     // loading texture id associated to ALL the wedges
     else if (p.name == ply::material_index) {
-        if constexpr (HasFaceMaterialIndices<MeshType>) {
+        if constexpr (HasFaceMaterialIndex<MeshType>) {
             if (mesh.isFaceMaterialIndexAvailable()) {
                 uint n      = io::readPrimitiveType<uint>(file, p.type, end);
                 hasBeenRead = true;
@@ -178,7 +178,7 @@ void readPlyFaceProperty(
     }
     // loading one of the normal components
     else if (p.name >= ply::nx && p.name <= ply::nz) {
-        if constexpr (HasFaceNormals<MeshType>) {
+        if constexpr (HasFaceNormal<MeshType>) {
             if (mesh.isFaceNormalAvailable()) {
                 using Scalar = FaceType::NormalType::ScalarType;
                 int    a     = p.name - ply::nx;
@@ -194,7 +194,7 @@ void readPlyFaceProperty(
     }
     // loading one of the color components
     else if (p.name >= ply::red && p.name <= ply::alpha) {
-        if constexpr (HasFaceColors<MeshType>) {
+        if constexpr (HasFaceColor<MeshType>) {
             if (mesh.isFaceColorAvailable()) {
                 int           a = p.name - ply::red;
                 unsigned char c =
@@ -209,7 +209,7 @@ void readPlyFaceProperty(
         }
     }
     else if (p.name == ply::quality) { // loading the quality component
-        if constexpr (HasFaceQualities<MeshType>) {
+        if constexpr (HasFaceQuality<MeshType>) {
             using QualityType = FaceType::QualityType;
             if (mesh.isFaceQualityAvailable()) {
                 QualityType s =
@@ -311,21 +311,21 @@ void writePlyFaces(
                 hasBeenWritten = true;
             }
             else if (p.name >= ply::nx && p.name <= ply::nz) {
-                if constexpr (HasFaceNormals<MeshType>) {
+                if constexpr (HasFaceNormal<MeshType>) {
                     io::writeProperty(
                         file, f.normal()[p.name - ply::nx], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             else if (p.name >= ply::red && p.name <= ply::alpha) {
-                if constexpr (HasFaceColors<MeshType>) {
+                if constexpr (HasFaceColor<MeshType>) {
                     io::writeProperty(
                         file, f.color()[p.name - ply::red], p.type, format);
                     hasBeenWritten = true;
                 }
             }
             else if (p.name == ply::quality) {
-                if constexpr (HasFaceQualities<MeshType>) {
+                if constexpr (HasFaceQuality<MeshType>) {
                     io::writeProperty(file, f.quality(), p.type, format);
                     hasBeenWritten = true;
                 }
@@ -342,7 +342,7 @@ void writePlyFaces(
                 }
             }
             else if (p.name == ply::material_index) {
-                if constexpr (HasFaceMaterialIndices<MeshType>) {
+                if constexpr (HasFaceMaterialIndex<MeshType>) {
                     io::writeProperty(file, f.materialIndex(), p.type, format);
                     hasBeenWritten = true;
                 }

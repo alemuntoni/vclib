@@ -1012,8 +1012,8 @@ void vertexMaterialIndicesFromRange(MeshType& mesh, R&& materialIndices)
             "The input material indices range must have the same number of "
             "elements as the number of vertices in the mesh");
 
-    enableIfVertexMaterialIndicesOptional(mesh);
-    requireVertexMaterialIndices(mesh);
+    enableIfVertexMaterialIndexOptional(mesh);
+    requireVertexMaterialIndex(mesh);
 
     auto tt = materialIndices.begin();
     for (auto v : mesh.vertices()) {
@@ -1092,8 +1092,8 @@ void faceMaterialIndicesFromRange(MeshType& mesh, R&& materialIndices)
             "The input material indices range must have the same number of "
             "elements as the number of faces in the mesh");
 
-    enableIfFaceMaterialIndicesOptional(mesh);
-    requireFaceMaterialIndices(mesh);
+    enableIfFaceMaterialIndexOptional(mesh);
+    requireFaceMaterialIndex(mesh);
 
     auto tt = materialIndices.begin();
     for (auto f : mesh.faces()) {

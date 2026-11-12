@@ -172,7 +172,7 @@ void normalizeFaceQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
 template<FaceMeshConcept MeshType>
 void setVertexQualityFromVertexValence(MeshType& m)
 {
-    requireVertexQualities(m);
+    requireVertexQuality(m);
 
     setVertexQuality(m, 0);
 
@@ -196,7 +196,7 @@ void setVertexQualityFromVertexValence(MeshType& m)
 template<FaceMeshConcept MeshType>
 void setFaceQualityFromFaceArea(MeshType& m)
 {
-    requireFaceQualities(m);
+    requireFaceQuality(m);
 
     for (auto f : m.faces()) {
         f.quality() = faceArea(f);
@@ -206,8 +206,8 @@ void setFaceQualityFromFaceArea(MeshType& m)
 template<MeshConcept MeshType>
 void setVertexQualityFromPrincipalCurvatureGaussian(MeshType& m)
 {
-    requireVertexQualities(m);
-    requireVertexPrincipalCurvatures(m);
+    requireVertexQuality(m);
+    requireVertexPrincipalCurvature(m);
 
     for (auto v : m.vertices()) {
         v.quality() = v.principalCurvature().maxValue() *
@@ -218,8 +218,8 @@ void setVertexQualityFromPrincipalCurvatureGaussian(MeshType& m)
 template<MeshConcept MeshType>
 void setVertexQualityFromPrincipalCurvatureMean(MeshType& m)
 {
-    requireVertexQualities(m);
-    requireVertexPrincipalCurvatures(m);
+    requireVertexQuality(m);
+    requireVertexPrincipalCurvature(m);
 
     for (auto v : m.vertices()) {
         v.quality() = (v.principalCurvature().maxValue() +
@@ -231,8 +231,8 @@ void setVertexQualityFromPrincipalCurvatureMean(MeshType& m)
 template<MeshConcept MeshType>
 void setVertexQualityFromPrincipalCurvatureMinValue(MeshType& m)
 {
-    requireVertexQualities(m);
-    requireVertexPrincipalCurvatures(m);
+    requireVertexQuality(m);
+    requireVertexPrincipalCurvature(m);
 
     for (auto v : m.vertices()) {
         v.quality() = v.principalCurvature().minValue();
@@ -242,8 +242,8 @@ void setVertexQualityFromPrincipalCurvatureMinValue(MeshType& m)
 template<MeshConcept MeshType>
 void setVertexQualityFromPrincipalCurvatureMaxValue(MeshType& m)
 {
-    requireVertexQualities(m);
-    requireVertexPrincipalCurvatures(m);
+    requireVertexQuality(m);
+    requireVertexPrincipalCurvature(m);
 
     for (auto v : m.vertices()) {
         v.quality() = v.principalCurvature().maxValue();
@@ -264,8 +264,8 @@ void setVertexQualityFromPrincipalCurvatureMaxValue(MeshType& m)
 template<MeshConcept MeshType>
 void setVertexQualityFromPrincipalCurvatureShapeIndex(MeshType& m)
 {
-    requireVertexQualities(m);
-    requireVertexPrincipalCurvatures(m);
+    requireVertexQuality(m);
+    requireVertexPrincipalCurvature(m);
 
     for (auto v : m.vertices()) {
         auto k1 = v.principalCurvature().maxValue();
@@ -290,8 +290,8 @@ void setVertexQualityFromPrincipalCurvatureShapeIndex(MeshType& m)
 template<MeshConcept MeshType>
 void setVertexQualityFromPrincipalCurvatureCurvedness(MeshType& m)
 {
-    requireVertexQualities(m);
-    requireVertexPrincipalCurvatures(m);
+    requireVertexQuality(m);
+    requireVertexPrincipalCurvature(m);
 
     for (auto v : m.vertices()) {
         auto k1 = v.principalCurvature().maxValue();

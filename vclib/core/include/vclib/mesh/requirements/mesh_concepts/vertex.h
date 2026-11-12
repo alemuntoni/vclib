@@ -18,29 +18,29 @@ namespace vcl {
 
 /* Normals */
 template<typename M>
-concept HasVertexNormals =
+concept HasVertexNormal =
     HasElementComponent<M, ElemId::VERTEX, CompId::NORMAL>;
 
 template<typename M>
-concept HasVertexOptionalNormals =
+concept HasVertexOptionalNormal =
     HasElementOptionalComponent<M, ElemId::VERTEX, CompId::NORMAL>;
 
 /* Colors */
 template<typename M>
-concept HasVertexColors =
+concept HasVertexColor =
     HasElementComponent<M, ElemId::VERTEX, CompId::COLOR>;
 
 template<typename M>
-concept HasVertexOptionalColors =
+concept HasVertexOptionalColor =
     HasElementOptionalComponent<M, ElemId::VERTEX, CompId::COLOR>;
 
 /* TexCoords */
 template<typename M>
-concept HasVertexTexCoords =
+concept HasVertexTexCoord =
     HasElementComponent<M, ElemId::VERTEX, CompId::TEX_COORD>;
 
 template<typename M>
-concept HasVertexOptionalTexCoords =
+concept HasVertexOptionalTexCoord =
     HasElementOptionalComponent<M, ElemId::VERTEX, CompId::TEX_COORD>;
 
 /* Adjacencies */
@@ -70,38 +70,38 @@ concept HasVertexOptionalAdjacentVertices =
 
 /* Quality */
 template<typename M>
-concept HasVertexQualities =
+concept HasVertexQuality =
     HasElementComponent<M, ElemId::VERTEX, CompId::QUALITY>;
 
 template<typename M>
-concept HasVertexOptionalQualities =
+concept HasVertexOptionalQuality =
     HasElementOptionalComponent<M, ElemId::VERTEX, CompId::QUALITY>;
 
 /* PrincipalCurvature */
 template<typename M>
-concept HasVertexPrincipalCurvatures =
+concept HasVertexPrincipalCurvature =
     HasElementComponent<M, ElemId::VERTEX, CompId::PRINCIPAL_CURVATURE>;
 
 template<typename M>
-concept HasVertexOptionalPrincipalCurvatures =
+concept HasVertexOptionalPrincipalCurvature =
     HasElementOptionalComponent<M, ElemId::VERTEX, CompId::PRINCIPAL_CURVATURE>;
 
 /* Tangent */
 template<typename M>
-concept HasVertexTangents =
+concept HasVertexTangent =
     HasElementComponent<M, ElemId::VERTEX, CompId::TANGENT>;
 
 template<typename M>
-concept HasVertexOptionalTangents =
+concept HasVertexOptionalTangent =
     HasElementOptionalComponent<M, ElemId::VERTEX, CompId::TANGENT>;
 
 /* MaterialIndex */
 template<typename M>
-concept HasVertexMaterialIndices =
+concept HasVertexMaterialIndex =
     HasElementComponent<M, ElemId::VERTEX, CompId::MATERIAL_INDEX>;
 
 template<typename M>
-concept HasVertexOptionalMaterialIndices =
+concept HasVertexOptionalMaterialIndex =
     HasElementOptionalComponent<M, ElemId::VERTEX, CompId::MATERIAL_INDEX>;
 
 /* Custom Components */

@@ -18,29 +18,29 @@ namespace vcl {
 
 /* Normals */
 template<typename M>
-concept HasEdgeNormals =
+concept HasEdgeNormal =
     HasElementComponent<M, ElemId::EDGE, CompId::NORMAL>;
 
 template<typename M>
-concept HasEdgeOptionalNormals =
+concept HasEdgeOptionalNormal =
     HasElementOptionalComponent<M, ElemId::EDGE, CompId::NORMAL>;
 
 /* Colors */
 template<typename M>
-concept HasEdgeColors =
+concept HasEdgeColor =
     HasElementComponent<M, ElemId::EDGE, CompId::COLOR>;
 
 template<typename M>
-concept HasEdgeOptionalColors =
+concept HasEdgeOptionalColor =
     HasElementOptionalComponent<M, ElemId::EDGE, CompId::COLOR>;
 
 /* TexCoords */
 template<typename M>
-concept HasEdgeTexCoords =
+concept HasEdgeTexCoord =
     HasElementComponent<M, ElemId::EDGE, CompId::TEX_COORD>;
 
 template<typename M>
-concept HasEdgeOptionalTexCoords =
+concept HasEdgeOptionalTexCoord =
     HasElementOptionalComponent<M, ElemId::EDGE, CompId::TEX_COORD>;
 
 /* Adjacencies */
@@ -70,38 +70,38 @@ concept HasEdgeOptionalAdjacentVertices =
 
 /* Quality */
 template<typename M>
-concept HasEdgeQualities =
+concept HasEdgeQuality =
     HasElementComponent<M, ElemId::EDGE, CompId::QUALITY>;
 
 template<typename M>
-concept HasEdgeOptionalQualities =
+concept HasEdgeOptionalQuality =
     HasElementOptionalComponent<M, ElemId::EDGE, CompId::QUALITY>;
 
 /* PrincipalCurvature */
 template<typename M>
-concept HasEdgePrincipalCurvatures =
+concept HasEdgePrincipalCurvature =
     HasElementComponent<M, ElemId::EDGE, CompId::PRINCIPAL_CURVATURE>;
 
 template<typename M>
-concept HasEdgeOptionalPrincipalCurvatures =
+concept HasEdgeOptionalPrincipalCurvature =
     HasElementOptionalComponent<M, ElemId::EDGE, CompId::PRINCIPAL_CURVATURE>;
 
 /* Tangent */
 template<typename M>
-concept HasEdgeTangents =
+concept HasEdgeTangent =
     HasElementComponent<M, ElemId::EDGE, CompId::TANGENT>;
 
 template<typename M>
-concept HasEdgeOptionalTangents =
+concept HasEdgeOptionalTangent =
     HasElementOptionalComponent<M, ElemId::EDGE, CompId::TANGENT>;
 
 /* MaterialIndex */
 template<typename M>
-concept HasEdgeMaterialIndices =
+concept HasEdgeMaterialIndex =
     HasElementComponent<M, ElemId::EDGE, CompId::MATERIAL_INDEX>;
 
 template<typename M>
-concept HasEdgeOptionalMaterialIndices =
+concept HasEdgeOptionalMaterialIndex =
     HasElementOptionalComponent<M, ElemId::EDGE, CompId::MATERIAL_INDEX>;
 
 /* Custom Components */

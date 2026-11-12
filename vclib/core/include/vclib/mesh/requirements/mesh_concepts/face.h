@@ -73,20 +73,20 @@ concept PolygonMeshConcept = FaceMeshConcept<M> && HasPolygons<M>;
 
 /* Normals */
 template<typename M>
-concept HasFaceNormals =
+concept HasFaceNormal =
     HasElementComponent<M, ElemId::FACE, CompId::NORMAL>;
 
 template<typename M>
-concept HasFaceOptionalNormals =
+concept HasFaceOptionalNormal =
     HasElementOptionalComponent<M, ElemId::FACE, CompId::NORMAL>;
 
 /* Colors */
 template<typename M>
-concept HasFaceColors =
+concept HasFaceColor =
     HasElementComponent<M, ElemId::FACE, CompId::COLOR>;
 
 template<typename M>
-concept HasFaceOptionalColors =
+concept HasFaceOptionalColor =
     HasElementOptionalComponent<M, ElemId::FACE, CompId::COLOR>;
 
 /* Wedges */
@@ -137,38 +137,38 @@ concept HasFaceOptionalAdjacentEdges =
 
 /* Quality */
 template<typename M>
-concept HasFaceQualities =
+concept HasFaceQuality =
     HasElementComponent<M, ElemId::FACE, CompId::QUALITY>;
 
 template<typename M>
-concept HasFaceOptionalQualities =
+concept HasFaceOptionalQuality =
     HasElementOptionalComponent<M, ElemId::FACE, CompId::QUALITY>;
 
 /* PrincipalCurvature */
 template<typename M>
-concept HasFacePrincipalCurvatures =
+concept HasFacePrincipalCurvature =
     HasElementComponent<M, ElemId::FACE, CompId::PRINCIPAL_CURVATURE>;
 
 template<typename M>
-concept HasFaceOptionalPrincipalCurvatures =
+concept HasFaceOptionalPrincipalCurvature =
     HasElementOptionalComponent<M, ElemId::FACE, CompId::PRINCIPAL_CURVATURE>;
 
 /* Tangent */
 template<typename M>
-concept HasFaceTangents =
+concept HasFaceTangent =
     HasElementComponent<M, ElemId::FACE, CompId::TANGENT>;
 
 template<typename M>
-concept HasFaceOptionalTangents =
+concept HasFaceOptionalTangent =
     HasElementOptionalComponent<M, ElemId::FACE, CompId::TANGENT>;
 
 /* MaterialIndex */
 template<typename M>
-concept HasFaceMaterialIndices =
+concept HasFaceMaterialIndex =
     HasElementComponent<M, ElemId::FACE, CompId::MATERIAL_INDEX>;
 
 template<typename M>
-concept HasFaceOptionalMaterialIndices =
+concept HasFaceOptionalMaterialIndex =
     HasElementOptionalComponent<M, ElemId::FACE, CompId::MATERIAL_INDEX>;
 
 /* Custom Components */

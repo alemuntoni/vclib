@@ -295,11 +295,11 @@ void transferFaceComponents(
 
     if (transferNormals || transferColors || transferQuality) {
         if (transferNormals)
-            enableIfFaceNormalsOptional(out);
+            enableIfFaceNormalOptional(out);
         if (transferColors)
-            enableIfFaceColorsOptional(out);
+            enableIfFaceColorOptional(out);
         if (transferQuality)
-            enableIfFaceQualitiesOptional(out);
+            enableIfFaceQualityOptional(out);
 
         uint m0Faces = m0.faceContainerSize();
         for (uint i = 0; auto f : out.faces()) {
@@ -346,11 +346,11 @@ void transferVertexComponents(
         return;
 
     if (transferNormals)
-        enableIfVertexNormalsOptional(out);
+        enableIfVertexNormalOptional(out);
     if (transferColors)
-        enableIfVertexColorsOptional(out);
+        enableIfVertexColorOptional(out);
     if (transferQuality)
-        enableIfVertexQualitiesOptional(out);
+        enableIfVertexQualityOptional(out);
 
     uint m0Triangles = F0.rows();
 

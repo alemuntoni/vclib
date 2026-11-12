@@ -1108,8 +1108,8 @@ void vertexTexCoordsFromBuffer(
     const IndexType NUM_ROWS =
         numRows == MeshType::NULL_INDEX ? mesh.vertexCount() : numRows;
 
-    enableIfVertexTexCoordsOptional(mesh);
-    requireVertexTexCoords(mesh);
+    enableIfVertexTexCoordOptional(mesh);
+    requireVertexTexCoord(mesh);
 
     for (IndexType i = 0; auto& t : mesh.vertices() | views::texCoords) {
         t.u() = at(buffer, i, 0, NUM_ROWS, 2, storage);
@@ -1144,8 +1144,8 @@ void vertexMaterialIndicesFromBuffer(MeshType& mesh, const auto* buffer)
 {
     using IndexType = typename MeshType::IndexType;
 
-    enableIfVertexMaterialIndicesOptional(mesh);
-    requireVertexMaterialIndices(mesh);
+    enableIfVertexMaterialIndexOptional(mesh);
+    requireVertexMaterialIndex(mesh);
 
     for (IndexType i = 0; auto v : mesh.vertices()) {
         v.materialIndex() = buffer[i];
@@ -1245,8 +1245,8 @@ void faceMaterialIndicesFromBuffer(MeshType& mesh, const auto* buffer)
 {
     using IndexType = typename MeshType::IndexType;
 
-    enableIfFaceMaterialIndicesOptional(mesh);
-    requireFaceMaterialIndices(mesh);
+    enableIfFaceMaterialIndexOptional(mesh);
+    requireFaceMaterialIndex(mesh);
 
     for (IndexType i = 0; auto f : mesh.faces()) {
         f.materialIndex() = buffer[i];

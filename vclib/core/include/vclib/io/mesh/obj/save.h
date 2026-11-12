@@ -123,7 +123,7 @@ void saveObj(
         io::writeDouble(fp, v.position().x(), false);
         io::writeDouble(fp, v.position().y(), false);
         io::writeDouble(fp, v.position().z(), false);
-        if constexpr (HasVertexColors<MeshType>) {
+        if constexpr (HasVertexColor<MeshType>) {
             if (meshInfo.hasVertexColor()) {
                 io::writeFloat(fp, v.color().redF(), false);
                 io::writeFloat(fp, v.color().greenF(), false);
@@ -132,7 +132,7 @@ void saveObj(
         }
         fp << std::endl;
 
-        if constexpr (HasVertexNormals<MeshType>) {
+        if constexpr (HasVertexNormal<MeshType>) {
             if (meshInfo.hasVertexNormal()) {
                 fp << "vn ";
                 io::writeDouble(fp, v.normal().x(), false);
@@ -141,7 +141,7 @@ void saveObj(
                 fp << std::endl;
             }
         }
-        if constexpr (HasVertexTexCoords<MeshType>) {
+        if constexpr (HasVertexTexCoord<MeshType>) {
             if (meshInfo.hasVertexTexCoord()) {
                 fp << "vt ";
                 io::writeFloat(fp, v.texCoord().u(), false);
@@ -184,7 +184,7 @@ void saveObj(
                 fp << "f ";
                 for (const auto& v : f.vertices()) {
                     fp << vIndices[v.index()] + 1;
-                    if constexpr (HasVertexTexCoords<MeshType>) {
+                    if constexpr (HasVertexTexCoord<MeshType>) {
                         // we wrote texcoords along with vertices, each texcoord
                         // has the same index of its vertex
                         if (meshInfo.hasVertexTexCoord()) {

@@ -427,7 +427,7 @@ void addMeshToTinygltfModel(
     }
 
     bool exportVertexTexCoord = false;
-    if constexpr (HasVertexTexCoords<MeshType>) {
+    if constexpr (HasVertexTexCoord<MeshType>) {
         if (meshInfo.hasVertexTexCoord() && !exportWedgeTexCoord) {
             exportVertexTexCoord = true;
         }
@@ -485,7 +485,7 @@ void addMeshToTinygltfModel(
 
     accessors.pos = posAccessor.first;
 
-    if constexpr (HasVertexColors<MeshType>) {
+    if constexpr (HasVertexColor<MeshType>) {
         if (meshInfo.hasVertexColor()) {
             auto  colAlloc = allocateInGltfBuffer(tModel, 4 * totalVertices);
             uint* ud       = reinterpret_cast<uint*>(
@@ -509,7 +509,7 @@ void addMeshToTinygltfModel(
             accessors.col = colAccessor.first;
         }
     }
-    if constexpr (HasVertexNormals<MeshType>) {
+    if constexpr (HasVertexNormal<MeshType>) {
         if (meshInfo.hasVertexNormal()) {
             auto normAlloc =
                 allocateInGltfBuffer(tModel, 3 * totalVertices * sizeof(float));
@@ -569,7 +569,7 @@ void addMeshToTinygltfModel(
 
         accessors.texCoord = texCoordAccessor.first;
     }
-    if constexpr (HasVertexTangents<MeshType>) {
+    if constexpr (HasVertexTangent<MeshType>) {
         if (meshInfo.hasVertexTangent()) {
             auto tangentAlloc =
                 allocateInGltfBuffer(tModel, 4 * totalVertices * sizeof(float));
@@ -608,14 +608,14 @@ void addMeshToTinygltfModel(
             bool usePerFaceMaterial   = false;
             bool usePerVertexMaterial = false;
 
-            if constexpr (HasFaceMaterialIndices<MeshType>) {
+            if constexpr (HasFaceMaterialIndex<MeshType>) {
                 if (meshInfo.hasFaceMaterialIndex()) {
                     exportMaterials    = true;
                     usePerFaceMaterial = true;
                 }
             }
 
-            if constexpr (HasVertexMaterialIndices<MeshType>) {
+            if constexpr (HasVertexMaterialIndex<MeshType>) {
                 if (meshInfo.hasVertexMaterialIndex() &&
                     !usePerFaceMaterial) {
                     exportMaterials      = true;
@@ -635,7 +635,7 @@ void addMeshToTinygltfModel(
                 // ordering by material index (if available)
                 auto faceComp = [&](FaceType f1, FaceType f2) {
                     if (usePerFaceMaterial) {
-                        if constexpr (HasFaceMaterialIndices<MeshType>) {
+                        if constexpr (HasFaceMaterialIndex<MeshType>) {
                             if (m.isFaceMaterialIndexAvailable()) {
                                 uint id1 = f1.materialIndex();
                                 uint id2 = f2.materialIndex();
@@ -646,7 +646,7 @@ void addMeshToTinygltfModel(
                         }
                     }
                     else if (usePerVertexMaterial) {
-                        if constexpr (HasVertexMaterialIndices<MeshType>) {
+                        if constexpr (HasVertexMaterialIndex<MeshType>) {
                             if (m.isVertexMaterialIndexAvailable()) {
                                 uint id1 = f1.vertex(0).materialIndex();
                                 uint id2 = f2.vertex(0).materialIndex();
@@ -729,12 +729,12 @@ void addMeshToTinygltfModel(
 
                     uint materialIndex = 0;
                     if (usePerFaceMaterial) {
-                        if constexpr (HasFaceMaterialIndices<MeshType>) {
+                        if constexpr (HasFaceMaterialIndex<MeshType>) {
                             materialIndex = face.materialIndex();
                         }
                     }
                     else if (usePerVertexMaterial) {
-                        if constexpr (HasVertexMaterialIndices<MeshType>) {
+                        if constexpr (HasVertexMaterialIndex<MeshType>) {
                             materialIndex = face.vertex(0).materialIndex();
                         }
                     }

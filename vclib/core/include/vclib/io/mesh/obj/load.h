@@ -194,13 +194,13 @@ void readObjVertex(
     for (uint i = 0; i < 3; ++i) {
         m.vertex(vid).position()[i] = io::readDouble<double>(token);
     }
-    if constexpr (HasVertexColors<MeshType>) {
+    if constexpr (HasVertexColor<MeshType>) {
         if (vid == 0) {
             // if the file stores the vertex color in the non-standard way
             // (color values after the positions)
             if (tokens.size() > 6) {
                 if (settings.enableOptionalComponents) {
-                    enableIfVertexColorsOptional(m);
+                    enableIfVertexColorOptional(m);
                     loadedInfo.setVertexColor();
                 }
                 else {
@@ -295,10 +295,10 @@ void readObjFace(
     }
 
     // material
-    if constexpr (HasFaceMaterialIndices<MeshType>) {
+    if constexpr (HasFaceMaterialIndex<MeshType>) {
         if (fid == 0 && currentMaterial.matId != UINT_NULL) {
             if (settings.enableOptionalComponents) {
-                enableIfFaceMaterialIndicesOptional(m);
+                enableIfFaceMaterialIndexOptional(m);
                 loadedInfo.setFaceMaterialIndex();
             }
             else {
@@ -321,7 +321,7 @@ void readObjFace(
     }
 
     // vertex normals
-    if constexpr (HasVertexNormals<MeshType>) {
+    if constexpr (HasVertexNormal<MeshType>) {
         using NST = typename VertexType<MeshType>::NormalType::ScalarType;
         // first, need to check if I can store vertex normals in the mesh
         if (fid == 0) {
@@ -329,7 +329,7 @@ void readObjFace(
             // that we can load vertex normals
             if (nids.size() == vids.size()) {
                 if (settings.enableOptionalComponents) {
-                    enableIfVertexNormalsOptional(m);
+                    enableIfVertexNormalOptional(m);
                     loadedInfo.setVertexNormal();
                 }
                 else {
@@ -543,7 +543,7 @@ void loadObj(
             // read normals and save them in the vector of normasl, we will
             // store them in the mesh later
             if (header == "vn") {
-                if constexpr (HasVertexNormals<MeshType>) {
+                if constexpr (HasVertexNormal<MeshType>) {
                     Point3d n;
                     for (uint i = 0; i < 3; ++i) {
                         n[i] = io::readDouble<double>(token);
@@ -555,7 +555,7 @@ void loadObj(
             // store them in the mesh later
             if (header == "vt") {
                 if constexpr (
-                    HasVertexTexCoords<MeshType> ||
+                    HasVertexTexCoord<MeshType> ||
                     HasFaceWedgeTexCoords<MeshType>) {
                     // save the texcoord for later
                     TexCoordd tf;
@@ -596,14 +596,14 @@ void loadObj(
         }
     } while (inputObjStream);
 
-    if constexpr (HasVertexNormals<MeshType>) {
+    if constexpr (HasVertexNormal<MeshType>) {
         using NormalType = typename VertexType<MeshType>::NormalType;
         using NST        = typename NormalType::ScalarType;
         // if we have not yet set vertex normals, try to set them now
         if (!loadedInfo.hasVertexNormal()) {
             if (normals.size() == m.vertexCount()) {
                 if (settings.enableOptionalComponents) {
-                    enableIfVertexNormalsOptional(m);
+                    enableIfVertexNormalOptional(m);
                     loadedInfo.setVertexNormal();
                 }
                 else {
@@ -621,12 +621,12 @@ void loadObj(
         }
     }
 
-    if constexpr (HasVertexTexCoords<MeshType>) {
+    if constexpr (HasVertexTexCoord<MeshType>) {
         if (!loadedInfo.hasFaceWedgeTexCoords()) {
             if (texCoords.size() == m.vertexCount()) {
                 // load texcoords into vertices only if there are no wedge
                 if (settings.enableOptionalComponents) {
-                    enableIfVertexTexCoordsOptional(m);
+                    enableIfVertexTexCoordOptional(m);
                     loadedInfo.setVertexTexCoord();
                 }
                 else {
@@ -646,7 +646,7 @@ void loadObj(
                 if constexpr (HasMaterials<MeshType>) {
                     if (m.materialCount() > 0) {
                         if (settings.enableOptionalComponents) {
-                            enableIfVertexMaterialIndicesOptional(m);
+                            enableIfVertexMaterialIndexOptional(m);
                             loadedInfo.setVertexMaterialIndex();
                         }
                         else {

@@ -95,7 +95,7 @@ void readStlBin(
         enableOptionalComponentsFromInfo(loadedInfo, m);
     }
     else if (colored) {
-        if constexpr (HasFaceColors<MeshType>) {
+        if constexpr (HasFaceColor<MeshType>) {
             if (m.isFaceColorAvailable())
                 loadedInfo.setFaceColor();
         }
@@ -144,13 +144,13 @@ void readStlBin(
             }
             for (uint j = 0; j < 3; ++j)
                 f.setVertex(j, vi + j);
-            if (HasFaceNormals<MeshType>) {
+            if (HasFaceNormal<MeshType>) {
                 using ST = FaceType::NormalType::ScalarType;
                 if (m.isFaceNormalAvailable()) {
                     f.normal() = norm.cast<ST>();
                 }
             }
-            if (HasFaceColors<MeshType>) {
+            if (HasFaceColor<MeshType>) {
                 if (m.isFaceColorAvailable() && colored) {
                     Color c;
                     if (magicsMode)
@@ -237,7 +237,7 @@ void readStlAscii(
                     }
                     for (uint j = 0; j < 3; ++j)
                         f.setVertex(j, vi + j);
-                    if (HasFaceNormals<MeshType>) {
+                    if (HasFaceNormal<MeshType>) {
                         using ST = FaceType::NormalType::ScalarType;
                         if (m.isFaceNormalAvailable()) {
                             f.normal() = normal.cast<ST>();

@@ -266,7 +266,7 @@ OutMesh poissonReconstruction(
     uint            scale     = 1,
     bool            linearFit = false)
 {
-    requireVertexNormals(mesh);
+    requireVertexNormal(mesh);
 
     OutMesh outMesh;
 
@@ -307,9 +307,9 @@ OutMesh poissonReconstruction(
 
     std::vector<detail::RGBAColor<ScalarType>> colors;
     bool                                       useVertexColor = false;
-    if constexpr (HasVertexColors<MeshType> && HasVertexColors<OutMesh>) {
+    if constexpr (HasVertexColor<MeshType> && HasVertexColor<OutMesh>) {
         if (mesh.isVertexColorAvailable()) {
-            enableIfVertexColorsOptional(outMesh);
+            enableIfVertexColorOptional(outMesh);
             if (outMesh.isVertexColorAvailable()) {
                 useVertexColor = true;
                 colors         = detail::extrapolateColors(
@@ -328,7 +328,7 @@ OutMesh poissonReconstruction(
             static_cast<OutScalar>(p[0]),
             static_cast<OutScalar>(p[1]),
             static_cast<OutScalar>(p[2])));
-        if constexpr (HasVertexColors<OutMesh>) {
+        if constexpr (HasVertexColor<OutMesh>) {
             if (useVertexColor) {
                 outMesh.vertex(vid).color() = detail::toVclColor(colors[i]);
             }

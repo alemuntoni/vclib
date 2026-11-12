@@ -40,16 +40,16 @@ inline void testMeshInfoDefaultAndManual()
     assert(!info.isQuadMesh());
     assert(!info.isPolygonMesh());
     assert(info.hasVertices());
-    assert(info.hasPerVertexPosition());
-    assert(info.perVertexPositionType() == PrimitiveType::FLOAT);
-    assert(info.hasPerVertexNormal());
-    assert(info.perVertexNormalType() == PrimitiveType::FLOAT);
-    assert(info.hasPerVertexColor());
-    assert(info.perVertexColorType() == PrimitiveType::UCHAR);
+    assert(info.hasVertexPosition());
+    assert(info.vertexPositionType() == PrimitiveType::FLOAT);
+    assert(info.hasVertexNormal());
+    assert(info.vertexNormalType() == PrimitiveType::FLOAT);
+    assert(info.hasVertexColor());
+    assert(info.vertexColorType() == PrimitiveType::UCHAR);
     assert(info.hasFaces());
-    assert(info.hasPerFaceVertexReferences());
-    assert(info.hasPerFaceNormal());
-    assert(info.perFaceNormalType() == PrimitiveType::DOUBLE);
+    assert(info.hasFaceVertexReferences());
+    assert(info.hasFaceNormal());
+    assert(info.faceNormalType() == PrimitiveType::DOUBLE);
     assert(!info.hasEdges());
 
     // Update mesh type
@@ -80,19 +80,19 @@ inline void testMeshInfoFromMesh()
         MeshInfo info(mesh);
 
         assert(info.hasVertices());
-        assert(info.hasPerVertexPosition());
-        assert(info.perVertexPositionType() == PrimitiveType::FLOAT);
-        assert(info.hasPerVertexBitFlags());
-        assert(info.hasPerVertexNormal());
-        assert(info.perVertexNormalType() == PrimitiveType::FLOAT);
-        assert(info.hasPerVertexColor());
-        assert(info.perVertexColorType() == PrimitiveType::UCHAR);
+        assert(info.hasVertexPosition());
+        assert(info.vertexPositionType() == PrimitiveType::FLOAT);
+        assert(info.hasVertexBitFlags());
+        assert(info.hasVertexNormal());
+        assert(info.vertexNormalType() == PrimitiveType::FLOAT);
+        assert(info.hasVertexColor());
+        assert(info.vertexColorType() == PrimitiveType::UCHAR);
 
         assert(info.hasFaces());
-        assert(info.hasPerFaceVertexReferences());
-        assert(info.hasPerFaceBitFlags());
-        assert(info.hasPerFaceColor());
-        assert(info.perFaceColorType() == PrimitiveType::UCHAR);
+        assert(info.hasFaceVertexReferences());
+        assert(info.hasFaceBitFlags());
+        assert(info.hasFaceColor());
+        assert(info.faceColorType() == PrimitiveType::UCHAR);
         assert(info.isTriangleMesh());
 
         assert(!info.hasEdges());
@@ -105,12 +105,12 @@ inline void testMeshInfoFromMesh()
         MeshInfo info(emptyMesh);
 
         assert(info.hasVertices());
-        assert(info.hasPerVertexPosition());
-        assert(!info.hasPerVertexNormal());
-        assert(!info.hasPerVertexColor());
+        assert(info.hasVertexPosition());
+        assert(!info.hasVertexNormal());
+        assert(!info.hasVertexColor());
 
         assert(info.hasFaces());
-        assert(!info.hasPerFaceColor());
+        assert(!info.hasFaceColor());
         assert(info.isTriangleMesh());
     }
 
@@ -120,8 +120,8 @@ inline void testMeshInfoFromMesh()
         MeshInfo info(dm);
 
         assert(info.hasVertices());
-        assert(info.hasPerVertexPosition());
-        assert(info.perVertexPositionType() == PrimitiveType::DOUBLE);
+        assert(info.hasVertexPosition());
+        assert(info.vertexPositionType() == PrimitiveType::DOUBLE);
         assert(info.hasFaces());
         assert(info.isTriangleMesh());
     }
@@ -145,10 +145,10 @@ inline void testMeshInfoFromMesh()
         MeshInfo info(em);
 
         assert(info.hasVertices());
-        assert(info.hasPerVertexPosition());
+        assert(info.hasVertexPosition());
         assert(info.hasEdges());
-        assert(info.hasPerEdgeVertexReferences());
-        assert(info.hasPerEdgeBitFlags());
+        assert(info.hasEdgeVertexReferences());
+        assert(info.hasEdgeBitFlags());
         assert(!info.hasFaces());
     }
 
@@ -159,8 +159,8 @@ inline void testMeshInfoFromMesh()
 
         assert(info.hasMaterials());
         assert(info.hasFaces());
-        assert(info.hasPerFaceMaterialIndex());
-        assert(info.perFaceMaterialIndexType() == PrimitiveType::UINT);
+        assert(info.hasFaceMaterialIndex());
+        assert(info.faceMaterialIndexType() == PrimitiveType::UINT);
     }
 
     // 7. CCMesh (Custom Components)
@@ -171,15 +171,15 @@ inline void testMeshInfoFromMesh()
 
         MeshInfo info(ccm);
 
-        assert(info.hasPerVertexCustomComponents());
-        assert(info.perVertexCustomComponents().size() == 1);
-        assert(info.perVertexCustomComponents()[0].name == "curvature");
-        assert(info.perVertexCustomComponents()[0].type == PrimitiveType::DOUBLE);
+        assert(info.hasVertexCustomComponents());
+        assert(info.vertexCustomComponents().size() == 1);
+        assert(info.vertexCustomComponents()[0].name == "curvature");
+        assert(info.vertexCustomComponents()[0].type == PrimitiveType::DOUBLE);
 
-        assert(info.hasPerFaceCustomComponents());
-        assert(info.perFaceCustomComponents().size() == 1);
-        assert(info.perFaceCustomComponents()[0].name == "cluster_id");
-        assert(info.perFaceCustomComponents()[0].type == PrimitiveType::INT);
+        assert(info.hasFaceCustomComponents());
+        assert(info.faceCustomComponents().size() == 1);
+        assert(info.faceCustomComponents()[0].name == "cluster_id");
+        assert(info.faceCustomComponents()[0].type == PrimitiveType::INT);
     }
 }
 
@@ -204,12 +204,12 @@ inline void testMeshInfoIntersect()
     MeshInfo inter = info1.intersect(info2);
 
     assert(inter.hasVertices());
-    assert(inter.hasPerVertexPosition());
-    assert(inter.perVertexPositionType() == PrimitiveType::FLOAT); // Taken from info1
-    assert(!inter.hasPerVertexNormal()); // Not in info2
-    assert(!inter.hasPerVertexColor());  // Not in info1
+    assert(inter.hasVertexPosition());
+    assert(inter.vertexPositionType() == PrimitiveType::FLOAT); // Taken from info1
+    assert(!inter.hasVertexNormal()); // Not in info2
+    assert(!inter.hasVertexColor());  // Not in info1
     assert(inter.hasFaces());
-    assert(inter.hasPerFaceColor());
+    assert(inter.hasFaceColor());
     assert(inter.isTriangleMesh());
 }
 
@@ -234,9 +234,9 @@ inline void testMeshInfoEnableOptionalComponents()
         assert(mesh.isVertexNormalAvailable());
         assert(mesh.isVertexColorAvailable());
         assert(mesh.isFaceColorAvailable());
-        assert(reqInfo.hasPerVertexNormal());
-        assert(reqInfo.hasPerVertexColor());
-        assert(reqInfo.hasPerFaceColor());
+        assert(reqInfo.hasVertexNormal());
+        assert(reqInfo.hasVertexColor());
+        assert(reqInfo.hasFaceColor());
 
         // Component not supported by MyMesh (e.g. vertex tangent)
         MeshInfo tangentInfo;
@@ -244,7 +244,7 @@ inline void testMeshInfoEnableOptionalComponents()
         tangentInfo.setVertexTangent(true);
         enableOptionalComponentsFromInfo(tangentInfo, mesh);
         // info should have tangent reset to false since mesh cannot support it
-        assert(!tangentInfo.hasPerVertexTangent());
+        assert(!tangentInfo.hasVertexTangent());
     }
 
     // 2. Custom components enablement on CCMesh

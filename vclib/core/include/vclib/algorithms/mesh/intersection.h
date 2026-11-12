@@ -83,7 +83,7 @@ EdgeMesh intersection(const MeshType& m, const PlaneType& pl)
         for (uint j = 0; j < f.vertexCount(); ++j) {
             if (qH[f.vertexIndex(j)] == 0) {
                 ptVec.push_back(f.vertex(j).position());
-                if constexpr (HasVertexNormals<MeshType>) {
+                if constexpr (HasVertexNormal<MeshType>) {
                     if (m.isVertexNormalAvailable()) {
                         nmVec.push_back(f.vertex(j).normal());
                     }
@@ -99,7 +99,7 @@ EdgeMesh intersection(const MeshType& m, const PlaneType& pl)
                 std::pair<PositionType, PositionType> seg(p0, p1);
                 PositionType pp = pl.segmentIntersection(seg);
                 ptVec.push_back(pp);
-                if constexpr (HasVertexNormals<MeshType>) {
+                if constexpr (HasVertexNormal<MeshType>) {
                     if (m.isVertexNormalAvailable()) {
                         const auto&  n0 = f.vertex(j).normal();
                         const auto&  n1 = f.vertexMod(j + 1).normal();
@@ -118,7 +118,7 @@ EdgeMesh intersection(const MeshType& m, const PlaneType& pl)
             em.vertex(v0).position() = ptVec[0];
             em.vertex(v1).position() = ptVec[1];
             if constexpr (
-                HasVertexNormals<MeshType> && HasVertexNormals<EdgeMesh>) {
+                HasVertexNormal<MeshType> && HasVertexNormal<EdgeMesh>) {
                 if (m.isVertexNormalAvailable() &&
                     em.isVertexNormalAvailable()) {
                     em.vertex(v0).normal() = nmVec[0];

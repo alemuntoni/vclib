@@ -39,7 +39,7 @@ MeshType createAxisCylinder(double unitLength, bool fromOrigin = false)
         vcl::translate(cylinder, Point3s(0, unitLength * 0.5, 0));
     }
 
-    if constexpr (HasVertexNormals<MeshType>) {
+    if constexpr (HasVertexNormal<MeshType>) {
         if (cylinder.isVertexNormalAvailable()) {
             vcl::updateVertexNormals(cylinder);
         }
@@ -92,7 +92,7 @@ MeshType createAxisConeSpheres(double unitLength, bool fromOrigin = false)
     MeshType         sp = vcl::createSphere<MeshType>(s);
     coneSpheres.append(sp);
 
-    if constexpr (HasVertexNormals<MeshType>) {
+    if constexpr (HasVertexNormal<MeshType>) {
         if (coneSpheres.isVertexNormalAvailable()) {
             vcl::updateVertexNormals(coneSpheres);
         }

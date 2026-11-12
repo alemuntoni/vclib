@@ -317,7 +317,7 @@ void readOffVertices(
             v.position()[j] = io::readDouble<double>(token);
         }
 
-        if constexpr (HasVertexNormals<MeshType>) {
+        if constexpr (HasVertexNormal<MeshType>) {
             if (mesh.isVertexNormalAvailable() &&
                 fileInfo.hasVertexNormal()) {
                 // Read 3 normal coordinates
@@ -337,7 +337,7 @@ void readOffVertices(
         const int  nColorComponents =
             (int) tokens.size() - nReadComponents - nTexCoords;
 
-        if constexpr (HasVertexColors<MeshType>) {
+        if constexpr (HasVertexColor<MeshType>) {
             if (mesh.isVertexColorAvailable() &&
                 fileInfo.hasVertexColor()) {
                 if (nColorComponents != 1 && nColorComponents != 3 &&
@@ -356,7 +356,7 @@ void readOffVertices(
             readOffColor(token, nColorComponents);
         }
 
-        if constexpr (HasVertexTexCoords<MeshType>) {
+        if constexpr (HasVertexTexCoord<MeshType>) {
             if (mesh.isVertexTexCoordAvailable() &&
                 fileInfo.hasVertexTexCoord()) {
                 // Read 2 tex coordinates
@@ -437,10 +437,10 @@ void readOffFaces(
 
             // read face color
             if (token != tokens.end()) { // there are colors to read
-                if constexpr (HasFaceColors<MeshType>) {
+                if constexpr (HasFaceColor<MeshType>) {
                     if (mesh.isFaceColorAvailable() ||
                         (settings.enableOptionalComponents &&
-                         enableIfFaceColorsOptional(mesh))) {
+                         enableIfFaceColorOptional(mesh))) {
                         loadedInfo.setFaceColor();
                         f.color() = readOffColor(
                             token, tokens.size() - (token - tokens.begin()));

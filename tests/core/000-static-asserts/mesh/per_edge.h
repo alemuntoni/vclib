@@ -55,36 +55,36 @@ void perEdgeStaticAsserts()
         "TriEdgeMesh does not satisfy the HasEdgeOptionalAdjacentFaces");
 
     static_assert(
-        !HasEdgeTexCoords<TriEdgeMesh>,
-        "TriEdgeMesh satisfies the HasEdgeTexCoords");
+        !HasEdgeTexCoord<TriEdgeMesh>,
+        "TriEdgeMesh satisfies the HasEdgeTexCoord");
 
     static_assert(
-        !HasEdgePrincipalCurvatures<TriEdgeMesh>,
-        "TriEdgeMesh satisfies the HasEdgePrincipalCurvatures");
+        !HasEdgePrincipalCurvature<TriEdgeMesh>,
+        "TriEdgeMesh satisfies the HasEdgePrincipalCurvature");
 
     static_assert(
-        !HasEdgeTangents<TriEdgeMesh>,
-        "TriEdgeMesh satisfies the HasEdgeTangents");
+        !HasEdgeTangent<TriEdgeMesh>,
+        "TriEdgeMesh satisfies the HasEdgeTangent");
 
     static_assert(
-        !HasEdgeMaterialIndices<TriEdgeMesh>,
-        "TriEdgeMesh satisfies the HasEdgeMaterialIndices");
+        !HasEdgeMaterialIndex<TriEdgeMesh>,
+        "TriEdgeMesh satisfies the HasEdgeMaterialIndex");
 
     static_assert(
-        HasEdgeColors<TriEdgeMesh>,
-        "TriEdgeMesh does not satisfy the HasEdgeColors");
+        HasEdgeColor<TriEdgeMesh>,
+        "TriEdgeMesh does not satisfy the HasEdgeColor");
     static_assert(
-        HasEdgeColors<const TriEdgeMesh>,
-        "const TriEdgeMesh does not satisfy the HasEdgeColors");
+        HasEdgeColor<const TriEdgeMesh>,
+        "const TriEdgeMesh does not satisfy the HasEdgeColor");
     static_assert(
-        HasEdgeColors<TriEdgeMesh&>,
-        "TriEdgeMesh& does not satisfy the HasEdgeColors");
+        HasEdgeColor<TriEdgeMesh&>,
+        "TriEdgeMesh& does not satisfy the HasEdgeColor");
     static_assert(
-        HasEdgeColors<const TriEdgeMesh&>,
-        "const TriEdgeMesh& does not satisfy the HasEdgeColors");
+        HasEdgeColor<const TriEdgeMesh&>,
+        "const TriEdgeMesh& does not satisfy the HasEdgeColor");
     static_assert(
-        HasEdgeColors<TriEdgeMesh&&>,
-        "TriEdgeMesh&& does not satisfy the HasEdgeColors");
+        HasEdgeColor<TriEdgeMesh&&>,
+        "TriEdgeMesh&& does not satisfy the HasEdgeColor");
 
     static_assert(
         HasEdgeCustomComponents<TriEdgeMesh>,
@@ -103,36 +103,36 @@ void perEdgeStaticAsserts()
         "TriEdgeMesh&& does not satisfy the HasEdgeCustomComponents");
 
     static_assert(
-        HasEdgeNormals<TriEdgeMesh>,
-        "TriEdgeMesh does not satisfy the HasEdgeNormals");
+        HasEdgeNormal<TriEdgeMesh>,
+        "TriEdgeMesh does not satisfy the HasEdgeNormal");
     static_assert(
-        HasEdgeNormals<const TriEdgeMesh>,
-        "const TriEdgeMesh does not satisfy the HasEdgeNormals");
+        HasEdgeNormal<const TriEdgeMesh>,
+        "const TriEdgeMesh does not satisfy the HasEdgeNormal");
     static_assert(
-        HasEdgeNormals<TriEdgeMesh&>,
-        "TriEdgeMesh& does not satisfy the HasEdgeNormals");
+        HasEdgeNormal<TriEdgeMesh&>,
+        "TriEdgeMesh& does not satisfy the HasEdgeNormal");
     static_assert(
-        HasEdgeNormals<const TriEdgeMesh&>,
-        "const TriEdgeMesh& does not satisfy the HasEdgeNormals");
+        HasEdgeNormal<const TriEdgeMesh&>,
+        "const TriEdgeMesh& does not satisfy the HasEdgeNormal");
     static_assert(
-        HasEdgeNormals<TriEdgeMesh&&>,
-        "TriEdgeMesh&& does not satisfy the HasEdgeNormals");
+        HasEdgeNormal<TriEdgeMesh&&>,
+        "TriEdgeMesh&& does not satisfy the HasEdgeNormal");
 
     static_assert(
-        HasEdgeQualities<TriEdgeMesh>,
-        "TriEdgeMesh does not satisfy the HasEdgeQualities");
+        HasEdgeQuality<TriEdgeMesh>,
+        "TriEdgeMesh does not satisfy the HasEdgeQuality");
     static_assert(
-        HasEdgeQualities<const TriEdgeMesh>,
-        "const TriEdgeMesh does not satisfy the HasEdgeQualities");
+        HasEdgeQuality<const TriEdgeMesh>,
+        "const TriEdgeMesh does not satisfy the HasEdgeQuality");
     static_assert(
-        HasEdgeQualities<TriEdgeMesh&>,
-        "TriEdgeMesh& does not satisfy the HasEdgeQualities");
+        HasEdgeQuality<TriEdgeMesh&>,
+        "TriEdgeMesh& does not satisfy the HasEdgeQuality");
     static_assert(
-        HasEdgeQualities<const TriEdgeMesh&>,
-        "const TriEdgeMesh& does not satisfy the HasEdgeQualities");
+        HasEdgeQuality<const TriEdgeMesh&>,
+        "const TriEdgeMesh& does not satisfy the HasEdgeQuality");
     static_assert(
-        HasEdgeQualities<TriEdgeMesh&&>,
-        "TriEdgeMesh&& does not satisfy the HasEdgeQualities");
+        HasEdgeQuality<TriEdgeMesh&&>,
+        "TriEdgeMesh&& does not satisfy the HasEdgeQuality");
 }
 
 #endif // PER_EDGE_H
