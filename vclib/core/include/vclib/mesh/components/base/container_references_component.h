@@ -155,6 +155,24 @@ protected:
     // --- Generic Static Reference / Adjacency Helpers ---
 
     /**
+     * @brief Casts a reference index from another unsigned integral index type
+     * to IndexType, preserving the NULL_INDEX sentinel value across different
+     * index widths.
+     */
+    template<std::unsigned_integral OtherIndex>
+    static constexpr IndexType castIndex(OtherIndex idx) noexcept
+    {
+        if constexpr (std::same_as<IndexType, OtherIndex>) {
+            return idx;
+        }
+        else {
+            return idx == vcl::NULL_INDEX<OtherIndex> ?
+                       NULL_INDEX :
+                       static_cast<IndexType>(idx);
+        }
+    }
+
+    /**
      * @brief Returns the number of referenced elements stored in this
      * component.
      * @param[in] self: The component / element proxy object.

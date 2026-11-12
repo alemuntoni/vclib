@@ -584,14 +584,14 @@ void VertexReferences<N, Index>::importFrom(
                 if constexpr (N == OTHER_N) {
                     for (uint i = 0; i < N; ++i) {
                         self.setVertex(
-                            i, static_cast<IndexType>(other.vertexIndex(i)));
+                            i, Base::castIndex(other.vertexIndex(i)));
                     }
                 }
                 else if constexpr (OTHER_N < 0) {
                     if (other.vertexCount() == N) {
                         for (uint i = 0; i < N; ++i) {
                             self.setVertex(
-                                i, static_cast<IndexType>(other.vertexIndex(i)));
+                                i, Base::castIndex(other.vertexIndex(i)));
                         }
                     }
                 }
@@ -599,8 +599,7 @@ void VertexReferences<N, Index>::importFrom(
             else {
                 self.resizeVertices(other.vertexCount());
                 for (uint i = 0; i < other.vertexCount(); ++i) {
-                    self.setVertex(
-                        i, static_cast<IndexType>(other.vertexIndex(i)));
+                    self.setVertex(i, Base::castIndex(other.vertexIndex(i)));
                 }
             }
         }

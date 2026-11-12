@@ -432,17 +432,14 @@ void AdjacentFaces<N, Index, TTVC, OPT>::importFrom(
                     if constexpr (N == OTHER_N) {
                         for (uint i = 0; i < N; ++i) {
                             self.setAdjFace(
-                                i,
-                                static_cast<IndexType>(other.adjFaceIndex(i)));
+                                i, Base::castIndex(other.adjFaceIndex(i)));
                         }
                     }
                     else if constexpr (OTHER_N < 0) {
                         if (other.adjFaceCount() == N) {
                             for (uint i = 0; i < N; ++i) {
                                 self.setAdjFace(
-                                    i,
-                                    static_cast<IndexType>(
-                                        other.adjFaceIndex(i)));
+                                    i, Base::castIndex(other.adjFaceIndex(i)));
                             }
                         }
                     }
@@ -451,15 +448,14 @@ void AdjacentFaces<N, Index, TTVC, OPT>::importFrom(
                     self.resizeAdjFaces(other.adjFaceCount());
                     for (uint i = 0; i < other.adjFaceCount(); ++i) {
                         self.setAdjFace(
-                            i, static_cast<IndexType>(other.adjFaceIndex(i)));
+                            i, Base::castIndex(other.adjFaceIndex(i)));
                     }
                 }
                 else {
                     if (self.adjFaceCount() == other.adjFaceCount()) {
                         for (uint i = 0; i < self.adjFaceCount(); ++i) {
                             self.setAdjFace(
-                                i,
-                                static_cast<IndexType>(other.adjFaceIndex(i)));
+                                i, Base::castIndex(other.adjFaceIndex(i)));
                         }
                     }
                 }

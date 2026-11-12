@@ -124,8 +124,13 @@ void MaterialIndex<Index, OPT>::importFrom(
 {
     if constexpr (HasMaterialIndex<OtherElement>) {
         if (other.template isComponentAvailable<CompId::MATERIAL_INDEX>()) {
-            self.materialIndex() =
-                static_cast<MaterialIndexType>(other.materialIndex());
+            if (other.materialIndex() == OtherElement::NULL_MATERIAL_INDEX) {
+                self.materialIndex() = NULL_MATERIAL_INDEX;
+            }
+            else {
+                self.materialIndex() =
+                    static_cast<MaterialIndexType>(other.materialIndex());
+            }
         }
     }
 }

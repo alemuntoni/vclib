@@ -416,9 +416,7 @@ void AdjacentVertices<N, Index, TTVC, OPT>::importFrom(
                     if constexpr (N == OTHER_N) {
                         for (uint i = 0; i < N; ++i) {
                             self.setAdjVertex(
-                                i,
-                                static_cast<IndexType>(
-                                    other.adjVertexIndex(i)));
+                                i, Base::castIndex(other.adjVertexIndex(i)));
                         }
                     }
                     else if constexpr (OTHER_N < 0) {
@@ -426,8 +424,7 @@ void AdjacentVertices<N, Index, TTVC, OPT>::importFrom(
                             for (uint i = 0; i < N; ++i) {
                                 self.setAdjVertex(
                                     i,
-                                    static_cast<IndexType>(
-                                        other.adjVertexIndex(i)));
+                                    Base::castIndex(other.adjVertexIndex(i)));
                             }
                         }
                     }
@@ -436,16 +433,14 @@ void AdjacentVertices<N, Index, TTVC, OPT>::importFrom(
                     self.resizeAdjVertices(other.adjVertexCount());
                     for (uint i = 0; i < other.adjVertexCount(); ++i) {
                         self.setAdjVertex(
-                            i, static_cast<IndexType>(other.adjVertexIndex(i)));
+                            i, Base::castIndex(other.adjVertexIndex(i)));
                     }
                 }
                 else {
                     if (self.adjVertexCount() == other.adjVertexCount()) {
                         for (uint i = 0; i < self.adjVertexCount(); ++i) {
                             self.setAdjVertex(
-                                i,
-                                static_cast<IndexType>(
-                                    other.adjVertexIndex(i)));
+                                i, Base::castIndex(other.adjVertexIndex(i)));
                         }
                     }
                 }

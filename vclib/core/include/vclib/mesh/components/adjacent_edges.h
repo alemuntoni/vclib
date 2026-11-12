@@ -412,17 +412,14 @@ void AdjacentEdges<N, Index, TTVC, OPT>::importFrom(
                     if constexpr (N == OTHER_N) {
                         for (uint i = 0; i < N; ++i) {
                             self.setAdjEdge(
-                                i,
-                                static_cast<IndexType>(other.adjEdgeIndex(i)));
+                                i, Base::castIndex(other.adjEdgeIndex(i)));
                         }
                     }
                     else if constexpr (OTHER_N < 0) {
                         if (other.adjEdgeCount() == N) {
                             for (uint i = 0; i < N; ++i) {
                                 self.setAdjEdge(
-                                    i,
-                                    static_cast<IndexType>(
-                                        other.adjEdgeIndex(i)));
+                                    i, Base::castIndex(other.adjEdgeIndex(i)));
                             }
                         }
                     }
@@ -431,15 +428,14 @@ void AdjacentEdges<N, Index, TTVC, OPT>::importFrom(
                     self.resizeAdjEdges(other.adjEdgeCount());
                     for (uint i = 0; i < other.adjEdgeCount(); ++i) {
                         self.setAdjEdge(
-                            i, static_cast<IndexType>(other.adjEdgeIndex(i)));
+                            i, Base::castIndex(other.adjEdgeIndex(i)));
                     }
                 }
                 else {
                     if (self.adjEdgeCount() == other.adjEdgeCount()) {
                         for (uint i = 0; i < self.adjEdgeCount(); ++i) {
                             self.setAdjEdge(
-                                i,
-                                static_cast<IndexType>(other.adjEdgeIndex(i)));
+                                i, Base::castIndex(other.adjEdgeIndex(i)));
                         }
                     }
                 }
