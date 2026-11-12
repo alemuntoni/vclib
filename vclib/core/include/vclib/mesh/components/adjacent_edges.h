@@ -162,9 +162,9 @@ public:
     }
 
     /**
-     * @brief Sets the i-th adjacent edge from an ElementProxy or pointer.
+     * @brief Sets the i-th adjacent edge from an ElementProxy.
      * @param[in] i: The position in this container.
-     * @param[in] e: The adjacent edge proxy or pointer.
+     * @param[in] e: The adjacent edge proxy.
      */
     template<typename Elem>
     void setAdjEdge(this auto&& self, uint i, const Elem& e)
@@ -184,10 +184,10 @@ public:
     }
 
     /**
-     * @brief Sets the i-th adjacent edge from an ElementProxy or pointer using
-     * modular arithmetic.
+     * @brief Sets the i-th adjacent edge from an ElementProxy using modular
+     * arithmetic.
      * @param[in] i: The position modulo adjEdgeCount().
-     * @param[in] e: The adjacent edge proxy or pointer.
+     * @param[in] e: The adjacent edge proxy.
      */
     template<typename Elem>
     void setAdjEdgeMod(this auto&& self, int i, const Elem& e)
@@ -198,7 +198,7 @@ public:
 
     /**
      * @brief Sets all adjacent edges from an input range.
-     * @param[in] rng: The input range of edge indices, proxies, or pointers.
+     * @param[in] rng: The input range of edge indices or proxies.
      */
     template<std::ranges::input_range Rng>
     void setAdjEdges(this auto&& self, Rng&& rng)
@@ -208,7 +208,7 @@ public:
 
     /**
      * @brief Sets all adjacent edges from a parameter pack.
-     * @param[in] args: The edge indices, proxies, or pointers to set.
+     * @param[in] args: The edge indices or proxies to set.
      */
     template<typename... Args>
     void setAdjEdges(this auto&& self, const Args&... args)
@@ -228,8 +228,8 @@ public:
     }
 
     /**
-     * @brief Checks if this container contains the given edge proxy or pointer.
-     * @param[in] e: The edge proxy or pointer to search for.
+     * @brief Checks if this container contains the given edge proxy.
+     * @param[in] e: The edge proxy to search for.
      * @return true if found, false otherwise.
      */
     template<typename Elem>
@@ -253,9 +253,8 @@ public:
     }
 
     /**
-     * @brief Finds the position in this container of the given edge proxy or
-     * pointer.
-     * @param[in] e: The edge proxy or pointer to search for.
+     * @brief Finds the position in this container of the given edge proxy.
+     * @param[in] e: The edge proxy to search for.
      * @return The 0-based position, or UINT_NULL if not found.
      */
     template<typename Elem>
@@ -288,9 +287,9 @@ public:
     }
 
     /**
-     * @brief Appends an edge proxy or pointer to the container.
+     * @brief Appends an edge proxy to the container.
      * @note Available only for dynamic, non-TTVC containers.
-     * @param[in] e: The edge proxy or pointer to append.
+     * @param[in] e: The edge proxy to append.
      */
     template<typename Elem>
     void pushAdjEdge(this auto&& self, const Elem& e) requires (
@@ -312,10 +311,10 @@ public:
     }
 
     /**
-     * @brief Inserts an edge proxy or pointer at position i.
+     * @brief Inserts an edge proxy at position i.
      * @note Available only for dynamic, non-TTVC containers.
      * @param[in] i: The position to insert at.
-     * @param[in] e: The edge proxy or pointer to insert.
+     * @param[in] e: The edge proxy to insert.
      */
     template<typename Elem>
     void insertAdjEdge(this auto&& self, uint i, const Elem& e) requires (

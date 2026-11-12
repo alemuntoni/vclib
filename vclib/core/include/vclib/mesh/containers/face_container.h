@@ -786,7 +786,7 @@ protected:
                     // vertices
                     if (mf.vertexCount() != 3) {
                         // triangulate mf; the first triangle of the
-                        // triangulation will be this->face(m.index(mf)); the
+                        // triangulation will be this->face(mf.index()); the
                         // other triangles will be added at the end of the
                         // container
 

@@ -28,12 +28,7 @@ namespace vcl::comp {
  * @endcode
  *
  * @tparam Scalar: The scalar type of the texture coordinate values.
- * @tparam ParentElemType: This template argument must be `void` if the
- * component needs to be stored horizontally, or the type of the parent element
- * that will contain this component if the component needs to be stored
- * vertically.
- * @tparam OPT: If true, the component will be optional. This argument is
- * considered only if the component is stored vertically.
+ * @tparam OPT: If true, the component will be optional.
  *
  * @ingroup components
  */

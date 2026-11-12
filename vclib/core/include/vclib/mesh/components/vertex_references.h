@@ -515,7 +515,6 @@ public:
         self.parentContainer().clearTTVCComponents(self.index());
     }
 
-    // check this: is the behaviour the same of old mesh?
     decltype(auto) vertices(this auto&& self)
     {
         return Base::refElements(self);

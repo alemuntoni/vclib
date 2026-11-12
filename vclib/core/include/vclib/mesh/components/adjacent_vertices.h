@@ -163,9 +163,9 @@ public:
     }
 
     /**
-     * @brief Sets the i-th adjacent vertex from an ElementProxy or pointer.
+     * @brief Sets the i-th adjacent vertex from an ElementProxy.
      * @param[in] i: The position in this container.
-     * @param[in] v: The adjacent vertex proxy or pointer.
+     * @param[in] v: The adjacent vertex proxy.
      */
     template<typename Elem>
     void setAdjVertex(this auto&& self, uint i, const Elem& v)
@@ -185,10 +185,10 @@ public:
     }
 
     /**
-     * @brief Sets the i-th adjacent vertex from an ElementProxy or pointer
+     * @brief Sets the i-th adjacent vertex from an ElementProxy
      * using modular arithmetic.
      * @param[in] i: The position modulo adjVertexCount().
-     * @param[in] v: The adjacent vertex proxy or pointer.
+     * @param[in] v: The adjacent vertex proxy.
      */
     template<typename Elem>
     void setAdjVertexMod(this auto&& self, int i, const Elem& v)
@@ -199,7 +199,7 @@ public:
 
     /**
      * @brief Sets all adjacent vertices from an input range.
-     * @param[in] rng: The input range of vertex indices, proxies, or pointers.
+     * @param[in] rng: The input range of vertex indices or proxies.
      */
     template<std::ranges::input_range Rng>
     void setAdjVertices(this auto&& self, Rng&& rng)
@@ -209,7 +209,7 @@ public:
 
     /**
      * @brief Sets all adjacent vertices from a parameter pack.
-     * @param[in] args: The vertex indices, proxies, or pointers to set.
+     * @param[in] args: The vertex indices or proxies to set.
      */
     template<typename... Args>
     void setAdjVertices(this auto&& self, const Args&... args)
@@ -229,9 +229,8 @@ public:
     }
 
     /**
-     * @brief Checks if this container contains the given vertex proxy or
-     * pointer.
-     * @param[in] v: The vertex proxy or pointer to search for.
+     * @brief Checks if this container contains the given vertex proxy.
+     * @param[in] v: The vertex proxy to search for.
      * @return true if found, false otherwise.
      */
     template<typename Elem>
@@ -255,9 +254,8 @@ public:
     }
 
     /**
-     * @brief Finds the position in this container of the given vertex proxy or
-     * pointer.
-     * @param[in] v: The vertex proxy or pointer to search for.
+     * @brief Finds the position in this container of the given vertex proxy.
+     * @param[in] v: The vertex proxy to search for.
      * @return The 0-based position, or UINT_NULL if not found.
      */
     template<typename Elem>
@@ -290,9 +288,9 @@ public:
     }
 
     /**
-     * @brief Appends a vertex proxy or pointer to the container.
+     * @brief Appends a vertex proxy to the container.
      * @note Available only for dynamic, non-TTVC containers.
-     * @param[in] v: The vertex proxy or pointer to append.
+     * @param[in] v: The vertex proxy to append.
      */
     template<typename Elem>
     void pushAdjVertex(this auto&& self, const Elem& v) requires (
@@ -314,10 +312,10 @@ public:
     }
 
     /**
-     * @brief Inserts a vertex proxy or pointer at position i.
+     * @brief Inserts a vertex proxy at position i.
      * @note Available only for dynamic, non-TTVC containers.
      * @param[in] i: The position to insert at.
-     * @param[in] v: The vertex proxy or pointer to insert.
+     * @param[in] v: The vertex proxy to insert.
      */
     template<typename Elem>
     void insertAdjVertex(this auto&& self, uint i, const Elem& v) requires (

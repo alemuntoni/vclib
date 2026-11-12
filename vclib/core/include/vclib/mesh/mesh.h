@@ -1154,8 +1154,8 @@ public:
      * @code{.cpp}
      * auto handle = m.elementCustomComponentVectorHandle<
      *      ElemId::VERTEX, int>("cc");
-     * for (Vertex& v : m.vertices()) {
-     *    handle[m.index(v)] = 5; // v.customComponent<int>("cc") == 5
+     * for (Vertex v : m.vertices()) {
+     *    handle[v.index()] = 5; // v.customComponent<int>("cc") == 5
      *    assert(v.customComponent<int>("cc") == 5);
      * }
      * @endcode

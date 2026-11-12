@@ -163,9 +163,9 @@ public:
     }
 
     /**
-     * @brief Sets the i-th adjacent face from an ElementProxy or pointer.
+     * @brief Sets the i-th adjacent face from an ElementProxy.
      * @param[in] i: The position in this container.
-     * @param[in] f: The adjacent face proxy or pointer.
+     * @param[in] f: The adjacent face proxy.
      */
     template<typename Elem>
     void setAdjFace(this auto&& self, uint i, const Elem& f)
@@ -185,10 +185,10 @@ public:
     }
 
     /**
-     * @brief Sets the i-th adjacent face from an ElementProxy or pointer using
-     * modular arithmetic.
+     * @brief Sets the i-th adjacent face from an ElementProxy using modular
+     * arithmetic.
      * @param[in] i: The position modulo adjFaceCount().
-     * @param[in] f: The adjacent face proxy or pointer.
+     * @param[in] f: The adjacent face proxy.
      */
     template<typename Elem>
     void setAdjFaceMod(this auto&& self, int i, const Elem& f)
@@ -199,7 +199,7 @@ public:
 
     /**
      * @brief Sets all adjacent faces from an input range.
-     * @param[in] rng: The input range of face indices, proxies, or pointers.
+     * @param[in] rng: The input range of face indices or proxies.
      */
     template<std::ranges::input_range Rng>
     void setAdjFaces(this auto&& self, Rng&& rng)
@@ -209,7 +209,7 @@ public:
 
     /**
      * @brief Sets all adjacent faces from a parameter pack.
-     * @param[in] args: The face indices, proxies, or pointers to set.
+     * @param[in] args: The face indices or proxies to set.
      */
     template<typename... Args>
     void setAdjFaces(this auto&& self, const Args&... args)
@@ -229,8 +229,8 @@ public:
     }
 
     /**
-     * @brief Checks if this container contains the given face proxy or pointer.
-     * @param[in] f: The face proxy or pointer to search for.
+     * @brief Checks if this container contains the given face proxy.
+     * @param[in] f: The face proxy to search for.
      * @return true if found, false otherwise.
      */
     template<typename Elem>
@@ -254,9 +254,8 @@ public:
     }
 
     /**
-     * @brief Finds the position in this container of the given face proxy or
-     * pointer.
-     * @param[in] f: The face proxy or pointer to search for.
+     * @brief Finds the position in this container of the given face proxy.
+     * @param[in] f: The face proxy to search for.
      * @return The 0-based position, or UINT_NULL if not found.
      */
     template<typename Elem>
@@ -289,9 +288,9 @@ public:
     }
 
     /**
-     * @brief Appends a face proxy or pointer to the container.
+     * @brief Appends a face proxy to the container.
      * @note Available only for dynamic, non-TTVC containers.
-     * @param[in] f: The face proxy or pointer to append.
+     * @param[in] f: The face proxy to append.
      */
     template<typename Elem>
     void pushAdjFace(this auto&& self, const Elem& f) requires (
@@ -313,10 +312,10 @@ public:
     }
 
     /**
-     * @brief Inserts a face proxy or pointer at position i.
+     * @brief Inserts a face proxy at position i.
      * @note Available only for dynamic, non-TTVC containers.
      * @param[in] i: The position to insert at.
-     * @param[in] f: The face proxy or pointer to insert.
+     * @param[in] f: The face proxy to insert.
      */
     template<typename Elem>
     void insertAdjFace(this auto&& self, uint i, const Elem& f) requires (

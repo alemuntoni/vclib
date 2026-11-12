@@ -63,10 +63,6 @@ void initContainer(
     if (namePlural.empty())
         namePlural = name + "s";
 
-    c.def("index", [](MeshType&, const Element& e) -> uint {
-        return e.index();
-    });
-
     c.def(
         name.c_str(),
         [](MeshType& t, uint i) -> Element {
