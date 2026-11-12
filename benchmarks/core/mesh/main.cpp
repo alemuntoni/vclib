@@ -120,7 +120,7 @@ int runBenchmarks(
     };
 
     std::println("==================================================");
-    std::println("VCLib Mesh Benchmark [Version: V2 (SoA Core)]");
+    std::println("VCLib Mesh Benchmark");
     std::println("Mesh type: {}", meshType);
     std::println(
         "Dataset: {} ({} vertices, {} faces)",

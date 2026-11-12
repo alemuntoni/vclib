@@ -14,7 +14,8 @@
 
 #include "grid.h"
 #include "types.h"
-#include "vclib/algorithms/mesh/import_export/import_matrix.h"
+
+#include <vclib/algorithms/mesh.h>
 
 namespace bench {
 
