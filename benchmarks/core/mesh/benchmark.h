@@ -74,8 +74,8 @@ void selectElements(Mesh& m, vcl::uint step = 2)
     }
 
     if constexpr (vcl::EdgeMeshConcept<Mesh>) {
-        for (auto& e : m.edges()) {
-            e.selected() = (m.index(e) % step == 0);
+        for (auto e : m.edges()) {
+            e.selected() = (e.index() % step == 0);
         }
     }
 }

@@ -144,13 +144,13 @@ void readStlBin(
             }
             for (uint j = 0; j < 3; ++j)
                 f.setVertex(j, vi + j);
-            if (HasFaceNormal<MeshType>) {
+            if constexpr (HasFaceNormal<MeshType>) {
                 using ST = FaceType::NormalType::ScalarType;
                 if (m.isFaceNormalAvailable()) {
                     f.normal() = norm.cast<ST>();
                 }
             }
-            if (HasFaceColor<MeshType>) {
+            if constexpr (HasFaceColor<MeshType>) {
                 if (m.isFaceColorAvailable() && colored) {
                     Color c;
                     if (magicsMode)
@@ -237,7 +237,7 @@ void readStlAscii(
                     }
                     for (uint j = 0; j < 3; ++j)
                         f.setVertex(j, vi + j);
-                    if (HasFaceNormal<MeshType>) {
+                    if constexpr (HasFaceNormal<MeshType>) {
                         using ST = FaceType::NormalType::ScalarType;
                         if (m.isFaceNormalAvailable()) {
                             f.normal() = normal.cast<ST>();

@@ -966,7 +966,7 @@ void loadGltfMeshPrimitive(
         }
     }
 
-    if (HasTransformMatrix<MeshType>) {
+    if constexpr (HasTransformMatrix<MeshType>) {
         m.transformMatrix() = transf;
     }
     else {

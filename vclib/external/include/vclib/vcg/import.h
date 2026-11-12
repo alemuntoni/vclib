@@ -159,7 +159,7 @@ void importMeshFromVCGMesh(
     mesh.reserveVertices(vcgMesh.VN());
 
     // add custom components that can be imported
-    if (HasVertexCustomComponents<MeshType>) {
+    if constexpr (HasVertexCustomComponents<MeshType>) {
         // for each supported type, apply the lampda function that adds the
         // custom components of the type T that are in the vcgMesh
         vcl::ForEachType<detail::SupportedCustomComponentTypes>::apply(
@@ -252,7 +252,7 @@ void importMeshFromVCGMesh(
         using FaceType = FaceType<MeshType>;
 
         // add custom components that can be imported
-        if (HasFaceCustomComponents<MeshType>) {
+        if constexpr (HasFaceCustomComponents<MeshType>) {
             // for each supported type, apply the lampda function that adds the
             // custom components of the type T that are in the vcgMesh
             vcl::ForEachType<detail::SupportedCustomComponentTypes>::apply(
@@ -345,7 +345,7 @@ void importMeshFromVCGMesh(
                 }
 
                 // custom components
-                if constexpr (HasVertexCustomComponents<MeshType>) {
+                if constexpr (HasFaceCustomComponents<MeshType>) {
                     // for each supported type, apply the lampda function that
                     // adds the custom components of the type T that are in the
                     // vcgMesh
