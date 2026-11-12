@@ -149,7 +149,7 @@ TEST_CASE("Update Selection - Select Non Manifold Vertices")
     {
         vcl::TriMesh tet = vcl::createTetrahedron<vcl::TriMesh>();
         tet.enableFaceAdjacentFaces();
-        vcl::updatePerFaceAdjacentFaces(tet);
+        vcl::updateFaceAdjacentFaces(tet);
 
         vcl::selectNonManifoldVertices(tet);
         REQUIRE(vcl::vertexSelectionCount(tet) == 0);
@@ -174,7 +174,7 @@ TEST_CASE("Update Selection - Select Non Manifold Vertices")
         m.addFace(0, 1, 2);
         m.addFace(0, 3, 4);
 
-        vcl::updatePerFaceAdjacentFaces(m);
+        vcl::updateFaceAdjacentFaces(m);
 
         // A. Default: clearSelectionFirst = true
         vcl::selectNonManifoldVertices(m, true);
@@ -221,7 +221,7 @@ TEST_CASE("Update Selection - Select Crease Face Edges")
     m.addFace(0, 1, 2);
     m.addFace(0, 3, 1);
 
-    vcl::updatePerFaceAdjacentFaces(m);
+    vcl::updateFaceAdjacentFaces(m);
 
     // Face 0: edge 0 is (0, 1) -> internal edge
     // Face 1: edge 2 is (1, 0) -> internal edge

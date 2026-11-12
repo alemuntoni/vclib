@@ -32,12 +32,12 @@ inline auto faceFlooding()
     m.enableFaceColor();
 
     // Update topology and normals
-    vcl::updatePerFaceAdjacentFaces(m);
-    vcl::updatePerVertexAndFaceNormals(m);
+    vcl::updateFaceAdjacentFaces(m);
+    vcl::updateVertexAndFaceNormals(m);
     vcl::updateBoundingBox(m);
 
     // Initialize face colors
-    vcl::setPerFaceColor(m, vcl::Color::LightGray);
+    vcl::setFaceColor(m, vcl::Color::LightGray);
 
     std::cout << "Mesh loaded: " << m.faceCount() << " faces\n";
 

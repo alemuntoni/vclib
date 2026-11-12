@@ -706,7 +706,7 @@ TEMPLATE_TEST_CASE(
     {
         using ScalarType = vcl::VertexType<TriMesh>::NormalType::ScalarType;
 
-        vcl::updatePerVertexNormals(tm);
+        vcl::updateVertexNormals(tm);
 
         SECTION("Eigen Row Major")
         {
@@ -734,7 +734,7 @@ TEMPLATE_TEST_CASE(
     {
         using ScalarType = vcl::FaceType<TriMesh>::NormalType::ScalarType;
 
-        vcl::updatePerFaceNormals(tm);
+        vcl::updateFaceNormals(tm);
 
         SECTION("Eigen Row Major")
         {
@@ -878,7 +878,7 @@ TEMPLATE_TEST_CASE(
     {
         // Update per-vertex adjacency information first
         tm.enableVertexAdjacentVertices();
-        vcl::updatePerVertexAdjacentVertices(tm);
+        vcl::updateVertexAdjacentVertices(tm);
 
         SECTION("std::vector<std::vector<vcl::uint>>")
         {
@@ -898,7 +898,7 @@ TEMPLATE_TEST_CASE(
     {
         // Update per-vertex adjacency information first
         tm.enableVertexAdjacentVertices();
-        vcl::updatePerVertexAdjacentVertices(tm);
+        vcl::updateVertexAdjacentVertices(tm);
 
         SECTION("Eigen Row Major")
         {
@@ -918,7 +918,7 @@ TEMPLATE_TEST_CASE(
     {
         // Update per-vertex adjacent faces information first
         tm.enableVertexAdjacentFaces();
-        vcl::updatePerVertexAdjacentFaces(tm);
+        vcl::updateVertexAdjacentFaces(tm);
 
         SECTION("std::vector<std::vector<vcl::uint>>")
         {
@@ -938,7 +938,7 @@ TEMPLATE_TEST_CASE(
     {
         // Update per-vertex adjacent faces information first
         tm.enableVertexAdjacentFaces();
-        vcl::updatePerVertexAdjacentFaces(tm);
+        vcl::updateVertexAdjacentFaces(tm);
 
         SECTION("Eigen Row Major")
         {
@@ -958,7 +958,7 @@ TEMPLATE_TEST_CASE(
     {
         // Update per-face adjacent faces information first
         tm.enableFaceAdjacentFaces();
-        vcl::updatePerFaceAdjacentFaces(tm);
+        vcl::updateFaceAdjacentFaces(tm);
 
         SECTION("std::vector<std::vector<vcl::uint>>")
         {
@@ -978,7 +978,7 @@ TEMPLATE_TEST_CASE(
     {
         // Update per-face adjacent faces information first
         tm.enableFaceAdjacentFaces();
-        vcl::updatePerFaceAdjacentFaces(tm);
+        vcl::updateFaceAdjacentFaces(tm);
 
         SECTION("Eigen Row Major")
         {

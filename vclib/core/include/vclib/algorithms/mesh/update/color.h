@@ -27,7 +27,7 @@ struct ColorAvgInfo
 };
 
 template<ElemId ELEM_ID, MeshConcept MeshType>
-void setPerElemColorFromVertexColor(MeshType& m)
+void setElemColorFromVertexColor(MeshType& m)
 {
     requireVertexColors(m);
     requireElementComponent<ELEM_ID, CompId::VERTEX_REFERENCES>(m);
@@ -44,7 +44,7 @@ void setPerElemColorFromVertexColor(MeshType& m)
 }
 
 template<ElemId ELEM_ID, MeshConcept MeshType>
-void setPerVertexColorFromElemColor(MeshType& m)
+void setVertexColorFromElemColor(MeshType& m)
 {
     requireVertexColors(m);
     requireElementComponent<ELEM_ID, CompId::VERTEX_REFERENCES>(m);
@@ -68,7 +68,7 @@ void setPerVertexColorFromElemColor(MeshType& m)
 }
 
 template<ElemId ELEM_ID, MeshConcept MeshType>
-void setPerElemColorFromMaterial(MeshType& m)
+void setElemColorFromMaterial(MeshType& m)
 {
     static_assert(
         HasMaterials<MeshType>,
@@ -104,7 +104,7 @@ void setPerElemColorFromMaterial(MeshType& m)
  * @ingroup update
  */
 template<MeshConcept MeshType>
-void setPerVertexColor(
+void setVertexColor(
     MeshType& m,
     Color     c            = Color::White,
     bool      onlySelected = false)
@@ -138,7 +138,7 @@ void setPerVertexColor(
  * @ingroup update
  */
 template<FaceMeshConcept MeshType>
-void setPerFaceColor(
+void setFaceColor(
     MeshType& m,
     Color     c            = Color::White,
     bool      onlySelected = false)
@@ -172,7 +172,7 @@ void setPerFaceColor(
  * @ingroup update
  */
 template<EdgeMeshConcept MeshType>
-void setPerEdgeColor(
+void setEdgeColor(
     MeshType& m,
     Color     c            = Color::White,
     bool      onlySelected = false)
@@ -204,9 +204,9 @@ void setPerEdgeColor(
  * @ingroup update
  */
 template<FaceMeshConcept MeshType>
-void setPerVertexColorFromFaceColor(MeshType& m)
+void setVertexColorFromFaceColor(MeshType& m)
 {
-    detail::setPerVertexColorFromElemColor<ElemId::FACE>(m);
+    detail::setVertexColorFromElemColor<ElemId::FACE>(m);
 }
 
 /**
@@ -226,9 +226,9 @@ void setPerVertexColorFromFaceColor(MeshType& m)
  * @ingroup update
  */
 template<FaceMeshConcept MeshType>
-void setPerFaceColorFromVertexColor(MeshType& m)
+void setFaceColorFromVertexColor(MeshType& m)
 {
-    detail::setPerElemColorFromVertexColor<ElemId::FACE>(m);
+    detail::setElemColorFromVertexColor<ElemId::FACE>(m);
 }
 
 /**
@@ -248,9 +248,9 @@ void setPerFaceColorFromVertexColor(MeshType& m)
  * @ingroup update
  */
 template<EdgeMeshConcept MeshType>
-void setPerEdgeColorFromVertexColor(MeshType& m)
+void setEdgeColorFromVertexColor(MeshType& m)
 {
-    detail::setPerElemColorFromVertexColor<ElemId::EDGE>(m);
+    detail::setElemColorFromVertexColor<ElemId::EDGE>(m);
 }
 
 /**
@@ -278,7 +278,7 @@ void setPerEdgeColorFromVertexColor(MeshType& m)
  * @ingroup update
  */
 template<MeshConcept MeshType, typename Q1 = float, typename Q2 = float>
-void setPerVertexColorFromQuality(
+void setVertexColorFromQuality(
     MeshType&       m,
     Color::ColorMap colorMap   = Color::ColorMap::RedBlue,
     Q1              minQuality = 0.f,
@@ -323,7 +323,7 @@ void setPerVertexColorFromQuality(
  * @ingroup update
  */
 template<FaceMeshConcept MeshType, typename Q1 = float, typename Q2 = float>
-void setPerFaceColorFromQuality(
+void setFaceColorFromQuality(
     MeshType&       m,
     Color::ColorMap colorMap   = Color::ColorMap::RedBlue,
     Q1              minQuality = 0.f,
@@ -361,9 +361,9 @@ void setPerFaceColorFromQuality(
  * @ingroup update
  */
 template<MeshConcept MeshType>
-void setPerVertexColorFromMaterial(MeshType& m)
+void setVertexColorFromMaterial(MeshType& m)
 {
-    detail::setPerElemColorFromMaterial<ElemId::VERTEX>(m);
+    detail::setElemColorFromMaterial<ElemId::VERTEX>(m);
 }
 
 /**
@@ -383,9 +383,9 @@ void setPerVertexColorFromMaterial(MeshType& m)
  * @ingroup update
  */
 template<FaceMeshConcept MeshType>
-void setPerFaceColorFromMaterial(MeshType& m)
+void setFaceColorFromMaterial(MeshType& m)
 {
-    detail::setPerElemColorFromMaterial<ElemId::FACE>(m);
+    detail::setElemColorFromMaterial<ElemId::FACE>(m);
 }
 
 /**
@@ -414,7 +414,7 @@ void setPerFaceColorFromMaterial(MeshType& m)
  * @ingroup update
  */
 template<FaceMeshConcept MeshType>
-void setPerVertexColorFromFaceBorderFlag(
+void setVertexColorFromFaceBorderFlag(
     MeshType& m,
     Color     borderColor   = Color::Blue,
     Color     internalColor = Color::White,
@@ -424,7 +424,7 @@ void setPerVertexColorFromFaceBorderFlag(
 
     const Color baseColor = Color::Green;
 
-    setPerVertexColor(m, baseColor);
+    setVertexColor(m, baseColor);
 
     for (auto f : m.faces()) {
         for (uint i = 0; i < f.vertexCount(); ++i) {
@@ -471,7 +471,7 @@ void setPerVertexColorFromFaceBorderFlag(
  * @ingroup update
  */
 template<FaceMeshConcept MeshType>
-void setPerFaceColorFromConnectedComponents(
+void setFaceColorFromConnectedComponents(
     MeshType&   m,
     const auto& connectedComponents)
 {
@@ -507,14 +507,14 @@ void setPerFaceColorFromConnectedComponents(
  */
 template<FaceMeshConcept MeshType>
     requires HasFaceAdjacentFaces<MeshType>
-void setPerFaceColorFromConnectedComponents(MeshType& m)
+void setFaceColorFromConnectedComponents(MeshType& m)
 {
     requireFaceColors(m);
     requireFaceAdjacentFaces(m);
 
     auto connComps = connectedComponents(m);
 
-    setPerFaceColorFromConnectedComponents(m, connComps);
+    setFaceColorFromConnectedComponents(m, connComps);
 }
 
 /**
@@ -542,7 +542,7 @@ void setPerFaceColorFromConnectedComponents(MeshType& m)
  * @ingroup update
  */
 template<FaceMeshConcept MeshType>
-void setPerFaceColorScattering(
+void setFaceColorScattering(
     MeshType& m,
     uint      nColors        = 50,
     bool      checkFauxEdges = true)
@@ -550,7 +550,7 @@ void setPerFaceColorScattering(
     requireFaceColors(m);
 
     Color baseColor = Color::Black;
-    setPerFaceColor(m, baseColor);
+    setFaceColor(m, baseColor);
 
     std::vector<Color> vc = colorScattering(nColors);
 
@@ -595,7 +595,7 @@ void setPerFaceColorScattering(
  * @ingroup update
  */
 template<MeshConcept MeshType>
-void setPerVertexColorPerlinNoise(
+void setVertexColorPerlinNoise(
     MeshType&                     m,
     const PositionType<MeshType>& period,
     const PositionType<MeshType>& offset     = PositionType<MeshType>(0, 0, 0),
@@ -638,7 +638,7 @@ void setPerVertexColorPerlinNoise(
  * @ingroup update
  */
 template<MeshConcept MeshType>
-void setPerVertexPerlinColor(
+void setVertexPerlinColor(
     MeshType&                     m,
     double                        period,
     const PositionType<MeshType>& offset     = PositionType<MeshType>(0, 0, 0),

@@ -44,20 +44,20 @@ inline void testSetPerElementColor()
         m.enableVertexColor();
 
         // 1. Default (White)
-        vcl::setPerVertexColor(m);
+        vcl::setVertexColor(m);
         for (const auto v : m.vertices()) {
             assert(v.color() == vcl::Color::White);
         }
 
         // 2. Custom color (Red)
-        vcl::setPerVertexColor(m, vcl::Color::Red);
+        vcl::setVertexColor(m, vcl::Color::Red);
         for (const auto v : m.vertices()) {
             assert(v.color() == vcl::Color::Red);
         }
 
         // 3. onlySelected = true
         m.vertex(1).selected() = true;
-        vcl::setPerVertexColor(m, vcl::Color::Green, true);
+        vcl::setVertexColor(m, vcl::Color::Green, true);
         assert(m.vertex(0).color() == vcl::Color::Red);
         assert(m.vertex(1).color() == vcl::Color::Green);
         assert(m.vertex(2).color() == vcl::Color::Red);
@@ -70,20 +70,20 @@ inline void testSetPerElementColor()
         m.enableFaceColor();
 
         // 1. Default (White)
-        vcl::setPerFaceColor(m);
+        vcl::setFaceColor(m);
         for (const auto f : m.faces()) {
             assert(f.color() == vcl::Color::White);
         }
 
         // 2. Custom color (Blue)
-        vcl::setPerFaceColor(m, vcl::Color::Blue);
+        vcl::setFaceColor(m, vcl::Color::Blue);
         for (const auto f : m.faces()) {
             assert(f.color() == vcl::Color::Blue);
         }
 
         // 3. onlySelected = true
         m.face(0).selected() = true;
-        vcl::setPerFaceColor(m, vcl::Color::Yellow, true);
+        vcl::setFaceColor(m, vcl::Color::Yellow, true);
         assert(m.face(0).color() == vcl::Color::Yellow);
         assert(m.face(1).color() == vcl::Color::Blue);
         assert(m.face(2).color() == vcl::Color::Blue);
@@ -102,20 +102,20 @@ inline void testSetPerElementColor()
         em.addEdge(1, 2);
 
         // 1. Default (White)
-        vcl::setPerEdgeColor(em);
+        vcl::setEdgeColor(em);
         for (const auto e : em.edges()) {
             assert(e.color() == vcl::Color::White);
         }
 
         // 2. Custom color (Magenta)
-        vcl::setPerEdgeColor(em, vcl::Color::Magenta);
+        vcl::setEdgeColor(em, vcl::Color::Magenta);
         for (const auto e : em.edges()) {
             assert(e.color() == vcl::Color::Magenta);
         }
 
         // 3. onlySelected = true
         em.edge(0).selected() = true;
-        vcl::setPerEdgeColor(em, vcl::Color::Cyan, true);
+        vcl::setEdgeColor(em, vcl::Color::Cyan, true);
         assert(em.edge(0).color() == vcl::Color::Cyan);
         assert(em.edge(1).color() == vcl::Color::Magenta);
     }
@@ -136,23 +136,23 @@ inline void testColorTransferBetweenElements()
         m.addFace(0, 1, 2);
         m.addFace(1, 3, 2);
 
-        // 1. setPerFaceColorFromVertexColor
+        // 1. setFaceColorFromVertexColor
         m.vertex(0).color() = vcl::Color(30, 60, 90, 255);
         m.vertex(1).color() = vcl::Color(60, 90, 120, 255);
         m.vertex(2).color() = vcl::Color(90, 120, 150, 255);
         m.vertex(3).color() = vcl::Color(120, 150, 180, 255);
 
-        vcl::setPerFaceColorFromVertexColor(m);
+        vcl::setFaceColorFromVertexColor(m);
         // Face 0: (0, 1, 2) -> avg = (60, 90, 120, 255)
         assert(m.face(0).color() == vcl::Color(60, 90, 120, 255));
         // Face 1: (1, 3, 2) -> avg = (90, 120, 150, 255)
         assert(m.face(1).color() == vcl::Color(90, 120, 150, 255));
 
-        // 2. setPerVertexColorFromFaceColor
+        // 2. setVertexColorFromFaceColor
         m.face(0).color() = vcl::Color(100, 0, 0, 255);
         m.face(1).color() = vcl::Color(0, 100, 0, 255);
 
-        vcl::setPerVertexColorFromFaceColor(m);
+        vcl::setVertexColorFromFaceColor(m);
         assert(m.vertex(0).color() == vcl::Color(100, 0, 0, 255));
         assert(m.vertex(3).color() == vcl::Color(0, 100, 0, 255));
         assert(m.vertex(1).color() == vcl::Color(50, 50, 0, 255));
@@ -175,7 +175,7 @@ inline void testColorTransferBetweenElements()
         em.vertex(1).color() = vcl::Color(0, 100, 0, 255);
         em.vertex(2).color() = vcl::Color(0, 0, 100, 255);
 
-        vcl::setPerEdgeColorFromVertexColor(em);
+        vcl::setEdgeColorFromVertexColor(em);
         assert(em.edge(0).color() == vcl::Color(50, 50, 0, 255));
         assert(em.edge(1).color() == vcl::Color(0, 50, 50, 255));
     }
@@ -195,7 +195,7 @@ inline void testColorFromQuality()
         m.vertex(3).quality() = 0.5;
 
         // Auto min/max range
-        vcl::setPerVertexColorFromQuality(m, vcl::Color::ColorMap::RedBlue);
+        vcl::setVertexColorFromQuality(m, vcl::Color::ColorMap::RedBlue);
         assert(
             m.vertex(0).color() ==
             vcl::colorFromInterval(0.0, 1.0, 0.0, vcl::Color::ColorMap::RedBlue));
@@ -204,7 +204,7 @@ inline void testColorFromQuality()
             vcl::colorFromInterval(0.0, 1.0, 1.0, vcl::Color::ColorMap::RedBlue));
 
         // Explicit min/max range
-        vcl::setPerVertexColorFromQuality(
+        vcl::setVertexColorFromQuality(
             m, vcl::Color::ColorMap::Parula, -2.0, 2.0);
         assert(
             m.vertex(0).color() ==
@@ -226,7 +226,7 @@ inline void testColorFromQuality()
         m.face(3).quality() = 15.0;
 
         // Auto min/max range
-        vcl::setPerFaceColorFromQuality(m, vcl::Color::ColorMap::GreyShade);
+        vcl::setFaceColorFromQuality(m, vcl::Color::ColorMap::GreyShade);
         assert(
             m.face(0).color() ==
             vcl::colorFromInterval(
@@ -237,7 +237,7 @@ inline void testColorFromQuality()
                 10.0, 20.0, 20.0, vcl::Color::ColorMap::GreyShade));
 
         // Explicit min/max range
-        vcl::setPerFaceColorFromQuality(
+        vcl::setFaceColorFromQuality(
             m, vcl::Color::ColorMap::RedBlue, 0.0, 100.0);
         assert(
             m.face(0).color() ==
@@ -272,7 +272,7 @@ inline void testColorFromMaterial()
     m.vertex(2).materialIndex() = 0;
     m.vertex(3).materialIndex() = 1;
 
-    vcl::setPerVertexColorFromMaterial(m);
+    vcl::setVertexColorFromMaterial(m);
     assert(m.vertex(0).color() == vcl::Color::Red);
     assert(m.vertex(1).color() == vcl::Color::Blue);
     assert(m.vertex(2).color() == vcl::Color::Red);
@@ -284,7 +284,7 @@ inline void testColorFromMaterial()
     m.face(2).materialIndex() = 0;
     m.face(3).materialIndex() = 1;
 
-    vcl::setPerFaceColorFromMaterial(m);
+    vcl::setFaceColorFromMaterial(m);
     assert(m.face(0).color() == vcl::Color::Red);
     assert(m.face(1).color() == vcl::Color::Blue);
     assert(m.face(2).color() == vcl::Color::Red);
@@ -315,7 +315,7 @@ inline void testColorFromFaceBorderFlag()
     m.face(1).edgeOnBorder(1) = true;  // (3, 2) -> border
     m.face(1).edgeOnBorder(2) = false; // (2, 1) -> internal
 
-    vcl::setPerVertexColorFromFaceBorderFlag(
+    vcl::setVertexColorFromFaceBorderFlag(
         m, vcl::Color::Blue, vcl::Color::White, vcl::Color::Cyan);
 
     // v0: incident only to border edges -> Blue
@@ -335,7 +335,7 @@ inline void testColorFromConnectedComponents()
         m.enableFaceColor();
 
         std::vector<std::vector<vcl::uint>> comps = {{0, 1}, {2, 3}};
-        vcl::setPerFaceColorFromConnectedComponents(m, comps);
+        vcl::setFaceColorFromConnectedComponents(m, comps);
 
         assert(m.face(0).color() == m.face(1).color());
         assert(m.face(2).color() == m.face(3).color());
@@ -359,8 +359,8 @@ inline void testColorFromConnectedComponents()
         m.addFace(0, 1, 2);
         m.addFace(3, 4, 5);
 
-        vcl::updatePerFaceAdjacentFaces(m);
-        vcl::setPerFaceColorFromConnectedComponents(m);
+        vcl::updateFaceAdjacentFaces(m);
+        vcl::setFaceColorFromConnectedComponents(m);
 
         assert(m.face(0).color() != m.face(1).color());
     }
@@ -373,7 +373,7 @@ inline void testFaceColorScattering()
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         m.enableFaceColor();
 
-        vcl::setPerFaceColorScattering(m, 10, false);
+        vcl::setFaceColorScattering(m, 10, false);
         for (const auto f : m.faces()) {
             assert(f.color() != vcl::Color::Black);
             assert(f.color().alpha() == 255);
@@ -394,13 +394,13 @@ inline void testFaceColorScattering()
         m.addFace(0, 1, 2);
         m.addFace(1, 3, 2);
 
-        vcl::updatePerFaceAdjacentFaces(m);
+        vcl::updateFaceAdjacentFaces(m);
 
         // Mark shared edge between face 0 and face 1 as faux
         // In face 0, edge 1 is (1, 2), adjacent to face 1
         m.face(0).edgeFaux(1) = true;
 
-        vcl::setPerFaceColorScattering(m, 50, true);
+        vcl::setFaceColorScattering(m, 50, true);
         assert(m.face(0).color() == m.face(1).color());
     }
 }
@@ -413,7 +413,7 @@ inline void testPerlinColor()
         m.enableVertexColor();
 
         vcl::Point3d period(1.0, 1.0, 1.0);
-        vcl::setPerVertexColorPerlinNoise(m, period);
+        vcl::setVertexColorPerlinNoise(m, period);
 
         for (const auto v : m.vertices()) {
             assert(v.color().alpha() == 255);
@@ -423,7 +423,7 @@ inline void testPerlinColor()
         m.vertex(0).selected() = true;
         const vcl::Color oldColor1 = m.vertex(1).color();
         vcl::Point3d     newPeriod(0.2, 0.2, 0.2);
-        vcl::setPerVertexColorPerlinNoise(
+        vcl::setVertexColorPerlinNoise(
             m, newPeriod, vcl::Point3d(1, 1, 1), true);
 
         assert(m.vertex(1).color() == oldColor1);
@@ -434,7 +434,7 @@ inline void testPerlinColor()
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         m.enableVertexColor();
 
-        vcl::setPerVertexPerlinColor(
+        vcl::setVertexPerlinColor(
             m, 2.0, vcl::Point3d(0, 0, 0), vcl::Color::Black, vcl::Color::White);
 
         for (const auto v : m.vertices()) {
@@ -444,7 +444,7 @@ inline void testPerlinColor()
         // Test onlySelected
         m.vertex(0).selected() = true;
         const vcl::Color oldColor1 = m.vertex(1).color();
-        vcl::setPerVertexPerlinColor(
+        vcl::setVertexPerlinColor(
             m,
             0.5,
             vcl::Point3d(2, 2, 2),
@@ -464,13 +464,13 @@ inline void testColorExceptions()
     // setPerVertexColor
     {
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
-        assertThrowsMissingComponent([&]() { vcl::setPerVertexColor(m); });
+        assertThrowsMissingComponent([&]() { vcl::setVertexColor(m); });
     }
 
     // setPerFaceColor
     {
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
-        assertThrowsMissingComponent([&]() { vcl::setPerFaceColor(m); });
+        assertThrowsMissingComponent([&]() { vcl::setFaceColor(m); });
     }
 
     // setPerEdgeColor
@@ -478,7 +478,7 @@ inline void testColorExceptions()
         vcl::EdgeMesh em;
         em.addVertices(vcl::Point3d(0, 0, 0), vcl::Point3d(1, 0, 0));
         em.addEdge(0, 1);
-        assertThrowsMissingComponent([&]() { vcl::setPerEdgeColor(em); });
+        assertThrowsMissingComponent([&]() { vcl::setEdgeColor(em); });
     }
 
     // setPerVertexColorFromFaceColor
@@ -486,11 +486,11 @@ inline void testColorExceptions()
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         // Missing both
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerVertexColorFromFaceColor(m); });
+            [&]() { vcl::setVertexColorFromFaceColor(m); });
         // Missing face colors
         m.enableVertexColor();
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerVertexColorFromFaceColor(m); });
+            [&]() { vcl::setVertexColorFromFaceColor(m); });
     }
 
     // setPerFaceColorFromVertexColor
@@ -498,11 +498,11 @@ inline void testColorExceptions()
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         // Missing both
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerFaceColorFromVertexColor(m); });
+            [&]() { vcl::setFaceColorFromVertexColor(m); });
         // Missing vertex colors
         m.enableFaceColor();
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerFaceColorFromVertexColor(m); });
+            [&]() { vcl::setFaceColorFromVertexColor(m); });
     }
 
     // setPerEdgeColorFromVertexColor
@@ -512,11 +512,11 @@ inline void testColorExceptions()
         em.addEdge(0, 1);
         // Missing both
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerEdgeColorFromVertexColor(em); });
+            [&]() { vcl::setEdgeColorFromVertexColor(em); });
         // Missing edge colors
         em.enableVertexColor();
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerEdgeColorFromVertexColor(em); });
+            [&]() { vcl::setEdgeColorFromVertexColor(em); });
     }
 
     // setPerVertexColorFromQuality
@@ -524,11 +524,11 @@ inline void testColorExceptions()
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         // Missing both
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerVertexColorFromQuality(m); });
+            [&]() { vcl::setVertexColorFromQuality(m); });
         // Missing quality
         m.enableVertexColor();
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerVertexColorFromQuality(m); });
+            [&]() { vcl::setVertexColorFromQuality(m); });
     }
 
     // setPerFaceColorFromQuality
@@ -536,11 +536,11 @@ inline void testColorExceptions()
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         // Missing both
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerFaceColorFromQuality(m); });
+            [&]() { vcl::setFaceColorFromQuality(m); });
         // Missing quality
         m.enableFaceColor();
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerFaceColorFromQuality(m); });
+            [&]() { vcl::setFaceColorFromQuality(m); });
     }
 
     // setPerVertexColorFromMaterial
@@ -548,11 +548,11 @@ inline void testColorExceptions()
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         // Missing both
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerVertexColorFromMaterial(m); });
+            [&]() { vcl::setVertexColorFromMaterial(m); });
         // Missing material index
         m.enableVertexColor();
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerVertexColorFromMaterial(m); });
+            [&]() { vcl::setVertexColorFromMaterial(m); });
     }
 
     // setPerFaceColorFromMaterial
@@ -560,18 +560,18 @@ inline void testColorExceptions()
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         // Missing both
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerFaceColorFromMaterial(m); });
+            [&]() { vcl::setFaceColorFromMaterial(m); });
         // Missing material index
         m.enableFaceColor();
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerFaceColorFromMaterial(m); });
+            [&]() { vcl::setFaceColorFromMaterial(m); });
     }
 
     // setPerVertexColorFromFaceBorderFlag
     {
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerVertexColorFromFaceBorderFlag(m); });
+            [&]() { vcl::setVertexColorFromFaceBorderFlag(m); });
     }
 
     // setPerFaceColorFromConnectedComponents
@@ -579,28 +579,28 @@ inline void testColorExceptions()
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         std::vector<std::vector<vcl::uint>> comps = {{0, 1}, {2, 3}};
         assertThrowsMissingComponent([&]() {
-            vcl::setPerFaceColorFromConnectedComponents(m, comps);
+            vcl::setFaceColorFromConnectedComponents(m, comps);
         });
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerFaceColorFromConnectedComponents(m); });
+            [&]() { vcl::setFaceColorFromConnectedComponents(m); });
         // Enable face colors but miss adjacent faces
         m.enableFaceColor();
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerFaceColorFromConnectedComponents(m); });
+            [&]() { vcl::setFaceColorFromConnectedComponents(m); });
     }
 
     // setPerFaceColorScattering
     {
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         assertThrowsMissingComponent(
-            [&]() { vcl::setPerFaceColorScattering(m); });
+            [&]() { vcl::setFaceColorScattering(m); });
     }
 
     // setPerVertexColorPerlinNoise
     {
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         assertThrowsMissingComponent([&]() {
-            vcl::setPerVertexColorPerlinNoise(m, vcl::Point3d(1, 1, 1));
+            vcl::setVertexColorPerlinNoise(m, vcl::Point3d(1, 1, 1));
         });
     }
 
@@ -608,7 +608,7 @@ inline void testColorExceptions()
     {
         vcl::TriMesh m = vcl::createTetrahedron<vcl::TriMesh>();
         assertThrowsMissingComponent([&]() {
-            vcl::setPerVertexPerlinColor(m, 1.0);
+            vcl::setVertexPerlinColor(m, 1.0);
         });
     }
 }

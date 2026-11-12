@@ -36,7 +36,7 @@ inline MeshPosTestMesh createHexagonFan()
         m.face(i).setVertices(0, i + 1, (i + 1) % 6 + 1);
     }
 
-    vcl::updatePerFaceAdjacentFaces(m);
+    vcl::updateFaceAdjacentFaces(m);
     return m;
 }
 

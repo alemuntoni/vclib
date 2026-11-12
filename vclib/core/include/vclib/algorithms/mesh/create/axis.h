@@ -41,7 +41,7 @@ MeshType createAxisCylinder(double unitLength, bool fromOrigin = false)
 
     if constexpr (HasVertexNormals<MeshType>) {
         if (cylinder.isVertexNormalAvailable()) {
-            vcl::updatePerVertexNormals(cylinder);
+            vcl::updateVertexNormals(cylinder);
         }
     }
 
@@ -94,7 +94,7 @@ MeshType createAxisConeSpheres(double unitLength, bool fromOrigin = false)
 
     if constexpr (HasVertexNormals<MeshType>) {
         if (coneSpheres.isVertexNormalAvailable()) {
-            vcl::updatePerVertexNormals(coneSpheres);
+            vcl::updateVertexNormals(coneSpheres);
         }
     }
 

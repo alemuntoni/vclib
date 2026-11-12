@@ -40,26 +40,26 @@ TEST_CASE("Update Quality - Set Quality")
         tet.enableVertexQuality();
         tet.enableFaceQuality();
 
-        // setPerVertexQuality
-        vcl::setPerVertexQuality(tet, 42.5);
+        // setVertexQuality
+        vcl::setVertexQuality(tet, 42.5);
         for (const auto v : tet.vertices()) {
             REQUIRE(v.quality() == 42.5);
         }
 
-        // setPerFaceQuality
-        vcl::setPerFaceQuality(tet, 17.25);
+        // setFaceQuality
+        vcl::setFaceQuality(tet, 17.25);
         for (const auto f : tet.faces()) {
             REQUIRE(f.quality() == 17.25);
         }
 
-        // setPerElementQuality<ElemId::VERTEX>
-        vcl::setPerElementQuality<vcl::ElemId::VERTEX>(tet, 99.0);
+        // setElementQuality<ElemId::VERTEX>
+        vcl::setElementQuality<vcl::ElemId::VERTEX>(tet, 99.0);
         for (const auto v : tet.vertices()) {
             REQUIRE(v.quality() == 99.0);
         }
 
-        // setPerElementQuality<ElemId::FACE>
-        vcl::setPerElementQuality<vcl::ElemId::FACE>(tet, -5.5);
+        // setElementQuality<ElemId::FACE>
+        vcl::setElementQuality<vcl::ElemId::FACE>(tet, -5.5);
         for (const auto f : tet.faces()) {
             REQUIRE(f.quality() == -5.5);
         }
@@ -76,20 +76,20 @@ TEST_CASE("Update Quality - Set Quality")
         vcl::uint v2 = qm.addVertex(Point3f(0.0f, 1.0f, 0.0f));
         vcl::uint f0 = qm.addFace(v0, v1, v2);
 
-        vcl::setPerVertexQuality(qm, 12.5f);
+        vcl::setVertexQuality(qm, 12.5f);
         for (const auto v : qm.vertices()) {
             REQUIRE(std::abs(v.quality() - 12.5f) < 1e-5f);
         }
 
-        vcl::setPerFaceQuality(qm, 34.5f);
+        vcl::setFaceQuality(qm, 34.5f);
         REQUIRE(std::abs(qm.face(f0).quality() - 34.5f) < 1e-5f);
 
-        vcl::setPerElementQuality<vcl::ElemId::VERTEX>(qm, 50.0f);
+        vcl::setElementQuality<vcl::ElemId::VERTEX>(qm, 50.0f);
         for (const auto v : qm.vertices()) {
             REQUIRE(std::abs(v.quality() - 50.0f) < 1e-5f);
         }
 
-        vcl::setPerElementQuality<vcl::ElemId::FACE>(qm, 70.0f);
+        vcl::setElementQuality<vcl::ElemId::FACE>(qm, 70.0f);
         REQUIRE(std::abs(qm.face(f0).quality() - 70.0f) < 1e-5f);
     }
 
@@ -104,7 +104,7 @@ TEST_CASE("Update Quality - Set Quality")
         em.addEdge(0, 1);
         em.addEdge(1, 2);
 
-        vcl::setPerElementQuality<vcl::ElemId::EDGE>(em, 7.5);
+        vcl::setElementQuality<vcl::ElemId::EDGE>(em, 7.5);
         for (const auto e : em.edges()) {
             REQUIRE(e.quality() == 7.5);
         }
@@ -124,7 +124,7 @@ TEST_CASE("Update Quality - Clamp Quality")
         tet.vertex(3).quality() = 10.0;
 
         // Custom range clamping
-        vcl::clampPerVertexQuality(tet, 0.0, 5.0);
+        vcl::clampVertexQuality(tet, 0.0, 5.0);
         REQUIRE(tet.vertex(0).quality() == 0.0);
         REQUIRE(tet.vertex(1).quality() == 0.5);
         REQUIRE(tet.vertex(2).quality() == 2.0);
@@ -136,19 +136,19 @@ TEST_CASE("Update Quality - Clamp Quality")
         tet.vertex(2).quality() = 0.9;
         tet.vertex(3).quality() = 2.5;
 
-        vcl::clampPerVertexQuality(tet);
+        vcl::clampVertexQuality(tet);
         REQUIRE(tet.vertex(0).quality() == 0.0);
         REQUIRE(tet.vertex(1).quality() == 0.3);
         REQUIRE(tet.vertex(2).quality() == 0.9);
         REQUIRE(tet.vertex(3).quality() == 1.0);
 
-        // clampPerElementQuality<ElemId::VERTEX>
+        // clampElementQuality<ElemId::VERTEX>
         tet.vertex(0).quality() = -10.0;
         tet.vertex(1).quality() = 15.0;
         tet.vertex(2).quality() = 25.0;
         tet.vertex(3).quality() = 50.0;
 
-        vcl::clampPerElementQuality<vcl::ElemId::VERTEX>(tet, 10.0, 30.0);
+        vcl::clampElementQuality<vcl::ElemId::VERTEX>(tet, 10.0, 30.0);
         REQUIRE(tet.vertex(0).quality() == 10.0);
         REQUIRE(tet.vertex(1).quality() == 15.0);
         REQUIRE(tet.vertex(2).quality() == 25.0);
@@ -166,7 +166,7 @@ TEST_CASE("Update Quality - Clamp Quality")
         tet.face(3).quality() = 120.0;
 
         // Custom range clamping
-        vcl::clampPerFaceQuality(tet, 0.0, 100.0);
+        vcl::clampFaceQuality(tet, 0.0, 100.0);
         REQUIRE(tet.face(0).quality() == 0.0);
         REQUIRE(tet.face(1).quality() == 25.0);
         REQUIRE(tet.face(2).quality() == 50.0);
@@ -178,19 +178,19 @@ TEST_CASE("Update Quality - Clamp Quality")
         tet.face(2).quality() = 0.7;
         tet.face(3).quality() = 3.0;
 
-        vcl::clampPerFaceQuality(tet);
+        vcl::clampFaceQuality(tet);
         REQUIRE(tet.face(0).quality() == 0.0);
         REQUIRE(tet.face(1).quality() == 0.4);
         REQUIRE(tet.face(2).quality() == 0.7);
         REQUIRE(tet.face(3).quality() == 1.0);
 
-        // clampPerElementQuality<ElemId::FACE>
+        // clampElementQuality<ElemId::FACE>
         tet.face(0).quality() = -1.0;
         tet.face(1).quality() = 5.0;
         tet.face(2).quality() = 10.0;
         tet.face(3).quality() = 20.0;
 
-        vcl::clampPerElementQuality<vcl::ElemId::FACE>(tet, 0.0, 8.0);
+        vcl::clampElementQuality<vcl::ElemId::FACE>(tet, 0.0, 8.0);
         REQUIRE(tet.face(0).quality() == 0.0);
         REQUIRE(tet.face(1).quality() == 5.0);
         REQUIRE(tet.face(2).quality() == 8.0);
@@ -211,7 +211,7 @@ TEST_CASE("Update Quality - Clamp Quality")
         em.edge(0).quality() = -5.0;
         em.edge(1).quality() = 15.0;
 
-        vcl::clampPerElementQuality<vcl::ElemId::EDGE>(em, 0.0, 10.0);
+        vcl::clampElementQuality<vcl::ElemId::EDGE>(em, 0.0, 10.0);
         REQUIRE(em.edge(0).quality() == 0.0);
         REQUIRE(em.edge(1).quality() == 10.0);
     }
@@ -230,7 +230,7 @@ TEST_CASE("Update Quality - Normalize Quality")
         tet.vertex(3).quality() = 40.0;
 
         // Default [0, 1] normalization
-        vcl::normalizePerVertexQuality(tet);
+        vcl::normalizeVertexQuality(tet);
         REQUIRE(std::abs(tet.vertex(0).quality() - 0.0) < 1e-6);
         REQUIRE(std::abs(tet.vertex(1).quality() - (1.0 / 3.0)) < 1e-6);
         REQUIRE(std::abs(tet.vertex(2).quality() - (2.0 / 3.0)) < 1e-6);
@@ -242,19 +242,19 @@ TEST_CASE("Update Quality - Normalize Quality")
         tet.vertex(2).quality() = 30.0;
         tet.vertex(3).quality() = 40.0;
 
-        vcl::normalizePerVertexQuality(tet, 100.0, 400.0);
+        vcl::normalizeVertexQuality(tet, 100.0, 400.0);
         REQUIRE(std::abs(tet.vertex(0).quality() - 100.0) < 1e-6);
         REQUIRE(std::abs(tet.vertex(1).quality() - 200.0) < 1e-6);
         REQUIRE(std::abs(tet.vertex(2).quality() - 300.0) < 1e-6);
         REQUIRE(std::abs(tet.vertex(3).quality() - 400.0) < 1e-6);
 
-        // normalizePerElementQuality<ElemId::VERTEX>
+        // normalizeElementQuality<ElemId::VERTEX>
         tet.vertex(0).quality() = 2.0;
         tet.vertex(1).quality() = 4.0;
         tet.vertex(2).quality() = 6.0;
         tet.vertex(3).quality() = 8.0;
 
-        vcl::normalizePerElementQuality<vcl::ElemId::VERTEX>(tet, -10.0, 10.0);
+        vcl::normalizeElementQuality<vcl::ElemId::VERTEX>(tet, -10.0, 10.0);
         REQUIRE(std::abs(tet.vertex(0).quality() - (-10.0)) < 1e-6);
         REQUIRE(
             std::abs(tet.vertex(1).quality() - (-10.0 + 20.0 * (1.0 / 3.0))) <
@@ -276,7 +276,7 @@ TEST_CASE("Update Quality - Normalize Quality")
         tet.face(3).quality() = 4.0;
 
         // Default [0, 1] normalization
-        vcl::normalizePerFaceQuality(tet);
+        vcl::normalizeFaceQuality(tet);
         REQUIRE(std::abs(tet.face(0).quality() - 0.0) < 1e-6);
         REQUIRE(std::abs(tet.face(1).quality() - (1.0 / 3.0)) < 1e-6);
         REQUIRE(std::abs(tet.face(2).quality() - (2.0 / 3.0)) < 1e-6);
@@ -288,19 +288,19 @@ TEST_CASE("Update Quality - Normalize Quality")
         tet.face(2).quality() = 3.0;
         tet.face(3).quality() = 4.0;
 
-        vcl::normalizePerFaceQuality(tet, -10.0, 20.0);
+        vcl::normalizeFaceQuality(tet, -10.0, 20.0);
         REQUIRE(std::abs(tet.face(0).quality() - (-10.0)) < 1e-6);
         REQUIRE(std::abs(tet.face(1).quality() - 0.0) < 1e-6);
         REQUIRE(std::abs(tet.face(2).quality() - 10.0) < 1e-6);
         REQUIRE(std::abs(tet.face(3).quality() - 20.0) < 1e-6);
 
-        // normalizePerElementQuality<ElemId::FACE>
+        // normalizeElementQuality<ElemId::FACE>
         tet.face(0).quality() = 100.0;
         tet.face(1).quality() = 200.0;
         tet.face(2).quality() = 300.0;
         tet.face(3).quality() = 400.0;
 
-        vcl::normalizePerElementQuality<vcl::ElemId::FACE>(tet);
+        vcl::normalizeElementQuality<vcl::ElemId::FACE>(tet);
         REQUIRE(std::abs(tet.face(0).quality() - 0.0) < 1e-6);
         REQUIRE(std::abs(tet.face(1).quality() - (1.0 / 3.0)) < 1e-6);
         REQUIRE(std::abs(tet.face(2).quality() - (2.0 / 3.0)) < 1e-6);
@@ -321,7 +321,7 @@ TEST_CASE("Update Quality - Normalize Quality")
         em.edge(0).quality() = 10.0;
         em.edge(1).quality() = 30.0;
 
-        vcl::normalizePerElementQuality<vcl::ElemId::EDGE>(em, 0.0, 1.0);
+        vcl::normalizeElementQuality<vcl::ElemId::EDGE>(em, 0.0, 1.0);
         REQUIRE(std::abs(em.edge(0).quality() - 0.0) < 1e-6);
         REQUIRE(std::abs(em.edge(1).quality() - 1.0) < 1e-6);
     }
@@ -334,7 +334,7 @@ TEST_CASE("Update Quality - Quality From Valence And Area")
         vcl::TriMesh tet = vcl::createTetrahedron<vcl::TriMesh>();
         tet.enableVertexQuality();
 
-        vcl::setPerVertexQualityFromVertexValence(tet);
+        vcl::setVertexQualityFromVertexValence(tet);
         for (const auto v : tet.vertices()) {
             REQUIRE(v.quality() == 3.0);
         }
@@ -352,7 +352,7 @@ TEST_CASE("Update Quality - Quality From Valence And Area")
         m.addFace(0, 1, 2);
         m.addFace(1, 3, 2);
 
-        vcl::setPerVertexQualityFromVertexValence(m);
+        vcl::setVertexQualityFromVertexValence(m);
         REQUIRE(m.vertex(0).quality() == 1.0);
         REQUIRE(m.vertex(1).quality() == 2.0);
         REQUIRE(m.vertex(2).quality() == 2.0);
@@ -376,7 +376,7 @@ TEST_CASE("Update Quality - Quality From Valence And Area")
         // * 4 = 6.0
         m.addFace(0, 4, 3);
 
-        vcl::setPerFaceQualityFromFaceArea(m);
+        vcl::setFaceQualityFromFaceArea(m);
         REQUIRE(std::abs(m.face(0).quality() - 0.5) < 1e-6);
         REQUIRE(std::abs(m.face(1).quality() - 6.0) < 1e-6);
     }
@@ -407,7 +407,7 @@ TEST_CASE("Update Quality - Quality From Curvature")
 
     // --- 1. Gaussian Curvature: K = k1 * k2 ---
     {
-        vcl::setPerVertexQualityFromPrincipalCurvatureGaussian(m);
+        vcl::setVertexQualityFromPrincipalCurvatureGaussian(m);
         REQUIRE(std::abs(m.vertex(0).quality() - 6.0) < 1e-6);
         REQUIRE(std::abs(m.vertex(1).quality() - (-8.0)) < 1e-6);
         REQUIRE(std::abs(m.vertex(2).quality() - 1.0) < 1e-6);
@@ -416,7 +416,7 @@ TEST_CASE("Update Quality - Quality From Curvature")
 
     // --- 2. Mean Curvature: H = (k1 + k2) / 2 ---
     {
-        vcl::setPerVertexQualityFromPrincipalCurvatureMean(m);
+        vcl::setVertexQualityFromPrincipalCurvatureMean(m);
         REQUIRE(std::abs(m.vertex(0).quality() - 2.5) < 1e-6);
         REQUIRE(std::abs(m.vertex(1).quality() - 1.0) < 1e-6);
         REQUIRE(std::abs(m.vertex(2).quality() - 1.0) < 1e-6);
@@ -425,7 +425,7 @@ TEST_CASE("Update Quality - Quality From Curvature")
 
     // --- 3. Min Value Curvature: k2 ---
     {
-        vcl::setPerVertexQualityFromPrincipalCurvatureMinValue(m);
+        vcl::setVertexQualityFromPrincipalCurvatureMinValue(m);
         REQUIRE(std::abs(m.vertex(0).quality() - 2.0) < 1e-6);
         REQUIRE(std::abs(m.vertex(1).quality() - (-2.0)) < 1e-6);
         REQUIRE(std::abs(m.vertex(2).quality() - 1.0) < 1e-6);
@@ -434,7 +434,7 @@ TEST_CASE("Update Quality - Quality From Curvature")
 
     // --- 4. Max Value Curvature: k1 ---
     {
-        vcl::setPerVertexQualityFromPrincipalCurvatureMaxValue(m);
+        vcl::setVertexQualityFromPrincipalCurvatureMaxValue(m);
         REQUIRE(std::abs(m.vertex(0).quality() - 3.0) < 1e-6);
         REQUIRE(std::abs(m.vertex(1).quality() - 4.0) < 1e-6);
         REQUIRE(std::abs(m.vertex(2).quality() - 1.0) < 1e-6);
@@ -449,7 +449,7 @@ TEST_CASE("Update Quality - Quality From Curvature")
         m.vertex(3).principalCurvature().maxValue() = -5.0;
         m.vertex(3).principalCurvature().minValue() = -1.0;
 
-        vcl::setPerVertexQualityFromPrincipalCurvatureShapeIndex(m);
+        vcl::setVertexQualityFromPrincipalCurvatureShapeIndex(m);
 
         // v0: k1 = 3, k2 = 2 -> atan2(5, 1)
         double exp0 = (2.0 / M_PI) * std::atan2(5.0, 1.0);
@@ -481,7 +481,7 @@ TEST_CASE("Update Quality - Quality From Curvature")
         m.vertex(3).principalCurvature().maxValue() = -3.0;
         m.vertex(3).principalCurvature().minValue() = -3.0;
 
-        vcl::setPerVertexQualityFromPrincipalCurvatureCurvedness(m);
+        vcl::setVertexQualityFromPrincipalCurvatureCurvedness(m);
 
         // v0: sqrt((9 + 16) / 2) = sqrt(12.5)
         REQUIRE(std::abs(m.vertex(0).quality() - std::sqrt(12.5)) < 1e-6);
@@ -502,29 +502,29 @@ TEST_CASE("Update Quality - Update Quality Exceptions")
         // Quality is initially disabled in TriMesh
 
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerElementQuality<vcl::ElemId::VERTEX>(tet, 1.0);
+            vcl::setElementQuality<vcl::ElemId::VERTEX>(tet, 1.0);
         });
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::setPerVertexQuality(tet, 1.0); });
+            [&]() { vcl::setVertexQuality(tet, 1.0); });
 
         assertThrowsMissingQualityComponent([&]() {
-            vcl::clampPerElementQuality<vcl::ElemId::VERTEX>(tet, 0.0, 1.0);
+            vcl::clampElementQuality<vcl::ElemId::VERTEX>(tet, 0.0, 1.0);
         });
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::clampPerVertexQuality(tet); });
+            [&]() { vcl::clampVertexQuality(tet); });
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::clampPerVertexQuality(tet, 0.0, 1.0); });
+            [&]() { vcl::clampVertexQuality(tet, 0.0, 1.0); });
 
         assertThrowsMissingQualityComponent([&]() {
-            vcl::normalizePerElementQuality<vcl::ElemId::VERTEX>(tet);
+            vcl::normalizeElementQuality<vcl::ElemId::VERTEX>(tet);
         });
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::normalizePerVertexQuality(tet); });
+            [&]() { vcl::normalizeVertexQuality(tet); });
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::normalizePerVertexQuality(tet, 0.0, 1.0); });
+            [&]() { vcl::normalizeVertexQuality(tet, 0.0, 1.0); });
 
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::setPerVertexQualityFromVertexValence(tet); });
+            [&]() { vcl::setVertexQualityFromVertexValence(tet); });
     }
 
     // --- 2. Face Quality Missing ---
@@ -532,27 +532,27 @@ TEST_CASE("Update Quality - Update Quality Exceptions")
         vcl::TriMesh tet = vcl::createTetrahedron<vcl::TriMesh>();
 
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::setPerElementQuality<vcl::ElemId::FACE>(tet, 1.0); });
+            [&]() { vcl::setElementQuality<vcl::ElemId::FACE>(tet, 1.0); });
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::setPerFaceQuality(tet, 1.0); });
+            [&]() { vcl::setFaceQuality(tet, 1.0); });
 
         assertThrowsMissingQualityComponent([&]() {
-            vcl::clampPerElementQuality<vcl::ElemId::FACE>(tet, 0.0, 1.0);
+            vcl::clampElementQuality<vcl::ElemId::FACE>(tet, 0.0, 1.0);
         });
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::clampPerFaceQuality(tet); });
+            [&]() { vcl::clampFaceQuality(tet); });
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::clampPerFaceQuality(tet, 0.0, 1.0); });
+            [&]() { vcl::clampFaceQuality(tet, 0.0, 1.0); });
 
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::normalizePerElementQuality<vcl::ElemId::FACE>(tet); });
+            [&]() { vcl::normalizeElementQuality<vcl::ElemId::FACE>(tet); });
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::normalizePerFaceQuality(tet); });
+            [&]() { vcl::normalizeFaceQuality(tet); });
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::normalizePerFaceQuality(tet, 0.0, 1.0); });
+            [&]() { vcl::normalizeFaceQuality(tet, 0.0, 1.0); });
 
         assertThrowsMissingQualityComponent(
-            [&]() { vcl::setPerFaceQualityFromFaceArea(tet); });
+            [&]() { vcl::setFaceQualityFromFaceArea(tet); });
     }
 
     // --- 3. Curvature Functions: Missing Quality or Principal Curvature ---
@@ -560,66 +560,66 @@ TEST_CASE("Update Quality - Update Quality Exceptions")
         // Case A: Missing both quality and principal curvature
         vcl::TriMesh tetA = vcl::createTetrahedron<vcl::TriMesh>();
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureGaussian(tetA);
+            vcl::setVertexQualityFromPrincipalCurvatureGaussian(tetA);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureMean(tetA);
+            vcl::setVertexQualityFromPrincipalCurvatureMean(tetA);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureMinValue(tetA);
+            vcl::setVertexQualityFromPrincipalCurvatureMinValue(tetA);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureMaxValue(tetA);
+            vcl::setVertexQualityFromPrincipalCurvatureMaxValue(tetA);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureShapeIndex(tetA);
+            vcl::setVertexQualityFromPrincipalCurvatureShapeIndex(tetA);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureCurvedness(tetA);
+            vcl::setVertexQualityFromPrincipalCurvatureCurvedness(tetA);
         });
 
         // Case B: Quality enabled, but Principal Curvature missing
         vcl::TriMesh tetB = vcl::createTetrahedron<vcl::TriMesh>();
         tetB.enableVertexQuality();
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureGaussian(tetB);
+            vcl::setVertexQualityFromPrincipalCurvatureGaussian(tetB);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureMean(tetB);
+            vcl::setVertexQualityFromPrincipalCurvatureMean(tetB);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureMinValue(tetB);
+            vcl::setVertexQualityFromPrincipalCurvatureMinValue(tetB);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureMaxValue(tetB);
+            vcl::setVertexQualityFromPrincipalCurvatureMaxValue(tetB);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureShapeIndex(tetB);
+            vcl::setVertexQualityFromPrincipalCurvatureShapeIndex(tetB);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureCurvedness(tetB);
+            vcl::setVertexQualityFromPrincipalCurvatureCurvedness(tetB);
         });
 
         // Case C: Principal Curvature enabled, but Quality missing
         vcl::TriMesh tetC = vcl::createTetrahedron<vcl::TriMesh>();
         tetC.enableVertexPrincipalCurvature();
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureGaussian(tetC);
+            vcl::setVertexQualityFromPrincipalCurvatureGaussian(tetC);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureMean(tetC);
+            vcl::setVertexQualityFromPrincipalCurvatureMean(tetC);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureMinValue(tetC);
+            vcl::setVertexQualityFromPrincipalCurvatureMinValue(tetC);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureMaxValue(tetC);
+            vcl::setVertexQualityFromPrincipalCurvatureMaxValue(tetC);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureShapeIndex(tetC);
+            vcl::setVertexQualityFromPrincipalCurvatureShapeIndex(tetC);
         });
         assertThrowsMissingQualityComponent([&]() {
-            vcl::setPerVertexQualityFromPrincipalCurvatureCurvedness(tetC);
+            vcl::setVertexQualityFromPrincipalCurvatureCurvedness(tetC);
         });
     }
 }

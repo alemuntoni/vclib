@@ -24,51 +24,51 @@ TEST_CASE("Update Normals")
     m.addFace(0, 1, 2);
 
     // 1. Update per-face normals
-    vcl::updatePerFaceNormals(m);
+    vcl::updateFaceNormals(m);
     Point3f expectedNormal(0.0f, 0.0f, 1.0f);
     REQUIRE((m.face(0).normal() - expectedNormal).norm() < 1e-5f);
 
     // 2. Clear per-face normals
-    vcl::clearPerFaceNormals(m);
+    vcl::clearFaceNormals(m);
     REQUIRE(m.face(0).normal() == Point3f(0.0f, 0.0f, 0.0f));
 
     // 3. Update per-vertex normals
-    vcl::updatePerVertexNormals(m);
+    vcl::updateVertexNormals(m);
     for (uint i = 0; i < 3; ++i) {
         REQUIRE((m.vertex(i).normal() - expectedNormal).norm() < 1e-5f);
     }
 
     // 4. Clear per-vertex normals
-    vcl::clearPerVertexNormals(m);
+    vcl::clearVertexNormals(m);
     for (uint i = 0; i < 3; ++i) {
         REQUIRE(m.vertex(i).normal() == Point3f(0.0f, 0.0f, 0.0f));
     }
 
     // 5. Update per-vertex normals from face normals
-    vcl::updatePerFaceNormals(m);
-    vcl::updatePerVertexNormalsFromFaceNormals(m);
+    vcl::updateFaceNormals(m);
+    vcl::updateVertexNormalsFromFaceNormals(m);
     for (uint i = 0; i < 3; ++i) {
         REQUIRE((m.vertex(i).normal() - expectedNormal).norm() < 1e-5f);
     }
 
     // 6. Update per-vertex normals angle weighted
-    vcl::clearPerVertexNormals(m);
-    vcl::updatePerVertexNormalsAngleWeighted(m);
+    vcl::clearVertexNormals(m);
+    vcl::updateVertexNormalsAngleWeighted(m);
     for (uint i = 0; i < 3; ++i) {
         REQUIRE((m.vertex(i).normal() - expectedNormal).norm() < 1e-5f);
     }
 
     // 7. Update per-vertex normals Nelson-Max weighted
-    vcl::clearPerVertexNormals(m);
-    vcl::updatePerVertexNormalsNelsonMaxWeighted(m);
+    vcl::clearVertexNormals(m);
+    vcl::updateVertexNormalsNelsonMaxWeighted(m);
     for (uint i = 0; i < 3; ++i) {
         REQUIRE((m.vertex(i).normal() - expectedNormal).norm() < 1e-5f);
     }
 
     // 8. Update per-vertex and face normals together
-    vcl::clearPerVertexNormals(m);
-    vcl::clearPerFaceNormals(m);
-    vcl::updatePerVertexAndFaceNormals(m);
+    vcl::clearVertexNormals(m);
+    vcl::clearFaceNormals(m);
+    vcl::updateVertexAndFaceNormals(m);
     REQUIRE((m.face(0).normal() - expectedNormal).norm() < 1e-5f);
     for (uint i = 0; i < 3; ++i) {
         REQUIRE((m.vertex(i).normal() - expectedNormal).norm() < 1e-5f);
@@ -78,11 +78,11 @@ TEST_CASE("Update Normals")
     // (0,-1,0))
     Matrix33f rotX;
     rotX << 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f;
-    vcl::multiplyPerFaceNormalsByMatrix(m, rotX);
+    vcl::multiplyFaceNormalsByMatrix(m, rotX);
     Point3f expectedRotated(0.0f, -1.0f, 0.0f);
     REQUIRE((m.face(0).normal() - expectedRotated).norm() < 1e-5f);
 
-    vcl::multiplyPerVertexNormalsByMatrix(m, rotX);
+    vcl::multiplyVertexNormalsByMatrix(m, rotX);
     for (uint i = 0; i < 3; ++i) {
         REQUIRE((m.vertex(i).normal() - expectedRotated).norm() < 1e-5f);
     }

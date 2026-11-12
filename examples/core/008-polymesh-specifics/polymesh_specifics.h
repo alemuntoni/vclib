@@ -175,7 +175,7 @@ auto polymeshSpecifics()
 
     // Enable face-face adjacency
     polyMeshLoaded.enableFaceAdjacentFaces();
-    vcl::updatePerFaceAdjacentFaces(polyMeshLoaded);
+    vcl::updateFaceAdjacentFaces(polyMeshLoaded);
 
     std::cout << "Face-face adjacency enabled for PolyMesh\n";
 

@@ -27,12 +27,12 @@ inline void testMeshInfoDefaultAndManual()
 
     // Manual setters
     info.setVertices(true);
-    info.setPerVertexPosition(true, PrimitiveType::FLOAT);
-    info.setPerVertexNormal(true, PrimitiveType::FLOAT);
-    info.setPerVertexColor(true, PrimitiveType::UCHAR);
+    info.setVertexPosition(true, PrimitiveType::FLOAT);
+    info.setVertexNormal(true, PrimitiveType::FLOAT);
+    info.setVertexColor(true, PrimitiveType::UCHAR);
     info.setFaces(true);
-    info.setPerFaceVertexReferences(true);
-    info.setPerFaceNormal(true, PrimitiveType::DOUBLE);
+    info.setFaceVertexReferences(true);
+    info.setFaceNormal(true, PrimitiveType::DOUBLE);
     info.setTriangleMesh();
 
     assert(!info.isEmpty());
@@ -187,18 +187,18 @@ inline void testMeshInfoIntersect()
 {
     MeshInfo info1;
     info1.setVertices(true);
-    info1.setPerVertexPosition(true, PrimitiveType::FLOAT);
-    info1.setPerVertexNormal(true, PrimitiveType::FLOAT);
+    info1.setVertexPosition(true, PrimitiveType::FLOAT);
+    info1.setVertexNormal(true, PrimitiveType::FLOAT);
     info1.setFaces(true);
-    info1.setPerFaceColor(true, PrimitiveType::UCHAR);
+    info1.setFaceColor(true, PrimitiveType::UCHAR);
     info1.setTriangleMesh();
 
     MeshInfo info2;
     info2.setVertices(true);
-    info2.setPerVertexPosition(true, PrimitiveType::DOUBLE);
-    info2.setPerVertexColor(true, PrimitiveType::UCHAR);
+    info2.setVertexPosition(true, PrimitiveType::DOUBLE);
+    info2.setVertexColor(true, PrimitiveType::UCHAR);
     info2.setFaces(true);
-    info2.setPerFaceColor(true, PrimitiveType::UCHAR);
+    info2.setFaceColor(true, PrimitiveType::UCHAR);
     info2.setTriangleMesh();
 
     MeshInfo inter = info1.intersect(info2);
@@ -224,10 +224,10 @@ inline void testMeshInfoEnableOptionalComponents()
 
         MeshInfo reqInfo;
         reqInfo.setVertices(true);
-        reqInfo.setPerVertexNormal(true);
-        reqInfo.setPerVertexColor(true);
+        reqInfo.setVertexNormal(true);
+        reqInfo.setVertexColor(true);
         reqInfo.setFaces(true);
-        reqInfo.setPerFaceColor(true);
+        reqInfo.setFaceColor(true);
 
         enableOptionalComponentsFromInfo(reqInfo, mesh);
 
@@ -241,7 +241,7 @@ inline void testMeshInfoEnableOptionalComponents()
         // Component not supported by MyMesh (e.g. vertex tangent)
         MeshInfo tangentInfo;
         tangentInfo.setVertices(true);
-        tangentInfo.setPerVertexTangent(true);
+        tangentInfo.setVertexTangent(true);
         enableOptionalComponentsFromInfo(tangentInfo, mesh);
         // info should have tangent reset to false since mesh cannot support it
         assert(!tangentInfo.hasPerVertexTangent());
@@ -255,9 +255,9 @@ inline void testMeshInfoEnableOptionalComponents()
 
         MeshInfo ccInfo;
         ccInfo.setVertices(true);
-        ccInfo.addPerVertexCustomComponent("weight", PrimitiveType::FLOAT);
+        ccInfo.addVertexCustomComponent("weight", PrimitiveType::FLOAT);
         ccInfo.setFaces(true);
-        ccInfo.addPerFaceCustomComponent("label", PrimitiveType::INT);
+        ccInfo.addFaceCustomComponent("label", PrimitiveType::INT);
 
         enableOptionalComponentsFromInfo(ccInfo, ccm);
 

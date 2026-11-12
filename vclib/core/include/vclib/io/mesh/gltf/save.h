@@ -421,14 +421,14 @@ void addMeshToTinygltfModel(
 
     bool exportWedgeTexCoord = false;
     if constexpr (HasFaceWedgeTexCoords<MeshType>) {
-        if (meshInfo.hasPerFaceWedgeTexCoords()) {
+        if (meshInfo.hasFaceWedgeTexCoords()) {
             exportWedgeTexCoord = true;
         }
     }
 
     bool exportVertexTexCoord = false;
     if constexpr (HasVertexTexCoords<MeshType>) {
-        if (meshInfo.hasPerVertexTexCoord() && !exportWedgeTexCoord) {
+        if (meshInfo.hasVertexTexCoord() && !exportWedgeTexCoord) {
             exportVertexTexCoord = true;
         }
     }
@@ -486,7 +486,7 @@ void addMeshToTinygltfModel(
     accessors.pos = posAccessor.first;
 
     if constexpr (HasVertexColors<MeshType>) {
-        if (meshInfo.hasPerVertexColor()) {
+        if (meshInfo.hasVertexColor()) {
             auto  colAlloc = allocateInGltfBuffer(tModel, 4 * totalVertices);
             uint* ud       = reinterpret_cast<uint*>(
                 tModel.buffers[colAlloc.first].data.data() + colAlloc.second);
@@ -510,7 +510,7 @@ void addMeshToTinygltfModel(
         }
     }
     if constexpr (HasVertexNormals<MeshType>) {
-        if (meshInfo.hasPerVertexNormal()) {
+        if (meshInfo.hasVertexNormal()) {
             auto normAlloc =
                 allocateInGltfBuffer(tModel, 3 * totalVertices * sizeof(float));
             fd = reinterpret_cast<float*>(
@@ -570,7 +570,7 @@ void addMeshToTinygltfModel(
         accessors.texCoord = texCoordAccessor.first;
     }
     if constexpr (HasVertexTangents<MeshType>) {
-        if (meshInfo.hasPerVertexTangent()) {
+        if (meshInfo.hasVertexTangent()) {
             auto tangentAlloc =
                 allocateInGltfBuffer(tModel, 4 * totalVertices * sizeof(float));
             fd = reinterpret_cast<float*>(
@@ -609,14 +609,14 @@ void addMeshToTinygltfModel(
             bool usePerVertexMaterial = false;
 
             if constexpr (HasFaceMaterialIndices<MeshType>) {
-                if (meshInfo.hasPerFaceMaterialIndex()) {
+                if (meshInfo.hasFaceMaterialIndex()) {
                     exportMaterials    = true;
                     usePerFaceMaterial = true;
                 }
             }
 
             if constexpr (HasVertexMaterialIndices<MeshType>) {
-                if (meshInfo.hasPerVertexMaterialIndex() &&
+                if (meshInfo.hasVertexMaterialIndex() &&
                     !usePerFaceMaterial) {
                     exportMaterials      = true;
                     usePerVertexMaterial = true;

@@ -25,7 +25,7 @@ inline void meshTopologyStatistics()
         vcl::loadMesh<vcl::TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/rangemap.ply");
 
     rangeMesh.enableFaceAdjacentFaces();
-    vcl::updatePerFaceAdjacentFaces(rangeMesh);
+    vcl::updateFaceAdjacentFaces(rangeMesh);
 
     std::cout << "Range mesh: " << rangeMesh.vertexCount() << " vertices, "
               << rangeMesh.faceCount() << " faces" << std::endl;
@@ -55,7 +55,7 @@ inline void meshTopologyStatistics()
 
     // Enable adjacency information for topology checks
     mesh.enableFaceAdjacentFaces();
-    vcl::updatePerFaceAdjacentFaces(mesh);
+    vcl::updateFaceAdjacentFaces(mesh);
 
     // Check if mesh is water tight
     bool waterTight = vcl::isWaterTight(mesh);

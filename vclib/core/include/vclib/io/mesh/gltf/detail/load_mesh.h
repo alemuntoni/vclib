@@ -881,7 +881,7 @@ void loadGltfMeshPrimitive(
         model,
         p,
         GltfAttrType::NORMAL);
-    info.setPerVertexNormal(lvn);
+    info.setVertexNormal(lvn);
 
     bool lvc = loadGltfAttribute(
         m,
@@ -891,7 +891,7 @@ void loadGltfMeshPrimitive(
         p,
         GltfAttrType::COLOR_0);
     if (lvc) {
-        info.setPerVertexColor();
+        info.setVertexColor();
     }
 
     bool lvt = loadGltfAttribute(
@@ -902,7 +902,7 @@ void loadGltfMeshPrimitive(
         p,
         GltfAttrType::TEXCOORD_0);
     if (lvt) {
-        info.setPerVertexTexCoord();
+        info.setVertexTexCoord();
     }
 
     bool lvtan = loadGltfAttribute(
@@ -913,7 +913,7 @@ void loadGltfMeshPrimitive(
         p,
         GltfAttrType::TANGENT);
     if (lvtan) {
-        info.setPerVertexTangent();
+        info.setVertexTangent();
     }
 
     if constexpr (HasVertexMaterialIndices<MeshType>) {
@@ -925,7 +925,7 @@ void loadGltfMeshPrimitive(
             for (uint v = firstVertex; v < vnum; ++v) {
                 m.vertex(v).materialIndex() = materialId;
             }
-            info.setPerVertexMaterialIndex();
+            info.setVertexMaterialIndex();
         }
     }
 
@@ -943,7 +943,7 @@ void loadGltfMeshPrimitive(
             if (lti) {
                 info.setTriangleMesh();
                 info.setFaces();
-                info.setPerFaceVertexReferences();
+                info.setFaceVertexReferences();
             }
         }
     }
@@ -961,7 +961,7 @@ void loadGltfMeshPrimitive(
                 GltfAttrType::LINE_INDICES);
             if (lti) {
                 info.setEdges();
-                info.setPerEdgeVertexReferences();
+                info.setEdgeVertexReferences();
             }
         }
     }

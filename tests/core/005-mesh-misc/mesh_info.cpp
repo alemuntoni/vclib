@@ -23,12 +23,12 @@ TEST_CASE("Mesh Info - Mesh Info Default And Manual")
 
     // Manual setters
     info.setVertices(true);
-    info.setPerVertexPosition(true, PrimitiveType::FLOAT);
-    info.setPerVertexNormal(true, PrimitiveType::FLOAT);
-    info.setPerVertexColor(true, PrimitiveType::UCHAR);
+    info.setVertexPosition(true, PrimitiveType::FLOAT);
+    info.setVertexNormal(true, PrimitiveType::FLOAT);
+    info.setVertexColor(true, PrimitiveType::UCHAR);
     info.setFaces(true);
-    info.setPerFaceVertexReferences(true);
-    info.setPerFaceNormal(true, PrimitiveType::DOUBLE);
+    info.setFaceVertexReferences(true);
+    info.setFaceNormal(true, PrimitiveType::DOUBLE);
     info.setTriangleMesh();
 
     REQUIRE(!info.isEmpty());
@@ -36,15 +36,15 @@ TEST_CASE("Mesh Info - Mesh Info Default And Manual")
     REQUIRE(!info.isQuadMesh());
     REQUIRE(!info.isPolygonMesh());
     REQUIRE(info.hasVertices());
-    REQUIRE(info.hasPerVertexPosition());
+    REQUIRE(info.hasVertexPosition());
     REQUIRE(info.perVertexPositionType() == PrimitiveType::FLOAT);
-    REQUIRE(info.hasPerVertexNormal());
+    REQUIRE(info.hasVertexNormal());
     REQUIRE(info.perVertexNormalType() == PrimitiveType::FLOAT);
-    REQUIRE(info.hasPerVertexColor());
+    REQUIRE(info.hasVertexColor());
     REQUIRE(info.perVertexColorType() == PrimitiveType::UCHAR);
     REQUIRE(info.hasFaces());
-    REQUIRE(info.hasPerFaceVertexReferences());
-    REQUIRE(info.hasPerFaceNormal());
+    REQUIRE(info.hasFaceVertexReferences());
+    REQUIRE(info.hasFaceNormal());
     REQUIRE(info.perFaceNormalType() == PrimitiveType::DOUBLE);
     REQUIRE(!info.hasEdges());
 
@@ -76,18 +76,18 @@ TEST_CASE("Mesh Info - Mesh Info From Mesh")
         MeshInfo info(mesh);
 
         REQUIRE(info.hasVertices());
-        REQUIRE(info.hasPerVertexPosition());
+        REQUIRE(info.hasVertexPosition());
         REQUIRE(info.perVertexPositionType() == PrimitiveType::FLOAT);
-        REQUIRE(info.hasPerVertexBitFlags());
-        REQUIRE(info.hasPerVertexNormal());
+        REQUIRE(info.hasVertexBitFlags());
+        REQUIRE(info.hasVertexNormal());
         REQUIRE(info.perVertexNormalType() == PrimitiveType::FLOAT);
-        REQUIRE(info.hasPerVertexColor());
+        REQUIRE(info.hasVertexColor());
         REQUIRE(info.perVertexColorType() == PrimitiveType::UCHAR);
 
         REQUIRE(info.hasFaces());
-        REQUIRE(info.hasPerFaceVertexReferences());
-        REQUIRE(info.hasPerFaceBitFlags());
-        REQUIRE(info.hasPerFaceColor());
+        REQUIRE(info.hasFaceVertexReferences());
+        REQUIRE(info.hasFaceBitFlags());
+        REQUIRE(info.hasFaceColor());
         REQUIRE(info.perFaceColorType() == PrimitiveType::UCHAR);
         REQUIRE(info.isTriangleMesh());
 
@@ -101,12 +101,12 @@ TEST_CASE("Mesh Info - Mesh Info From Mesh")
         MeshInfo info(emptyMesh);
 
         REQUIRE(info.hasVertices());
-        REQUIRE(info.hasPerVertexPosition());
-        REQUIRE(!info.hasPerVertexNormal());
-        REQUIRE(!info.hasPerVertexColor());
+        REQUIRE(info.hasVertexPosition());
+        REQUIRE(!info.hasVertexNormal());
+        REQUIRE(!info.hasVertexColor());
 
         REQUIRE(info.hasFaces());
-        REQUIRE(!info.hasPerFaceColor());
+        REQUIRE(!info.hasFaceColor());
         REQUIRE(info.isTriangleMesh());
     }
 
@@ -116,7 +116,7 @@ TEST_CASE("Mesh Info - Mesh Info From Mesh")
         MeshInfo   info(dm);
 
         REQUIRE(info.hasVertices());
-        REQUIRE(info.hasPerVertexPosition());
+        REQUIRE(info.hasVertexPosition());
         REQUIRE(info.perVertexPositionType() == PrimitiveType::DOUBLE);
         REQUIRE(info.hasFaces());
         REQUIRE(info.isTriangleMesh());
@@ -141,10 +141,10 @@ TEST_CASE("Mesh Info - Mesh Info From Mesh")
         MeshInfo   info(em);
 
         REQUIRE(info.hasVertices());
-        REQUIRE(info.hasPerVertexPosition());
+        REQUIRE(info.hasVertexPosition());
         REQUIRE(info.hasEdges());
-        REQUIRE(info.hasPerEdgeVertexReferences());
-        REQUIRE(info.hasPerEdgeBitFlags());
+        REQUIRE(info.hasEdgeVertexReferences());
+        REQUIRE(info.hasEdgeBitFlags());
         REQUIRE(!info.hasFaces());
     }
 
@@ -155,7 +155,7 @@ TEST_CASE("Mesh Info - Mesh Info From Mesh")
 
         REQUIRE(info.hasMaterials());
         REQUIRE(info.hasFaces());
-        REQUIRE(info.hasPerFaceMaterialIndex());
+        REQUIRE(info.hasFaceMaterialIndex());
         REQUIRE(info.perFaceMaterialIndexType() == PrimitiveType::UINT);
     }
 
@@ -167,13 +167,13 @@ TEST_CASE("Mesh Info - Mesh Info From Mesh")
 
         MeshInfo info(ccm);
 
-        REQUIRE(info.hasPerVertexCustomComponents());
+        REQUIRE(info.hasVertexCustomComponents());
         REQUIRE(info.perVertexCustomComponents().size() == 1);
         REQUIRE(info.perVertexCustomComponents()[0].name == "curvature");
         REQUIRE(
             info.perVertexCustomComponents()[0].type == PrimitiveType::DOUBLE);
 
-        REQUIRE(info.hasPerFaceCustomComponents());
+        REQUIRE(info.hasFaceCustomComponents());
         REQUIRE(info.perFaceCustomComponents().size() == 1);
         REQUIRE(info.perFaceCustomComponents()[0].name == "cluster_id");
         REQUIRE(info.perFaceCustomComponents()[0].type == PrimitiveType::INT);
@@ -184,31 +184,31 @@ TEST_CASE("Mesh Info - Mesh Info Intersect")
 {
     MeshInfo info1;
     info1.setVertices(true);
-    info1.setPerVertexPosition(true, PrimitiveType::FLOAT);
-    info1.setPerVertexNormal(true, PrimitiveType::FLOAT);
+    info1.setVertexPosition(true, PrimitiveType::FLOAT);
+    info1.setVertexNormal(true, PrimitiveType::FLOAT);
     info1.setFaces(true);
-    info1.setPerFaceColor(true, PrimitiveType::UCHAR);
+    info1.setFaceColor(true, PrimitiveType::UCHAR);
     info1.setTriangleMesh();
 
     MeshInfo info2;
     info2.setVertices(true);
-    info2.setPerVertexPosition(true, PrimitiveType::DOUBLE);
-    info2.setPerVertexColor(true, PrimitiveType::UCHAR);
+    info2.setVertexPosition(true, PrimitiveType::DOUBLE);
+    info2.setVertexColor(true, PrimitiveType::UCHAR);
     info2.setFaces(true);
-    info2.setPerFaceColor(true, PrimitiveType::UCHAR);
+    info2.setFaceColor(true, PrimitiveType::UCHAR);
     info2.setTriangleMesh();
 
     MeshInfo inter = info1.intersect(info2);
 
     REQUIRE(inter.hasVertices());
-    REQUIRE(inter.hasPerVertexPosition());
+    REQUIRE(inter.hasVertexPosition());
     REQUIRE(
         inter.perVertexPositionType() ==
         PrimitiveType::FLOAT);            // Taken from info1
-    REQUIRE(!inter.hasPerVertexNormal()); // Not in info2
-    REQUIRE(!inter.hasPerVertexColor());  // Not in info1
+    REQUIRE(!inter.hasVertexNormal()); // Not in info2
+    REQUIRE(!inter.hasVertexColor());  // Not in info1
     REQUIRE(inter.hasFaces());
-    REQUIRE(inter.hasPerFaceColor());
+    REQUIRE(inter.hasFaceColor());
     REQUIRE(inter.isTriangleMesh());
 }
 
@@ -223,27 +223,27 @@ TEST_CASE("Mesh Info - Mesh Info Enable Optional Components")
 
         MeshInfo reqInfo;
         reqInfo.setVertices(true);
-        reqInfo.setPerVertexNormal(true);
-        reqInfo.setPerVertexColor(true);
+        reqInfo.setVertexNormal(true);
+        reqInfo.setVertexColor(true);
         reqInfo.setFaces(true);
-        reqInfo.setPerFaceColor(true);
+        reqInfo.setFaceColor(true);
 
         enableOptionalComponentsFromInfo(reqInfo, mesh);
 
         REQUIRE(mesh.isVertexNormalAvailable());
         REQUIRE(mesh.isVertexColorAvailable());
         REQUIRE(mesh.isFaceColorAvailable());
-        REQUIRE(reqInfo.hasPerVertexNormal());
-        REQUIRE(reqInfo.hasPerVertexColor());
-        REQUIRE(reqInfo.hasPerFaceColor());
+        REQUIRE(reqInfo.hasVertexNormal());
+        REQUIRE(reqInfo.hasVertexColor());
+        REQUIRE(reqInfo.hasFaceColor());
 
         // Component not supported by MyMesh (e.g. vertex tangent)
         MeshInfo tangentInfo;
         tangentInfo.setVertices(true);
-        tangentInfo.setPerVertexTangent(true);
+        tangentInfo.setVertexTangent(true);
         enableOptionalComponentsFromInfo(tangentInfo, mesh);
         // info should have tangent reset to false since mesh cannot support it
-        REQUIRE(!tangentInfo.hasPerVertexTangent());
+        REQUIRE(!tangentInfo.hasVertexTangent());
     }
 
     // 2. Custom components enablement on CCMesh
@@ -254,9 +254,9 @@ TEST_CASE("Mesh Info - Mesh Info Enable Optional Components")
 
         MeshInfo ccInfo;
         ccInfo.setVertices(true);
-        ccInfo.addPerVertexCustomComponent("weight", PrimitiveType::FLOAT);
+        ccInfo.addVertexCustomComponent("weight", PrimitiveType::FLOAT);
         ccInfo.setFaces(true);
-        ccInfo.addPerFaceCustomComponent("label", PrimitiveType::INT);
+        ccInfo.addFaceCustomComponent("label", PrimitiveType::INT);
 
         enableOptionalComponentsFromInfo(ccInfo, ccm);
 

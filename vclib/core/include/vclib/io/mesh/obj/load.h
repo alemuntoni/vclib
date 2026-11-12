@@ -201,15 +201,15 @@ void readObjVertex(
             if (tokens.size() > 6) {
                 if (settings.enableOptionalComponents) {
                     enableIfVertexColorsOptional(m);
-                    loadedInfo.setPerVertexColor();
+                    loadedInfo.setVertexColor();
                 }
                 else {
                     if (m.isVertexColorAvailable())
-                        loadedInfo.setPerVertexColor();
+                        loadedInfo.setVertexColor();
                 }
             }
         }
-        if (loadedInfo.hasPerVertexColor()) {
+        if (loadedInfo.hasVertexColor()) {
             // the file has the nonstandard way to store vertex colors, after
             // the positions...
             if (tokens.size() > 6) {
@@ -299,15 +299,15 @@ void readObjFace(
         if (fid == 0 && currentMaterial.matId != UINT_NULL) {
             if (settings.enableOptionalComponents) {
                 enableIfFaceMaterialIndicesOptional(m);
-                loadedInfo.setPerFaceMaterialIndex();
+                loadedInfo.setFaceMaterialIndex();
             }
             else {
                 if (m.isFaceMaterialIndexAvailable()) {
-                    loadedInfo.setPerFaceMaterialIndex();
+                    loadedInfo.setFaceMaterialIndex();
                 }
             }
         }
-        if (loadedInfo.hasPerFaceMaterialIndex()) {
+        if (loadedInfo.hasFaceMaterialIndex()) {
             if (!splitFace) {
                 f.materialIndex() = currentMaterial.matId;
             }
@@ -330,16 +330,16 @@ void readObjFace(
             if (nids.size() == vids.size()) {
                 if (settings.enableOptionalComponents) {
                     enableIfVertexNormalsOptional(m);
-                    loadedInfo.setPerVertexNormal();
+                    loadedInfo.setVertexNormal();
                 }
                 else {
                     if (m.isVertexNormalAvailable()) {
-                        loadedInfo.setPerVertexNormal();
+                        loadedInfo.setVertexNormal();
                     }
                 }
             }
         }
-        if (loadedInfo.hasPerVertexNormal()) {
+        if (loadedInfo.hasVertexNormal()) {
             if (nids.size() == vids.size()) {
                 for (uint i = 0; i < nids.size(); ++i) {
                     if (nids[i] >= normals.size()) {
@@ -362,16 +362,16 @@ void readObjFace(
             if (wids.size() == vids.size()) {
                 if (settings.enableOptionalComponents) {
                     enableIfFaceWedgeTexCoordsOptional(m);
-                    loadedInfo.setPerFaceWedgeTexCoords();
+                    loadedInfo.setFaceWedgeTexCoords();
                 }
                 else {
                     if (m.isFaceWedgeTexCoordsAvailable()) {
-                        loadedInfo.setPerFaceWedgeTexCoords();
+                        loadedInfo.setFaceWedgeTexCoords();
                     }
                 }
             }
         }
-        if (loadedInfo.hasPerFaceWedgeTexCoords()) {
+        if (loadedInfo.hasFaceWedgeTexCoords()) {
             if (wids.size() == vids.size()) {
                 if (!splitFace) { // there wasn't a triangulation of the face
                     // it is safe to assign each wedge texcoord to its position
@@ -537,7 +537,7 @@ void loadObj(
             // color)
             if (header == "v") {
                 loadedInfo.setVertices();
-                loadedInfo.setPerVertexPosition();
+                loadedInfo.setVertexPosition();
                 detail::readObjVertex(m, token, loadedInfo, tokens, settings);
             }
             // read normals and save them in the vector of normasl, we will
@@ -571,7 +571,7 @@ void loadObj(
             // - possibility to split polygonal face into several triangles
             if (header == "f") {
                 loadedInfo.setFaces();
-                loadedInfo.setPerFaceVertexReferences();
+                loadedInfo.setFaceVertexReferences();
                 if constexpr (HasFaces<MeshType>) {
                     detail::readObjFace(
                         m,
@@ -586,7 +586,7 @@ void loadObj(
             // read edges and manage their color
             if (header == "l") {
                 loadedInfo.setEdges();
-                loadedInfo.setPerEdgeVertexReferences();
+                loadedInfo.setEdgeVertexReferences();
                 if constexpr (HasEdges<MeshType>) {
                     detail::readObjEdge(
                         m, loadedInfo, tokens, currentMaterial, settings);
@@ -600,18 +600,18 @@ void loadObj(
         using NormalType = typename VertexType<MeshType>::NormalType;
         using NST        = typename NormalType::ScalarType;
         // if we have not yet set vertex normals, try to set them now
-        if (!loadedInfo.hasPerVertexNormal()) {
+        if (!loadedInfo.hasVertexNormal()) {
             if (normals.size() == m.vertexCount()) {
                 if (settings.enableOptionalComponents) {
                     enableIfVertexNormalsOptional(m);
-                    loadedInfo.setPerVertexNormal();
+                    loadedInfo.setVertexNormal();
                 }
                 else {
                     if (m.isVertexNormalAvailable())
-                        loadedInfo.setPerVertexNormal();
+                        loadedInfo.setVertexNormal();
                 }
 
-                if (loadedInfo.hasPerVertexNormal()) {
+                if (loadedInfo.hasVertexNormal()) {
                     for (uint i = 0; const auto& n : normals) {
                         m.vertex(i).normal() = n.template cast<NST>();
                         ++i;
@@ -622,18 +622,18 @@ void loadObj(
     }
 
     if constexpr (HasVertexTexCoords<MeshType>) {
-        if (!loadedInfo.hasPerFaceWedgeTexCoords()) {
+        if (!loadedInfo.hasFaceWedgeTexCoords()) {
             if (texCoords.size() == m.vertexCount()) {
                 // load texcoords into vertices only if there are no wedge
                 if (settings.enableOptionalComponents) {
                     enableIfVertexTexCoordsOptional(m);
-                    loadedInfo.setPerVertexTexCoord();
+                    loadedInfo.setVertexTexCoord();
                 }
                 else {
                     if (m.isVertexTexCoordAvailable())
-                        loadedInfo.setPerVertexTexCoord();
+                        loadedInfo.setVertexTexCoord();
                 }
-                if (loadedInfo.hasPerVertexTexCoord()) {
+                if (loadedInfo.hasVertexTexCoord()) {
                     using TCT =
                         typename VertexType<MeshType>::TexCoordType::ScalarType;
                     for (uint i = 0; i < m.vertexCount(); ++i) {
@@ -647,13 +647,13 @@ void loadObj(
                     if (m.materialCount() > 0) {
                         if (settings.enableOptionalComponents) {
                             enableIfVertexMaterialIndicesOptional(m);
-                            loadedInfo.setPerVertexMaterialIndex();
+                            loadedInfo.setVertexMaterialIndex();
                         }
                         else {
                             if (m.isVertexMaterialIndexAvailable())
-                                loadedInfo.setPerVertexMaterialIndex();
+                                loadedInfo.setVertexMaterialIndex();
                         }
-                        if (loadedInfo.hasPerVertexMaterialIndex()) {
+                        if (loadedInfo.hasVertexMaterialIndex()) {
                             for (uint i = 0; i < m.vertexCount(); ++i) {
                                 // assign the first material to all vertices
                                 m.vertex(i).materialIndex() = 0;

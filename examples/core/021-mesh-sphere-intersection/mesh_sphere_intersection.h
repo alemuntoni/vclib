@@ -29,8 +29,8 @@ inline auto meshSphereIntersection()
         vcl::loadMesh<vcl::TriMesh>(VCLIB_EXAMPLE_MESHES_PATH "/bunny.obj");
     originalMesh.name() = "Original Bunny";
 
-    vcl::updatePerFaceNormals(originalMesh);
-    vcl::updatePerVertexNormals(originalMesh);
+    vcl::updateFaceNormals(originalMesh);
+    vcl::updateVertexNormals(originalMesh);
 
     std::cout << "Loaded bunny mesh: " << originalMesh.vertexCount()
               << " vertices, " << originalMesh.faceCount() << " faces"

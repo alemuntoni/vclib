@@ -23,7 +23,7 @@ namespace vcl {
  * @param[in] quality: quality value to set
  */
 template<ElemId ELEM_ID, MeshConcept MeshType>
-void setPerElementQuality(MeshType& mesh, auto quality)
+void setElementQuality(MeshType& mesh, auto quality)
 {
     requireElementComponent<ELEM_ID, CompId::QUALITY>(mesh);
 
@@ -44,7 +44,7 @@ template<
     MeshConcept MeshType,
     typename Q1 = float,
     typename Q2 = float>
-void clampPerElementQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
+void clampElementQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
 {
     requireElementComponent<ELEM_ID, CompId::QUALITY>(mesh);
 
@@ -67,7 +67,7 @@ template<
     MeshConcept MeshType,
     typename Q1 = float,
     typename Q2 = float>
-void normalizePerElementQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
+void normalizeElementQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
 {
     requireElementComponent<ELEM_ID, CompId::QUALITY>(mesh);
 
@@ -85,10 +85,10 @@ void normalizePerElementQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
  * @param[in, out] mesh: the mesh on which set the vertex quality
  * @param[in] quality: quality value to set
  */
-template<MeshConcept MeshType>
-void setPerVertexQuality(MeshType& mesh, auto quality)
+template<MeshConcept MeshType, typename QualityType>
+void setVertexQuality(MeshType& mesh, QualityType quality)
 {
-    setPerElementQuality<ElemId::VERTEX>(mesh, quality);
+    setElementQuality<ElemId::VERTEX>(mesh, quality);
 }
 
 /**
@@ -98,9 +98,9 @@ void setPerVertexQuality(MeshType& mesh, auto quality)
  * @param[in] quality: quality value to set
  */
 template<FaceMeshConcept MeshType>
-void setPerFaceQuality(MeshType& mesh, auto quality)
+void setFaceQuality(MeshType& mesh, auto quality)
 {
-    setPerElementQuality<ElemId::FACE>(mesh, quality);
+    setElementQuality<ElemId::FACE>(mesh, quality);
 }
 
 /**
@@ -111,9 +111,9 @@ void setPerFaceQuality(MeshType& mesh, auto quality)
  * @param[in] maxQ: maximum value of the clamping interval
  */
 template<MeshConcept MeshType, typename Q1 = float, typename Q2 = float>
-void clampPerVertexQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
+void clampVertexQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
 {
-    clampPerElementQuality<ElemId::VERTEX>(mesh, minQ, maxQ);
+    clampElementQuality<ElemId::VERTEX>(mesh, minQ, maxQ);
 }
 
 /**
@@ -124,9 +124,9 @@ void clampPerVertexQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
  * @param[in] maxQ: maximum value of the clamping interval
  */
 template<FaceMeshConcept MeshType, typename Q1 = float, typename Q2 = float>
-void clampPerFaceQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
+void clampFaceQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
 {
-    clampPerElementQuality<ElemId::FACE>(mesh, minQ, maxQ);
+    clampElementQuality<ElemId::FACE>(mesh, minQ, maxQ);
 }
 
 /**
@@ -138,9 +138,9 @@ void clampPerFaceQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
  * @param[in] maxQ: maximum value of the normalizing interval
  */
 template<MeshConcept MeshType, typename Q1 = float, typename Q2 = float>
-void normalizePerVertexQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
+void normalizeVertexQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
 {
-    normalizePerElementQuality<ElemId::VERTEX>(mesh, minQ, maxQ);
+    normalizeElementQuality<ElemId::VERTEX>(mesh, minQ, maxQ);
 }
 
 /**
@@ -152,9 +152,9 @@ void normalizePerVertexQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
  * @param[in] maxQ: maximum value of the normalizing interval
  */
 template<FaceMeshConcept MeshType, typename Q1 = float, typename Q2 = float>
-void normalizePerFaceQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
+void normalizeFaceQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
 {
-    normalizePerElementQuality<ElemId::FACE>(mesh, minQ, maxQ);
+    normalizeElementQuality<ElemId::FACE>(mesh, minQ, maxQ);
 }
 
 /**
@@ -170,11 +170,11 @@ void normalizePerFaceQuality(MeshType& mesh, Q1 minQ = 0.f, Q2 maxQ = 1.f)
  * @param[in,out] m: mesh on which set the vertex quality to the vertex valence
  */
 template<FaceMeshConcept MeshType>
-void setPerVertexQualityFromVertexValence(MeshType& m)
+void setVertexQualityFromVertexValence(MeshType& m)
 {
     requireVertexQualities(m);
 
-    setPerVertexQuality(m, 0);
+    setVertexQuality(m, 0);
 
     for (auto f : m.faces()) {
         for (auto v : f.vertices()) {
@@ -194,7 +194,7 @@ void setPerVertexQualityFromVertexValence(MeshType& m)
  * @param[in,out] m: mesh on which set the face quality to the face area
  */
 template<FaceMeshConcept MeshType>
-void setPerFaceQualityFromFaceArea(MeshType& m)
+void setFaceQualityFromFaceArea(MeshType& m)
 {
     requireFaceQualities(m);
 
@@ -204,7 +204,7 @@ void setPerFaceQualityFromFaceArea(MeshType& m)
 }
 
 template<MeshConcept MeshType>
-void setPerVertexQualityFromPrincipalCurvatureGaussian(MeshType& m)
+void setVertexQualityFromPrincipalCurvatureGaussian(MeshType& m)
 {
     requireVertexQualities(m);
     requireVertexPrincipalCurvatures(m);
@@ -216,7 +216,7 @@ void setPerVertexQualityFromPrincipalCurvatureGaussian(MeshType& m)
 }
 
 template<MeshConcept MeshType>
-void setPerVertexQualityFromPrincipalCurvatureMean(MeshType& m)
+void setVertexQualityFromPrincipalCurvatureMean(MeshType& m)
 {
     requireVertexQualities(m);
     requireVertexPrincipalCurvatures(m);
@@ -229,7 +229,7 @@ void setPerVertexQualityFromPrincipalCurvatureMean(MeshType& m)
 }
 
 template<MeshConcept MeshType>
-void setPerVertexQualityFromPrincipalCurvatureMinValue(MeshType& m)
+void setVertexQualityFromPrincipalCurvatureMinValue(MeshType& m)
 {
     requireVertexQualities(m);
     requireVertexPrincipalCurvatures(m);
@@ -240,7 +240,7 @@ void setPerVertexQualityFromPrincipalCurvatureMinValue(MeshType& m)
 }
 
 template<MeshConcept MeshType>
-void setPerVertexQualityFromPrincipalCurvatureMaxValue(MeshType& m)
+void setVertexQualityFromPrincipalCurvatureMaxValue(MeshType& m)
 {
     requireVertexQualities(m);
     requireVertexPrincipalCurvatures(m);
@@ -262,7 +262,7 @@ void setPerVertexQualityFromPrincipalCurvatureMaxValue(MeshType& m)
  * @param m
  */
 template<MeshConcept MeshType>
-void setPerVertexQualityFromPrincipalCurvatureShapeIndex(MeshType& m)
+void setVertexQualityFromPrincipalCurvatureShapeIndex(MeshType& m)
 {
     requireVertexQualities(m);
     requireVertexPrincipalCurvatures(m);
@@ -288,7 +288,7 @@ void setPerVertexQualityFromPrincipalCurvatureShapeIndex(MeshType& m)
  * @param m
  */
 template<MeshConcept MeshType>
-void setPerVertexQualityFromPrincipalCurvatureCurvedness(MeshType& m)
+void setVertexQualityFromPrincipalCurvatureCurvedness(MeshType& m)
 {
     requireVertexQualities(m);
     requireVertexPrincipalCurvatures(m);
