@@ -338,8 +338,7 @@ void readOffVertices(
             (int) tokens.size() - nReadComponents - nTexCoords;
 
         if constexpr (HasVertexColor<MeshType>) {
-            if (mesh.isVertexColorAvailable() &&
-                fileInfo.hasVertexColor()) {
+            if (mesh.isVertexColorAvailable() && fileInfo.hasVertexColor()) {
                 if (nColorComponents != 1 && nColorComponents != 3 &&
                     nColorComponents != 4)
                     throw MalformedFileException(
