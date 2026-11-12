@@ -22,7 +22,7 @@ void initSmoothAlgorithms(pybind11::module& m)
             m.def(
                 "smooth_vertex_normals_point_cloud",
                 [](MeshType& m, uint neighborCount, uint iterCount) -> void {
-                    return smoothPerVertexNormalsPointCloud(
+                    return smoothVertexNormalsPointCloud(
                         m, neighborCount, iterCount);
                 },
                 "mesh"_a,

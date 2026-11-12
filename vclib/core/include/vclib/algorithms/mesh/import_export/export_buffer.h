@@ -1958,11 +1958,11 @@ void faceMaterialIndicesAsDuplicatedVertexMaterialIndicesToBuffer(
  * `static_cast<BufferValueType>(-1)`, which is `-1` for signed integer types or
  * the maximum representable value for unsigned integer types).
  *
- * You can use the function @ref vcl::largestPerVertexAdjacentVerticesCount to
+ * You can use the function @ref vcl::largestVertexAdjacentVerticesCount to
  * get the largest adjacency size and allocate the buffer accordingly:
  *
  * @code{.cpp}
- * uint lva = vcl::largestPerVertexAdjacentVerticesCount(myMesh);
+ * uint lva = vcl::largestVertexAdjacentVerticesCount(myMesh);
  * Eigen::MatrixXi vertexAdj(myMesh.vertexCount(), lva);
  * vcl::vertexAdjacentVerticesToBuffer(
  *    myMesh, vertexAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
@@ -2026,11 +2026,11 @@ void vertexAdjacentVerticesToBuffer(
  * `static_cast<BufferValueType>(-1)`, which is `-1` for signed integer types or
  * the maximum representable value for unsigned integer types).
  *
- * You can use the function @ref vcl::largestPerElementAdjacentFacesCount to
+ * You can use the function @ref vcl::largestElementAdjacentFacesCount to
  * get the largest adjacency size and allocate the buffer accordingly:
  *
  * @code{.cpp}
- * uint lva = vcl::largestPerElementAdjacentFacesCount<ELEM_ID>(myMesh);
+ * uint lva = vcl::largestElementAdjacentFacesCount<ELEM_ID>(myMesh);
  * Eigen::MatrixXi faceAdj(myMesh.count<ELEM_ID>(), lva);
  * vcl::elementAdjacentFacesToBuffer<ELEM_ID>(
  *    myMesh, faceAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
@@ -2095,11 +2095,11 @@ void elementAdjacentFacesToBuffer(
  * `static_cast<BufferValueType>(-1)`, which is `-1` for signed integer types or
  * the maximum representable value for unsigned integer types).
  *
- * You can use the function @ref vcl::largestPerVertexAdjacentFacesCount to
+ * You can use the function @ref vcl::largestVertexAdjacentFacesCount to
  * get the largest adjacency size and allocate the buffer accordingly:
  *
  * @code{.cpp}
- * uint lva = vcl::largestPerVertexAdjacentFacesCount(myMesh);
+ * uint lva = vcl::largestVertexAdjacentFacesCount(myMesh);
  * Eigen::MatrixXi faceAdj(myMesh.vertexCount(), lva);
  * vcl::vertexAdjacentFacesToBuffer(
  *    myMesh, faceAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
@@ -2170,11 +2170,11 @@ void faceAdjacentFacesToBuffer(
  * `static_cast<BufferValueType>(-1)`, which is `-1` for signed integer types or
  * the maximum representable value for unsigned integer types).
  *
- * You can use the function @ref vcl::largestPerEdgeAdjacentFacesCount to
+ * You can use the function @ref vcl::largestEdgeAdjacentFacesCount to
  * get the largest adjacency size and allocate the buffer accordingly:
  *
  * @code{.cpp}
- * uint lva = vcl::largestPerEdgeAdjacentFacesCount(myMesh);
+ * uint lva = vcl::largestEdgeAdjacentFacesCount(myMesh);
  * Eigen::MatrixXi faceAdj(myMesh.edgeCount(), lva);
  * vcl::edgeAdjacentFacesToBuffer(
  *    myMesh, faceAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
@@ -2213,11 +2213,11 @@ void edgeAdjacentFacesToBuffer(
  * `static_cast<BufferValueType>(-1)`, which is `-1` for signed integer types or
  * the maximum representable value for unsigned integer types).
  *
- * You can use the function @ref vcl::largestPerElementAdjacentEdgesCount to
+ * You can use the function @ref vcl::largestElementAdjacentEdgesCount to
  * get the largest adjacency size and allocate the buffer accordingly:
  *
  * @code{.cpp}
- * uint lva = vcl::largestPerElementAdjacentEdgesCount<ELEM_ID>(myMesh);
+ * uint lva = vcl::largestElementAdjacentEdgesCount<ELEM_ID>(myMesh);
  * Eigen::MatrixXi edgeAdj(myMesh.count<ELEM_ID>(), lva);
  * vcl::elementAdjacentEdgesToBuffer<ELEM_ID>(
  *    myMesh, edgeAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
@@ -2225,7 +2225,7 @@ void edgeAdjacentFacesToBuffer(
  *
  * @param[in] mesh: input mesh
  * @param[out] buffer: preallocated buffer
- * @param[in] largestAdjacentEdgesSize: size of the largest per-element edge
+ * @param[in] largestAdjacentEdgesSize: size of the largest element edge
  * adjacency list
  * @param[in] storage: storage type of the matrix (row or column major)
  * @param[in] numRows: number of rows of the matrix (if different from the
@@ -2282,11 +2282,11 @@ void elementAdjacentEdgesToBuffer(
  * `static_cast<BufferValueType>(-1)`, which is `-1` for signed integer types or
  * the maximum representable value for unsigned integer types).
  *
- * You can use the function @ref vcl::largestPerVertexAdjacentEdgesCount to
+ * You can use the function @ref vcl::largestVertexAdjacentEdgesCount to
  * get the largest adjacency size and allocate the buffer accordingly:
  *
  * @code{.cpp}
- * uint lva = vcl::largestPerVertexAdjacentEdgesCount(myMesh);
+ * uint lva = vcl::largestVertexAdjacentEdgesCount(myMesh);
  * Eigen::MatrixXi edgeAdj(myMesh.vertexCount(), lva);
  * vcl::vertexAdjacentEdgesToBuffer(
  *    myMesh, edgeAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
@@ -2324,19 +2324,19 @@ void vertexAdjacentEdgesToBuffer(
  * `static_cast<BufferValueType>(-1)`, which is `-1` for signed integer types or
  * the maximum representable value for unsigned integer types).
  *
- * You can use the function @ref vcl::largestPerFaceAdjacentEdgesCount to
+ * You can use the function @ref vcl::largestFaceAdjacentEdgesCount to
  * get the largest adjacency size and allocate the buffer accordingly:
  *
  * @code{.cpp}
- * uint lva = vcl::largestPerFaceAdjacentEdgesCount(myMesh);
- * Eigen::MatrixXi edgeAdj(myMesh.vertexCount(), lva);
+ * uint lva = vcl::largestFaceAdjacentEdgesCount(myMesh);
+ * Eigen::MatrixXi edgeAdj(myMesh.faceCount(), lva);
  * vcl::faceAdjacentEdgesToBuffer(
  *    myMesh, edgeAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
  * @endcode
  *
  * @param[in] mesh: input mesh
  * @param[out] buffer: preallocated buffer
- * @param[in] largestAdjacentEdgesSize: size of the largest per-face edge
+ * @param[in] largestAdjacentEdgesSize: size of the largest face edge
  * adjacency list
  * @param[in] storage: storage type of the matrix (row or column major)
  * @param[in] numRows: number of rows of the matrix (if different from the
@@ -2367,19 +2367,19 @@ void faceAdjacentEdgesToBuffer(
  * `static_cast<BufferValueType>(-1)`, which is `-1` for signed integer types or
  * the maximum representable value for unsigned integer types).
  *
- * You can use the function @ref vcl::largestPerEdgeAdjacentEdgesCount to
+ * You can use the function @ref vcl::largestEdgeAdjacentEdgesCount to
  * get the largest adjacency size and allocate the buffer accordingly:
  *
  * @code{.cpp}
- * uint lva = vcl::largestPerEdgeAdjacentEdgesCount(myMesh);
- * Eigen::MatrixXi edgeAdj(myMesh.vertexCount(), lva);
+ * uint lva = vcl::largestEdgeAdjacentEdgesCount(myMesh);
+ * Eigen::MatrixXi edgeAdj(myMesh.edgeCount(), lva);
  * vcl::edgeAdjacentEdgesToBuffer(
  *    myMesh, edgeAdj.data(), lva, MatrixStorageType::COLUMN_MAJOR);
  * @endcode
  *
  * @param[in] mesh: input mesh
  * @param[out] buffer: preallocated buffer
- * @param[in] largestAdjacentEdgesSize: size of the largest per-edge edge
+ * @param[in] largestAdjacentEdgesSize: size of the largest edge edge
  * adjacency list
  * @param[in] storage: storage type of the matrix (row or column major)
  * @param[in] numRows: number of rows of the matrix (if different from the

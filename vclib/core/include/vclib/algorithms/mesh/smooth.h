@@ -171,7 +171,7 @@ void taubinSmoothing(
 }
 
 /**
- * @brief smoothPerVertexNormalsPointCloud
+ * @brief smoothVertexNormalsPointCloud
  *
  * Requirements:
  * - Mesh:
@@ -184,7 +184,7 @@ void taubinSmoothing(
  * @param iterCount
  */
 template<MeshConcept MeshType, PointConcept PointType>
-void smoothPerVertexNormalsPointCloud(
+void smoothVertexNormalsPointCloud(
     MeshType&                m,
     const KDTree<PointType>& tree,
     uint                     neighborCount,
@@ -220,7 +220,7 @@ void smoothPerVertexNormalsPointCloud(
 }
 
 /**
- * @brief smoothPerVertexNormalsPointCloud
+ * @brief smoothVertexNormalsPointCloud
  *
  * Requirements:
  * - Mesh:
@@ -232,14 +232,14 @@ void smoothPerVertexNormalsPointCloud(
  * @param iterCount
  */
 template<MeshConcept MeshType>
-void smoothPerVertexNormalsPointCloud(
+void smoothVertexNormalsPointCloud(
     MeshType& m,
     uint      neighborCount,
     uint      iterCount)
 {
     using PointType = PositionType<MeshType>;
     KDTree<PointType> tree(m);
-    smoothPerVertexNormalsPointCloud(m, tree, neighborCount, iterCount);
+    smoothVertexNormalsPointCloud(m, tree, neighborCount, iterCount);
 }
 
 } // namespace vcl

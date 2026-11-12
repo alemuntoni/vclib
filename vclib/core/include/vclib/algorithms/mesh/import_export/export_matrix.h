@@ -1199,11 +1199,11 @@ Container<Container<T>> vertexAdjacentVerticesVectors(const MeshType& mesh)
  * @code{.cpp}
  * Eigen::MatrixXi VA =
  *     vcl::vertexAdjacentVerticesMatrix<Eigen::MatrixXi>(myMesh);
- * @endif
+ * @endcode
  *
  * @throws vcl::MissingCompactnessException if the vertex container is not
  * compact.
- * @throws vcl::MissingComponentException if the mesh does not have per-vertex
+ * @throws vcl::MissingComponentException if the mesh does not have vertex
  * adjacent vertices available.
  *
  * @tparam Matrix: type of the matrix to be returned, it must satisfy the
@@ -1219,7 +1219,7 @@ Container<Container<T>> vertexAdjacentVerticesVectors(const MeshType& mesh)
 template<MatrixConcept Matrix, MeshConcept MeshType>
 Matrix vertexAdjacentVerticesMatrix(const MeshType& mesh)
 {
-    uint lva = vcl::largestPerVertexAdjacentVerticesCount(mesh);
+    uint lva = vcl::largestVertexAdjacentVerticesCount(mesh);
 
     Matrix vAVM(mesh.vertexCount(), lva);
 
@@ -1337,7 +1337,7 @@ Container<Container<T>> elementAdjacentFacesVectors(const MeshType& mesh)
 template<ElemId ELEM_ID, MatrixConcept Matrix, FaceMeshConcept MeshType>
 Matrix elementAdjacentFacesMatrix(const MeshType& mesh)
 {
-    uint lfa = vcl::largestPerElementAdjacentFacesCount<ELEM_ID>(mesh);
+    uint lfa = vcl::largestElementAdjacentFacesCount<ELEM_ID>(mesh);
 
     Matrix eAFM(mesh.template count<ELEM_ID>(), lfa);
 
@@ -1708,7 +1708,7 @@ Container<Container<T>> elementAdjacentEdgesVectors(const MeshType& mesh)
 template<ElemId ELEM_ID, MatrixConcept Matrix, EdgeMeshConcept MeshType>
 Matrix elementAdjacentEdgesMatrix(const MeshType& mesh)
 {
-    uint lea = vcl::largestPerElementAdjacentEdgesCount<ELEM_ID>(mesh);
+    uint lea = vcl::largestElementAdjacentEdgesCount<ELEM_ID>(mesh);
 
     Matrix eAEM(mesh.template count<ELEM_ID>(), lea);
 

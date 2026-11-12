@@ -99,7 +99,7 @@ inline auto meshSmoothing()
 
     {
         vcl::Timer timer("Normal smoothing");
-        vcl::smoothPerVertexNormalsPointCloud(normalMesh, 10, 3);
+        vcl::smoothVertexNormalsPointCloud(normalMesh, 10, 3);
         timer.stopAndPrint();
     }
 
