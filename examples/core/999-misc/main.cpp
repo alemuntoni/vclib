@@ -7,70 +7,9 @@
 
 #include <print>
 
-#include "test_concepts.h"
-#include "test_navigation.h"
-#include "test_container_proxy.h"
-#include "test_const_correctness.h"
-#include "test_vertex_references.h"
-#include "test_lifetime.h"
-#include "test_deletion_compaction.h"
-#include "test_optional_components.h"
-#include "test_add_elements.h"
-#include "test_import_from.h"
-#include "test_append.h"
-#include "test_custom_components.h"
-#include "test_views.h"
-#include "test_serialization.h"
-#include "test_wedge.h"
-#include "test_adjacencies.h"
-#include "test_edges.h"
-#include "test_elem_algorithms.h"
-#include "test_presets.h"
-#include "test_mesh_info.h"
-#include "test_mesh_pos.h"
-#include "test_update_normals.h"
-#include "test_delete_algorithms.h"
-#include "test_clean_algorithms.h"
-#include "test_create_algorithms.h"
-#include "test_stat_quality.h"
-#include "test_update_color.h"
-#include "test_update_quality.h"
-#include "test_update_selection.h"
-#include "test_shuffle.h"
-
 int main()
 {
-    testConcepts();
-    testPresets();
-    testNavigation();
-    testContainerProxy();
-    testConstCorrectness();
-    testVertexReferences();
-    testMeshLifetime();
-    testDeletionCompaction();
-    testOptionalComponents();
-    testAddElements();
-    testImportFrom();
-    testAppend();
-    testCustomComponents();
-    testViews();
-    testSerialization();
-    testWedge();
-    testAdjacencies();
-    testEdges();
-    testElemAlgorithms();
-    testMeshInfo();
-    testMeshPos();
-    testUpdateNormals();
-    testDeleteAlgorithms();
-    testCleanAlgorithms();
-    testCreateAlgorithms();
-    testStatQuality();
-    testUpdateColor();
-    testUpdateQuality();
-    testUpdateSelection();
-    testShuffle();
+    // left empty for tests
 
-    std::println("All mesh tests passed successfully!");
     return 0;
 }

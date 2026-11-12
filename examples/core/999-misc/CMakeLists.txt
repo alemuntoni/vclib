@@ -8,40 +8,7 @@
 get_filename_component(EXAMPLE_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(vclib-core-example-${EXAMPLE_NAME})
 
-set(SOURCES
-    types.h
-    test_concepts.h
-    test_navigation.h
-    test_container_proxy.h
-    test_const_correctness.h
-    test_vertex_references.h
-    test_lifetime.h
-    test_deletion_compaction.h
-    test_optional_components.h
-    test_add_elements.h
-    test_import_from.h
-    test_append.h
-    test_custom_components.h
-    test_views.h
-    test_serialization.h
-    test_wedge.h
-    test_adjacencies.h
-    test_edges.h
-    test_elem_algorithms.h
-    test_presets.h
-    test_mesh_info.h
-    test_mesh_pos.h
-    test_update_normals.h
-    test_delete_algorithms.h
-    test_clean_algorithms.h
-    test_create_algorithms.h
-    test_stat_quality.h
-    test_update_color.h
-    test_update_quality.h
-    test_update_selection.h
-    test_shuffle.h
-    main.cpp
-)
+set(SOURCES main.cpp)
 
 vclib_add_example(
     ${EXAMPLE_NAME}
