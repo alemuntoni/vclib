@@ -5,10 +5,5 @@ template<typename T>
 concept HasOptionalMaterialIndex = comp::HasOptionalMaterialIndex<T>;
 //@aliases
 /* Port MaterialIndex class into %EL_NS% namespace */
-using MaterialIndex           = comp::MaterialIndex<ushort, false>;
-using OptionalMaterialIndex   = comp::OptionalMaterialIndex<ushort>;
-
-using MaterialIndexus         = comp::MaterialIndexus;
-using MaterialIndexu          = comp::MaterialIndexu;
-using OptionalMaterialIndexus = comp::OptionalMaterialIndexus;
-using OptionalMaterialIndexu  = comp::OptionalMaterialIndexu;
+using MaterialIndex         = comp::MaterialIndex<false>;
+using OptionalMaterialIndex = comp::OptionalMaterialIndex;

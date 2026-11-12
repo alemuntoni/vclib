@@ -15,7 +15,7 @@
 namespace vcl::comp {
 
 /**
- * @brief The MaterialIndex class represents an unsigned integer index that
+ * @brief The MaterialIndex class represents an unsigned short index that
  * refers to a Material in the Mesh Materials component.
  *
  * It is typically part of an Element (e.g. Vertex, Face).
@@ -25,32 +25,19 @@ namespace vcl::comp {
  *
  * @code{.cpp}
  * f.materialIndex() = 0;
- * auto mi = f.materialIndex();
+ * ushort mi = f.materialIndex();
  * @endcode
  *
- * @tparam Index: The unsigned integral type used to store the material index
- * (default: ushort / uint16_t).
  * @tparam OPT: If true, the component is optional (runtime enable/disable).
  *
  * @ingroup components
  */
-template<std::unsigned_integral Index = ushort, bool OPT = false>
-class MaterialIndex : public Component<CompId::MATERIAL_INDEX, Index, OPT>
+template<bool OPT = false>
+class MaterialIndex : public Component<CompId::MATERIAL_INDEX, ushort, OPT>
 {
-    using Base = Component<CompId::MATERIAL_INDEX, Index, OPT>;
+    using Base = Component<CompId::MATERIAL_INDEX, ushort, OPT>;
 
 public:
-    /**
-     * @brief Expose the type of the material index.
-     */
-    using MaterialIndexType = Index;
-
-    /**
-     * @brief The null/unassigned sentinel value for material index.
-     */
-    static constexpr MaterialIndexType NULL_MATERIAL_INDEX =
-        vcl::NULL_INDEX<MaterialIndexType>;
-
     /* Constructors */
 
     /**
@@ -60,13 +47,10 @@ public:
 
     /**
      * @brief Returns the default initial value for MaterialIndex
-     * (NULL_MATERIAL_INDEX).
-     * @return NULL_MATERIAL_INDEX.
+     * (USHORT_NULL).
+     * @return USHORT_NULL.
      */
-    static constexpr MaterialIndexType defaultValue()
-    {
-        return NULL_MATERIAL_INDEX;
-    }
+    static constexpr ushort defaultValue() { return USHORT_NULL; }
 
     /* Member functions */
 
@@ -84,6 +68,10 @@ protected:
     template<typename OtherElement>
     void importFrom(this auto&& self, const OtherElement& other, bool = true);
 };
+
+/* Aliases */
+
+using OptionalMaterialIndex = MaterialIndex<true>;
 
 /* Concepts */
 
@@ -111,39 +99,21 @@ template<typename T>
 concept HasOptionalMaterialIndex =
     HasMaterialIndex<T> && HasOptionalComponent<CompId::MATERIAL_INDEX, T>;
 
-/* Detector function to check if a class has MaterialIndex available */
-
 /* Implementation of member functions */
 
-template<std::unsigned_integral Index, bool OPT>
+template<bool OPT>
 template<typename OtherElement>
-void MaterialIndex<Index, OPT>::importFrom(
+void MaterialIndex<OPT>::importFrom(
     this auto&&         self,
     const OtherElement& other,
     bool)
 {
     if constexpr (HasMaterialIndex<OtherElement>) {
         if (other.template isComponentAvailable<CompId::MATERIAL_INDEX>()) {
-            if (other.materialIndex() == OtherElement::NULL_MATERIAL_INDEX) {
-                self.materialIndex() = NULL_MATERIAL_INDEX;
-            }
-            else {
-                self.materialIndex() =
-                    static_cast<MaterialIndexType>(other.materialIndex());
-            }
+            self.materialIndex() = other.materialIndex();
         }
     }
 }
-
-/* Specialization Aliases */
-
-template<std::unsigned_integral Index = ushort>
-using OptionalMaterialIndex = MaterialIndex<Index, true>;
-
-using MaterialIndexus         = MaterialIndex<ushort>;
-using MaterialIndexu          = MaterialIndex<uint>;
-using OptionalMaterialIndexus = OptionalMaterialIndex<ushort>;
-using OptionalMaterialIndexu  = OptionalMaterialIndex<uint>;
 
 } // namespace vcl::comp
 

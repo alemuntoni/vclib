@@ -317,8 +317,7 @@ TEST_CASE("Append - Append With Materials")
         0; // "Material_1" (should remap to index 1 of m1)
     m2.face(1).materialIndex() =
         1; // "Material_2" (should become index 2 of m1)
-    m2.face(2).materialIndex() =
-        MaterialMeshWithMaterials::Face::NULL_MATERIAL_INDEX; // unassigned
+    m2.face(2).materialIndex() = vcl::USHORT_NULL; // unassigned
 
     m2.pushTextureImage("textures/wood.png", Image());
 
@@ -348,11 +347,8 @@ TEST_CASE("Append - Append With Materials")
     REQUIRE(m1.face(2).materialIndex() == 1);
     // face 3 was m2 face 1 (had mat 1 = Material_2 -> remapped to m1's index 2)
     REQUIRE(m1.face(3).materialIndex() == 2);
-    // face 4 was m2 face 2 (NULL_MATERIAL_INDEX -> remained
-    // NULL_MATERIAL_INDEX)
-    REQUIRE(
-        m1.face(4).materialIndex() ==
-        MaterialMeshWithMaterials::Face::NULL_MATERIAL_INDEX);
+    // face 4 was m2 face 2 (USHORT_NULL -> remained USHORT_NULL)
+    REQUIRE(m1.face(4).materialIndex() == vcl::USHORT_NULL);
 
     // 2. Self-append on a mesh with materials
     MaterialMeshWithMaterials mSelf = createSampleMaterialMesh();

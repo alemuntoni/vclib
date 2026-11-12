@@ -702,7 +702,7 @@ void addMeshToTinygltfModel(
                 std::unordered_map<uint, uint> modelMaterialIndices {};
                 uint chunkByteOffset    = indAlloc.second;
                 uint chunkLength        = 0;
-                uint modelMaterialIndex = 0;
+                uint modelMaterialIndex = UINT_NULL;
                 std::unordered_map<std::size_t, uint> addedTextures = {};
                 std::unordered_map<std::string, uint> addedImages   = {};
                 std::unordered_map<std::size_t, uint> addedSamplers = {};
@@ -718,16 +718,14 @@ void addMeshToTinygltfModel(
                             chunkLength,
                             accessors,
                             TINYGLTF_MODE_TRIANGLES,
-                            lastMaterialIndex == UINT_NULL ?
-                                UINT_NULL :
-                                modelMaterialIndex);
+                            modelMaterialIndex);
                     }
                 };
 
                 for (auto faceCompactIndex : faceIndicesSortedByMaterialID) {
                     auto face = m.face(oldFaceIndices[faceCompactIndex]);
 
-                    uint materialIndex = 0;
+                    ushort materialIndex = USHORT_NULL;
                     if (usePerFaceMaterial) {
                         if constexpr (HasFaceMaterialIndex<MeshType>) {
                             materialIndex = face.materialIndex();
@@ -754,22 +752,30 @@ void addMeshToTinygltfModel(
                     // Material changed: end previous chunk
                     flushChunk();
 
-                    // the material is added to the model if not already
-                    // present
-                    if (!modelMaterialIndices.contains(materialIndex)) {
-                        auto material = addGltfMaterial(
-                            tModel,
-                            m,
-                            m.material(materialIndex),
-                            addedTextures,
-                            addedImages,
-                            addedSamplers,
-                            saveTextureImages,
-                            log);
-                        modelMaterialIndices[materialIndex] = material.first;
-                    }
+                    if (materialIndex != USHORT_NULL &&
+                        materialIndex < m.materialCount()) {
+                        // the material is added to the model if not already
+                        // present
+                        if (!modelMaterialIndices.contains(materialIndex)) {
+                            auto material = addGltfMaterial(
+                                tModel,
+                                m,
+                                m.material(materialIndex),
+                                addedTextures,
+                                addedImages,
+                                addedSamplers,
+                                saveTextureImages,
+                                log);
+                            modelMaterialIndices[materialIndex] =
+                                material.first;
+                        }
 
-                    modelMaterialIndex = modelMaterialIndices.at(materialIndex);
+                        modelMaterialIndex =
+                            modelMaterialIndices.at(materialIndex);
+                    }
+                    else {
+                        modelMaterialIndex = UINT_NULL;
+                    }
 
                     // start new chunk
                     chunkByteOffset += chunkLength;

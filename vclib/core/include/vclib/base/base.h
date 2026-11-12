@@ -45,7 +45,7 @@ constexpr uint UINT_NULL = std::numeric_limits<uint>::max();
  *
  * @ingroup base
  */
-constexpr uint USHORT_NULL = std::numeric_limits<ushort>::max();
+constexpr ushort USHORT_NULL = std::numeric_limits<ushort>::max();
 
 /**
  * @brief The NULL_INDEX variable template represents a null / invalid sentinel

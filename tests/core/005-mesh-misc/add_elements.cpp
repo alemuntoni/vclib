@@ -135,34 +135,25 @@ TEST_CASE("Add Elements - Add Polygon Faces")
 
 TEST_CASE("Add Elements - Default Component Initialization")
 {
-    // 1. Non-optional MaterialIndex component (default ushort)
+    // 1. Non-optional MaterialIndex component (ushort)
     MaterialMesh mesh;
     vcl::uint    f0 = mesh.addFace();
-    REQUIRE(
-        mesh.face(f0).materialIndex() ==
-        MaterialMesh::Face::NULL_MATERIAL_INDEX);
-    REQUIRE(mesh.face(f0).materialIndex() == vcl::NULL_INDEX<ushort>);
+    REQUIRE(mesh.face(f0).materialIndex() == vcl::USHORT_NULL);
 
     vcl::uint fBase = mesh.addFaces(3);
     for (vcl::uint i = 0; i < 3; ++i) {
-        REQUIRE(
-            mesh.face(fBase + i).materialIndex() ==
-            MaterialMesh::Face::NULL_MATERIAL_INDEX);
+        REQUIRE(mesh.face(fBase + i).materialIndex() == vcl::USHORT_NULL);
     }
 
     mesh.resizeFaces(8);
     for (vcl::uint i = 4; i < 8; ++i) {
-        REQUIRE(
-            mesh.face(i).materialIndex() ==
-            MaterialMesh::Face::NULL_MATERIAL_INDEX);
+        REQUIRE(mesh.face(i).materialIndex() == vcl::USHORT_NULL);
     }
 
     // Mutate and check
     mesh.face(0).materialIndex() = 2;
     REQUIRE(mesh.face(0).materialIndex() == 2);
-    REQUIRE(
-        mesh.face(1).materialIndex() ==
-        MaterialMesh::Face::NULL_MATERIAL_INDEX);
+    REQUIRE(mesh.face(1).materialIndex() == vcl::USHORT_NULL);
 
     // 2. Optional MaterialIndex component
     OptionalMaterialMesh optMesh;
@@ -177,18 +168,12 @@ TEST_CASE("Add Elements - Default Component Initialization")
              CompId::MATERIAL_INDEX>()));
 
     for (vcl::uint i = 0; i < 4; ++i) {
-        REQUIRE(
-            optMesh.face(i).materialIndex() ==
-            OptionalMaterialMesh::Face::NULL_MATERIAL_INDEX);
+        REQUIRE(optMesh.face(i).materialIndex() == vcl::USHORT_NULL);
     }
 
     vcl::uint optFBase = optMesh.addFaces(2);
-    REQUIRE(
-        optMesh.face(optFBase).materialIndex() ==
-        OptionalMaterialMesh::Face::NULL_MATERIAL_INDEX);
-    REQUIRE(
-        optMesh.face(optFBase + 1).materialIndex() ==
-        OptionalMaterialMesh::Face::NULL_MATERIAL_INDEX);
+    REQUIRE(optMesh.face(optFBase).materialIndex() == vcl::USHORT_NULL);
+    REQUIRE(optMesh.face(optFBase + 1).materialIndex() == vcl::USHORT_NULL);
 }
 
 TEST_CASE("Add Elements")

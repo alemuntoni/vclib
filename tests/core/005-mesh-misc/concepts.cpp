@@ -148,27 +148,13 @@ TEST_CASE("Concepts - Component Concepts")
         face::HasOptionalMaterialIndex<OptionalMaterialFaceComponents>);
     static_assert(face::HasOptionalMaterialIndex<OptionalMaterialMesh::Face>);
 
-    // MaterialIndex Type and Sentinel Concepts
-    static_assert(
-        std::is_same_v<MaterialMesh::Face::MaterialIndexType, ushort>);
-    static_assert(
-        MaterialMesh::Face::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<ushort>);
-    static_assert(
-        comp::MaterialIndex<>::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<ushort>);
-    static_assert(
-        face::MaterialIndex::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<ushort>);
-    static_assert(
-        face::MaterialIndexu::NULL_MATERIAL_INDEX == vcl::NULL_INDEX<uint>);
-
     // Default Value Concepts
     static_assert(comp::HasDefaultValue<comp::MaterialIndex<>>);
     static_assert(
-        comp::defaultValue<comp::MaterialIndex<>>() == vcl::NULL_INDEX<ushort>);
+        comp::defaultValue<comp::MaterialIndex<>>() == vcl::USHORT_NULL);
     static_assert(comp::HasDefaultValue<face::MaterialIndex>);
     static_assert(
-        comp::defaultValue<face::MaterialIndex>() == vcl::NULL_INDEX<ushort>);
-    static_assert(
-        comp::defaultValue<face::MaterialIndexu>() == vcl::NULL_INDEX<uint>);
+        comp::defaultValue<face::MaterialIndex>() == vcl::USHORT_NULL);
 
     // Adjacency Component Concepts
     static_assert(HasAdjacentFaces<AdjFaceComponents>);

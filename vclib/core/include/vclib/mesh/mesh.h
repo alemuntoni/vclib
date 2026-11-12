@@ -1400,12 +1400,11 @@ private:
 
             if constexpr (comp::HasComponent<CompId::MATERIAL_INDEX, Cont>) {
                 if (this->Cont::template isComponentAvailable<CompId::MATERIAL_INDEX>()) {
-                    using MatIndexType = typename Cont::ElementType::MaterialIndexType;
-                    constexpr auto nullIdx = Cont::ElementType::NULL_MATERIAL_INDEX;
                     for (auto e : this->template elements<ELEM_ID>(startFrom)) {
-                        if (e.materialIndex() != nullIdx &&
+                        if (e.materialIndex() != USHORT_NULL &&
                             e.materialIndex() < mapping.size()) {
-                            e.materialIndex() = static_cast<MatIndexType>(mapping[e.materialIndex()]);
+                            e.materialIndex() =
+                                static_cast<ushort>(mapping[e.materialIndex()]);
                         }
                     }
                 }

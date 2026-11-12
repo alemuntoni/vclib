@@ -106,13 +106,8 @@ using OptionalColor = comp::OptionalColor;
 using CustomComponents = comp::CustomComponents;
 
 /* Port MaterialIndex class into vert namespace */
-using MaterialIndex           = comp::MaterialIndex<ushort, false>;
-using OptionalMaterialIndex   = comp::OptionalMaterialIndex<ushort>;
-
-using MaterialIndexus         = comp::MaterialIndexus;
-using MaterialIndexu          = comp::MaterialIndexu;
-using OptionalMaterialIndexus = comp::OptionalMaterialIndexus;
-using OptionalMaterialIndexu  = comp::OptionalMaterialIndexu;
+using MaterialIndex         = comp::MaterialIndex<false>;
+using OptionalMaterialIndex = comp::OptionalMaterialIndex;
 
 /* Port Normal classes into vert namespace */
 template<typename ScalarType, int N, bool OPT = false>

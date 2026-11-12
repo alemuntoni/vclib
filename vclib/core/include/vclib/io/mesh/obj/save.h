@@ -113,7 +113,7 @@ void saveObj(
         materialNames = saveObjMaterials(m, meshBasePath, *mtlfp, log);
     }
 
-    uint lastMaterial = UINT_NULL;
+    ushort lastMaterial = USHORT_NULL;
 
     // vertices
     fp << std::endl << "# Vertices" << std::endl;
@@ -163,8 +163,23 @@ void saveObj(
             for (const auto& f : m.faces()) {
                 if constexpr (HasMaterials<MeshType>) {
                     if (useMtl) { // mtl management
-                        if (f.materialIndex() != lastMaterial) {
-                            lastMaterial = f.materialIndex();
+                        ushort matIdx = USHORT_NULL;
+                        if constexpr (HasFaceMaterialIndex<MeshType>) {
+                            if (meshInfo.hasFaceMaterialIndex()) {
+                                matIdx = f.materialIndex();
+                            }
+                        }
+                        if constexpr (HasVertexMaterialIndex<MeshType>) {
+                            if (matIdx == USHORT_NULL &&
+                                meshInfo.hasVertexMaterialIndex() &&
+                                f.vertexCount() > 0) {
+                                matIdx = f.vertex(0).materialIndex();
+                            }
+                        }
+                        if (matIdx != USHORT_NULL &&
+                            matIdx < materialNames.size() &&
+                            matIdx != lastMaterial) {
+                            lastMaterial = matIdx;
                             fp << "usemtl " << materialNames[lastMaterial]
                                << std::endl;
                         }
