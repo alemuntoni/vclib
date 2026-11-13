@@ -9,6 +9,7 @@
 
 #include <vclib/algorithms/mesh.h>
 #include <vclib/meshes.h>
+#include <vclib/space/complex.h>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -179,4 +180,68 @@ TEST_CASE("Shuffle - Shuffle64 Bit")
     auto fIndices = vcl::fillAndShuffleFaceIndexVector(mesh, 42u);
     static_assert(std::is_same_v<decltype(fIndices), std::vector<uint64_t>>);
     REQUIRE(fIndices.size() == 10);
+}
+
+TEST_CASE("Shuffle - Sort Proxy Vector and StaticGrid Do Not Corrupt Mesh")
+{
+    vcl::Sphere<double> s(vcl::Point3d(0, 0, 0), 1.0);
+    vcl::TriMesh mesh = vcl::createSphereIcosahedron<vcl::TriMesh>(s, 1);
+    mesh.compactVertices();
+    mesh.enableVertexColor();
+    mesh.enableVertexPrincipalCurvature();
+
+    std::vector<uint> origIndices;
+    std::vector<vcl::Point3d> origPositions;
+    std::vector<vcl::Color> origColors;
+    origIndices.reserve(mesh.vertexCount());
+    origPositions.reserve(mesh.vertexCount());
+    origColors.reserve(mesh.vertexCount());
+
+    for (auto v : mesh.vertices()) {
+        origIndices.push_back(v.index());
+        origPositions.push_back(v.position());
+        v.color() = vcl::Color(
+            static_cast<uint8_t>(v.index() % 255),
+            static_cast<uint8_t>((v.index() * 3) % 255),
+            static_cast<uint8_t>((v.index() * 7) % 255));
+        origColors.push_back(v.color());
+    }
+
+    std::vector<std::array<uint, 3>> origFaces;
+    origFaces.reserve(mesh.faceCount());
+    for (auto f : mesh.faces()) {
+        origFaces.push_back(
+            {f.vertexIndex(0), f.vertexIndex(1), f.vertexIndex(2)});
+    }
+
+    // Sorting a vector of mutable Vertex proxies must only reorder handles
+    auto vVec = vcl::fillAndShuffleVertexVector(mesh, 123u);
+    std::sort(vVec.begin(), vVec.end());
+    REQUIRE(vVec.size() == mesh.vertexCount());
+    for (uint i = 0; i < vVec.size(); ++i) {
+        REQUIRE(vVec[i].index() == origIndices[i]);
+        REQUIRE(vVec[i].position() == origPositions[i]);
+        REQUIRE(vVec[i].color() == origColors[i]);
+    }
+
+    // Building StaticGrid over mutable vertices/faces and running PCA curvature
+    // must not mutate vertex positions, colors, or face topology
+    vcl::StaticGrid vGrid(mesh.vertices());
+    vcl::StaticGrid fGrid(mesh.faces());
+    vcl::updatePrincipalCurvaturePCA(mesh, 0.5, true);
+
+    uint idx = 0;
+    for (auto v : mesh.vertices()) {
+        REQUIRE(v.index() == origIndices[idx]);
+        REQUIRE(v.position() == origPositions[idx]);
+        REQUIRE(v.color() == origColors[idx]);
+        ++idx;
+    }
+    idx = 0;
+    for (auto f : mesh.faces()) {
+        REQUIRE(f.vertexIndex(0) == origFaces[idx][0]);
+        REQUIRE(f.vertexIndex(1) == origFaces[idx][1]);
+        REQUIRE(f.vertexIndex(2) == origFaces[idx][2]);
+        ++idx;
+    }
 }

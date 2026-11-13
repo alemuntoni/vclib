@@ -195,7 +195,7 @@ public:
      * @param i The first element index.
      * @param j The second element index.
      */
-    void swapElements(uint i, uint j)
+    void swapElements(std::size_t i, std::size_t j)
     {
         if constexpr (vectorCount() > 0) {
             vectorSwap<vectorCount() - 1>(i, j);
@@ -426,11 +426,12 @@ private:
     }
 
     template<std::size_t N>
-    void vectorSwap(uint i, uint j)
+    void vectorSwap(std::size_t i, std::size_t j)
     {
         if (mVecEnabled[N]) {
             auto& vec = std::get<N>(mVecTuple);
-            std::swap(vec[i], vec[j]);
+            using std::swap;
+            swap(vec[i], vec[j]);
         }
         if constexpr (N != 0) {
             vectorSwap<N - 1>(i, j);

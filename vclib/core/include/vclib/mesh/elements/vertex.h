@@ -57,6 +57,16 @@ public:
     {
     }
 
+    /**
+     * @brief Swaps this Vertex proxy handle with another one.
+     */
+    void swap(Vertex& other) noexcept { Base::swap(other); }
+
+    /**
+     * @brief Swaps two Vertex proxy handles.
+     */
+    friend void swap(Vertex& a, Vertex& b) noexcept { a.swap(b); }
+
 protected:
     Vertex(ContainerType& container, IndexType index) : Base(container, index)
     {

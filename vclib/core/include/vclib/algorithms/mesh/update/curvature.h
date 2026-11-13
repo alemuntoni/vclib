@@ -251,7 +251,6 @@ void updatePrincipalCurvaturePCA(
     if (montecarloSampling) {
         area  = surfaceArea(m);
         pGrid = VGrid(m.vertices());
-        pGrid.build();
     }
 
     parallelFor(m.vertices(), [&](VertexType v) {

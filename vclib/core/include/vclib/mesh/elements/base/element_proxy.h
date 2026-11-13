@@ -19,6 +19,7 @@
 #include <concepts>
 #include <limits>
 #include <type_traits>
+#include <utility>
 
 namespace vcl {
 
@@ -184,18 +185,26 @@ public:
     bool operator==(std::nullptr_t) const { return !isValid(); }
 
     /**
-     * @brief Swaps the data of the two elements referenced by the proxies.
-     * Both proxies must refer to the same container.
+     * @brief Swaps this element proxy handle with another one.
+     *
+     * @note This swaps only the lightweight proxy handles (container pointer
+     * and element index), not the underlying element data in the container.
      */
-    friend void swap(ElementProxy a, ElementProxy b)
-        requires (!std::is_const_v<ContainerType>)
+    void swap(ElementProxy& other) noexcept
     {
-        assert(
-            a.mContainer == b.mContainer &&
-            "Cannot swap elements of different containers");
-        if (a.mContainer) {
-            a.mContainer->swapElements(a.mIndex, b.mIndex);
-        }
+        std::swap(mContainer, other.mContainer);
+        std::swap(mIndex, other.mIndex);
+    }
+
+    /**
+     * @brief Swaps two element proxy handles.
+     *
+     * @note This swaps only the lightweight proxy handles (container pointer
+     * and element index), not the underlying element data in the container.
+     */
+    friend void swap(ElementProxy& a, ElementProxy& b) noexcept
+    {
+        a.swap(b);
     }
 
     /**

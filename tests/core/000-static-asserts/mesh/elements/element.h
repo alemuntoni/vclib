@@ -10,11 +10,18 @@
 
 #include <vclib/meshes.h>
 
+#include <concepts>
+
 void elementStaticAsserts()
 {
     using namespace vcl;
 
-    using TMVertex  = VertexType<TriMesh>;
+    using TMVertex      = VertexType<TriMesh>;
+    using TMConstVertex = ConstVertexType<TriMesh>;
+    using TMFace        = FaceType<TriMesh>;
+    using TMConstFace   = ConstFaceType<TriMesh>;
+    using EMEdge        = EdgeType<EdgeMesh>;
+    using EMConstEdge   = ConstEdgeType<EdgeMesh>;
 
     static_assert(
         ElementConcept<TMVertex>,
@@ -31,6 +38,22 @@ void elementStaticAsserts()
     static_assert(
         ElementConcept<TMVertex&&>,
         "TMVertex&& does not satisfy the ElementConcept");
+
+    // Proxy handle swappability and const/rvalue safety
+    static_assert(std::swappable<TMVertex>);
+    static_assert(std::swappable<TMConstVertex>);
+    static_assert(!std::swappable<const TMVertex>);
+    static_assert(!std::swappable<const TMConstVertex>);
+
+    static_assert(std::swappable<TMFace>);
+    static_assert(std::swappable<TMConstFace>);
+    static_assert(!std::swappable<const TMFace>);
+    static_assert(!std::swappable<const TMConstFace>);
+
+    static_assert(std::swappable<EMEdge>);
+    static_assert(std::swappable<EMConstEdge>);
+    static_assert(!std::swappable<const EMEdge>);
+    static_assert(!std::swappable<const EMConstEdge>);
 }
 
 #endif // ELEM_ELEMENT_H

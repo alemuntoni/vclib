@@ -62,6 +62,16 @@ public:
     {
     }
 
+    /**
+     * @brief Swaps this Face proxy handle with another one.
+     */
+    void swap(Face& other) noexcept { Base::swap(other); }
+
+    /**
+     * @brief Swaps two Face proxy handles.
+     */
+    friend void swap(Face& a, Face& b) noexcept { a.swap(b); }
+
     template<typename OtherElement>
     void importFrom(const OtherElement& other, bool importRefs = true)
         requires (!std::is_const_v<ContainerType>)

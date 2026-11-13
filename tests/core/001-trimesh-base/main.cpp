@@ -296,16 +296,20 @@ TEMPLATE_TEST_CASE(
         PointT p0 = m.vertex(0).position();
         PointT p1 = m.vertex(1).position();
 
-        // swap vertices
+        // 1. Swapping ElementProxy handles only rebinds handles, without
+        //    modifying the underlying SoA data in the container
+        auto v0 = m.vertex(0);
+        auto v1 = m.vertex(1);
         using std::swap;
-        swap(m.vertex(0), m.vertex(1));
+        swap(v0, v1);
 
-        // check that positions are swapped
-        REQUIRE(m.vertex(0).position() == p1);
-        REQUIRE(m.vertex(1).position() == p0);
-
-        // check that colors are swapped too
-        REQUIRE(m.vertex(0).color() == vcl::Color::Green);
-        REQUIRE(m.vertex(1).color() == vcl::Color::Red);
+        REQUIRE(v0.index() == 1);
+        REQUIRE(v1.index() == 0);
+        REQUIRE(v0.position() == p1);
+        REQUIRE(v1.position() == p0);
+        REQUIRE(m.vertex(0).position() == p0);
+        REQUIRE(m.vertex(1).position() == p1);
+        REQUIRE(m.vertex(0).color() == vcl::Color::Red);
+        REQUIRE(m.vertex(1).color() == vcl::Color::Green);
     }
 }

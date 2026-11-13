@@ -11,6 +11,7 @@
 #include "wedge_traits.h"
 
 #include <cassert>
+#include <utility>
 
 namespace vcl {
 namespace comp {
@@ -60,6 +61,21 @@ public:
     WedgeProxy() = default;
 
     WedgeProxy(FaceType face, uint index) : mFace(face), mIndex(index) {}
+
+    /**
+     * @brief Swaps this WedgeProxy handle with another one.
+     */
+    void swap(WedgeProxy& other) noexcept
+    {
+        using std::swap;
+        swap(mFace, other.mFace);
+        swap(mIndex, other.mIndex);
+    }
+
+    /**
+     * @brief Swaps two WedgeProxy handles.
+     */
+    friend void swap(WedgeProxy& a, WedgeProxy& b) noexcept { a.swap(b); }
 
     /**
      * @brief Returns the 0-based local corner/position index of this wedge in the face (uint).

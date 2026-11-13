@@ -50,6 +50,16 @@ public:
     {
     }
 
+    /**
+     * @brief Swaps this %EL_UC% proxy handle with another one.
+     */
+    void swap(%EL_UC%& other) noexcept { Base::swap(other); }
+
+    /**
+     * @brief Swaps two %EL_UC% proxy handles.
+     */
+    friend void swap(%EL_UC%& a, %EL_UC%& b) noexcept { a.swap(b); }
+
 protected:
     %EL_UC%(ContainerType& container, IndexType index) : Base(container, index) {}
 

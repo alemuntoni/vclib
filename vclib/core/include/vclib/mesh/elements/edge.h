@@ -65,6 +65,16 @@ public:
     {
     }
 
+    /**
+     * @brief Swaps this Edge proxy handle with another one.
+     */
+    void swap(Edge& other) noexcept { Base::swap(other); }
+
+    /**
+     * @brief Swaps two Edge proxy handles.
+     */
+    friend void swap(Edge& a, Edge& b) noexcept { a.swap(b); }
+
 protected:
     Edge(ContainerType& container, IndexType index) : Base(container, index) {}
 
