@@ -62,6 +62,11 @@ public:
      */
     %EL_UC%Container() = default;
 
+    friend void swap(%EL_UC%Container& a, %EL_UC%Container& b) noexcept
+    {
+        a.swap(b);
+    }
+
     /**
      * @brief Returns the %EL_UC% at the i-th position in the %EL_UC% Container of
      * the Mesh, which will be the %EL_TXT% having index = i.

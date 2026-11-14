@@ -30,6 +30,7 @@
 #include <concepts>
 #include <istream>
 #include <ostream>
+#include <utility>
 
 namespace vcl::mesh {
 
@@ -137,7 +138,70 @@ public:
 
     static constexpr ElemId ELEMENT_ID = ElementType::ELEMENT_ID;
 
+    /**
+     * @brief Empty constructor. Enables non-optional components.
+     */
     ElementContainer() { enableNonOptionalComponents(Components {}); }
+
+    /**
+     * @brief Copy constructor. Deep copies elements, components, and state.
+     *
+     * @param other The container to copy from.
+     */
+    ElementContainer(const ElementContainer&) = default;
+
+    /**
+     * @brief Move constructor. Moves all element storage into this container,
+     * leaving other in a valid empty state (elementCount() == 0,
+     * elementContainerSize() == 0).
+     *
+     * @param other The container to move from.
+     */
+    ElementContainer(ElementContainer&& other) noexcept :
+        mParentMesh(std::exchange(other.mParentMesh, nullptr)),
+        mElemCount(std::exchange(other.mElemCount, 0)),
+        mElemComponents(std::move(other.mElemComponents)),
+        mCustomComponents(std::move(other.mCustomComponents))
+    {
+    }
+
+    /**
+     * @brief Assignment operator of the ElementContainer using the Copy & Swap
+     * idiom. Handles both copy assignment and move assignment seamlessly and
+     * provides the strong exception safety guarantee.
+     *
+     * @param other The container from which to copy or move data.
+     * @return Reference to this container after assignment.
+     */
+    ElementContainer& operator=(ElementContainer other) noexcept
+    {
+        swap(other);
+        return *this;
+    }
+
+    /**
+     * @brief Swaps the content of this container with another.
+     *
+     * @param other The container to swap with.
+     */
+    void swap(ElementContainer& other) noexcept
+    {
+        using std::swap;
+        swap(mElemCount, other.mElemCount);
+        swap(mElemComponents, other.mElemComponents);
+        swap(mCustomComponents, other.mCustomComponents);
+    }
+
+    /**
+     * @brief Swaps the contents of two ElementContainer instances.
+     *
+     * @param a The first container.
+     * @param b The second container.
+     */
+    friend void swap(ElementContainer& a, ElementContainer& b) noexcept
+    {
+        a.swap(b);
+    }
 
     /* Members that are inherited and wrapped by derived element containers */
 

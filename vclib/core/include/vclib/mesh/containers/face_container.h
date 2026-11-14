@@ -69,6 +69,11 @@ public:
      */
     FaceContainer() = default;
 
+    friend void swap(FaceContainer& a, FaceContainer& b) noexcept
+    {
+        a.swap(b);
+    }
+
     /**
      * @brief Returns the Face at the i-th position in the Face Container of
      * the Mesh, which will be the face having index = i.

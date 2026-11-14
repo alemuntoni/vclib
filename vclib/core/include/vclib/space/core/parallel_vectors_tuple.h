@@ -54,6 +54,62 @@ public:
     ParallelVectorsTuple() = default;
 
     /**
+     * @brief Copy constructor. Deep copies all vectors, enabled flags, and size.
+     */
+    ParallelVectorsTuple(const ParallelVectorsTuple&) = default;
+
+    /**
+     * @brief Move constructor. Moves all vectors and leaves the moved-from
+     * tuple in a valid empty state (size 0).
+     *
+     * @param other The tuple to move from.
+     */
+    ParallelVectorsTuple(ParallelVectorsTuple&& other) noexcept :
+        mVecTuple(std::move(other.mVecTuple)),
+        mVecEnabled(other.mVecEnabled),
+        mSize(std::exchange(other.mSize, 0))
+    {
+    }
+
+    /**
+     * @brief Assignment operator of the ParallelVectorsTuple using the Copy &
+     * Swap idiom. Handles both copy assignment and move assignment seamlessly
+     * and provides the strong exception safety guarantee.
+     *
+     * @param other The tuple from which to copy or move data.
+     * @return Reference to this tuple after assignment.
+     */
+    ParallelVectorsTuple& operator=(ParallelVectorsTuple other) noexcept
+    {
+        swap(other);
+        return *this;
+    }
+
+    /**
+     * @brief Swaps the content of this tuple with another.
+     *
+     * @param other The tuple to swap with.
+     */
+    void swap(ParallelVectorsTuple& other) noexcept
+    {
+        using std::swap;
+        swap(mVecTuple, other.mVecTuple);
+        swap(mVecEnabled, other.mVecEnabled);
+        swap(mSize, other.mSize);
+    }
+
+    /**
+     * @brief Swaps the contents of two ParallelVectorsTuple instances.
+     *
+     * @param a The first tuple.
+     * @param b The second tuple.
+     */
+    friend void swap(ParallelVectorsTuple& a, ParallelVectorsTuple& b) noexcept
+    {
+        a.swap(b);
+    }
+
+    /**
      * @brief Returns the total number of types (both enabled and disabled) in
      * the tuple.
      * @return The number of vectors.

@@ -57,6 +57,10 @@ public:
     template<typename Index>
     void compact(const std::vector<Index>&) {}
     void swapCustomComponents(std::size_t, std::size_t) {}
+    void swap(CustomComponentsVectorMap&) noexcept {}
+    friend void swap(
+        CustomComponentsVectorMap&,
+        CustomComponentsVectorMap&) noexcept {}
     template<typename Other>
     void append(const Other&, std::size_t, std::size_t) {}
     template<typename Other>
@@ -97,6 +101,25 @@ public:
         mMap.clear();
         mNeedToInitialize.clear();
         mCompType.clear();
+    }
+
+    /**
+     * @brief Swaps the contents of this CustomComponentsVectorMap with another.
+     * @param[in,out] other: The other CustomComponentsVectorMap.
+     */
+    void swap(CustomComponentsVectorMap& other) noexcept
+    {
+        using std::swap;
+        swap(mMap, other.mMap);
+        swap(mNeedToInitialize, other.mNeedToInitialize);
+        swap(mCompType, other.mCompType);
+    }
+
+    friend void swap(
+        CustomComponentsVectorMap& a,
+        CustomComponentsVectorMap& b) noexcept
+    {
+        a.swap(b);
     }
 
     /**

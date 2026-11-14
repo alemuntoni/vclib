@@ -67,6 +67,11 @@ public:
      */
     EdgeContainer() = default;
 
+    friend void swap(EdgeContainer& a, EdgeContainer& b) noexcept
+    {
+        a.swap(b);
+    }
+
     /**
      * @brief Returns the Edge at the i-th position in the Edge Container of
      * the Mesh, which will be the edge having index = i.

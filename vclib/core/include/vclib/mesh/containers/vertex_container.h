@@ -68,6 +68,11 @@ public:
      */
     VertexContainer() = default;
 
+    friend void swap(VertexContainer& a, VertexContainer& b) noexcept
+    {
+        a.swap(b);
+    }
+
     /**
      * @brief Returns the Vertex at the i-th position in the Vertex Container of
      * the Mesh, which will be the vertex having index = i.
