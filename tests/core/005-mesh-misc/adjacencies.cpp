@@ -7,6 +7,8 @@
 
 #include "types.h"
 
+#include <vclib/meshes.h>
+
 #include <catch2/catch_test_macros.hpp>
 
 #include <vector>
@@ -211,4 +213,51 @@ TEST_CASE("Adjacencies")
 
     m.face(0).setAdjEdge(0, 100);
     REQUIRE(m.face(0).adjEdgeIndex(0) == 100);
+}
+
+TEST_CASE("PolyMesh - TTVC Adjacencies pushVertex and insertVertex default to NULL_INDEX")
+{
+    vcl::PolyMesh pm;
+    pm.enableFaceAdjacentFaces();
+
+    pm.addVertices(5);
+    for (uint i = 0; i < 5; ++i) {
+        pm.vertex(i).position() = Point3d(i, 0.0, 0.0);
+    }
+
+    auto f = pm.face(pm.addFace());
+    f.pushVertex(0);
+    f.pushVertex(1);
+    f.pushVertex(2);
+
+    REQUIRE(f.vertexCount() == 3);
+    REQUIRE(f.adjFaceCount() == 3);
+    // Newly created adjacent faces must be NULL_INDEX, NOT 0
+    REQUIRE(f.adjFaceIndex(0) == vcl::PolyMesh::NULL_INDEX);
+    REQUIRE(f.adjFaceIndex(1) == vcl::PolyMesh::NULL_INDEX);
+    REQUIRE(f.adjFaceIndex(2) == vcl::PolyMesh::NULL_INDEX);
+
+    // Set specific values to existing adjacencies
+    f.setAdjFace(0, 10);
+    f.setAdjFace(1, 20);
+    f.setAdjFace(2, 30);
+
+    // pushVertex must append an entry initialized to NULL_INDEX (NOT 0)
+    f.pushVertex(3);
+    REQUIRE(f.vertexCount() == 4);
+    REQUIRE(f.adjFaceCount() == 4);
+    REQUIRE(f.adjFaceIndex(0) == 10);
+    REQUIRE(f.adjFaceIndex(1) == 20);
+    REQUIRE(f.adjFaceIndex(2) == 30);
+    REQUIRE(f.adjFaceIndex(3) == vcl::PolyMesh::NULL_INDEX);
+
+    // insertVertex at position 1 must insert an entry initialized to NULL_INDEX (NOT 0)
+    f.insertVertex(1, 4);
+    REQUIRE(f.vertexCount() == 5);
+    REQUIRE(f.adjFaceCount() == 5);
+    REQUIRE(f.adjFaceIndex(0) == 10);
+    REQUIRE(f.adjFaceIndex(1) == vcl::PolyMesh::NULL_INDEX);
+    REQUIRE(f.adjFaceIndex(2) == 20);
+    REQUIRE(f.adjFaceIndex(3) == 30);
+    REQUIRE(f.adjFaceIndex(4) == vcl::PolyMesh::NULL_INDEX);
 }

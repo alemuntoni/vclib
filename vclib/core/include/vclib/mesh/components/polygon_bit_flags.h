@@ -509,16 +509,18 @@ private:
 
 template<int N>
 template<typename OtherElement>
-void PolygonBitFlags<N>::importFrom(this auto&& self, const OtherElement& other, bool)
+void PolygonBitFlags<N>::importFrom(
+    this auto&&         self,
+    const OtherElement& other,
+    bool)
 {
     if constexpr (HasBitFlags<OtherElement>) {
+        const bool wasDeleted = self.deleted();
+        const bool isDeleted  = other.deleted();
         self.resetBitFlags();
         if constexpr (HasPolygonBitFlags<OtherElement>) {
             self.setUnderlyingBitFlags(other.underlyingBitFlags());
-            self.setDeleted(other.deleted());
-            if constexpr (N < 0) {
-                self.edgeFlags().resize(other.edgeCount());
-            }
+            self.setDeleted(isDeleted);
             const uint n = std::min(
                 (uint) self.edgeCount(),
                 (uint) other.edgeCount());
@@ -527,7 +529,7 @@ void PolygonBitFlags<N>::importFrom(this auto&& self, const OtherElement& other,
             }
         }
         else {
-            self.setDeleted(other.deleted());
+            self.setDeleted(isDeleted);
             self.selected() = other.selected();
             self.visited()  = other.visited();
 
@@ -537,11 +539,6 @@ void PolygonBitFlags<N>::importFrom(this auto&& self, const OtherElement& other,
                 self.userBit(i) = other.userBit(i);
             }
             if constexpr (HasTriangleBitFlags<OtherElement>) {
-                if constexpr (N < 0) {
-                    if (self.edgeCount() < 3) {
-                        self.edgeFlags().resize(3);
-                    }
-                }
                 const uint numEdges =
                     std::min((uint) self.edgeCount(), 3u);
                 for (uint i = 0; i < numEdges; ++i) {
@@ -550,6 +547,12 @@ void PolygonBitFlags<N>::importFrom(this auto&& self, const OtherElement& other,
                     self.edgeVisited(i)  = other.edgeVisited(i);
                     self.edgeFaux(i)     = other.edgeFaux(i);
                 }
+            }
+        }
+        if constexpr (CanAdjustContainerElemCount<decltype(self)>) {
+            if (self.isValid()) {
+                self.parentContainer().adjustElemCountOnDeletedChange(
+                    wasDeleted, isDeleted);
             }
         }
     }

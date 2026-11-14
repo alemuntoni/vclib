@@ -7,6 +7,8 @@
 
 #include "types.h"
 
+#include <vclib/meshes.h>
+
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Import From - Vertex Import From")
@@ -320,4 +322,138 @@ TEST_CASE("Import From - Mesh Import From Mesh Components")
     REQUIRE(nm2.name() == "SampleMesh");
     REQUIRE(nm2.vertexCount() == 3);
     REQUIRE(nm2.faceCount() == 1);
+}
+
+TEST_CASE("Import From - Face importFrom with importRefs = false on PolyMesh")
+{
+    vcl::PolyMesh pm1;
+    pm1.enableFaceColor();
+    pm1.enableFaceWedgeTexCoords();
+    pm1.enableFaceAdjacentFaces();
+
+    pm1.addVertices(4);
+    for (uint i = 0; i < 4; ++i) {
+        pm1.vertex(i).position() = Point3d(i, 0.0, 0.0);
+    }
+    auto f1 = pm1.face(pm1.addFace());
+    f1.setVertices(0, 1, 2, 3); // 4 vertices
+    f1.wedge(0).texCoord() = Point2d(0.1, 0.2);
+    f1.wedge(1).texCoord() = Point2d(0.3, 0.4);
+    f1.wedge(2).texCoord() = Point2d(0.5, 0.6);
+    f1.wedge(3).texCoord() = Point2d(0.7, 0.8);
+    f1.setAdjFace(0, 10);
+    f1.setAdjFace(1, 20);
+    f1.setAdjFace(2, 30);
+    f1.setAdjFace(3, 40);
+
+    vcl::PolyMesh pm2;
+    pm2.enableFaceColor();
+    pm2.enableFaceWedgeTexCoords();
+    pm2.enableFaceAdjacentFaces();
+
+    pm2.addVertices(3);
+    for (uint i = 0; i < 3; ++i) {
+        pm2.vertex(i).position() = Point3d(10.0 + i, 0.0, 0.0);
+    }
+    auto f2 = pm2.face(pm2.addFace());
+    f2.setVertices(0, 1, 2); // 3 vertices
+    f2.color() = vcl::Color::Yellow;
+
+    // Call importFrom with importRefs = false
+    f1.importFrom(f2, false);
+
+    // Vertex count MUST NOT change
+    REQUIRE(f1.vertexCount() == 4);
+    REQUIRE(f1.vertexIndex(0) == 0);
+    REQUIRE(f1.vertexIndex(1) == 1);
+    REQUIRE(f1.vertexIndex(2) == 2);
+    REQUIRE(f1.vertexIndex(3) == 3);
+
+    // TTVC components MUST NOT be resized down to 3
+    REQUIRE(f1.wedges().size() == 4);
+    REQUIRE(f1.adjFaceCount() == 4);
+
+    // Adjacencies should remain unchanged since importRefs is false
+    REQUIRE(f1.adjFaceIndex(0) == 10);
+    REQUIRE(f1.adjFaceIndex(1) == 20);
+    REQUIRE(f1.adjFaceIndex(2) == 30);
+    REQUIRE(f1.adjFaceIndex(3) == 40);
+
+    // Non-reference components like Color ARE imported
+    REQUIRE(f1.color() == vcl::Color::Yellow);
+}
+
+TEST_CASE("Import From - Element importFrom Updates Container Element Count on Deleted Status Change")
+{
+    // 1. Vertices (BitFlags)
+    MyMesh m1;
+    m1.addVertices(3);
+    REQUIRE(m1.vertexCount() == 3);
+    REQUIRE(m1.isCompact());
+
+    MyMesh m2;
+    m2.addVertices(3);
+    m2.deleteVertex(1);
+    REQUIRE(m2.vertexCount() == 2);
+    REQUIRE(!m2.isCompact());
+
+    // Importing deleted vertex into active vertex must update m1's active count
+    m1.vertex(1).importFrom(m2.vertex(1));
+    REQUIRE(m1.vertex(1).deleted());
+    REQUIRE(m1.vertexCount() == 2);
+    REQUIRE(m1.deletedVertexCount() == 1);
+    REQUIRE(!m1.isCompact());
+
+    // Importing active vertex into deleted vertex must increment m1's active count back
+    m1.vertex(1).importFrom(m2.vertex(0));
+    REQUIRE(!m1.vertex(1).deleted());
+    REQUIRE(m1.vertexCount() == 3);
+    REQUIRE(m1.deletedVertexCount() == 0);
+    REQUIRE(m1.isCompact());
+
+    // 2. Triangle Faces (TriangleBitFlags)
+    MyMesh tm1;
+    tm1.addVertices(3);
+    tm1.addFace(0, 1, 2);
+    REQUIRE(tm1.faceCount() == 1);
+    REQUIRE(tm1.deletedFaceCount() == 0);
+    REQUIRE(tm1.isCompact());
+
+    MyMesh tm2;
+    tm2.addVertices(3);
+    tm2.addFace(0, 1, 2);
+    tm2.deleteFace(0);
+    REQUIRE(tm2.faceCount() == 0);
+    REQUIRE(tm2.deletedFaceCount() == 1);
+    REQUIRE(!tm2.isCompact());
+
+    tm1.face(0).importFrom(tm2.face(0));
+    REQUIRE(tm1.face(0).deleted());
+    REQUIRE(tm1.faceCount() == 0);
+    REQUIRE(tm1.deletedFaceCount() == 1);
+    REQUIRE(!tm1.isCompact());
+
+    // 3. PolyMesh Faces (PolygonBitFlags)
+    vcl::PolyMesh pm1;
+    pm1.addVertices(3);
+    auto pf1 = pm1.face(pm1.addFace());
+    pf1.setVertices(0, 1, 2);
+    REQUIRE(pm1.faceCount() == 1);
+    REQUIRE(pm1.deletedFaceCount() == 0);
+    REQUIRE(pm1.isCompact());
+
+    vcl::PolyMesh pm2;
+    pm2.addVertices(3);
+    auto pf2 = pm2.face(pm2.addFace());
+    pf2.setVertices(0, 1, 2);
+    pm2.deleteFace(0);
+    REQUIRE(pm2.faceCount() == 0);
+    REQUIRE(pm2.deletedFaceCount() == 1);
+    REQUIRE(!pm2.isCompact());
+
+    pf1.importFrom(pf2);
+    REQUIRE(pf1.deleted());
+    REQUIRE(pm1.faceCount() == 0);
+    REQUIRE(pm1.deletedFaceCount() == 1);
+    REQUIRE(!pm1.isCompact());
 }

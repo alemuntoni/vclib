@@ -210,9 +210,11 @@ template<typename OtherElement>
 void BitFlags::importFrom(this auto&& self, const OtherElement& other, bool)
 {
     if constexpr (HasBitFlags<OtherElement>) {
+        const bool wasDeleted = self.deleted();
+        const bool isDeleted  = other.deleted();
         self.resetBitFlags();
         if constexpr (HasFaceBitFlags<OtherElement>) {
-            self.setDeleted(other.deleted());
+            self.setDeleted(isDeleted);
             self.selected() = other.selected();
             self.visited()  = other.visited();
             self.onBorder() = other.onBorder();
@@ -225,7 +227,13 @@ void BitFlags::importFrom(this auto&& self, const OtherElement& other, bool)
         }
         else {
             self.setUnderlyingBitFlags(other.underlyingBitFlags());
-            self.setDeleted(other.deleted());
+            self.setDeleted(isDeleted);
+        }
+        if constexpr (CanAdjustContainerElemCount<decltype(self)>) {
+            if (self.isValid()) {
+                self.parentContainer().adjustElemCountOnDeletedChange(
+                    wasDeleted, isDeleted);
+            }
         }
     }
 }

@@ -76,10 +76,12 @@ public:
     void importFrom(const OtherElement& other, bool importRefs = true)
         requires (!std::is_const_v<ContainerType>)
     {
-        if constexpr (
-            comp::HasPolygonVertexReferences<Components> &&
-            comp::HasVertexReferences<OtherElement>) {
-            this->resizeVertices(other.vertexCount());
+        if (importRefs) {
+            if constexpr (
+                comp::HasPolygonVertexReferences<Components> &&
+                comp::HasVertexReferences<OtherElement>) {
+                this->resizeVertices(other.vertexCount());
+            }
         }
         Base::importFrom(other, importRefs);
     }

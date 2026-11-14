@@ -73,6 +73,17 @@ concept HasPolygonBitFlags =
 template<typename T>
 concept HasFaceBitFlags = HasPolygonBitFlags<T> || HasTriangleBitFlags<T>;
 
+/**
+ * @brief Concept that checks whether an element type T has a parent container
+ * that can adjust its active element count when deleted status changes.
+ *
+ * @ingroup components_concepts
+ */
+template<typename T>
+concept CanAdjustContainerElemCount = requires(T& elem, bool b1, bool b2) {
+    elem.parentContainer().adjustElemCountOnDeletedChange(b1, b2);
+};
+
 } // namespace vcl::comp
 
 #endif // VCL_MESH_COMPONENTS_BASE_BIT_FLAGS_CONCEPTS_H

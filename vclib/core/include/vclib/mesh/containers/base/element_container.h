@@ -461,6 +461,26 @@ public:
     void deleteElement(const ElementType& e) { deleteElement(e.index()); }
 
     /**
+     * @brief Adjusts the active element count when an element's deleted state
+     * changes.
+     *
+     * @param[in] wasDeleted: Whether the element was previously marked as deleted.
+     * @param[in] isDeleted: Whether the element is now marked as deleted.
+     */
+    void adjustElemCountOnDeletedChange(bool wasDeleted, bool isDeleted) noexcept
+    {
+        if (wasDeleted != isDeleted) {
+            if (isDeleted) {
+                assert(mElemCount > 0);
+                --mElemCount;
+            }
+            else {
+                ++mElemCount;
+            }
+        }
+    }
+
+    /**
      * @brief Returns whether the container is compact, i.e. there are no
      * deleted elements.
      *
@@ -487,6 +507,9 @@ public:
     IndexType elementIndexIfCompact(IndexType i) const
     {
         assert(i < size());
+        if (isElementDeleted(i)) {
+            return NULL_INDEX;
+        }
         if (isElementContainerCompact()) {
             return i;
         }
@@ -778,9 +801,9 @@ public:
                     comp::IndexOfCompId<COMP_ID, VectorComponents>::value;
                 mElemComponents.template enable<N>();
                 using Comp = comp::ComponentTypeT<COMP_ID, Components>;
-                if constexpr (comp::IsTiedToVertexCount<Comp>) {
-                    if constexpr (ElementType::VERTEX_COUNT < 0) {
-                        for (auto e : elements()) {
+                if constexpr (comp::HasPolygonVertexReferences<Components>) {
+                    if constexpr (comp::IsTiedToVertexCount<Comp>) {
+                        for (auto e : elements(false)) {
                             e.Comp::resize(e.vertexCount());
                         }
                     }
@@ -1446,8 +1469,13 @@ private:
         }
 
         const std::size_t n = size();
+
+        // 1. Allocate space for 'on' new elements across all active component vectors.
+        //    Note: addElements(on) temporarily increments mElemCount by on (assuming all valid).
         addElements(on);
 
+        // 2. Fast-copy component data: for each component enabled in both containers,
+        //    copy elements from other's vector into this vector starting at offset n.
         auto copyComponent = [&]<typename Comp>() {
             if constexpr (Comp::COMPONENT_ID != CompId::CUSTOM_COMPONENTS) {
                 if (this->template isComponentAvailable<Comp::COMPONENT_ID>() &&
@@ -1463,10 +1491,39 @@ private:
 
         (copyComponent.template operator()<Comps>(), ...);
 
+        // 3. Preserve TTVC (Tied-To-Vertex-Count) invariant on polygon meshes:
+        //    If an optional TTVC component (e.g., AdjacentFaces, AdjacentEdges, Wedges,
+        //    PolygonBitFlags) is enabled in 'this' container but was disabled in 'other',
+        //    addElements(on) initialized inner vectors to size 0. Since the vertex references
+        //    were copied in step 2, we now have the correct vertexCount() for each appended
+        //    polygon and can resize the missing TTVC component to match it.
+        if constexpr (comp::HasPolygonVertexReferences<Components>) {
+            auto resizeTTVCIfMissingInOther = [&]<typename Comp>() {
+                if constexpr (comp::IsTiedToVertexCount<Comp>) {
+                    if (this->template isComponentAvailable<
+                            Comp::COMPONENT_ID>() &&
+                        !other.template isComponentAvailable<
+                            Comp::COMPONENT_ID>()) {
+                        for (std::size_t i = n; i < n + on; ++i) {
+                            auto p = element(i);
+                            p.Comp::resize(p.vertexCount());
+                        }
+                    }
+                }
+            };
+
+            (resizeTTVCIfMissingInOther.template operator()<Comps>(), ...);
+        }
+
+        // 4. Append custom dynamic components (if supported).
         if constexpr (comp::HasCustomComponents<Components>) {
             mCustomComponents.append(other.mCustomComponents, n, on);
         }
 
+        // 5. Correct the valid element counter:
+        //    addElements(on) assumed all 'on' elements were valid (+on).
+        //    We deduct 'on' and add other.elementCount() so deleted elements in 'other'
+        //    are properly accounted for.
         mElemCount = (mElemCount - on) + other.elementCount();
     }
 

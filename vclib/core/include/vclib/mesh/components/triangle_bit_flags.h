@@ -315,13 +315,15 @@ template<typename OtherElement>
 void TriangleBitFlags::importFrom(this auto&& self, const OtherElement& other, bool)
 {
     if constexpr (HasBitFlags<OtherElement>) {
+        const bool wasDeleted = self.deleted();
+        const bool isDeleted  = other.deleted();
         self.resetBitFlags();
         if constexpr (HasTriangleBitFlags<OtherElement>) {
             self.setUnderlyingBitFlags(other.underlyingBitFlags());
-            self.setDeleted(other.deleted());
+            self.setDeleted(isDeleted);
         }
         else {
-            self.setDeleted(other.deleted());
+            self.setDeleted(isDeleted);
             self.selected() = other.selected();
             self.visited()  = other.visited();
 
@@ -338,6 +340,12 @@ void TriangleBitFlags::importFrom(this auto&& self, const OtherElement& other, b
                     self.edgeVisited(i)  = other.edgeVisited(i);
                     self.edgeFaux(i)     = other.edgeFaux(i);
                 }
+            }
+        }
+        if constexpr (CanAdjustContainerElemCount<decltype(self)>) {
+            if (self.isValid()) {
+                self.parentContainer().adjustElemCountOnDeletedChange(
+                    wasDeleted, isDeleted);
             }
         }
     }

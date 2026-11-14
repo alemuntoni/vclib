@@ -128,9 +128,6 @@ void Wedges<Comp, N, OPT>::importFrom(
         if (other.template isComponentAvailable<COMP_ID>()) {
             auto&& selfContainer = Base::container(self);
             if constexpr (COMP_ID == CompId::WEDGE_COLORS) {
-                if constexpr (N < 0) {
-                    selfContainer.resize(other.wedges().colors().size());
-                }
                 const uint n = std::min(
                     (uint) selfContainer.size(),
                     (uint) other.wedges().colors().size());
@@ -139,9 +136,6 @@ void Wedges<Comp, N, OPT>::importFrom(
                 }
             }
             else if constexpr (COMP_ID == CompId::WEDGE_TEX_COORDS) {
-                if constexpr (N < 0) {
-                    selfContainer.resize(other.wedges().texCoords().size());
-                }
                 const uint n = std::min(
                     (uint) selfContainer.size(),
                     (uint) other.wedges().texCoords().size());
@@ -152,9 +146,6 @@ void Wedges<Comp, N, OPT>::importFrom(
                 }
             }
             else if constexpr (COMP_ID == CompId::WEDGE_NORMALS) {
-                if constexpr (N < 0) {
-                    selfContainer.resize(other.wedges().normals().size());
-                }
                 const uint n = std::min(
                     (uint) selfContainer.size(),
                     (uint) other.wedges().normals().size());

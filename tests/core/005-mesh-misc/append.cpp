@@ -7,6 +7,8 @@
 
 #include "types.h"
 
+#include <vclib/meshes.h>
+
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Append - Basic Append")
@@ -362,4 +364,73 @@ TEST_CASE("Append - Append With Materials")
     REQUIRE(mSelf.face(1).materialIndex() == 1);
     REQUIRE(mSelf.face(2).materialIndex() == 0);
     REQUIRE(mSelf.face(3).materialIndex() == 1);
+}
+
+TEST_CASE("Append - PolyMesh TTVC Invariant when Optional Component in Destination Only")
+{
+    // m1 has optional TTVC components (WedgeTexCoords and AdjacentFaces) enabled
+    vcl::PolyMesh m1;
+    m1.enableFaceWedgeTexCoords();
+    m1.enableFaceAdjacentFaces();
+
+    m1.addVertices(4);
+    for (uint i = 0; i < 4; ++i) {
+        m1.vertex(i).position() = Point3d(i, 0.0, 0.0);
+    }
+    auto f0 = m1.face(m1.addFace());
+    f0.setVertices(0, 1, 2, 3);
+    REQUIRE(f0.vertexCount() == 4);
+    REQUIRE(f0.wedges().size() == 4);
+    REQUIRE(f0.adjFaceCount() == 4);
+
+    f0.wedge(0).texCoord() = Point2d(0.0, 0.0);
+    f0.wedge(1).texCoord() = Point2d(1.0, 0.0);
+    f0.wedge(2).texCoord() = Point2d(1.0, 1.0);
+    f0.wedge(3).texCoord() = Point2d(0.0, 1.0);
+
+    // m2 has WedgeTexCoords and AdjacentFaces DISABLED
+    vcl::PolyMesh m2;
+    m2.addVertices(3);
+    for (uint i = 0; i < 3; ++i) {
+        m2.vertex(i).position() = Point3d(10.0 + i, 0.0, 0.0);
+    }
+    auto f1 = m2.face(m2.addFace());
+    f1.setVertices(0, 1, 2);
+    REQUIRE(f1.vertexCount() == 3);
+
+    // Append m2 to m1: m1 has TTVC components enabled, m2 does not
+    m1.append(m2);
+
+    REQUIRE(m1.vertexCount() == 7);
+    REQUIRE(m1.faceCount() == 2);
+
+    // Face 0 was preserved
+    REQUIRE(m1.face(0).vertexCount() == 4);
+    REQUIRE(m1.face(0).wedges().size() == 4);
+    REQUIRE(m1.face(0).adjFaceCount() == 4);
+    REQUIRE(m1.face(0).wedge(0).texCoord() == Point2d(0.0, 0.0));
+    REQUIRE(m1.face(0).wedge(3).texCoord() == Point2d(0.0, 1.0));
+
+    // Appended face 1 MUST have its TTVC vectors properly resized to its vertex count (3),
+    // and NOT left at size 0!
+    auto appF = m1.face(1);
+    REQUIRE(appF.vertexCount() == 3);
+    REQUIRE(appF.wedges().size() == 3);
+    REQUIRE(appF.adjFaceCount() == 3);
+
+    // Adjacencies on the appended face should be initialized to NULL_INDEX
+    REQUIRE(appF.adjFaceIndex(0) == vcl::PolyMesh::NULL_INDEX);
+    REQUIRE(appF.adjFaceIndex(1) == vcl::PolyMesh::NULL_INDEX);
+    REQUIRE(appF.adjFaceIndex(2) == vcl::PolyMesh::NULL_INDEX);
+
+    // Accessing wedges must not crash / go out of bounds
+    REQUIRE_NOTHROW(appF.wedge(0).texCoord());
+    REQUIRE_NOTHROW(appF.wedge(1).texCoord());
+    REQUIRE_NOTHROW(appF.wedge(2).texCoord());
+
+    // Modifying or erasing vertices must maintain the TTVC invariant
+    REQUIRE_NOTHROW(appF.eraseVertex(0));
+    REQUIRE(appF.vertexCount() == 2);
+    REQUIRE(appF.wedges().size() == 2);
+    REQUIRE(appF.adjFaceCount() == 2);
 }

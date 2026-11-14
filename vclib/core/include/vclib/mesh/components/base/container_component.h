@@ -78,14 +78,34 @@ protected:
         container(self).resize(n);
     }
 
-    void pushBack(this auto&& self, const T& v = T()) requires (N < 0)
+    void pushBack(this auto&& self) requires (N < 0)
+    {
+        container(self).pushBack();
+    }
+
+    void pushBack(this auto&& self, const T& v) requires (N < 0)
     {
         container(self).pushBack(v);
     }
 
-    void insert(this auto&& self, uint pos, const T& v = T()) requires (N < 0)
+    void pushBack(this auto&& self, T&& v) requires (N < 0)
+    {
+        container(self).pushBack(std::move(v));
+    }
+
+    void insert(this auto&& self, uint pos) requires (N < 0)
+    {
+        container(self).insert(pos);
+    }
+
+    void insert(this auto&& self, uint pos, const T& v) requires (N < 0)
     {
         container(self).insert(pos, v);
+    }
+
+    void insert(this auto&& self, uint pos, T&& v) requires (N < 0)
+    {
+        container(self).insert(pos, std::move(v));
     }
 
     void erase(this auto&& self, uint pos) requires (N < 0)
