@@ -186,7 +186,7 @@ TEST_CASE("Shuffle - Sort Proxy Vector and StaticGrid Do Not Corrupt Mesh")
 {
     vcl::Sphere<double> s(vcl::Point3d(0, 0, 0), 1.0);
     vcl::TriMesh mesh = vcl::createSphereIcosahedron<vcl::TriMesh>(s, 1);
-    mesh.compactVertices();
+    //mesh.compactVertices();
     mesh.enableVertexColor();
     mesh.enableVertexPrincipalCurvature();
 

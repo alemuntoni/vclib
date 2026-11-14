@@ -9,6 +9,10 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <atomic>
+#include <ranges>
+#include <vector>
+
 inline void testVertexDeletionAndIteration(MyMesh& mesh)
 {
     mesh.deleteVertex(1);
@@ -120,6 +124,99 @@ TEST_CASE("Deletion Compaction - 64 Bit Null Index And Compaction")
     REQUIRE(!m.face(0).vertex(1).isValid());
 }
 
+inline void testIteratorDistanceWithDeleted(MyMesh& mesh)
+{
+    // delete a middle and the last vertex: the tail of the container is deleted
+    mesh.deleteVertex(1);
+    mesh.deleteVertex(mesh.vertexContainerSize() - 1);
+    const std::size_t active = mesh.vertexCount();
+
+    auto vertices = mesh.vertices();
+    REQUIRE(
+        static_cast<std::size_t>(vertices.end() - vertices.begin()) == active);
+    REQUIRE(
+        static_cast<std::size_t>(vertices.begin() - vertices.end()) ==
+        0 - active);
+    REQUIRE(std::ranges::distance(vertices) == static_cast<long>(active));
+
+    // backward iteration must skip the deleted tail
+    REQUIRE(vertices.back().index() == mesh.vertexContainerSize() - 2);
+    REQUIRE((--vertices.end())->index() == mesh.vertexContainerSize() - 2);
+
+    // parallelFor must visit exactly the active elements
+    std::atomic<std::size_t> visited = 0;
+    std::atomic<bool>        visitedDeleted = false;
+    vcl::parallelFor(mesh.vertices(), [&](auto v) {
+        if (v.deleted()) {
+            visitedDeleted = true;
+        }
+        ++visited;
+    });
+    REQUIRE(visited == active);
+    REQUIRE(!visitedDeleted);
+
+    // component views
+    auto positions = mesh.vertices().positions();
+    REQUIRE(
+        static_cast<std::size_t>(positions.end() - positions.begin()) ==
+        active);
+
+    // jumpDeleted = false covers the whole container
+    auto all = mesh.vertices(false);
+    REQUIRE(
+        static_cast<std::size_t>(all.end() - all.begin()) ==
+        mesh.vertexContainerSize());
+
+    // default constructed view must not dereference a null container
+    decltype(mesh.vertices().positions()) emptyView;
+    REQUIRE(emptyView.begin() == emptyView.end());
+}
+
+TEST_CASE("Deletion Compaction - parallelFor on non compact mesh")
+{
+    constexpr std::size_t N = 100000;
+
+    MyMesh mesh;
+    mesh.addVertices(N);
+    for (std::size_t i = 0; i < N; ++i) {
+        mesh.vertex(i).position() = Point3f(i, 0, 0);
+    }
+    for (std::size_t i = 0; i < N; i += 3) {
+        mesh.deleteVertex(i);
+    }
+    // deleted tail
+    mesh.deleteVertex(N - 1);
+    mesh.deleteVertex(N - 2);
+    REQUIRE(!mesh.isCompact());
+
+    std::vector<int> hits(N, 0);
+    vcl::parallelFor(mesh.vertices(), [&](auto v) {
+        ++hits[v.index()];
+    });
+    for (std::size_t i = 0; i < N; ++i) {
+        REQUIRE(hits[i] == (mesh.vertex(i).deleted() ? 0 : 1));
+    }
+
+    // component view
+    std::atomic<std::size_t> count = 0;
+    vcl::parallelFor(mesh.vertices().positions(), [&](Point3f& p) {
+        p.x() += 1;
+        ++count;
+    });
+    REQUIRE(count == mesh.vertexCount());
+    REQUIRE(mesh.vertex(1).position().x() == 2.0f);
+
+    // iterators that do not jump deleted elements visit everything
+    count = 0;
+    vcl::parallelFor(mesh.vertices(false), [&](auto) { ++count; });
+    REQUIRE(count == mesh.vertexContainerSize());
+
+    // empty views
+    vcl::parallelFor(
+        decltype(mesh.vertices().positions()) {}, [&](Point3f&) { ++count; });
+    REQUIRE(count == mesh.vertexContainerSize());
+}
+
 TEST_CASE("Deletion Compaction")
 {
     MyMesh mesh = createSampleQuadMesh();
@@ -128,4 +225,7 @@ TEST_CASE("Deletion Compaction")
     testComponentViewWithDeleted(mesh);
     testMeshCompaction(mesh);
     testFaceDeletionAndCompaction(mesh);
+
+    MyMesh mesh2 = createSampleQuadMesh();
+    testIteratorDistanceWithDeleted(mesh2);
 }

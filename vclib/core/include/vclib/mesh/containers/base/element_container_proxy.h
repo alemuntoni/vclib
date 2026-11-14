@@ -76,7 +76,10 @@ public:
         return mContainer ? mContainer->begin(mJumpDeleted) : Iterator();
     }
 
-    Iterator end() const { return mContainer ? mContainer->end() : Iterator(); }
+    Iterator end() const
+    {
+        return mContainer ? mContainer->end(mJumpDeleted) : Iterator();
+    }
 
     ElementType operator[](IndexType i) const
     {

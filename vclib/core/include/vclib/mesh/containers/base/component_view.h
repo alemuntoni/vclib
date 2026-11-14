@@ -86,19 +86,18 @@ public:
     Iterator begin() const
     {
         if (!mContainer || !isAvailable()) {
-            return end();
+            return Iterator();
         }
-        bool needJump =
-            mJumpDeleted && (mContainer->size() != mContainer->elementCount());
-        return Iterator(*mContainer, 0, needJump);
+        return Iterator(*mContainer, 0, needJump());
     }
 
     Iterator end() const
     {
-        IndexType endIdx = (mContainer && isAvailable()) ?
-                               mContainer->elementContainerSize() :
-                               0;
-        return Iterator(*mContainer, endIdx, false);
+        if (!mContainer || !isAvailable()) {
+            return Iterator();
+        }
+        return Iterator(
+            *mContainer, mContainer->elementContainerSize(), needJump());
     }
 
     reference operator[](IndexType i) const
@@ -131,6 +130,14 @@ public:
     bool isCompact() const
     {
         return mContainer && mContainer->isCompact();
+    }
+
+private:
+    // begin() and end() must agree on this flag
+    bool needJump() const
+    {
+        return mJumpDeleted &&
+               (mContainer->size() != mContainer->elementCount());
     }
 };
 

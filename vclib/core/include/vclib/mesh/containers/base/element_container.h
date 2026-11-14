@@ -489,9 +489,19 @@ public:
     /**
      * @brief Returns an iterator to the end of the container.
      *
+     * The jumpDeleted flag must match the one used for begin(), otherwise
+     * distance computations between the two iterators (end() - begin()) and
+     * backward iteration from end() are not consistent.
+     *
+     * @param[in] jumpDeleted (default: true): boolean that tells if the iterator
+     * should jump deleted elements.
      * @return An iterator to the end of the container.
      */
-    Iterator end() { return Iterator(*this, size(), false); }
+    Iterator end(bool jumpDeleted = true)
+    {
+        bool needJump = jumpDeleted && (size() != elementCount());
+        return Iterator(*this, size(), needJump);
+    }
 
     /**
      * @brief Returns a const iterator to the beginning of the container.
@@ -513,9 +523,19 @@ public:
     /**
      * @brief Returns a const iterator to the end of the container.
      *
+     * The jumpDeleted flag must match the one used for begin(), otherwise
+     * distance computations between the two iterators (end() - begin()) and
+     * backward iteration from end() are not consistent.
+     *
+     * @param[in] jumpDeleted (default: true): boolean that tells if the iterator
+     * should jump deleted elements.
      * @return A const iterator to the end of the container.
      */
-    ConstIterator end() const { return ConstIterator(*this, size(), false); }
+    ConstIterator end(bool jumpDeleted = true) const
+    {
+        bool needJump = jumpDeleted && (size() != elementCount());
+        return ConstIterator(*this, size(), needJump);
+    }
 
     /**
      * @brief Returns an ElementContainerProxy object that allows to iterate over

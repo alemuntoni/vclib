@@ -25,6 +25,12 @@ namespace vcl::mesh {
  * elements, random-access movement arithmetic, and comparisons using C++23
  * deducing this.
  *
+ * @note When the iterator jumps deleted elements and the container is not
+ * compact, `+=`, `-=`, `+`, `-` and the difference between two iterators have
+ * linear cost, since the deleted elements must be skipped one by one. For
+ * parallel iterations, use vcl::parallelFor, which handles this case
+ * efficiently.
+ *
  * Derived classes (such as ElementIterator and ComponentIterator) only need to
  * provide `operator*()` and `operator->()`.
  *
