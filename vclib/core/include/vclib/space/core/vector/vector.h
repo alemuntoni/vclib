@@ -223,22 +223,10 @@ public:
      * @throws std::out_of_range If `i` is not within the range of valid indices
      * for the Vector.
      */
-    Reference at(uint i) { return mContainer.at(i); }
-
-    /**
-     * @brief Access the specified element with bounds checking.
-     *
-     * Returns a const reference to the element at position `i` in the Vector,
-     * with bounds checking. If `i` is not within the range of valid indices for
-     * the Vector, an `std::out_of_range` exception is thrown.
-     *
-     * @param[in] i: The position of the element.
-     * @return A const reference to the element at position `i`.
-     *
-     * @throws std::out_of_range If `i` is not within the range of valid indices
-     * for the Vector.
-     */
-    ConstReference at(uint i) const { return mContainer.at(i); }
+    decltype(auto) at(this auto&& self, uint i)
+    {
+        return self.mContainer.at(i);
+    }
 
     /**
      * @brief Access the specified element, computing first the module of the
@@ -250,26 +238,10 @@ public:
      * @param[in] i: The position of the element.
      * @return A reference to the element at position i % size().
      */
-    Reference atMod(int i)
+    decltype(auto) atMod(this auto&& self, int i)
     {
-        int n = size(); // need to save n as int to avoid unwanted casts
-        return mContainer[(i % n + n) % n];
-    }
-
-    /**
-     * @brief Access the specified element, computing first the module of the
-     * position w.r.t. the size of the container.
-     *
-     * Takes into account negative indices: atMod(-1) will access to the last
-     * element of the container.
-     *
-     * @param[in] i The position of the element.
-     * @return A const reference to the element at position i % size().
-     */
-    ConstReference atMod(int i) const
-    {
-        int n = size(); // need to save n as int to avoid unwanted casts
-        return mContainer[(i % n + n) % n];
+        int n = self.size(); // need to save n as int to avoid unwanted casts
+        return self.mContainer[(i % n + n) % n];
     }
 
     /**
@@ -280,17 +252,7 @@ public:
      *
      * @return A reference to the first element.
      */
-    Reference front() { return mContainer.front(); }
-
-    /**
-     * @brief Access the first element of the Vector.
-     *
-     * Returns a const reference to the first element of the Vector. If the
-     * Vector is empty, the behavior is undefined.
-     *
-     * @return A const reference to the first element.
-     */
-    ConstReference front() const { return mContainer.front(); }
+    decltype(auto) front(this auto&& self) { return self.mContainer.front(); }
 
     /**
      * @brief Access the last element of the Vector.
@@ -300,17 +262,7 @@ public:
      *
      * @return A reference to the last element.
      */
-    Reference back() { return mContainer.back(); }
-
-    /**
-     * @brief Access the last element of the Vector.
-     *
-     * Returns a const reference to the last element of the Vector. If the
-     * Vector is empty, the behavior is undefined.
-     *
-     * @return A const reference to the last element.
-     */
-    ConstReference back() const { return mContainer.back(); }
+    decltype(auto) back(this auto&& self) { return self.mContainer.back(); }
 
     /**
      * @brief Returns a pointer to the underlying array serving as element
@@ -322,19 +274,7 @@ public:
      * containers, the returned pointer compares equal to the address of the
      * first element.
      */
-    Pointer data() { return mContainer.data(); }
-
-    /**
-     * @brief Returns a const pointer to the underlying array serving as element
-     * storage. The pointer is such that range [data(), data() + size()) is
-     * always a valid range, even if the container is empty (data() is not
-     * dereferenceable in that case).
-     *
-     * @return A const pointer to the underlying element storage. For non-empty
-     * containers, the returned pointer compares equal to the address of the
-     * first element.
-     */
-    ConstPointer data() const { return mContainer.data(); }
+    decltype(auto) data(this auto&& self) { return self.mContainer.data(); }
 
     /**
      * @brief Set the value of the element at the specified position.
@@ -466,24 +406,9 @@ public:
      * @return An iterator to the first occurrence of the element in the Vector,
      * or `end()` if the element is not found.
      */
-    Iterator find(const MakeConstPointerT<T>& e)
+    auto find(this auto&& self, const MakeConstPointerT<T>& e)
     {
-        return std::find(mContainer.begin(), mContainer.end(), e);
-    }
-
-    /**
-     * @brief Find the first occurrence of the specified element in the Vector.
-     *
-     * Finds the first occurrence of the element specified by `e` in the Vector,
-     * using the `std::find()` algorithm.
-     *
-     * @param[in] e: The element to search for in the Vector.
-     * @return A const iterator to the first occurrence of the element in the
-     * Vector, or `end()` if the element is not found.
-     */
-    ConstIterator find(const MakeConstPointerT<T>& e) const
-    {
-        return std::find(mContainer.begin(), mContainer.end(), e);
+        return std::find(self.mContainer.begin(), self.mContainer.end(), e);
     }
 
     /**
@@ -542,6 +467,17 @@ public:
     }
 
     /**
+     * @brief Add a default-constructed element to the end of the Vector.
+     *
+     * Appends a new element to the end of the Vector by calling the
+     * `emplace_back()` member function of the underlying `std::vector`. This
+     * member function is only available if the size of the Vector is not known
+     * at compile-time, as specified by the concept requirement `requires (N <
+     * 0)`.
+     */
+    void pushBack() requires (N < 0) { mContainer.emplace_back(); }
+
+    /**
      * @brief Add an element to the end of the Vector.
      *
      * Adds the element `v` to the end of the Vector by calling the
@@ -568,6 +504,24 @@ public:
     void pushBack(T&& v) requires (N < 0)
     {
         mContainer.push_back(std::move(v));
+    }
+
+    /**
+     * @brief Insert a default-constructed element at the specified position in
+     * the Vector.
+     *
+     * Inserts a new element at the position specified by `i` in the Vector by
+     * calling the `emplace()` member function of the underlying `std::vector`.
+     * This member function is only available if the size of the Vector is not
+     * known at compile-time, as specified by the concept requirement `requires
+     * (N < 0)`.
+     *
+     * @param[in] i: The index at which to insert the element.
+     */
+    void insert(uint i) requires (N < 0)
+    {
+        assert(i < size() + 1);
+        mContainer.emplace(mContainer.begin() + i);
     }
 
     /**
@@ -671,15 +625,10 @@ public:
      * @param[in] i: Position of the element to return
      * @return A reference to the requested element.
      */
-    Reference operator[](uint i) { return mContainer[i]; }
-
-    /**
-     * @brief Returns a const reference to the element at specified location i.
-     * No bounds checking is performed.
-     * @param[in] i: Position of the element to return
-     * @return A const reference to the requested element.
-     */
-    ConstReference operator[](uint i) const { return mContainer[i]; }
+    decltype(auto) operator[](this auto&& self, uint i)
+    {
+        return self.mContainer[i];
+    }
 
     /**
      * @brief Returns a reference to the element at specified location i. No
@@ -687,15 +636,10 @@ public:
      * @param[in] i: Position of the element to return
      * @return A reference to the requested element.
      */
-    Reference operator()(uint i) { return mContainer[i]; }
-
-    /**
-     * @brief Returns a const reference to the element at specified location i.
-     * No bounds checking is performed.
-     * @param[in] i: Position of the element to return
-     * @return A const reference to the requested element.
-     */
-    ConstReference operator()(uint i) const { return mContainer[i]; }
+    decltype(auto) operator()(this auto&& self, uint i)
+    {
+        return self.mContainer[i];
+    }
 
     /* Iterator member functions */
 
@@ -704,28 +648,14 @@ public:
      *
      * @return An iterator pointing to the beginning of the Vector.
      */
-    Iterator begin() { return mContainer.begin(); }
+    decltype(auto) begin(this auto&& self) { return self.mContainer.begin(); }
 
     /**
      * @brief Return an iterator pointing to the end of the Vector.
      *
      * @return An iterator pointing to the end of the Vector.
      */
-    Iterator end() { return mContainer.end(); }
-
-    /**
-     * @brief Return a const iterator pointing to the beginning of the Vector.
-     *
-     * @return A const iterator pointing to the beginning of the Vector.
-     */
-    ConstIterator begin() const { return mContainer.begin(); }
-
-    /**
-     * @brief Return a const iterator pointing to the end of the Vector.
-     *
-     * @return A const iterator pointing to the end of the Vector.
-     */
-    ConstIterator end() const { return mContainer.end(); }
+    decltype(auto) end(this auto&& self) { return self.mContainer.end(); }
 };
 
 } // namespace vcl

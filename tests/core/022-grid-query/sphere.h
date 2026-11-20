@@ -22,7 +22,7 @@ auto bruteforceFacesInSpheres(
     const std::vector<SphereType>& spheres)
 {
     using ScalarType = SphereType::ScalarType;
-    using FaceType   = MeshType::FaceType;
+    using FaceType   = MeshType::ConstFace;
 
     auto intersFunction = [](const SphereType& s, const FaceType& f) {
         return s.intersects(vcl::boundingBox(f));
@@ -37,7 +37,7 @@ auto bruteforceFacesInSpheres(
         for (const auto& f : mesh.faces()) {
             intersFunction(s, f);
             if (intersFunction(s, f)) {
-                facesInSpheres[i].push_back(mesh.index(f));
+                facesInSpheres[i].push_back(f.index());
             }
         }
         ++i;
@@ -62,7 +62,7 @@ auto gridFacesInSpheres(
         auto vec = grid.valuesInSphere(spheres[i]);
         facesInSpheresGrid[i].resize(vec.size());
         for (vcl::uint j = 0; auto& it : vec) {
-            facesInSpheresGrid[i][j] = it->second->index();
+            facesInSpheresGrid[i][j] = it->second.index();
             ++j;
         }
     }
@@ -92,6 +92,7 @@ void facesInSpheresTest(
                       << vsG[i].size() << std::endl;
         }
         REQUIRE(vsBF[i].size() == vsG[i].size());
+        REQUIRE(grid.countInSphere(spheres[i]) == vsG[i].size());
         for (vcl::uint j = 0; j < vsBF[i].size(); j++) {
             auto it = std::find(vsBF[i].begin(), vsBF[i].end(), vsG[i][j]);
             if (it == vsBF[i].end()) {

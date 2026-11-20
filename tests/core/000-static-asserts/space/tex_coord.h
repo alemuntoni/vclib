@@ -8,9 +8,9 @@
 #ifndef TEX_COORD_H
 #define TEX_COORD_H
 
-#include <vclib/space.h>
+#include <vclib/space/core.h>
 
-void texCoordStaticAsserts()
+inline void texCoordStaticAsserts()
 {
     using namespace vcl;
 
@@ -30,22 +30,6 @@ void texCoordStaticAsserts()
     static_assert(
         TexCoordConcept<TexCoordf&&>,
         "TexCoordf&& does not satisfy the TexCoordConcept");
-
-    static_assert(
-        TexCoordConcept<TexCoordIndexedf>,
-        "TexCoordIndexedf does not satisfy the TexCoordConcept");
-    static_assert(
-        TexCoordConcept<const TexCoordIndexedf>,
-        "const TexCoordIndexedf does not satisfy the TexCoordConcept");
-    static_assert(
-        TexCoordConcept<TexCoordIndexedf&>,
-        "TexCoordIndexedf& does not satisfy the TexCoordConcept");
-    static_assert(
-        TexCoordConcept<const TexCoordIndexedf&>,
-        "const TexCoordIndexedf& does not satisfy the TexCoordConcept");
-    static_assert(
-        TexCoordConcept<TexCoordIndexedf&&>,
-        "TexCoordIndexedf&& does not satisfy the TexCoordConcept");
 }
 
 #endif // TEX_COORD_H

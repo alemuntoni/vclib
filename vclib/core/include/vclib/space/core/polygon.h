@@ -135,14 +135,10 @@ public:
      *
      * @param[in] i: the index of the point to return.
      */
-    PointT& point(uint i) { return mPoints.at(i); }
-
-    /**
-     * @brief Returns the point at index i in the polygon.
-     *
-     * @param[in] i: the index of the point to return.
-     */
-    const PointT& point(uint i) const { return mPoints.at(i); }
+    decltype(auto) point(this auto&& self, uint i)
+    {
+        return self.mPoints.at(i);
+    }
 
     /**
      * @brief Returns the side length of the i-th side of the polygon.
@@ -222,37 +218,20 @@ public:
      * @param i: the index of the point to return.
      * @return The i-th point of the polygon.
      */
-    PointType& operator[](uint i) { return mPoints[i]; }
-
-    /**
-     * @brief Returns the i-th point of the polygon.
-     *
-     * @param i: the index of the point to return.
-     * @return The i-th point of the polygon.
-     */
-    const PointType& operator[](uint i) const { return mPoints[i]; }
+    decltype(auto) operator[](this auto&& self, uint i)
+    {
+        return self.mPoints[i];
+    }
 
     /**
      * @brief Returns an iterator pointing to the first point of the polygon.
      */
-    Iterator begin() { return mPoints.begin(); }
+    auto begin(this auto&& self) { return self.mPoints.begin(); }
 
     /**
      * @brief Returns an iterator pointing past the last point of the polygon.
      */
-    Iterator end() { return mPoints.end(); }
-
-    /**
-     * @brief Returns a const iterator pointing to the first point of the
-     * polygon.
-     */
-    ConstIterator begin() const { return mPoints.begin(); }
-
-    /**
-     * @brief Returns a const iterator pointing past the last point of the
-     * polygon.
-     */
-    ConstIterator end() const { return mPoints.end(); }
+    auto end(this auto&& self) { return self.mPoints.end(); }
 
     // static member functions
 
@@ -261,8 +240,8 @@ public:
      * the iterators begin and end, listed in counterclockwise order,
      * representing a polygon.
      *
-     * The normal is computed as the normalized sum of the cross products of
-     * each triplet of consecutive points.
+     * Triangles and quads use their direct, short formulas. Larger polygons use
+     * Newell's method in a single forward pass over the polygon boundary.
      *
      * @tparam Iterator: an iterator which points to a type that satisfies the
      * PointConcept.
@@ -275,22 +254,63 @@ public:
         std::is_same_v<typename Iterator::value_type, PointT> &&
         PointT::DIM == 3)
     {
-        // compute the sum of normals for each triplet of consecutive points
+        if (begin == end) {
+            return PointT::Zero();
+        }
+
+        const auto first = *begin;
+        auto       prev  = first;
+        auto       it    = begin;
+        ++it;
+
+        if (it == end) {
+            return PointT::Zero();
+        }
+
+        const auto second = *it;
+        ++it;
+        if (it == end) {
+            return PointT::Zero();
+        }
+
+        const auto third = *it;
+        ++it;
+        if (it == end) {
+            PointT normal = (second - first).cross(third - first);
+            normal.normalize();
+            return normal;
+        }
+
+        const auto fourth = *it;
+        ++it;
+        if (it == end) {
+            PointT normal = (third - first).cross(fourth - second);
+            normal.normalize();
+            return normal;
+        }
+
         PointT sum;
         sum.setZero();
-        for (auto i = begin; i != end; ++i) {
-            auto i1 = i;
-            ++i1;
-            if (i1 == end)
-                i1 = begin;
 
-            auto i2 = i1;
-            ++i2;
-            if (i2 == end)
-                i2 = begin;
+        const auto addNewellEdge = [&sum](const PointT& a, const PointT& b) {
+            sum[0] += (a[1] - b[1]) * (a[2] + b[2]);
+            sum[1] += (a[2] - b[2]) * (a[0] + b[0]);
+            sum[2] += (a[0] - b[0]) * (a[1] + b[1]);
+        };
 
-            sum += (*i1 - *i).cross(*i2 - *i);
+        addNewellEdge(first, second);
+        addNewellEdge(second, third);
+        addNewellEdge(third, fourth);
+
+        prev = fourth;
+        for (; it != end; ++it) {
+            const auto curr = *it;
+            addNewellEdge(prev, curr);
+            prev = curr;
         }
+
+        addNewellEdge(prev, first);
+
         sum.normalize();
         return sum;
     }
@@ -436,7 +456,7 @@ public:
         for (auto i = begin; i != end; ++i) {
             const PointT& p0 = *i;
             auto          i1 = i;
-            ++i;
+            ++i1;
             if (i1 == end)
                 i1 = begin;
             const PointT& p1 = *i1;

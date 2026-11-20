@@ -134,7 +134,7 @@ ScalarType processCell(
                     const auto v1  = v0 + grid.cellLength(1);
                     VMesh      hex = createHexahedron<VMesh>(
                         Point3d(u0, v0, prevT), Point3d(u1, v1, tHit));
-                    for (auto& vert : hex.vertices()) {
+                    for (auto vert : hex.vertices()) {
                         const PointType p =
                             vert.position().template cast<ScalarType>();
                         vert.position() =
@@ -383,8 +383,8 @@ auto findBestOrientationByHeightfieldExteriorVolume(
 {
     using namespace vcl;
 
-    using PointType  = MeshType::VertexType::PositionType;
-    using ScalarType = typename PointType::ScalarType;
+    using PointType  = PositionType<MeshType>;
+    using ScalarType = PointType::ScalarType;
 
     if (nDirections == 0) {
         throw std::invalid_argument(
@@ -394,7 +394,7 @@ auto findBestOrientationByHeightfieldExteriorVolume(
     log.startNewTask(
         0, 100, "Finding best orientation by heightfield exterior volume...");
 
-    requirePerFaceNormal(m);
+    requireFaceNormal(m);
 
     Box3<ScalarType> bbox = boundingBox(m);
 
@@ -420,17 +420,23 @@ auto findBestOrientationByHeightfieldExteriorVolume(
             bestNormal  = fibNormals[i];
 
             log.setPercentage(i / static_cast<double>(fibNormals.size()) * 100);
-            log.info() << "New best: Plane id: " << i << "/"
-                       << fibNormals.size() - 1 << ", normal: " << fibNormals[i]
-                       << ", volume: " << std::to_string(vol);
+            log.log(
+                "New best: Plane id: {}/{}, normal: {:.3f}, volume: {:.3f}",
+                i,
+                fibNormals.size() - 1,
+                fibNormals[i],
+                vol);
         }
     }
 
     log.setPercentage(100);
-    log.info() << "Fibonacci planes tested: " << fibNormals.size()
-               << "\nBest plane id: " << bestPlaneId
-               << "\nBest plane normal: " << bestNormal
-               << "\nMinimum volume: " << bestVolume;
+    log.log(
+        "Fibonacci planes tested: {}\nBest plane id: {}\nBest plane normal: "
+        "{:.3f}\nMinimum volume: {:.3f}",
+        fibNormals.size(),
+        bestPlaneId,
+        bestNormal,
+        bestVolume);
     log.endTask("Best orientation found.");
 
     return bestNormal;

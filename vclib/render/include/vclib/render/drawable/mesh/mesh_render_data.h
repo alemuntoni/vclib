@@ -8,8 +8,8 @@
 #ifndef VCL_RENDER_DRAWABLE_MESH_MESH_RENDER_DATA_H
 #define VCL_RENDER_DRAWABLE_MESH_MESH_RENDER_DATA_H
 
-#include <vclib/render/drawable/mesh/mesh_render_info.h>
-#include <vclib/render/drawable/mesh/mesh_render_settings.h>
+#include "mesh_render_info.h"
+#include "mesh_render_settings.h"
 
 #include <vclib/algorithms/mesh.h>
 #include <vclib/mesh.h>
@@ -23,10 +23,11 @@ namespace vcl {
  * a subset of the buffers, taking into account different scenarios (e.g.,
  * vertex duplication, polygonal faces triangulation) consistently.
  *
- * The class uses the Curiously Recurring Template Pattern (CRTP) to allow this
- * class to call functions to set the buffers (that are managed by the derived
- * class, since they depend on the rendering backend used) when the users
- * requires to update the mesh data (that may be all the data, or a subset).
+ * The class uses C++23 explicit object parameters ("deducing this") to allow
+ * this class to call functions to set the buffers (that are managed by the
+ * derived class, since they depend on the rendering backend used) when the
+ * user requires to update the mesh data (that may be all the data, or a
+ * subset).
  *
  * It also provides a set of protected functions that may be used by the derived
  * class to fill the buffers in a consistent way, managing automatically all the
@@ -61,16 +62,15 @@ namespace vcl {
  * Refer to the documentation of the functions that set the buffers for more
  * details on how to fill the buffers.
  */
-template<typename MeshRenderDerived>
 class MeshRenderData
 {
 public:
     struct TriangleMaterialChunk
     {
-        uint startIndex     = 0; // start index in the triangle index buffer
-        uint indexCount     = 0; // num indices in the triangle index buffer
-        uint vertMaterialId = 0; // material id associated to the vertices
-        uint faceMaterialId = 0; // material id associated to the faces
+        uint   startIndex     = 0; // start index in the triangle index buffer
+        uint   indexCount     = 0; // num indices in the triangle index buffer
+        ushort vertMaterialId = USHORT_NULL; // material id associated to verts
+        ushort faceMaterialId = USHORT_NULL; // material id associated to faces
     };
 
 private:
@@ -122,28 +122,29 @@ public:
      * all the buffers are updated.
      */
     void update(
+        this auto&&             self,
         const MeshConcept auto& mesh,
         MRI::BuffersBitSet      buffersToUpdate = MRI::BUFFERS_ALL)
     {
-        MRI::BuffersBitSet btu = mBuffersToFill & buffersToUpdate;
+        MRI::BuffersBitSet btu = self.mBuffersToFill & buffersToUpdate;
 
         // first thing to do
-        updateAuxiliaryData(mesh, btu);
+        self.updateAuxiliaryData(mesh, btu);
 
         // set data for vertices
-        updateVerticesData(mesh, btu);
+        self.updateVerticesData(mesh, btu);
 
         // set data for faces
-        updateFacesData(mesh, btu);
+        self.updateFacesData(mesh, btu);
 
         // set data for edges
-        updateEdgesData(mesh, btu);
+        self.updateEdgesData(mesh, btu);
 
         // set additional data for mesh
-        updateMeshAdditionalData(mesh, btu);
+        self.updateMeshAdditionalData(mesh, btu);
 
         // set data for textures
-        updateTextureData(mesh, btu);
+        self.updateTextureData(mesh, btu);
     }
 
     /**
@@ -269,7 +270,7 @@ public:
      * @param[in] chunkNumber: the triangle chunk number
      * @return the material index for the given triangle chunk
      */
-    uint materialIndex(const MeshRenderSettings& mrs, uint chunkNumber) const
+    ushort materialIndex(const MeshRenderSettings& mrs, uint chunkNumber) const
     {
         using enum MeshRenderInfo::Surface;
 
@@ -292,6 +293,8 @@ protected:
         using std::swap;
         swap(mNumVerts, other.mNumVerts);
         swap(mNumTris, other.mNumTris);
+        swap(mNumEdges, other.mNumEdges);
+        swap(nWireframeLines, other.nWireframeLines);
         swap(mVertWedgeMap, other.mVertWedgeMap);
         swap(mVertsToDuplicate, other.mVertsToDuplicate);
         swap(mFacesToReassign, other.mFacesToReassign);
@@ -457,7 +460,7 @@ protected:
     void fillTriangleIndices(const FaceMeshConcept auto& mesh, auto* buffer)
     {
         using MeshType = std::decay_t<decltype(mesh)>;
-        using FaceType = MeshType::FaceType;
+        using FaceType = ConstFaceType<MeshType>;
 
         triangulatedFaceVertexIndicesToBuffer(
             mesh, buffer, mIndexMap, MatrixStorageType::ROW_MAJOR, mNumTris);
@@ -472,18 +475,18 @@ protected:
         // comparator of faces
         // ordering first by per-vertex material index (if available),
         // then by per-face material index (if available)
-        auto faceComp = [&](const FaceType& f1, const FaceType& f2) {
-            if constexpr (HasPerVertexMaterialIndex<MeshType>) {
-                if (isPerVertexMaterialIndexAvailable(mesh)) {
-                    uint id1 = f1.vertex(0)->materialIndex();
-                    uint id2 = f2.vertex(0)->materialIndex();
+        auto faceComp = [&](FaceType f1, FaceType f2) {
+            if constexpr (HasVertexMaterialIndex<MeshType>) {
+                if (mesh.isVertexMaterialIndexAvailable()) {
+                    uint id1 = f1.vertex(0).materialIndex();
+                    uint id2 = f2.vertex(0).materialIndex();
                     if (id1 != id2) { // do not return true if equal
                         return id1 < id2;
                     }
                 }
             }
-            if constexpr (HasPerFaceMaterialIndex<MeshType>) {
-                if (isPerFaceMaterialIndexAvailable(mesh)) {
+            if constexpr (HasFaceMaterialIndex<MeshType>) {
+                if (mesh.isFaceMaterialIndexAvailable()) {
                     uint id1 = f1.materialIndex();
                     uint id2 = f2.materialIndex();
                     if (id1 != id2) { // do not return true if equal
@@ -504,7 +507,7 @@ protected:
         permuteFaceVertexIndicesByFunctionToBuffer(
             mesh, buffer, faceComp, mIndexMap);
 
-        fillChuncks(mesh);
+        fillChunks(mesh);
     }
 
     /**
@@ -649,7 +652,9 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setVertexPositionsBuffer(const MeshConcept auto&) {}
+    void setVertexPositionsBuffer([[maybe_unused]] const MeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of vertex selection buffer and
@@ -667,7 +672,9 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setVertexSelectionBuffer(const MeshConcept auto&) {}
+    void setVertexSelectionBuffer([[maybe_unused]] const MeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of vertex normals buffer and sends
@@ -685,7 +692,9 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setVertexNormalsBuffer(const MeshConcept auto&) {}
+    void setVertexNormalsBuffer([[maybe_unused]] const MeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of vertex colors buffer and sends
@@ -703,7 +712,7 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setVertexColorsBuffer(const MeshConcept auto&) {}
+    void setVertexColorsBuffer([[maybe_unused]] const MeshConcept auto& mesh) {}
 
     /**
      * @brief Function that sets the content of vertex texture coordinates
@@ -721,7 +730,9 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setVertexTexCoordsBuffer(const MeshConcept auto&) {}
+    void setVertexTexCoordsBuffer([[maybe_unused]] const MeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of vertex tangent buffer and sends
@@ -739,7 +750,9 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setVertexTangentsBuffer(const MeshConcept auto&) {}
+    void setVertexTangentsBuffer([[maybe_unused]] const MeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of wedge texture coordinates buffer
@@ -762,7 +775,9 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setWedgeTexCoordsBuffer(const MeshConcept auto&) {}
+    void setWedgeTexCoordsBuffer([[maybe_unused]] const MeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of triangle indices buffer and
@@ -780,7 +795,10 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setTriangleIndicesBuffer(const FaceMeshConcept auto&) {};
+    void setTriangleIndicesBuffer(
+        [[maybe_unused]] const FaceMeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of triangle selection buffer and
@@ -798,7 +816,10 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setTriangleSelectionBuffer(const FaceMeshConcept auto&) {};
+    void setTriangleSelectionBuffer(
+        [[maybe_unused]] const FaceMeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of triangle normals buffer and
@@ -816,7 +837,10 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setTriangleNormalsBuffer(const FaceMeshConcept auto&) {}
+    void setTriangleNormalsBuffer(
+        [[maybe_unused]] const FaceMeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of triangle colors buffer and
@@ -834,7 +858,10 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setTriangleColorsBuffer(const FaceMeshConcept auto&) {}
+    void setTriangleColorsBuffer(
+        [[maybe_unused]] const FaceMeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of vertex material indices buffer
@@ -856,7 +883,10 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setVertexMaterialIndicesBuffer(const FaceMeshConcept auto&) {}
+    void setVertexMaterialIndicesBuffer(
+        [[maybe_unused]] const FaceMeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of face material indices buffer and
@@ -874,7 +904,10 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setFaceMaterialIndicesBuffer(const FaceMeshConcept auto&) {}
+    void setFaceMaterialIndicesBuffer(
+        [[maybe_unused]] const FaceMeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of wireframe indices buffer and
@@ -892,7 +925,10 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setWireframeIndicesBuffer(const FaceMeshConcept auto&) {}
+    void setWireframeIndicesBuffer(
+        [[maybe_unused]] const FaceMeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of edge indices buffer and sends
@@ -910,7 +946,9 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setEdgeIndicesBuffer(const EdgeMeshConcept auto&) {}
+    void setEdgeIndicesBuffer([[maybe_unused]] const EdgeMeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of edge normals buffer and sends
@@ -928,7 +966,9 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setEdgeNormalsBuffer(const EdgeMeshConcept auto&) {}
+    void setEdgeNormalsBuffer([[maybe_unused]] const EdgeMeshConcept auto& mesh)
+    {
+    }
 
     /**
      * @brief Function that sets the content of edge colors buffer and sends
@@ -946,7 +986,9 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setEdgeColorsBuffer(const EdgeMeshConcept auto&) {}
+    void setEdgeColorsBuffer([[maybe_unused]] const EdgeMeshConcept auto& mesh)
+    {
+    }
 
     void setEdgeSelectionBuffer(const EdgeMeshConcept auto&) {}
 
@@ -963,7 +1005,7 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setTextures(const MeshConcept auto&) {}
+    void setTextures([[maybe_unused]] const MeshConcept auto& mesh) {}
 
     /**
      * @brief Function that sets the mesh additional data from the mesh.
@@ -973,24 +1015,14 @@ protected:
      *
      * @param[in] mesh: the input mesh from which to get the data
      */
-    void setMeshAdditionalData(const MeshConcept auto&) {}
+    void setMeshAdditionalData([[maybe_unused]] const MeshConcept auto& mesh) {}
 
 private:
-    MeshRenderDerived& derived()
-    {
-        return static_cast<MeshRenderDerived&>(*this);
-    }
-
-    const MeshRenderDerived& derived() const
-    {
-        return static_cast<const MeshRenderDerived&>(*this);
-    }
-
+    template<MeshConcept MeshType>
     void updateAuxiliaryData(
-        const MeshConcept auto&       mesh,
+        const MeshType&               mesh,
         MeshRenderInfo::BuffersBitSet btu)
     {
-        using MeshType = MeshRenderDerived::MeshType;
         using enum MRI::Buffers;
 
         if (btu[toUnderlying(VERTICES)] || btu[toUnderlying(WEDGE_TEXCOORDS)] ||
@@ -999,8 +1031,8 @@ private:
             mVertsToDuplicate.clear();
             mFacesToReassign.clear();
 
-            if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
-                if (mesh.isPerFaceWedgeTexCoordsEnabled()) {
+            if constexpr (HasFaceWedgeTexCoords<MeshType>) {
+                if (mesh.isFaceWedgeTexCoordsAvailable()) {
                     verticesToDuplicateByWedgeTexCoordsCount(
                         mesh,
                         mVertWedgeMap,
@@ -1025,161 +1057,164 @@ private:
         }
     }
 
+    template<MeshConcept MeshType>
     void updateVerticesData(
-        const MeshConcept auto&       mesh,
+        this auto&&                   self,
+        const MeshType&               mesh,
         MeshRenderInfo::BuffersBitSet btu)
     {
-        using MeshType = MeshRenderDerived::MeshType;
         using enum MRI::Buffers;
 
         if (btu[toUnderlying(VERTICES)]) {
             // vertex buffer (positions)
-            derived().setVertexPositionsBuffer(mesh);
+            self.setVertexPositionsBuffer(mesh);
         }
 
         if (btu[toUnderlying(VERTICES)] || btu[toUnderlying(VERT_SELECTION)]) {
-            derived().setVertexSelectionBuffer(mesh);
+            self.setVertexSelectionBuffer(mesh);
         }
 
-        if constexpr (HasPerVertexNormal<MeshType>) {
-            if (isPerVertexNormalAvailable(mesh)) {
+        if constexpr (HasVertexNormal<MeshType>) {
+            if (mesh.isVertexNormalAvailable()) {
                 if (btu[toUnderlying(VERT_NORMALS)]) {
                     // vertex buffer (normals)
-                    derived().setVertexNormalsBuffer(mesh);
+                    self.setVertexNormalsBuffer(mesh);
                 }
             }
         }
 
-        if constexpr (HasPerVertexColor<MeshType>) {
-            if (isPerVertexColorAvailable(mesh)) {
+        if constexpr (HasVertexColor<MeshType>) {
+            if (mesh.isVertexColorAvailable()) {
                 if (btu[toUnderlying(VERT_COLORS)]) {
                     // vertex buffer (colors)
-                    derived().setVertexColorsBuffer(mesh);
+                    self.setVertexColorsBuffer(mesh);
                 }
             }
         }
 
-        if constexpr (HasPerVertexTexCoord<MeshType>) {
-            if (isPerVertexTexCoordAvailable(mesh)) {
+        if constexpr (HasVertexTexCoord<MeshType>) {
+            if (mesh.isVertexTexCoordAvailable()) {
                 if (btu[toUnderlying(VERT_TEXCOORDS)]) {
                     // vertex buffer (UVs)
-                    derived().setVertexTexCoordsBuffer(mesh);
+                    self.setVertexTexCoordsBuffer(mesh);
                 }
             }
         }
 
-        if constexpr (HasPerVertexTangent<MeshType>) {
-            if (isPerVertexTangentAvailable(mesh)) {
+        if constexpr (HasVertexTangent<MeshType>) {
+            if (mesh.isVertexTangentAvailable()) {
                 if (btu[toUnderlying(VERT_TANGENT)]) {
                     // vertex buffer (tangent)
-                    derived().setVertexTangentsBuffer(mesh);
+                    self.setVertexTangentsBuffer(mesh);
                 }
             }
         }
     }
 
+    template<MeshConcept MeshType>
     void updateFacesData(
-        const MeshConcept auto&       mesh,
+        this auto&&                   self,
+        const MeshType&               mesh,
         MeshRenderInfo::BuffersBitSet btu)
     {
-        using MeshType = MeshRenderDerived::MeshType;
         using enum MRI::Buffers;
 
         if constexpr (HasFaces<MeshType>) {
             if (btu[toUnderlying(TRIANGLES)]) {
                 // triangle index buffer
-                derived().setTriangleIndicesBuffer(mesh);
+                self.setTriangleIndicesBuffer(mesh);
             }
 
             if (btu[toUnderlying(TRIANGLES)] ||
                 btu[toUnderlying(FACE_SELECTION)]) {
-                derived().setTriangleSelectionBuffer(mesh);
+                self.setTriangleSelectionBuffer(mesh);
             }
 
-            if constexpr (HasPerFaceWedgeTexCoords<MeshType>) {
-                if (isPerFaceWedgeTexCoordsAvailable(mesh)) {
+            if constexpr (HasFaceWedgeTexCoords<MeshType>) {
+                if (mesh.isFaceWedgeTexCoordsAvailable()) {
                     if (btu[toUnderlying(WEDGE_TEXCOORDS)]) {
                         // vertex wedges buffer (duplicated vertices)
-                        derived().setWedgeTexCoordsBuffer(mesh);
+                        self.setWedgeTexCoordsBuffer(mesh);
                     }
                 }
             }
 
-            if constexpr (HasPerFaceNormal<MeshType>) {
-                if (isPerFaceNormalAvailable(mesh)) {
+            if constexpr (HasFaceNormal<MeshType>) {
+                if (mesh.isFaceNormalAvailable()) {
                     if (btu[toUnderlying(TRI_NORMALS)]) {
                         // triangle normal buffer
-                        derived().setTriangleNormalsBuffer(mesh);
+                        self.setTriangleNormalsBuffer(mesh);
                     }
                 }
             }
 
-            if constexpr (HasPerFaceColor<MeshType>) {
-                if (isPerFaceColorAvailable(mesh)) {
+            if constexpr (HasFaceColor<MeshType>) {
+                if (mesh.isFaceColorAvailable()) {
                     if (btu[toUnderlying(TRI_COLORS)]) {
                         // triangle color buffer
-                        derived().setTriangleColorsBuffer(mesh);
+                        self.setTriangleColorsBuffer(mesh);
                     }
                 }
             }
 
             // material indices are stored per face (each face has its own
             // material index)
-            if constexpr (HasPerVertexMaterialIndex<MeshType>) {
-                if (isPerVertexMaterialIndexAvailable(mesh)) {
+            if constexpr (HasVertexMaterialIndex<MeshType>) {
+                if (mesh.isVertexMaterialIndexAvailable()) {
                     if (btu[toUnderlying(VERT_TEXCOORDS)]) {
                         // triangle vertex material indices buffer
-                        derived().setVertexMaterialIndicesBuffer(mesh);
+                        self.setVertexMaterialIndicesBuffer(mesh);
                     }
                 }
             }
 
-            if constexpr (HasPerFaceMaterialIndex<MeshType>) {
-                if (isPerFaceMaterialIndexAvailable(mesh)) {
+            if constexpr (HasFaceMaterialIndex<MeshType>) {
+                if (mesh.isFaceMaterialIndexAvailable()) {
                     if (btu[toUnderlying(WEDGE_TEXCOORDS)]) {
                         // triangle material indices buffer
-                        derived().setFaceMaterialIndicesBuffer(mesh);
+                        self.setFaceMaterialIndicesBuffer(mesh);
                     }
                 }
             }
 
             if (btu[toUnderlying(WIREFRAME)]) {
                 // wireframe index buffer
-                derived().setWireframeIndicesBuffer(mesh);
+                self.setWireframeIndicesBuffer(mesh);
             }
         }
     }
 
+    template<MeshConcept MeshType>
     void updateEdgesData(
-        const MeshConcept auto&       mesh,
+        this auto&&                   self,
+        const MeshType&               mesh,
         MeshRenderInfo::BuffersBitSet btu)
     {
-        using MeshType = MeshRenderDerived::MeshType;
         using enum MRI::Buffers;
 
         if constexpr (HasEdges<MeshType>) {
             if (btu[toUnderlying(EDGES)]) {
                 // edge index buffer
-                derived().setEdgeIndicesBuffer(mesh);
+                self.setEdgeIndicesBuffer(mesh);
+            }
+            if (btu[toUnderlying(EDGE_SELECTION)]) {
+                self.setEdgeSelectionBuffer(mesh);
             }
 
-            if constexpr (HasPerEdgeNormal<MeshType>) {
-                if (isPerEdgeNormalAvailable(mesh)) {
+            if constexpr (HasEdgeNormal<MeshType>) {
+                if (mesh.isEdgeNormalAvailable()) {
                     if (btu[toUnderlying(EDGE_NORMALS)]) {
                         // edge normal buffer
-                        derived().setEdgeNormalsBuffer(mesh);
+                        self.setEdgeNormalsBuffer(mesh);
                     }
                 }
             }
 
-            if constexpr (HasPerEdgeColor<MeshType>) {
-                if (isPerEdgeColorAvailable(mesh)) {
+            if constexpr (HasEdgeColor<MeshType>) {
+                if (mesh.isEdgeColorAvailable()) {
                     if (btu[toUnderlying(EDGE_COLORS)]) {
                         // edge color buffer
-                        derived().setEdgeColorsBuffer(mesh);
-                    }
-                    if (btu[toUnderlying(EDGE_SELECTION)]) {
-                        derived().setEdgeSelectionBuffer(mesh);
+                        self.setEdgeColorsBuffer(mesh);
                     }
                 }
             }
@@ -1187,6 +1222,7 @@ private:
     }
 
     void updateMeshAdditionalData(
+        this auto&&                   self,
         const MeshConcept auto&       mesh,
         MeshRenderInfo::BuffersBitSet btu)
     {
@@ -1194,74 +1230,77 @@ private:
 
         if (btu[toUnderlying(MESH_ADDITIONAL_DATA)]) {
             // mesh additional data
-            derived().setMeshAdditionalData(mesh);
+            self.setMeshAdditionalData(mesh);
         }
     }
 
+    template<MeshConcept MeshType>
     void updateTextureData(
-        const MeshConcept auto&       mesh,
+        this auto&&                   self,
+        const MeshType&               mesh,
         MeshRenderInfo::BuffersBitSet btu)
     {
-        using MeshType = MeshRenderDerived::MeshType;
         using enum MRI::Buffers;
 
         if constexpr (HasMaterials<MeshType>) {
             if (btu[toUnderlying(TEXTURES)]) {
                 // textures
-                derived().setTextures(mesh);
+                self.setTextures(mesh);
             }
         }
     }
 
-    void fillChuncks(const FaceMeshConcept auto& mesh)
+    void fillChunks(const FaceMeshConcept auto& mesh)
     {
         using MeshType = std::decay_t<decltype(mesh)>;
 
         mMaterialChunks.clear();
+        if (mIndexMap.triangleCount() == 0)
+            return;
 
         uint first = 0;
         uint n     = 0;
 
-        uint currentVertMatID = UINT_NULL;
-        uint currentFaceMatID = UINT_NULL;
+        ushort currentVertMatID = USHORT_NULL;
+        ushort currentFaceMatID = USHORT_NULL;
 
         for (uint i = 0; i < mIndexMap.triangleCount(); ++i) {
             uint fIndex = mIndexMap.polygon(i);
 
-            if constexpr (HasPerVertexMaterialIndex<MeshType>) {
-                if (isPerVertexMaterialIndexAvailable(mesh)) {
-                    uint mId = mesh.face(fIndex).vertex(0)->materialIndex();
-                    if (mId != currentVertMatID && n != 0) {
-                        if (currentVertMatID != UINT_NULL) {
-                            mMaterialChunks.push_back(
-                                {first, n, currentVertMatID, currentFaceMatID});
-                            first += n;
-                            n = 0;
-                        }
-                        currentVertMatID = mId;
-                    }
+            ushort vMatId = USHORT_NULL;
+            if constexpr (HasVertexMaterialIndex<MeshType>) {
+                if (mesh.isVertexMaterialIndexAvailable()) {
+                    vMatId = mesh.face(fIndex).vertex(0).materialIndex();
                 }
             }
-            if constexpr (HasPerFaceMaterialIndex<MeshType>) {
-                if (isPerFaceMaterialIndexAvailable(mesh)) {
-                    uint mId = mesh.face(fIndex).materialIndex();
-                    if (mId != currentFaceMatID && n != 0) {
-                        if (currentFaceMatID != UINT_NULL) {
-                            mMaterialChunks.push_back(
-                                {first, n, currentVertMatID, currentFaceMatID});
-                            first += n;
-                            n = 0;
-                        }
-                        currentFaceMatID = mId;
-                    }
+
+            ushort fMatId = USHORT_NULL;
+            if constexpr (HasFaceMaterialIndex<MeshType>) {
+                if (mesh.isFaceMaterialIndexAvailable()) {
+                    fMatId = mesh.face(fIndex).materialIndex();
                 }
+            }
+
+            if (i == 0) {
+                currentVertMatID = vMatId;
+                currentFaceMatID = fMatId;
+            }
+            else if (vMatId != currentVertMatID || fMatId != currentFaceMatID) {
+                mMaterialChunks.push_back(
+                    {first, n, currentVertMatID, currentFaceMatID});
+                first += n;
+                n                = 0;
+                currentVertMatID = vMatId;
+                currentFaceMatID = fMatId;
             }
 
             n++;
         }
 
-        mMaterialChunks.push_back(
-            {first, n, currentVertMatID, currentFaceMatID});
+        if (n > 0) {
+            mMaterialChunks.push_back(
+                {first, n, currentVertMatID, currentFaceMatID});
+        }
     }
 };
 
